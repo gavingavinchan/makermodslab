@@ -91,6 +91,15 @@ export default {
     keepEpisodeAria: "Keep episode {{index}}",
     finalizeFailedTitle: "Couldn't finalize the recording",
     finalizeFailedBody: "Nothing was uploaded — try again.",
+    // The way out of Finalize that deletes nothing. Always offered — the
+    // dialog can't be dismissed, and a reload would drop the pending Hub push.
+    keepAllAndClose: "Keep all episodes and close",
+    // The episode list failed to load. The backend's own message renders
+    // beside this heading, untranslated like every server string.
+    episodesLoadFailedTitle: "Couldn't load the episode list",
+    episodesRetry: "Try again",
+    finalizeUnavailable:
+      "Finalizing needs the episode list. Try loading it again, or keep all episodes and close.",
   },
 
   jointChart: {

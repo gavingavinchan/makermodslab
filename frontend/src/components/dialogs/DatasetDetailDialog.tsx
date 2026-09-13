@@ -57,9 +57,20 @@ import {
   getDatasetInfo,
   getEpisodeJoints,
   getExcludedEpisodes,
+  hideDataset,
   listEpisodes,
+  removeCustomDataset,
   setExcludedEpisodes,
 } from "@/lib/replayApi";
+import { ApiError } from "@/lib/apiClient";
+
+// The backend's own message for a rejected request (the 409 detail from
+// episode-delete, say), or null when the failure carried none. Server prose
+// renders in English in every language — the call site supplies the translated
+// fallback beside it.
+function backendDetail(e: unknown): string | null {
+  return e instanceof ApiError && e.detail ? e.detail : null;
+}
 
 export interface DatasetDetailDialogProps {
   repoId: string | null;
@@ -87,7 +98,11 @@ export interface DatasetDetailDialogProps {
    * unchecked, deletes the whole dataset and calls `onDiscarded` instead
    * (there is nothing left to finalize). The training-curation toggle and the
    * info card's own delete affordance are hidden while this is set — both
-   * would be redundant with (or conflict with) the checkboxes here. */
+   * would be redundant with (or conflict with) the checkboxes here. A
+   * secondary "keep all episodes and close" action always exits through
+   * `onFinalize` without deleting anything, so a failed episode load can
+   * never leave the user with a page reload as the only way out (a reload
+   * would drop the pending Hub push). */
   finalize?: {
     onFinalize: () => void;
     onDiscarded: () => void;
@@ -629,6 +644,12 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
 
   const [episodes, setEpisodes] = useState<EpisodeSummary[] | null>(null);
   const [episodesLoading, setEpisodesLoading] = useState(true);
+  // Why the episode list is missing, when it is. The list used to be swallowed
+  // into a plain `null`, which reads exactly like "this dataset has no
+  // episodes" — and in Finalize mode left a dead button and no way out. The
+  // backend's own message is server prose (never translated); the title
+  // beside it is ours.
+  const [episodesError, setEpisodesError] = useState<string | null>(null);
 
   // Per-weight training-mix tiers, newest-lever-first. Share is measured in
   // FRAMES (length x weight), not episodes: episodes differ in length, so an
@@ -715,16 +736,26 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
     const controller = new AbortController();
     setEpisodesLoading(true);
     setEpisodes(null);
+    setEpisodesError(null);
     setCameras([]);
     setExcludedEpisodesState(new Set());
     setSelecting(false);
     Promise.all([
-      listEpisodes(baseUrl, fetchWithHeaders, repoId, controller.signal).catch(() => null),
+      listEpisodes(baseUrl, fetchWithHeaders, repoId, controller.signal)
+        .then((eps) => ({ eps, error: null as string | null }))
+        .catch((e) => ({
+          eps: null,
+          // A failed listing is reported, not silently rendered as an empty
+          // dataset — Finalize can't act on a list it never got.
+          error: backendDetail(e) ?? (e instanceof Error ? e.message : String(e)),
+        })),
       getDatasetInfo(baseUrl, fetchWithHeaders, repoId, controller.signal).catch(() => null),
       getExcludedEpisodes(baseUrl, fetchWithHeaders, repoId, controller.signal).catch(() => []),
-    ]).then(([eps, info, excluded]) => {
+    ]).then(([episodesResult, info, excluded]) => {
       if (controller.signal.aborted) return;
+      const eps = episodesResult.eps;
       setEpisodes(eps);
+      setEpisodesError(episodesResult.error);
       setCameras(info?.cameras ?? []);
       setExcludedEpisodesState(new Set(excluded));
       // Finalize starts every episode checked (kept) — only unchecking marks
@@ -813,17 +844,30 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
         onDeleted?.();
         finalize.onDiscarded();
       } else {
+        // A partial delete changes the episode count the caller's own card is
+        // showing, exactly like the manual per-episode path — tell it, or the
+        // library keeps the pre-Finalize count until something else refreshes.
+        onDeleted?.();
         finalize.onFinalize();
       }
-    } catch {
+    } catch (e) {
       toast({
         title: t("dialogs.datasetDetail.finalizeFailedTitle"),
-        description: t("dialogs.datasetDetail.finalizeFailedBody"),
+        description:
+          backendDetail(e) ?? t("dialogs.datasetDetail.finalizeFailedBody"),
         variant: "destructive",
       });
     } finally {
       setFinalizing(false);
     }
+  };
+
+  // The escape hatch out of Finalize: keep every episode and leave, deleting
+  // nothing. Runs the SAME continuation a Finalize with nothing unchecked runs
+  // (fold the form, open the library, start the Hub push), because a reload —
+  // the only other way out of a non-dismissable dialog — would drop that push.
+  const handleKeepAllAndClose = () => {
+    finalize?.onFinalize();
   };
 
   // Per-episode delete (permanent, no trash/undo). Re-fetches the episode
@@ -845,10 +889,13 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
         hadDeletionRef.current = true;
         setReloadKey((k) => k + 1);
       }
-    } catch {
+    } catch (e) {
+      // The backend's refusal says WHY (dataset busy, index out of range) —
+      // far more use than a generic "try again".
       toast({
         title: t("dialogs.datasetDetail.deleteEpisodeFailedTitle"),
-        description: t("dialogs.datasetDetail.deleteEpisodeFailedBody"),
+        description:
+          backendDetail(e) ?? t("dialogs.datasetDetail.deleteEpisodeFailedBody"),
         variant: "destructive",
       });
     } finally {
@@ -856,24 +903,44 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
     }
   };
 
-  // Whole-dataset delete via the info card (permanent, local-only —
-  // deleteDataset never touches a Hub copy). `item` decides the confirm
-  // dialog's wording (resolveDeleteAction) but not the API call: a "both"
-  // row's first press and a local-only row's delete both just remove the
-  // local directory.
+  // Whole-dataset delete via the info card. `resolveDeleteAction` decides BOTH
+  // the confirm dialog's wording and which route runs: a local-only row and a
+  // "both" row's first press remove the local directory (deleteDataset, which
+  // never touches a Hub copy), while a Hub-only row has no local directory at
+  // all and is only removed from the listing — unpinned or hidden, the same
+  // two calls PolicyManageDialog makes for a model.
   const datasetDeleteResolution = item ? resolveDeleteAction("dataset", item) : null;
   const confirmDeleteDataset = async () => {
-    if (!repoId) return;
+    if (!repoId || !datasetDeleteResolution) return;
     setDeletingDataset(true);
     try {
-      await deleteDataset(baseUrl, fetchWithHeaders, repoId);
+      if (datasetDeleteResolution.action === "unpin") {
+        await removeCustomDataset(baseUrl, fetchWithHeaders, repoId);
+      } else if (datasetDeleteResolution.action === "hide") {
+        await hideDataset(baseUrl, fetchWithHeaders, repoId);
+      } else {
+        // A refusal here answers 200 with {success: false, message} rather
+        // than an error status, so the flag has to be read — otherwise the
+        // dialog closes and the caller drops a dataset that still exists.
+        const result = await deleteDataset(baseUrl, fetchWithHeaders, repoId);
+        if (!result.success) {
+          toast({
+            title: t("dialogs.datasetDetail.deleteDatasetFailedTitle"),
+            description:
+              result.message || t("dialogs.datasetDetail.deleteDatasetFailedBody"),
+            variant: "destructive",
+          });
+          return;
+        }
+      }
       setDatasetDeleteConfirm(false);
       onOpenChange(false);
       onDeleted?.();
-    } catch {
+    } catch (e) {
       toast({
         title: t("dialogs.datasetDetail.deleteDatasetFailedTitle"),
-        description: t("dialogs.datasetDetail.deleteDatasetFailedBody"),
+        description:
+          backendDetail(e) ?? t("dialogs.datasetDetail.deleteDatasetFailedBody"),
         variant: "destructive",
       });
     } finally {
@@ -1029,7 +1096,29 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
                 </div>
               ) : null}
               <div className="min-h-0 flex-1 overflow-y-auto">
-                {episodes && episodes.length > 0 ? (
+                {episodesError ? (
+                  /* The list failed to load. Say so (with the backend's own
+                     message, which renders in English like every server
+                     string) and offer the fetch again — silently showing an
+                     empty list here is how Finalize ended up with a button
+                     that did nothing. */
+                  <div className="space-y-2 px-1">
+                    <p className="text-xs font-medium text-destructive">
+                      {t("dialogs.datasetDetail.episodesLoadFailedTitle")}
+                    </p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      {episodesError}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setReloadKey((k) => k + 1)}
+                      className="h-6 px-2 text-[11px]"
+                    >
+                      {t("dialogs.datasetDetail.episodesRetry")}
+                    </Button>
+                  </div>
+                ) : episodes && episodes.length > 0 ? (
                   <div className="space-y-0.5">
                     {episodes.map((ep) => (
                       <div
@@ -1142,18 +1231,41 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
 
             <div className="p-3">
               {finalize ? (
-                <Button
-                  onClick={handleFinalizeClick}
-                  disabled={finalizing}
-                  className="w-full gap-2"
-                >
-                  {finalizing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Check className="h-4 w-4" />
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleFinalizeClick}
+                    disabled={finalizing || episodesLoading || !episodes}
+                    title={
+                      episodesError
+                        ? t("dialogs.datasetDetail.finalizeUnavailable")
+                        : undefined
+                    }
+                    className="w-full gap-2"
+                  >
+                    {finalizing ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Check className="h-4 w-4" />
+                    )}
+                    {t("dialogs.datasetDetail.finalize")}
+                  </Button>
+                  {episodesError && (
+                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                      {t("dialogs.datasetDetail.finalizeUnavailable")}
+                    </p>
                   )}
-                  {t("dialogs.datasetDetail.finalize")}
-                </Button>
+                  {/* Always available, including when the list never loaded:
+                      this dialog can't be dismissed any other way, and a
+                      reload would drop the pending Hub push. */}
+                  <Button
+                    variant="outline"
+                    onClick={handleKeepAllAndClose}
+                    disabled={finalizing}
+                    className="w-full"
+                  >
+                    {t("dialogs.datasetDetail.keepAllAndClose")}
+                  </Button>
+                </div>
               ) : (
                 <Button
                   onClick={handleTrain}
@@ -1229,7 +1341,12 @@ const DatasetDetailDialog: React.FC<DatasetDetailDialogProps> = ({
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDeleteDataset}
+              onClick={(e) => {
+                // Radix closes on click; a refused delete has to keep the
+                // confirm open so its error is attached to something.
+                e.preventDefault();
+                void confirmDeleteDataset();
+              }}
               disabled={deletingDataset}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

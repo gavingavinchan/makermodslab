@@ -52,6 +52,7 @@ vi.mock("@/lib/replayApi", async () => {
 });
 
 import DatasetDetailDialog from "./DatasetDetailDialog";
+import { ApiError } from "@/lib/apiClient";
 import type { DatasetItem } from "@/lib/replayApi";
 
 const LOCAL_ITEM: DatasetItem = {
@@ -194,6 +195,46 @@ describe("whole-dataset delete via the info card", () => {
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
     expect(onDeleted).toHaveBeenCalled();
   });
+
+  it("keeps the dialog open and surfaces the server's message when the delete is refused", async () => {
+    mocks.listEpisodes.mockResolvedValue([episode(0)]);
+    // The route answers 200 with success:false rather than an error status.
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: false, message: "Dataset is being recorded into" }),
+    });
+    const { onOpenChange, onDeleted } = setup({ item: LOCAL_ITEM });
+    await screen.findByText("Episode 0");
+
+    fireEvent.click(screen.getByText("info-card-delete"));
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() =>
+      expect(mocks.toast).toHaveBeenCalledWith(
+        expect.objectContaining({ description: "Dataset is being recorded into" }),
+      ),
+    );
+    expect(onDeleted).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("removes a Hub-only row from the listing instead of calling the local delete route", async () => {
+    mocks.listEpisodes.mockResolvedValue([episode(0)]);
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, repo_id: "makermods/ds" }),
+    });
+    const { onDeleted } = setup({ item: { ...LOCAL_ITEM, source: "hub" } });
+    await screen.findByText("Episode 0");
+
+    fireEvent.click(screen.getByText("info-card-delete"));
+    fireEvent.click(screen.getByRole("button", { name: /^remove$/i }));
+
+    await waitFor(() => expect(onDeleted).toHaveBeenCalled());
+    const paths = mocks.fetch.mock.calls.map((c: unknown[]) => c[0]);
+    expect(paths).toContain("http://test/api/v1/datasets/hide");
+    expect(paths).not.toContain("http://test/api/v1/delete-dataset");
+  });
 });
 
 describe("Finalize review mode", () => {
@@ -269,6 +310,93 @@ describe("Finalize review mode", () => {
     expect(f.onFinalize).not.toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
     expect(onDeleted).toHaveBeenCalled();
+  });
+
+  it("reports the deletion to the caller so a stale episode count refreshes", async () => {
+    mocks.listEpisodes.mockResolvedValue([episode(0), episode(1)]);
+    mocks.deleteEpisodes.mockResolvedValue({ success: true, whole_dataset_deleted: false });
+    const f = finalize();
+    const { onDeleted } = setup({ finalize: f });
+
+    await screen.findByText("Episode 1");
+    fireEvent.click(screen.getByRole("checkbox", { name: /keep episode 1/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^finalize$/i }));
+
+    await waitFor(() => expect(f.onFinalize).toHaveBeenCalled());
+    expect(onDeleted).toHaveBeenCalled();
+  });
+
+  it("shows the backend's reason when the delete is refused", async () => {
+    mocks.listEpisodes.mockResolvedValue([episode(0), episode(1)]);
+    mocks.deleteEpisodes.mockRejectedValue(
+      new ApiError("Delete episodes failed", 409, "Dataset is busy", "dataset.busy"),
+    );
+    const f = finalize();
+    setup({ finalize: f });
+
+    await screen.findByText("Episode 1");
+    fireEvent.click(screen.getByRole("checkbox", { name: /keep episode 1/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^finalize$/i }));
+
+    await waitFor(() =>
+      expect(mocks.toast).toHaveBeenCalledWith(
+        expect.objectContaining({ description: "Dataset is busy" }),
+      ),
+    );
+    expect(f.onFinalize).not.toHaveBeenCalled();
+  });
+
+  describe("when the episode list fails to load", () => {
+    beforeEach(() => {
+      mocks.listEpisodes.mockRejectedValue(
+        new ApiError("List episodes failed", 500, "Dataset metadata is unreadable"),
+      );
+    });
+
+    it("shows the failure with the backend's message and disables Finalize", async () => {
+      setup({ finalize: finalize() });
+
+      expect(await screen.findByText(/couldn't load the episode list/i)).toBeInTheDocument();
+      expect(screen.getByText("Dataset metadata is unreadable")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^finalize$/i })).toBeDisabled();
+      expect(screen.getByText(/finalizing needs the episode list/i)).toBeInTheDocument();
+    });
+
+    it("still lets the user out through the keep-all escape hatch", async () => {
+      const f = finalize();
+      setup({ finalize: f });
+
+      await screen.findByText(/couldn't load the episode list/i);
+      fireEvent.click(screen.getByRole("button", { name: /keep all episodes and close/i }));
+
+      expect(f.onFinalize).toHaveBeenCalled();
+      expect(mocks.deleteEpisodes).not.toHaveBeenCalled();
+    });
+
+    it("can retry the fetch", async () => {
+      setup({ finalize: finalize() });
+
+      await screen.findByText(/couldn't load the episode list/i);
+      mocks.listEpisodes.mockResolvedValue([episode(0)]);
+      fireEvent.click(screen.getByRole("button", { name: /try again/i }));
+
+      expect(await screen.findByText("Episode 0")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^finalize$/i })).toBeEnabled();
+    });
+  });
+
+  it("keeps every episode and runs the same continuation when the escape hatch is used", async () => {
+    mocks.listEpisodes.mockResolvedValue([episode(0), episode(1)]);
+    const f = finalize();
+    setup({ finalize: f });
+
+    await screen.findByText("Episode 1");
+    // Unchecked episodes are ignored — this action deletes nothing.
+    fireEvent.click(screen.getByRole("checkbox", { name: /keep episode 1/i }));
+    fireEvent.click(screen.getByRole("button", { name: /keep all episodes and close/i }));
+
+    expect(f.onFinalize).toHaveBeenCalled();
+    expect(mocks.deleteEpisodes).not.toHaveBeenCalled();
   });
 
   it("cannot be dismissed by escape or outside click", async () => {

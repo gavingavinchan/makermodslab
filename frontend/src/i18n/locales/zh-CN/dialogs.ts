@@ -51,6 +51,11 @@ export default {
     keepEpisodeAria: "保留第 {{index}} 回合",
     finalizeFailedTitle: "无法完成录制",
     finalizeFailedBody: "未上传任何内容 —— 请重试。",
+    keepAllAndClose: "保留所有回合并关闭",
+    episodesLoadFailedTitle: "无法加载回合列表",
+    episodesRetry: "重试",
+    finalizeUnavailable:
+      "完成录制需要回合列表。请重新加载，或保留所有回合并关闭。",
   },
 
   jointChart: {
