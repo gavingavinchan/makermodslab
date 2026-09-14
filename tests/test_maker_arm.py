@@ -234,7 +234,8 @@ def _no_staging(monkeypatch: pytest.MonkeyPatch):
     """Skip the on-disk calibration staging — this is a config-shape test."""
     monkeypatch.setattr(
         "makermodslab.utils.robot_factory.setup_calibration_files",
-        lambda leader, follower, arm_type="so101": (leader, follower),
+        # The Maker arm offers two leader kinds, so it now hears leader_kind.
+        lambda leader, follower, arm_type="so101", **kw: (leader, follower),
     )
     monkeypatch.setattr(
         "makermodslab.utils.robot_factory.stage_bimanual_calibrations",
@@ -429,10 +430,10 @@ def test_replay_accepts_a_maker_robot(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "Maker" not in result["message"]
 
 
-def test_replay_still_refuses_a_bimanual_robot_of_either_arm_type(
+def test_replay_requires_both_slots_for_a_bimanual_robot(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pre-existing limit, unchanged by the Maker port: replay drives one bus."""
+    """A legacy single-slot request cannot drive a bimanual robot."""
     from makermodslab import replay
 
     monkeypatch.setattr(replay, "_load_robot_record", lambda name: {"mode": "bimanual"})

@@ -72,6 +72,18 @@ def _metal_leader_available() -> bool:
 
 
 class MetalFamily(CanArmFamily):
+    recording_realign_speed_deg_s = 60.0
+    recording_home_speed_deg_s = 400.0 * 360.0 / 4096.0
+
+    # Zero is upright: final teardown still returns to the captured resting pose.
+    def hold_recording_home(self, targets):
+        # The pinned follower smooths target velocity across MIT commands.
+        # Clear that history so the last held frame has zero velocity, while
+        # retaining configured gains and the already-reached home position.
+        for device, pose in targets:
+            device._reset_velocity_feedforward()
+            device.send_action({f"{motor}.pos": value for motor, value in pose.items()})
+
     id = "metal"
     supports_gripper_effort_control = True
     label = "Metal Arm"
@@ -106,6 +118,8 @@ class MetalFamily(CanArmFamily):
     supports_gripper_wiggle = True
 
     def leader_options(self) -> tuple[LeaderOption, ...]:
+        from ..star_gripper import STAR_VERTICAL_LEADER_KIND
+
         available = _metal_leader_available()
         return (
             LeaderOption(id=STAR_LEADER_KIND, label="Star Arm 102 leader"),
@@ -116,9 +130,14 @@ class MetalFamily(CanArmFamily):
                 unavailable_reason=None if available else METAL_LEADER_UNAVAILABLE,
                 energized=True,
             ),
+            LeaderOption(id=STAR_VERTICAL_LEADER_KIND, label="Star arm vertical grip"),
         )
 
     def leader_calibration_dir(self, leader_kind: str | None = None) -> str:
+        from ..star_gripper import STAR_VERTICAL_LEADER_KIND, vertical_calibration_dir
+
+        if leader_kind == STAR_VERTICAL_LEADER_KIND:
+            return vertical_calibration_dir()
         # The Metal leader is its own lerobot class (metal_leader), so lerobot
         # derives a directory of its own for it; the Star leader keeps the
         # library shared with the Maker arm.
@@ -153,6 +172,18 @@ class MetalFamily(CanArmFamily):
         from lerobot.teleoperators.rebot_102_leader.config_rebot_102_leader_metal import (
             RebotArm102LeaderMetalTeleopConfig,
         )
+
+        from ..star_gripper import STAR_VERTICAL_LEADER_KIND, vertical_sub_config, vertical_teleop_config
+
+        if leader_kind == STAR_VERTICAL_LEADER_KIND:
+            return CanDeviceClasses(
+                follower=MetalFollowerConfig,
+                follower_base=MetalFollowerConfigBase,
+                bi_follower=BiMetalFollowerConfig,
+                teleop=vertical_teleop_config,
+                leader_sub=vertical_sub_config,
+                bi_teleop=BiRebot102LeaderConfig,
+            )
 
         return CanDeviceClasses(
             follower=MetalFollowerConfig,

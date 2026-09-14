@@ -1694,7 +1694,9 @@ def _capture_realign(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
 
     captured: list[dict] = []
 
-    def _fake_return(targets, abort_event=None, target_label="its start pose", target_fns=None):
+    def _fake_return(
+        targets, abort_event=None, target_label="its start pose", target_fns=None, speed_deg_s=30
+    ):
         captured.append(
             {
                 "targets": targets,
@@ -1908,7 +1910,7 @@ def test_realign_reports_a_move_the_abort_cut_short(monkeypatch: pytest.MonkeyPa
     loop so the next resume runs it again."""
     from makermodslab import record
 
-    def _cut_short(targets, abort_event=None, target_label="", target_fns=None):
+    def _cut_short(targets, abort_event=None, target_label="", target_fns=None, speed_deg_s=30):
         return [(False, "cut-short") for _ in targets]
 
     monkeypatch.setattr(record, "return_maker_arms_to_rest", _cut_short)
@@ -1929,7 +1931,7 @@ def test_realign_reports_done_when_the_move_merely_stopped_short(
     """
     from makermodslab import record
 
-    def _blocked(targets, abort_event=None, target_label="", target_fns=None):
+    def _blocked(targets, abort_event=None, target_label="", target_fns=None, speed_deg_s=30):
         return [(False, "elbow_flex still 20.0 deg away") for _ in targets]
 
     monkeypatch.setattr(record, "return_maker_arms_to_rest", _blocked)
@@ -2130,6 +2132,11 @@ def _run_record_session(
     record_loop_side_effect=None,
     connect_side_effect=None,
     teleop=None,
+    processors=None,
+    inspect_record_call=None,
+    arm_type="so101",
+    home_side_effect=None,
+    alignment_side_effect=None,
 ):
     """Drive record_with_web_events with every lerobot dependency mocked so no
     real hardware, dataset, or record_loop runs. Returns the spy call log for
@@ -2139,6 +2146,22 @@ def _run_record_session(
     supplied events) so the session ends normally after one save, unless
     `raise_in_loop` makes record_loop raise (the error path)."""
     import makermodslab.record as record
+
+    if teleop is None or alignment_side_effect is not None:
+        monkeypatch.setattr(
+            record, "_realign_follower_to_leader", alignment_side_effect or (lambda *a, **k: True)
+        )
+
+    def fake_home(device, speed, cancelled, **kwargs):
+        if home_side_effect is not None:
+            return home_side_effect(device, speed, cancelled, **kwargs)
+        return (
+            (False, [])
+            if cancelled()
+            else (True, record.arm_registry.get(arm_type).capture_rest_poses(device))
+        )
+
+    monkeypatch.setattr("makermodslab.recording_home.return_recording_home", fake_home)
 
     return_calls: list[tuple] = []
 
@@ -2164,7 +2187,7 @@ def _run_record_session(
         "lerobot.teleoperators.make_teleoperator_from_config", lambda cfg: teleop, raising=False
     )
     monkeypatch.setattr(
-        "lerobot.processor.make_default_processors", lambda: (None, None, None), raising=False
+        "lerobot.processor.make_default_processors", lambda: processors or (None, None, None), raising=False
     )
     monkeypatch.setattr(
         "lerobot.utils.feature_utils.hw_to_dataset_features", lambda *a, **k: {}, raising=False
@@ -2172,6 +2195,8 @@ def _run_record_session(
     monkeypatch.setattr("lerobot.utils.utils.log_say", lambda *a, **k: None, raising=False)
 
     def _fake_record_loop(*args, **kwargs):
+        if inspect_record_call is not None:
+            inspect_record_call(kwargs)
         if raise_in_loop:
             raise RuntimeError("bus died mid-episode")
         events = kwargs.get("events")
@@ -2217,7 +2242,9 @@ def _run_record_session(
             connect_side_effect(next(connect_attempts))
 
         robot.connect = _connect  # type: ignore[attr-defined]
-    robot.name = "so101"  # type: ignore[attr-defined]
+    if not hasattr(robot, "get_observation"):
+        robot.get_observation = lambda: {}  # type: ignore[attr-defined]
+    robot.name = arm_type  # type: ignore[attr-defined]
     robot.cameras = {}  # type: ignore[attr-defined]
     robot.action_features = {}  # type: ignore[attr-defined]
     robot.observation_features = {}  # type: ignore[attr-defined]
@@ -2230,6 +2257,7 @@ def _run_record_session(
             leader_config="leader",
             follower_config="follower",
             dataset_repo_id=repo_id,
+            arm_type=arm_type,
             single_task="pick",
             num_episodes=num_episodes,
             reset_time_s=reset_time_s,
@@ -2252,6 +2280,54 @@ def _run_record_session(
     except Exception as e:  # the error-path test expects this
         error = e
     return return_calls, robot, error, dataset_calls
+
+
+@pytest.mark.parametrize("first_action", ["timeout", "exit_early", "rerecord"])
+def test_record_completed_episodes_save_and_advance(
+    monkeypatch: pytest.MonkeyPatch, tmp_lerobot_home, first_action: str
+) -> None:
+    """Duration completion saves; only an explicit re-record drops a take."""
+    import makermodslab.record as record
+
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files",
+        lambda leader, follower, arm_type="so101": ("leader", "follower"),
+    )
+    recorded_episodes = []
+    reset_episodes = []
+    monkeypatch.setattr(
+        record, "_reset_loop_with_pause", lambda **kwargs: reset_episodes.append(record.current_episode)
+    )
+
+    def capture(events):
+        recorded_episodes.append(record.current_episode)
+        # Bound a regression: the old timeout policy otherwise retries forever.
+        assert len(recorded_episodes) <= 3
+        if len(recorded_episodes) == 1:
+            if first_action == "exit_early":
+                events["_exit_early_triggered"] = True
+            elif first_action == "rerecord":
+                events["rerecord_episode"] = True
+        # All remaining calls return normally with no user event, as on timeout.
+
+    _, robot, error, dataset_calls = _run_record_session(
+        monkeypatch,
+        _RecRobot(_RecReturnBus()),
+        num_episodes=2,
+        record_loop_side_effect=capture,
+    )
+
+    assert error is None
+    if first_action == "rerecord":
+        assert recorded_episodes == [1, 1, 2]
+        assert reset_episodes == [1, 2]
+        assert dataset_calls == ["clear_episode_buffer", "save_episode", "save_episode"]
+    else:
+        assert recorded_episodes == [1, 2]
+        assert reset_episodes == [2]
+        assert dataset_calls == ["save_episode", "save_episode"]
+    assert record.current_phase == "completed"
+    assert robot.disconnected
 
 
 def test_reset_phase_globals_reset_on_both_call_sites(
@@ -3856,8 +3932,8 @@ def test_teleop_connect_failure_releases_both_devices(
 
 # ---------------------------------------------------------------------------
 # Per-episode task naming — the operator names each episode's task description
-# right after recording it (a checkbox on the Collect form). The session pauses
-# in a dedicated "naming" phase between the recording phase and the reset gap.
+# before recording it. The session waits in a dedicated "naming" phase
+# while the operator resets the environment and describes the next task.
 # ---------------------------------------------------------------------------
 
 
@@ -3878,23 +3954,6 @@ def test_recording_request_per_episode_task_defaults_off() -> None:
 
     ticked = req.model_copy(update={"per_episode_task": True})
     assert ticked.per_episode_task is True
-
-
-def test_apply_episode_task_rewrites_every_frame_in_the_pending_buffer() -> None:
-    """record_loop appended the captured frames with the session's placeholder
-    task; _apply_episode_task swaps in the operator-named string before
-    save_episode() reads the buffer."""
-    from makermodslab.record import _apply_episode_task
-
-    dataset = type(
-        "FakeDataset",
-        (),
-        {"writer": type("W", (), {"episode_buffer": {"task": ["placeholder"] * 4, "size": 4}})()},
-    )()
-
-    _apply_episode_task(dataset, "fold the left sleeve")
-
-    assert dataset.writer.episode_buffer["task"] == ["fold the left sleeve"] * 4
 
 
 def test_handle_submit_episode_task_stashes_the_task_during_the_naming_phase(
@@ -3952,12 +4011,10 @@ def test_handle_submit_episode_task_refused_outside_the_naming_phase(
     assert events["episode_task_submitted"] is None
 
 
-def test_recording_status_naming_phase_locks_every_control_but_the_task_submit(
+def test_recording_status_naming_phase_allows_stop_but_blocks_unnamed_recording(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """While the session waits for an episode task there is no bypass: Stop,
-    skip-to-next, re-record and pause are all withdrawn, and the status carries
-    the prefill for the prompt (the previous episode's task)."""
+    """Naming gates capture, while Done/Quit remain available."""
     import makermodslab.record as record
 
     monkeypatch.setattr(record, "recording_active", True)
@@ -3980,7 +4037,7 @@ def test_recording_status_naming_phase_locks_every_control_but_the_task_submit(
 
     controls = status["available_controls"]
     assert controls["submit_episode_task"] is True
-    assert controls["stop_recording"] is False
+    assert controls["stop_recording"] is True
     assert controls["exit_early"] is False
     assert controls["rerecord_episode"] is False
     assert controls["pause_recording"] is False
@@ -4082,3 +4139,355 @@ def test_strict_preparation_finishes_pending_startup_sync_with_measured_hold(mon
         robot, _RealignTeleop({"shoulder_pan.pos": 10}), "maker", _identity, _identity, require_settled=True
     )
     assert sent == [{"shoulder_pan.pos": 9.5}]
+
+
+@pytest.mark.parametrize("action", ["next", "rerecord", "done", "quit", "lease_expiry", "timeout"])
+def test_task_workflow_labels_before_capture_and_handles_pending_take(monkeypatch, action):
+    """Exercise the real gate/record/save loop without hardware or disk I/O."""
+    from types import SimpleNamespace
+
+    import makermodslab.record as record
+
+    events = {"stop_recording": False}
+    monkeypatch.setattr(record, "recording_active", True)
+    monkeypatch.setattr(record, "recording_events", events)
+    monkeypatch.setattr(record, "saved_episodes", 0)
+    monkeypatch.setattr(record, "discard_requested", False)
+    monkeypatch.setattr(record, "last_episode_task", "")
+    monkeypatch.setattr(record.time, "sleep", lambda _: None)
+    buffer = []
+    saved = []
+    captured = []
+    prompts = []
+    alignments = []
+
+    def save():
+        saved.append(buffer.copy())
+        buffer.clear()
+
+    dataset = SimpleNamespace(save_episode=save, clear_episode_buffer=buffer.clear)
+    cfg = SimpleNamespace(dataset=SimpleNamespace(num_episodes=2))
+
+    def prompt():
+        assert record.current_phase == "naming"
+        prompts.append(record.current_episode)
+        if len(prompts) == 1:
+            assert not captured  # The first prompt precedes ALL recording.
+            assert record.handle_exit_early()["success"] is False
+            assert record.handle_submit_episode_task("pick cube")["success"]
+        elif len(prompts) == 2:
+            assert not saved  # Completed take still available to re-record.
+            assert events["pending_episode"] is True
+            assert buffer == ["pick cube"] * 3
+            if action == "rerecord":
+                assert record.handle_rerecord_episode()["success"]
+            elif action in ("done", "quit"):
+                record.handle_stop_recording(discard=action == "quit")
+            elif action == "lease_expiry":
+                events["stop_recording"] = True
+            else:
+                assert record.handle_submit_episode_task("fold towel")["success"]
+        else:
+            assert record.handle_submit_episode_task("fold towel")["success"]
+
+    def capture(task):
+        assert record.current_phase == "recording"
+        assert len(alignments) == len(captured) + 1
+        captured.append(task)
+        buffer.extend([task] * 3)
+        events["_exit_early_triggered"] = action != "timeout"
+
+    record._record_task_episodes(
+        cfg, dataset, events, capture, lambda: alignments.append(True) or True, prompt
+    )
+
+    if action in ("done", "lease_expiry"):
+        assert saved == [["pick cube"] * 3]
+    elif action == "quit":
+        assert saved == []
+    elif action == "rerecord":
+        assert saved == [["fold towel"] * 3, ["fold towel"] * 3]
+        assert prompts == [1, 2, 1, 2]
+    else:
+        assert saved == [["pick cube"] * 3, ["fold towel"] * 3]
+        assert prompts == [1, 2]
+    assert record.saved_episodes == len(saved)
+    assert not buffer
+
+
+def test_task_prompt_keeps_waiting_without_recording(monkeypatch):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    import makermodslab.record as record
+
+    events = {"stop_recording": False}
+    monkeypatch.setattr(record, "recording_active", True)
+    monkeypatch.setattr(record, "recording_events", events)
+    monkeypatch.setattr(record, "saved_episodes", 0)
+    monkeypatch.setattr(record, "discard_requested", False)
+    monkeypatch.setattr(record.time, "sleep", lambda _: None)
+    ticks = []
+
+    def preview():
+        ticks.append(True)
+        assert not record.handle_submit_episode_task("   ")["success"]
+        if len(ticks) == 5:
+            record.handle_stop_recording()
+
+    capture, realign, dataset = Mock(), Mock(), Mock()
+    record._record_task_episodes(
+        SimpleNamespace(dataset=SimpleNamespace(num_episodes=2)), dataset, events, capture, realign, preview
+    )
+    assert len(ticks) == 5
+    capture.assert_not_called()
+    realign.assert_not_called()
+    dataset.save_episode.assert_not_called()
+
+
+@pytest.mark.parametrize("prepare_result", [True, False])
+def test_task_workflow_prepares_only_after_description_and_before_timer(monkeypatch, prepare_result):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    import makermodslab.record as record
+
+    events = {"stop_recording": False}
+    monkeypatch.setattr(record, "recording_active", True)
+    monkeypatch.setattr(record, "recording_events", events)
+    monkeypatch.setattr(record, "saved_episodes", 0)
+    monkeypatch.setattr(record, "discard_requested", False)
+    monkeypatch.setattr(record.time, "sleep", lambda _: None)
+    calls = []
+
+    def prompt():
+        assert calls == []
+        assert record.handle_submit_episode_task("pick cube")["success"]
+        calls.append("task")
+
+    def prepare():
+        assert calls == ["task"]
+        assert record.current_phase == "preparing"
+        assert record.phase_start_time is None
+        calls.append("prepare")
+        return prepare_result
+
+    def capture(task):
+        assert task == "pick cube"
+        assert record.current_phase == "recording"
+        assert record.phase_start_time is not None
+        calls.append("capture")
+        events["_exit_early_triggered"] = True
+
+    dataset = Mock()
+    record._record_task_episodes(
+        SimpleNamespace(dataset=SimpleNamespace(num_episodes=1)), dataset, events, capture, prepare, prompt
+    )
+    assert calls == (["task", "prepare", "capture"] if prepare_result else ["task", "prepare"])
+    assert dataset.save_episode.call_count == int(prepare_result)
+
+
+@pytest.mark.parametrize("raise_in_loop", [False, True])
+def test_record_session_keeps_default_processors_and_readonly_tap(
+    monkeypatch, tmp_lerobot_home, raise_in_loop
+):
+    from unittest.mock import Mock
+
+    import numpy as np
+
+    from lerobot.processor import make_default_processors
+    from makermodslab import record
+
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files",
+        lambda *args, **kwargs: ("leader", "follower"),
+    )
+    processors = make_default_processors()
+    robot = _RecRobot(_RecReturnBus())
+    image = np.zeros((8, 8, 3), dtype=np.uint8)
+    image.flags.writeable = False
+    observation = {"wrist": image}
+    original_read = Mock(return_value=observation)
+    robot.get_observation = original_read
+    publish = Mock()
+    monkeypatch.setattr(record, "observation_tap", lambda *args: publish)
+    calls = []
+
+    def inspect(kwargs):
+        calls.append(kwargs)
+        assert kwargs["teleop_action_processor"] is processors[0]
+        assert kwargs["robot_action_processor"] is processors[1]
+        assert kwargs["robot_observation_processor"] is processors[2]
+        # The ACTUAL Lab recording entrypoint must pass the untouched default
+        # pipeline, preserving eligibility for dependency ownership checks.
+        assert kwargs["robot"].get_observation() is observation
+        assert processors[2](observation)["wrist"] is image
+        np.testing.assert_array_equal(image, 0)
+
+    _, _, error, _ = _run_record_session(
+        monkeypatch,
+        robot,
+        processors=processors,
+        inspect_record_call=inspect,
+        raise_in_loop=raise_in_loop,
+    )
+    assert bool(error) == raise_in_loop
+    assert len(calls) == 1
+    publish.assert_called_once_with(observation)
+    original_read.assert_called_once_with()
+    assert robot.get_observation is original_read
+
+
+@pytest.mark.parametrize("home_ok", [True, False])
+def test_completed_episode_home_holds_reset_and_final_cleanup(monkeypatch, tmp_lerobot_home, home_ok):
+    import makermodslab.record as record
+
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files", lambda *a, **k: ("leader", "follower")
+    )
+    arm_type = "maker"
+    robot = _RecRobot(_RecReturnBus())
+    robot.get_observation = lambda: {"shoulder_pan.pos": 20.0}
+    homes, captures, resets, cleanups = [], [], [], []
+    target = [(robot, {"shoulder_pan": 0})]
+    family = record.arm_registry.get(arm_type)
+    monkeypatch.setattr(family, "return_to_rest", lambda poses, abort: cleanups.append(list(poses)))
+    monkeypatch.setattr(family, "release_torque", lambda *a, **k: [])
+    monkeypatch.setattr(record, "_reset_loop_with_pause", lambda **kwargs: resets.append(kwargs))
+
+    def home(device, speed, cancelled, **kwargs):
+        homes.append(len(captures))
+        assert record.current_phase == "preparing"
+        return home_ok, target
+
+    _, _, error, dataset_calls = _run_record_session(
+        monkeypatch,
+        robot,
+        arm_type=arm_type,
+        num_episodes=2,
+        record_loop_side_effect=lambda events: captures.append(True),
+        home_side_effect=home,
+    )
+    assert error is None
+    assert homes == ([1, 2] if home_ok else [1])
+    assert dataset_calls == ["save_episode"] * len(homes)
+    assert cleanups  # Even failed home goes through graceful return.
+    if home_ok:
+        assert cleanups[-1] == target
+        assert len(resets) == 1 and resets[0]["hold_position"] is True
+    else:
+        assert not resets
+        assert cleanups[-1] != target
+
+
+@pytest.mark.parametrize("alignment", [True, False, "error"])
+def test_recording_needs_alignment_but_not_leaders_at_zero(monkeypatch, tmp_lerobot_home, alignment):
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files", lambda *a, **k: ("leader", "follower")
+    )
+    calls = []
+
+    def align(*args, **kwargs):
+        calls.append("align")
+        assert kwargs["require_settled"] is True
+        if alignment == "error":
+            raise RuntimeError("Follower did not settle")
+        return alignment
+
+    returned, robot, error, saved = _run_record_session(
+        monkeypatch,
+        _RecRobot(_RecReturnBus()),
+        alignment_side_effect=align,
+        inspect_record_call=lambda kwargs: calls.append("capture"),
+    )
+    assert error is None
+    assert calls == (["align", "capture"] if alignment is True else ["align"])
+    if alignment is not True:
+        assert not saved
+    assert returned and robot.disconnected
+
+
+def test_rerecord_returns_home_and_holds_without_saving_discarded_take(monkeypatch, tmp_lerobot_home):
+    import makermodslab.record as record
+
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files", lambda *a, **k: ("leader", "follower")
+    )
+    family = record.arm_registry.get("maker")
+    monkeypatch.setattr(family, "return_to_rest", lambda *a, **k: None)
+    monkeypatch.setattr(family, "release_torque", lambda *a, **k: [])
+    captures, homes, resets = [], [], []
+    monkeypatch.setattr(record, "_reset_loop_with_pause", lambda **kw: resets.append(kw))
+
+    def capture(events):
+        captures.append(True)
+        if len(captures) == 1:
+            events["rerecord_episode"] = True
+
+    def home(device, speed, cancelled, **kwargs):
+        homes.append(True)
+        return True, [(device, {"shoulder_pan": 0})]
+
+    _, _, error, saved = _run_record_session(
+        monkeypatch,
+        _RecRobot(_RecReturnBus()),
+        record_loop_side_effect=capture,
+        home_side_effect=home,
+        arm_type="maker",
+    )
+    assert error is None
+    assert len(captures) == len(homes) == 2
+    assert saved == ["clear_episode_buffer", "save_episode"]
+    assert len(resets) == 1 and resets[0]["hold_position"] is True
+
+
+@pytest.mark.parametrize("leader_count", [1, 2])
+@pytest.mark.parametrize("home_ok", [True, False])
+def test_metal_episode_home_preserves_follower_and_energized_leader_teardown(
+    monkeypatch, tmp_lerobot_home, leader_count, home_ok
+):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    import makermodslab.record as record
+
+    monkeypatch.setattr(
+        "makermodslab.utils.robot_factory.setup_calibration_files", lambda *a, **k: ("leader", "follower")
+    )
+    monkeypatch.setattr("makermodslab.metal_gripper.install_metal_gripper", lambda *a, **k: None)
+    family = record.arm_registry.get("metal")
+    robot = _RecRobot(_RecReturnBus())
+    robot.get_observation = lambda: {"shoulder_pan.pos": 25.0}
+    leaders = [Mock() for _ in range(leader_count)]
+    leader_targets = [(leader, {"shoulder_pan": 40.0}) for leader in leaders]
+    monkeypatch.setattr(family, "capture_leader_rest_poses", lambda teleop: leader_targets)
+    cleanup, homes, resets = [], [], []
+    monkeypatch.setattr(family, "return_to_rest", lambda targets, abort: cleanup.append(list(targets)))
+    monkeypatch.setattr(family, "release_torque", lambda *a, **k: [])
+    monkeypatch.setattr(record, "_reset_loop_with_pause", lambda **kw: resets.append(kw))
+    teleop = SimpleNamespace(connect=lambda **kw: None, disconnect=lambda: None, calibration={})
+
+    def home(device, speed, cancelled, **kwargs):
+        assert device is robot
+        homes.append(True)
+        for leader in leaders:
+            leader.send_action.assert_not_called()
+        return home_ok, [(robot, {"shoulder_pan": 0.0})]
+
+    _, _, error, saved = _run_record_session(
+        monkeypatch,
+        robot,
+        arm_type="metal",
+        teleop=teleop,
+        alignment_side_effect=lambda *a, **k: True,
+        home_side_effect=home,
+        num_episodes=2,
+        record_loop_side_effect=lambda events: None,
+    )
+    assert error is None
+    assert saved == ["save_episode"] * (2 if home_ok else 1)
+    assert len(homes) == (2 if home_ok else 1)
+    assert cleanup == [[(robot, {"shoulder_pan": 25.0}), *leader_targets]]
+    assert all(reset["hold_position"] is True for reset in resets)
+    for leader in leaders:
+        leader.send_action.assert_not_called()
