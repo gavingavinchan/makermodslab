@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -1183,9 +1184,15 @@ class _FakeProc:
         self.returncode = -signal.SIGKILL
 
 
-def _running_manager(tmp_lerobot_home: Path, output_rel: str) -> tuple[object, _FakeProc, Path]:
+def _running_manager(
+    tmp_lerobot_home: Path, output_rel: str, monkeypatch: pytest.MonkeyPatch
+) -> tuple[object, _FakeProc, Path]:
+    from makermodslab import merge
     from makermodslab.merge import MergeManager
 
+    # The fake pid must never reach os.killpg — on a host where that pid is
+    # real, the kill path would signal an unrelated process group.
+    monkeypatch.setattr(merge, "_signal_process_group", lambda proc, signum: False)
     mgr = MergeManager()
     mgr.state = "running"
     proc = _FakeProc()
@@ -1197,8 +1204,8 @@ def _running_manager(tmp_lerobot_home: Path, output_rel: str) -> tuple[object, _
     return mgr, proc, out
 
 
-def test_cancel_terminates_a_running_merge(tmp_lerobot_home: Path) -> None:
-    mgr, proc, out = _running_manager(tmp_lerobot_home, "a/mix-dead")
+def test_cancel_terminates_a_running_merge(tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    mgr, proc, out = _running_manager(tmp_lerobot_home, "a/mix-dead", monkeypatch)
 
     res = mgr.cancel()
 
@@ -1223,8 +1230,10 @@ def test_cancel_is_a_noop_when_no_merge_is_running() -> None:
     assert mgr.state == "done"
 
 
-def test_monitor_does_not_overwrite_a_cancelled_verdict(tmp_lerobot_home: Path) -> None:
-    mgr, proc, _ = _running_manager(tmp_lerobot_home, "a/mix-race")
+def test_monitor_does_not_overwrite_a_cancelled_verdict(
+    tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mgr, proc, _ = _running_manager(tmp_lerobot_home, "a/mix-race", monkeypatch)
     proc.returncode = -signal.SIGTERM
     mgr.state = "cancelled"
 
@@ -1233,8 +1242,10 @@ def test_monitor_does_not_overwrite_a_cancelled_verdict(tmp_lerobot_home: Path) 
     assert mgr.state == "cancelled"
 
 
-def test_watchdog_kills_a_merge_that_goes_silent(tmp_lerobot_home: Path) -> None:
-    mgr, proc, out = _running_manager(tmp_lerobot_home, "a/mix-stuck")
+def test_watchdog_kills_a_merge_that_goes_silent(
+    tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mgr, proc, out = _running_manager(tmp_lerobot_home, "a/mix-stuck", monkeypatch)
     clock = [1_000.0]
     mgr._now = lambda: clock[0]
     mgr._last_output_at = clock[0]
@@ -1252,8 +1263,10 @@ def test_watchdog_kills_a_merge_that_goes_silent(tmp_lerobot_home: Path) -> None
     assert not out.exists()
 
 
-def test_watchdog_does_not_fire_while_output_keeps_arriving(tmp_lerobot_home: Path) -> None:
-    mgr, proc, _ = _running_manager(tmp_lerobot_home, "a/mix-live")
+def test_watchdog_does_not_fire_while_output_keeps_arriving(
+    tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mgr, proc, _ = _running_manager(tmp_lerobot_home, "a/mix-live", monkeypatch)
     clock = [1_000.0]
     mgr._now = lambda: clock[0]
     mgr._last_output_at = clock[0]
@@ -1266,6 +1279,58 @@ def test_watchdog_does_not_fire_while_output_keeps_arriving(tmp_lerobot_home: Pa
 
     assert mgr.state == "running"
     assert proc.terminated is False
+
+
+def test_cancel_releases_the_cleanup_guard_and_start_refuses_meanwhile(
+    tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from makermodslab import merge
+    from makermodslab.merge import MergeRequest
+
+    mgr, _, out = _running_manager(tmp_lerobot_home, "a/mix-guard", monkeypatch)
+    seen: list[dict[str, object]] = []
+
+    def slow_cleanup(output_root: Path) -> None:
+        # Mid-cleanup a retry must be refused, and not with the misleading
+        # "already exists locally" — the directory is being deleted right now.
+        req = MergeRequest(source_repo_ids=["a/one", "a/two"], output_repo_id="a/mix-guard")
+        seen.append(mgr.start(req))
+        shutil.rmtree(output_root)
+
+    monkeypatch.setattr(merge, "_cleanup_partial_output", slow_cleanup)
+
+    assert mgr.cancel()["cancelled"] is True
+
+    assert seen == [
+        {
+            "started": False,
+            "message": "The previous merge is still being cleaned up. Try again in a moment.",
+        }
+    ]
+    assert mgr._cancelling is False  # released once cleanup returned
+    assert not out.exists()
+
+
+def test_watchdog_treats_output_growth_as_progress(
+    tmp_lerobot_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mgr, proc, out = _running_manager(tmp_lerobot_home, "a/mix-writing", monkeypatch)
+    clock = [1_000.0]
+    mgr._now = lambda: clock[0]
+    mgr._last_output_at = clock[0]
+    mgr._stuck_after = 600
+
+    for i in range(5):
+        clock[0] += 500  # silent on stdout for 500s at a time ...
+        (out / "meta" / f"chunk-{i}.parquet").write_bytes(b"x" * (i + 1))  # ... but writing
+        assert mgr._watchdog_tick() is False
+    assert mgr.state == "running"
+    assert proc.terminated is False
+
+    clock[0] += 700  # nothing written AND nothing printed — now it is stuck
+    assert mgr._watchdog_tick() is True
+    assert mgr.state == "error"
+    assert not out.exists()
 
 
 def test_merge_cancel_endpoint_reports_no_merge_when_idle(client) -> None:
