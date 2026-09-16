@@ -133,3 +133,6 @@ both sides ready. These checks did not enable torque or command motion.
 Only built-in Mac cameras were detected; wrist/front cameras remain
 unassigned on the Mac. Local and remote launcher modes passed, and repeating
 the local command preserved the running server's PID.
+Gavin subsequently tested powered teleoperation in the local Mac Lab and
+confirmed that it works. Teleoperation is now operator-confirmed on both
+Linux and macOS; recording and physical policy execution remain unverified.
