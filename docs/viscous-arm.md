@@ -45,11 +45,16 @@ The Star leader retains the existing zero-pose procedure.
 
 ## One-command launcher for Gavin's machines
 
-Run `makermods-viscous` on the Linux desktop or MacBook. It starts the
-Linux service if needed, waits for Lab, and opens the browser at
-`http://100.64.91.4:8000`. On the MacBook it uses the existing `gavin-linux`
-SSH alias over Tailscale; the robot, cameras, datasets and GPU stay on Linux.
-It never starts a hardware session or restarts an already running server.
+Run `makermods-viscous` on whichever machine the arms are connected to.
+On the MacBook it starts the local Lab at `http://127.0.0.1:8000`; on Linux
+it opens `http://100.64.91.4:8000`. It waits for Lab and opens the browser,
+without starting a hardware session or restarting an already running server.
+
+To use the Linux desktop from the MacBook instead, run
+`makermods-viscous --remote`. This uses the existing `gavin-linux` SSH alias
+over Tailscale. The arms and cameras must then be connected to Linux;
+datasets and training also live on that machine. `--no-browser` prints the
+address without opening a browser.
 
 The installed command links to `scripts/makermods-viscous` in this checkout:
 
@@ -68,8 +73,15 @@ cp scripts/makermodslab-viscous.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 ```
 
-The service is started by the command, not automatically at login. Keep
-Tailscale running on both machines. No `makermods` alias is installed.
+On the MacBook the launcher installs its own on-demand LaunchAgent on first
+use (`~/Library/LaunchAgents/com.gavin.makermods-viscous.plist`), using this
+checkout's virtual environment. Both machines keep Lab settings separately
+under `~/.makermods/makermodslab-viscous`; the Mac server log is
+`~/.makermods/makermodslab-viscous/server.log`.
+
+The services start through the command, not automatically at login. Local
+Mac use does not require Tailscale. Remote use requires Tailscale on both
+machines. No `makermods` alias is installed.
 
 ## Supported behavior
 
@@ -110,3 +122,14 @@ at 640 x 480. Motor temperatures were 34–38 C. These were read-only checks.
 Gavin subsequently tested powered teleoperation in Lab on the Linux desktop
 and reported that it works. Recording and physical policy execution still
 require separate bench validation.
+
+MacBook checks after moving both arms on 2026-09-15 found the CANable at
+`/dev/cu.usbmodem2050389538461` and the Star at `/dev/cu.wchusbserial10`.
+Both calibration files matched Linux byte-for-byte. All seven follower
+motors answered with temperatures of 34–38 C, and every leader joint passed
+the preset's 30-degree starting-pose tolerance. Lab's live port-probe API
+correctly identified both ports, and the local `viscous_01` record reports
+both sides ready. These checks did not enable torque or command motion.
+Only built-in Mac cameras were detected; wrist/front cameras remain
+unassigned on the Mac. Local and remote launcher modes passed, and repeating
+the local command preserved the running server's PID.
