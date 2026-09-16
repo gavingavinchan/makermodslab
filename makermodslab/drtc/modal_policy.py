@@ -502,8 +502,8 @@ image = (
         # fails with "transformers is required". molmoact2 adds only peft (~1 MB)
         # and scipy (~35 MB) on top of what [pi,smolvla] already pulls, and all
         # three extras resolve the same transformers range — no conflict.
-        '"lerobot[pi,smolvla,molmoact2] @ git+https://github.com/makermods-robotics/lerobot.git'
-        '@5ce2fe41a63647c20b2ab6e84bcb4cc7295a9b21"'
+        '"lerobot[pi,smolvla,molmoact2] @ git+https://github.com/gavingavinchan/lerobot-MakerMods.git'
+        '@2a5ea4e581c0d8956b6e58a8e1c6bf8e13486daa"'
     )
     # Tailscale, for the `--tailscale` hybrid transport (signaling over the
     # tailnet; media still direct UDP). Installed from Tailscale's own apt repo,

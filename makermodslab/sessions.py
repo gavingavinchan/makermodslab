@@ -943,7 +943,7 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
     # keeps the registry's UnknownArmType unreachable from here.
     from .arm_capabilities import require_known_arm_type, require_leader_available, require_leader_kind
 
-    require_known_arm_type(record["arm_type"])
+    require_known_arm_type(record["arm_type"], mode=record.get("mode"))
     # And a leader kind the family offers — for every kind, calibration
     # included (it opens the leader the record names, so a hand-edited
     # unknown one must not reach the family).

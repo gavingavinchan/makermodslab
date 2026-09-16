@@ -60,7 +60,7 @@ def _family(arm_type: object):
     return _registry.get(normalize_arm_type(arm_type))
 
 
-def require_known_arm_type(arm_type: object) -> None:
+def require_known_arm_type(arm_type: object, *, mode: object = None) -> None:
     """Refuse (400 robot.arm_type.unavailable) an arm type nothing registered.
 
     THE gate every request path calls before an arm type reaches the
@@ -84,6 +84,13 @@ def require_known_arm_type(arm_type: object) -> None:
                 "provides it, or delete this robot and create it again with an installed arm type."
             ),
             code=ErrorCode.ROBOT_ARM_TYPE_UNAVAILABLE,
+        )
+
+    if mode == "bimanual" and not _registry.get(resolved).supports_bimanual:
+        raise ApiError(
+            status_code=400,
+            detail=f"{_registry.get(resolved).label} supports single-arm sessions only.",
+            code=ErrorCode.ROBOT_NOT_READY,
         )
 
 

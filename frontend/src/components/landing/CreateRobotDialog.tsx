@@ -240,7 +240,10 @@ const CreateRobotDialog: React.FC<CreateRobotDialogProps> = ({
                     type="button"
                     role="radio"
                     aria-checked={selected}
-                    onClick={() => setNewArmType(info.id)}
+                    onClick={() => {
+                      setNewArmType(info.id);
+                      if (!info.supports_bimanual) setNewMode("single");
+                    }}
                     className={cn(
                       "rounded-md border p-2 text-left transition-colors",
                       selected
@@ -311,9 +314,10 @@ const CreateRobotDialog: React.FC<CreateRobotDialogProps> = ({
                     type="button"
                     role="radio"
                     aria-checked={selected}
+                    disabled={opt.value === "bimanual" && arms.find((arm) => arm.id === newArmType)?.supports_bimanual === false}
                     onClick={() => setNewMode(opt.value)}
                     className={cn(
-                      "rounded-md border px-3 py-2 text-left transition-colors",
+                      "rounded-md border px-3 py-2 text-left transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
                       selected
                         ? "border-primary bg-accent"
                         : "border-border bg-card hover:bg-accent"

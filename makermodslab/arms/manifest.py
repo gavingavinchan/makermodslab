@@ -93,7 +93,7 @@ def describe_family(family: ArmFamily) -> dict:
             "motion_identify_energizes_follower": family.motion_identify_energizes_follower,
             "supports_gripper_wiggle": family.supports_gripper_wiggle,
         },
-        "robot_types": [family.single_robot_type, family.bimanual_robot_type],
+        "robot_types": [kind for kind in (family.single_robot_type, family.bimanual_robot_type) if kind],
         "robot_type_markers": list(family.robot_type_markers),
         "calibration_name_suffix": family.calibration_name_suffix,
         "default_leader_kind": family.leader_options()[0].id,

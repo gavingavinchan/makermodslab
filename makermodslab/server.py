@@ -5187,7 +5187,10 @@ def upsert_robot(name: str, data: dict, create: bool = False):
     # (the disk layer would otherwise ignore the key and merge the rest). An
     # absent or null arm_type is "unspecified" and passes (the disk layer
     # then keeps the existing value, or the SO-101 default on create).
-    require_known_arm_type(body.get("arm_type"))
+    require_known_arm_type(
+        body.get("arm_type") or existing.get("arm_type"),
+        mode=body.get("mode") or existing.get("mode"),
+    )
     # A leader kind is validated against the family the record WILL have:
     # the body's arm type when it names one, else the stored one (the SO-101
     # default on create). Refused whole, like an unknown arm type.

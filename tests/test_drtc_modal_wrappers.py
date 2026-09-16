@@ -59,7 +59,7 @@ _PYPROJECT = _REPO_ROOT / "pyproject.toml"
 # extras, the repo URL and the SHA so a test can assert each independently — a
 # right SHA on the wrong fork is still wrong.
 _LEROBOT_PIN_RE = re.compile(
-    r"lerobot\[(?P<extras>[^\]]*)\]\s*@\s*git\+(?P<url>https://\S*?/lerobot\.git)"
+    r"lerobot\[(?P<extras>[^\]]*)\]\s*@\s*git\+(?P<url>https://\S*?/lerobot(?:-MakerMods)?\.git)"
     r"'?\s*'?@(?P<sha>[0-9a-f]{40})"
 )
 _PORTAL_PIN_RE = re.compile(r"livekit-portal==(?P<version>[0-9][^\"'\s]*)")

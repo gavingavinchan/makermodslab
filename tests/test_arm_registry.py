@@ -42,8 +42,8 @@ _ATTRIBUTE_TYPES: dict[str, type | tuple[type, ...]] = {
 }
 
 
-def test_the_three_built_ins_register_in_order() -> None:
-    assert registry.ids() == ("so101", "maker", "metal")
+def test_the_built_ins_register_in_order() -> None:
+    assert registry.ids() == ("so101", "maker", "metal", "viscous")
     assert registry.default().id == registry.DEFAULT_ID == "so101"
 
 
@@ -100,7 +100,11 @@ def test_calibration_summary_exists_exactly_for_steps_families(family: ArmFamily
     if family.calibration_kind == "steps":
         assert set(follower) == {"text", "image_url"} == set(leader)
         assert follower["image_url"] is None and leader["image_url"] is None
-        assert "ZERO POSE" in follower["text"] and "ZERO POSE" in leader["text"]
+        assert "ZERO POSE" in leader["text"]
+        if family.id == "viscous":
+            assert "Re-zeroing the follower is disabled" in follower["text"]
+        else:
+            assert "ZERO POSE" in follower["text"]
         assert "leader" in leader["text"] and "leader" not in follower["text"]
     else:
         assert follower is None and leader is None
@@ -112,7 +116,7 @@ def test_the_built_in_calibration_kinds_and_panel_urls() -> None:
     from makermodslab.arms.base import CALIBRATION_KINDS
 
     assert CALIBRATION_KINDS == ("range_sweep", "steps", "panel")
-    assert [f.calibration_kind for f in registry.families()] == ["range_sweep", "steps", "steps"]
+    assert [f.calibration_kind for f in registry.families()] == ["range_sweep", "steps", "steps", "steps"]
     assert all(f.calibration_panel_url is None for f in registry.families())
     assert all(f.image_url is None for f in registry.families())
     assert ArmFamily.calibration_panel_url is None and ArmFamily.image_url is None
@@ -163,7 +167,7 @@ async def test_probe_ports_exists_exactly_for_families_with_a_probe_protocol(
             assert result["success"] is True
     # No leader kind reaches maker_ports from a call that named none: the
     # family's default is what the probe then assumes.
-    assert seen == [(["/dev/x"], "maker", None), (["/dev/x"], "metal", None)]
+    assert seen == [(["/dev/x"], "maker", None), (["/dev/x"], "metal", None), (["/dev/x"], "viscous", None)]
 
 
 @pytest.mark.asyncio
@@ -188,6 +192,7 @@ async def test_identify_by_motion_routes_to_the_family_detector(monkeypatch: pyt
         ("so", ["/dev/y"]),
         ("can", "teleop", ["/dev/y"], "maker"),
         ("can", "teleop", ["/dev/y"], "metal"),
+        ("can", "teleop", ["/dev/y"], "viscous"),
     ]
 
 
@@ -196,14 +201,19 @@ def test_telemetry_kind_is_one_of_the_two_the_frontend_renders() -> None:
     numeric readout in its slot. A family with a URDF says "urdf" — the SO-101
     Maker, and Metal arms each ship one."""
     assert all(f.telemetry_kind in ("urdf", "degrees") for f in registry.families())
-    assert [f.telemetry_kind for f in registry.families()] == ["urdf", "urdf", "urdf"]
+    assert [f.telemetry_kind for f in registry.families()] == ["urdf", "urdf", "urdf", "degrees"]
 
 
 def test_only_the_damiao_follower_refuses_the_motion_gesture() -> None:
     """The fact maker_ports.identify_maker_arm_by_motion refuses on: the
     Damiao handshake energizes the follower, RobStride and Feetech do not."""
-    assert [f.motion_identify_energizes_follower for f in registry.families()] == [False, False, True]
-    assert [f.follower_probe_protocol for f in registry.families()] == [None, "robstride", "damiao"]
+    assert [f.motion_identify_energizes_follower for f in registry.families()] == [False, False, True, False]
+    assert [f.follower_probe_protocol for f in registry.families()] == [
+        None,
+        "robstride",
+        "damiao",
+        "robstride",
+    ]
 
 
 @pytest.mark.parametrize("family", registry.families(), ids=lambda f: f.id)
@@ -514,7 +524,7 @@ def test_the_built_ins_share_the_star_leader_dir_legitimately() -> None:
     assert maker.leader_calibration_dir() == metal.leader_calibration_dir()
     assert maker.follower_calibration_dir() != metal.follower_calibration_dir()
     assert maker.calibration_name_suffix and metal.calibration_name_suffix
-    assert registry.ids() == ("so101", "maker", "metal")
+    assert registry.ids() == ("so101", "maker", "metal", "viscous")
 
 
 def test_an_unknown_calibration_kind_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -591,7 +601,7 @@ def test_a_complete_extension_family_registers_beside_the_built_ins(monkeypatch:
     built-ins are untouched and still first."""
     scratch_registry(monkeypatch)
     registry.register(make_arm_family("nine"), provided_by="ext")
-    assert registry.ids() == ("so101", "maker", "metal", "nine")
+    assert registry.ids() == ("so101", "maker", "metal", "viscous", "nine")
 
 
 def test_read_positions_default_prefers_the_raw_reader_then_the_bus() -> None:

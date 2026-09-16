@@ -669,7 +669,7 @@ def handle_start_recording(request: RecordingRequest) -> dict[str, Any]:
     # Argument validation first: an arm type nothing registered is refused
     # (400 robot.arm_type.unavailable) before the flag is claimed or a device
     # config built.
-    require_known_arm_type(request.arm_type)
+    require_known_arm_type(request.arm_type, mode=request.mode)
 
     # Claim the active flag under the lock so two concurrent starts can't both
     # pass the precondition check.

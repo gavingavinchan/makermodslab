@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Arm families and their registry. Importing this package registers the
-three built-in families (SO-101, Maker, Metal) in that order.
+four built-in families (SO-101, Maker, Metal, Viscous) in that order.
 
 Import registry for lookups; import ArmFamily to define a family.
 """
@@ -22,8 +22,9 @@ from .base import ArmFamily
 from .maker import MAKER
 from .metal import METAL
 from .so101 import SO101
+from .viscous import VISCOUS
 
-for _family in (SO101, MAKER, METAL):
+for _family in (SO101, MAKER, METAL, VISCOUS):
     registry.register(_family)
 
-__all__ = ["MAKER", "METAL", "SO101", "ArmFamily", "registry"]
+__all__ = ["MAKER", "METAL", "SO101", "VISCOUS", "ArmFamily", "registry"]

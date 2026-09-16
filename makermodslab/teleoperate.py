@@ -770,7 +770,7 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
     # Argument validation first: an arm type nothing registered is refused
     # (400 robot.arm_type.unavailable) before anything is released, claimed
     # or built — build_single_configs would otherwise ask the registry for it.
-    require_known_arm_type(request.arm_type)
+    require_known_arm_type(request.arm_type, mode=request.mode)
 
     # A previous session (teleop or recording) may still be holding torque for
     # its release grace — cut it short so this start doesn't fail on a busy

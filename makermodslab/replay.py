@@ -192,7 +192,7 @@ def handle_start_replay(request: ReplayRequest, websocket_manager=None) -> dict[
     # Argument validation first: an arm type nothing registered is refused
     # (400 robot.arm_type.unavailable) before the record and the episode are
     # loaded or the follower connected.
-    require_known_arm_type(request.arm_type)
+    require_known_arm_type(request.arm_type, mode=request.mode)
 
     with _state_lock:
         if _teleoperate.teleoperation_active:

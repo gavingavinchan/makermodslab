@@ -3080,7 +3080,7 @@ def handle_start_inference(request: InferenceRequest) -> dict[str, Any]:
     # Argument validation first: an arm type nothing registered is refused
     # (400 robot.arm_type.unavailable) before the slot is claimed — the
     # arm-count guard and the CLI robot type both read the family off it.
-    require_known_arm_type(request.arm_type)
+    require_known_arm_type(request.arm_type, mode=request.mode)
 
     with _state_lock:
         if _teleoperate.teleoperation_active:
