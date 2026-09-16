@@ -1,0 +1,8 @@
+[Unit]
+Description=MakerMods Lab for Viscous Arm
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Documents/makermodslab-viscous
+Environment=MAKERMODSLAB_HOME=%h/.makermods/makermodslab-viscous
+ExecStart=%h/Documents/makermodslab-viscous/.venv/bin/python -m uvicorn makermodslab.server:app --host 100.64.91.4 --port 8000

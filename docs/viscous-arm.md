@@ -43,6 +43,34 @@ arm's measured limits and mapping depend on its commissioned zero. Existing
 calibration files can be selected or imported through the normal library.
 The Star leader retains the existing zero-pose procedure.
 
+## One-command launcher for Gavin's machines
+
+Run `makermods-viscous` on the Linux desktop or MacBook. It starts the
+Linux service if needed, waits for Lab, and opens the browser at
+`http://100.64.91.4:8000`. On the MacBook it uses the existing `gavin-linux`
+SSH alias over Tailscale; the robot, cameras, datasets and GPU stay on Linux.
+It never starts a hardware session or restarts an already running server.
+
+The installed command links to `scripts/makermods-viscous` in this checkout:
+
+```sh
+mkdir -p ~/.local/bin
+ln -s "$PWD/scripts/makermods-viscous" ~/.local/bin/makermods-viscous
+```
+
+Linux also needs the persistent, on-demand service (already installed on
+Gavin's desktop). This template assumes the checkout is at
+`~/Documents/makermodslab-viscous` and uses its separate Lab settings:
+
+```sh
+mkdir -p ~/.config/systemd/user
+cp scripts/makermodslab-viscous.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+```
+
+The service is started by the command, not automatically at login. Keep
+Tailscale running on both machines. No `makermods` alias is installed.
+
 ## Supported behavior
 
 - Seven RS00 motors, Viscous limits and follow gains, matched Star mapping,
@@ -78,6 +106,7 @@ policy or a hardware rollout.
 
 Linux hardware checks on 2026-09-15 read all seven follower motors without
 enabling torque, checked the Star's starting pose, and captured both cameras
-at 640 x 480. Motor temperatures were 34–38 C. These were read-only checks;
-powered teleoperation, recording and physical policy execution require a
-separate bench validation.
+at 640 x 480. Motor temperatures were 34–38 C. These were read-only checks.
+Gavin subsequently tested powered teleoperation in Lab on the Linux desktop
+and reported that it works. Recording and physical policy execution still
+require separate bench validation.
