@@ -773,6 +773,12 @@ def find_available_ports():
     if platform.system() == "Windows":
         # List COM ports using pyserial
         ports = [port.device for port in list_ports.comports()]
+    elif platform.system() == "Darwin":
+        # Metadata enumeration includes WCH/CH34x adapters and other driver
+        # names a tty.usbserial glob misses. Use callout nodes on macOS.
+        from ..usb_ports import serial_ports
+
+        ports = [port.device for port in (serial_ports() or [])]
     else:
         # Linux/macOS: globbing all of /dev/tty* returns dozens of pseudo-ttys
         # and Bluetooth/debug devices. Restrict to USB-serial adapters — the only
@@ -931,7 +937,7 @@ def _empty_record(name: str) -> dict:
     return record
 
 
-def get_robot_record(name: str) -> dict | None:
+def get_robot_record(name: str, *, resolve_usb: bool = True) -> dict | None:
     """Return the robot record by name, or None if missing."""
     path = _robot_record_path(name)
     if not os.path.exists(path):
@@ -981,6 +987,12 @@ def get_robot_record(name: str) -> dict | None:
     record["motor_power"] = clamp_motor_power(record.get("motor_power"))
     # Preserve invalid persisted gripper values here: session setup validates
     # strictly and refuses them, rather than silently removing a safety cap.
+    if resolve_usb and isinstance(data.get("port_identities"), dict):
+        from ..usb_ports import resolve_ports, serial_ports
+
+        ports = serial_ports()
+        # An enumeration failure cannot verify a stale path's occupant.
+        record = resolve_ports(record, data["port_identities"], ports or [])
     return record
 
 
@@ -1014,12 +1026,12 @@ def save_robot_record(name: str, data: dict, allow_create: bool = True) -> bool:
         return False
 
     os.makedirs(ROBOTS_PATH, exist_ok=True)
-    existing = get_robot_record(name)
+    existing = get_robot_record(name, resolve_usb=False)
     if existing is None and not allow_create:
         logger.info(f"save_robot_record no-op: {name} does not exist (allow_create=False)")
         return False
 
-    record = existing if existing is not None else _empty_record(name)
+    record = dict(existing) if existing is not None else _empty_record(name)
     # Decided BEFORE the merge below, because the switch blanks hardware-bound
     # fields and must not blank ones this same payload is setting. Only a
     # KNOWN arm type switches: arm_type is not in _ROBOT_STRING_FIELDS, so an
@@ -1102,6 +1114,43 @@ def save_robot_record(name: str, data: dict, allow_create: bool = True) -> bool:
     record["name"] = name
 
     path = _robot_record_path(name)
+    # Private persisted metadata: the HTTP record shape stays unchanged. Do
+    # not let a client supply identities; learn them from USB descriptors.
+    from ..usb_ports import PORT_FIELDS, capture_identities, same_port, serial_ports
+
+    previous_identities = {}
+    if existing is not None:
+        try:
+            with open(path) as f:
+                previous_identities = json.load(f).get("port_identities", {})
+        except (OSError, json.JSONDecodeError):
+            pass
+    if not isinstance(previous_identities, dict):
+        previous_identities = {}
+    ports = serial_ports()
+    changed = {
+        field
+        for field in PORT_FIELDS
+        if field in data
+        and isinstance(data[field], str)
+        and (
+            existing is None
+            or data[field] != existing.get(field)
+            # Explicitly selecting a present adapter also replaces a broken
+            # unit whose replacement inherited exactly the same device path.
+            or any(same_port(p.device, data[field]) for p in (ports or []))
+        )
+    }
+    if switching_arm_type:
+        changed.update(PORT_FIELDS)
+    elif switching_leader_kind:
+        changed.update(field for field in PORT_FIELDS if "leader" in field)
+    if ports is not None:
+        identities = capture_identities(record, previous_identities, changed, ports)
+    else:
+        identities = {key: value for key, value in previous_identities.items() if key not in changed}
+    if identities:
+        record["port_identities"] = identities
     _atomic_write_text(path, json.dumps(record, indent=2))
     logger.info(f"Saved robot record {name}: {record}")
     return True
@@ -1134,7 +1183,7 @@ def rename_robot_record(old_name: str, new_name: str) -> tuple[bool, str]:
     if not is_valid_robot_name(old_name) or not is_valid_robot_name(new_name):
         return False, "invalid_name"
 
-    record = get_robot_record(old_name)
+    record = get_robot_record(old_name, resolve_usb=False)
     if record is None:
         return False, "not_found"
 
@@ -1145,6 +1194,10 @@ def rename_robot_record(old_name: str, new_name: str) -> tuple[bool, str]:
         return False, "name_taken"
 
     record["name"] = new_name
+    with open(_robot_record_path(old_name)) as f:
+        identities = json.load(f).get("port_identities")
+    if isinstance(identities, dict):
+        record["port_identities"] = identities
     _atomic_write_text(_robot_record_path(new_name), json.dumps(record, indent=2))
     os.remove(_robot_record_path(old_name))
     logger.info(f"Renamed robot record {old_name} -> {new_name}")
