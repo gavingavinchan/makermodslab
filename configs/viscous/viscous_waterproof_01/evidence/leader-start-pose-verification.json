@@ -1,0 +1,60 @@
+{
+  "timestamp_utc": "2026-10-10T03:09:26.712462+00:00",
+  "leader_port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "start_pose_limit_deg": 30.0,
+  "start_pose_passed": true,
+  "follower_connected": false,
+  "torque_enabled": false,
+  "calibration_changed": false,
+  "records": [
+    {
+      "joint": "shoulder_pan",
+      "servo_id": 0,
+      "raw_deg": 1.0,
+      "wrapped_deg": 1.0,
+      "mapped_target_deg": 1.446099
+    },
+    {
+      "joint": "shoulder_lift",
+      "servo_id": 1,
+      "raw_deg": 0.0,
+      "wrapped_deg": 0.0,
+      "mapped_target_deg": -3.0
+    },
+    {
+      "joint": "elbow_flex",
+      "servo_id": 2,
+      "raw_deg": 1.2000000476837158,
+      "wrapped_deg": 1.2000000476837158,
+      "mapped_target_deg": 3.0
+    },
+    {
+      "joint": "wrist_flex",
+      "servo_id": 3,
+      "raw_deg": -2.9000000953674316,
+      "wrapped_deg": -2.9000000953674316,
+      "mapped_target_deg": 3.0162059991889
+    },
+    {
+      "joint": "wrist_yaw",
+      "servo_id": 4,
+      "raw_deg": -2.200000047683716,
+      "wrapped_deg": -2.200000047683716,
+      "mapped_target_deg": 2.7421240594339373
+    },
+    {
+      "joint": "wrist_roll",
+      "servo_id": 5,
+      "raw_deg": -0.20000000298023224,
+      "wrapped_deg": -0.20000000298023224,
+      "mapped_target_deg": -0.1891382028183788
+    },
+    {
+      "joint": "gripper",
+      "servo_id": 6,
+      "raw_deg": -0.30000001192092896,
+      "wrapped_deg": -0.30000001192092896,
+      "mapped_target_deg": -3.0
+    }
+  ]
+}

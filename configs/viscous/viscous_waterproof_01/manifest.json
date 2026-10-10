@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "arm": "viscous_waterproof_01",
+  "linux_original_code_commit": "94f0d669faafcd3ffd0f0179b9fd3837d536fa71",
+  "recovered_profile_code_commit": "add5762ee9d827ebfe5927c2c189923caaf15f56",
+  "driver_commit": "2a5ea4e581c0d8956b6e58a8e1c6bf8e13486daa",
+  "sdk_commit": "8d3998d774650c239bc1b42f73c3f7d569e2c59d",
+  "physical_test": "Gavin reports small powered movement at all seven joints; wider tracking pending cable management.",
+  "files": {
+    "calibration/robots/viscous_follower/viscous_waterproof_01.json": "c95c6a9d184cdf16139f99cb96470d4f31cea31c04bb4330422c6ae1b4503f37",
+    "calibration/teleoperators/rebot_102_leader/star_viscous_waterproof_01.json": "5ffb5127d517b05e603692b237bf35b36e44c0fcb3ad934ca0709e2113473449",
+    "evidence/commissioning-progress.json": "3c5679b5f257cca7ff50b6a6bff78ed0a554abc633620cf9697dcd0a98d33356",
+    "evidence/commissioning-readme.txt": "62de7848a32d180516eccf5b57a179f9efae7c7a8512c18497888e4eacf432a6",
+    "evidence/first-small-motion-test.json": "ea20e5e80f332aa67512bbd9e681c8005845990783a76549f5249d8783d75ae1",
+    "evidence/j4-logo-clearance-note.txt": "e9833b82f1556d53eecb627e9615d202140062978806de9517984836d2d24833",
+    "evidence/joint-limits-zeroed-frame.json": "2bfda385b17710639b97ab362d7f2b9dbf5854ce717f26ffcebcc1ca2a7411e3",
+    "evidence/lab-config-verification.json": "278b0c99122281d279db81f496b41ef68fad637b6fedb81441907403be96dc7f",
+    "evidence/lab-hardware-profile.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
+    "evidence/lab-robot-record.json": "633e6ca4522ef262fc76579dbb7c700afda2be12569ec7d0b1268b3d4081c8f2",
+    "evidence/leader-start-pose-verification.json": "78ecf64c66c9afbfec033b76ed2523319766b5f9c6d45f3e102e479aca8dd266",
+    "evidence/mit-power-cycle-verification.json": "38db199871000f6c36f929a382b02a9640bd4167daf67e88730ec298eb7ac9f1",
+    "evidence/star-ranges-2026-08-29.json": "c29025d0d9f43e12b91d567a55ff01c372f2610da1cc51252387fc4ec7754c40",
+    "evidence/star_viscous_waterproof_01.json": "5ffb5127d517b05e603692b237bf35b36e44c0fcb3ad934ca0709e2113473449",
+    "evidence/viscous_waterproof_01.json": "c95c6a9d184cdf16139f99cb96470d4f31cea31c04bb4330422c6ae1b4503f37",
+    "evidence/viscous_waterproof_01.yaml": "17ac2f35b4187ff7bb9cfd7ddf91ab3fb3f901951615465fa25e4886b4e83ed1",
+    "robot-record-template.json": "c5045ca47fecec51a6ee6bab257308ae9b6f62746e7fa58579ce9578bda0afe1",
+    "viscous_profiles/star_viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
+    "viscous_profiles/viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2"
+  },
+  "recovery_scope": "All essential runtime calibrations, Lab hardware profiles, robot settings template and available commissioning evidence. Original per-joint raw capture logs remain on the offline Linux computer; their extrema are preserved in commissioning-progress.json."
+}
