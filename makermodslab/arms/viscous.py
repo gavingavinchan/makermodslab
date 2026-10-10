@@ -7,7 +7,12 @@ startup check and thermal stop. Never substitute the Maker arm's presets.
 
 from __future__ import annotations
 
+import json
+import math
 import os
+from pathlib import Path
+
+import draccus
 
 from .can_common import CanArmFamily
 
@@ -38,21 +43,74 @@ class ViscousFamily(CanArmFamily):
 
         return os.path.join(CALIBRATION_BASE_PATH_ROBOTS, "viscous_follower")
 
+    @staticmethod
+    def _commissioned_config(config_class, port, config_id, section):
+        """Load a per-calibration hardware profile without changing the unit-1 preset."""
+        from ..utils.config import MAKERMODSLAB_HOME
+
+        if not config_id:
+            # One-sided builders discard the unselected side.
+            return config_class(port=port, id=config_id)
+        if Path(config_id).name != config_id:
+            raise ValueError("Invalid Viscous calibration id")
+        path = Path(MAKERMODSLAB_HOME) / "viscous_profiles" / f"{config_id}.json"
+        if not path.exists():
+            # Only unit 1 has a known built-in hardware profile.
+            original_id = "viscous_01" if section == "follower" else "star_viscous"
+            if config_id != original_id:
+                raise FileNotFoundError(f"Missing commissioned Viscous hardware profile: {path}")
+            return config_class(port=port, id=config_id)
+        profile = json.loads(path.read_text())
+        fields = profile.get(section)
+        allowed = (
+            {"joint_limits"}
+            if section == "follower"
+            else {"joint_directions", "joint_ranges", "joint_offsets", "max_start_offset_deg"}
+        )
+        if not isinstance(fields, dict) or set(fields) != allowed:
+            raise ValueError(f"Incomplete or unsupported Viscous {section} profile: {path}")
+        config = draccus.decode(config_class, {"port": port, "id": config_id, **fields})
+        names = set(config.motor_can_ids if section == "follower" else config.joint_ids)
+        ranges = config.joint_limits if section == "follower" else config.joint_ranges
+        if set(ranges) != names or any(
+            len(bounds) != 2 or not all(math.isfinite(v) for v in bounds) or bounds[0] >= bounds[1]
+            for bounds in ranges.values()
+        ):
+            raise ValueError(f"Invalid seven-joint Viscous ranges: {path}")
+        if section == "leader" and (
+            set(config.joint_directions) != names
+            or set(config.joint_offsets) != names
+            or any(not math.isfinite(v) or v == 0 for v in config.joint_directions.values())
+            or any(not math.isfinite(v) for v in config.joint_offsets.values())
+            or config.max_start_offset_deg is None
+            or not 0 < config.max_start_offset_deg <= 30
+        ):
+            raise ValueError(f"Invalid Viscous leader mapping: {path}")
+        return config
+
     def single_follower_config(self, port: str, config_id: str):
         from lerobot.robots.viscous_follower import ViscousFollowerConfig
 
-        return ViscousFollowerConfig(port=port, id=config_id)
+        return self._commissioned_config(ViscousFollowerConfig, port, config_id, "follower")
 
     def single_leader_config(self, port: str, config_id: str, leader_kind: str | None = None):
-        from lerobot.teleoperators.rebot_102_leader import RebotArm102LeaderViscousTeleopConfig
+        from lerobot.teleoperators.rebot_102_leader import (
+            RebotArm102LeaderViscousTeleopConfig,
+        )
 
-        return RebotArm102LeaderViscousTeleopConfig(port=port, id=config_id)
+        return self._commissioned_config(RebotArm102LeaderViscousTeleopConfig, port, config_id, "leader")
 
     def build_single_configs(self, request, cameras, leader_id, follower_id):
         follower = self.single_follower_config(request.follower_port, follower_id)
         if cameras is not None:
             follower.cameras = cameras
-        return follower, self.single_leader_config(request.leader_port, leader_id)
+        leader = self.single_leader_config(request.leader_port, leader_id)
+        expected = {name: [math.ceil(lo), math.floor(hi)] for name, (lo, hi) in follower.joint_limits.items()}
+        if leader_id and follower_id and leader.joint_ranges != expected:
+            raise ValueError(
+                "Viscous follower limits and leader mapping do not match; select the commissioned pair"
+            )
+        return follower, leader
 
     def build_bimanual_configs(self, request, cameras, base, leader_staging, follower_staging):
         raise ValueError("Viscous currently supports a single follower and Star leader only.")
