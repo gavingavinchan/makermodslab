@@ -1,0 +1,19 @@
+{
+  "name": "viscous_waterproof_01",
+  "mode": "single",
+  "arms": "both",
+  "arm_type": "viscous",
+  "leader_kind": "star",
+  "motor_power": 38,
+  "gripper_current_limit_a": null,
+  "gripper_hold_torque_nm": null,
+  "leader_port": "",
+  "follower_port": "",
+  "leader_config": "star_viscous_waterproof_01",
+  "follower_config": "viscous_waterproof_01",
+  "right_leader_port": "",
+  "right_follower_port": "",
+  "right_leader_config": "",
+  "right_follower_config": "",
+  "cameras": []
+}

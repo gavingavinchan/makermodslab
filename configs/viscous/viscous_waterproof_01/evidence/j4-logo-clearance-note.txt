@@ -1,0 +1,11 @@
+J4 / wrist_flex — logo clearance dependency
+Recorded 2026-10-09 from Gavin during live commissioning.
+
+Gavin reports that the added arm logo physically blocks some J4 rearward travel. These limits were measured with the current logo installed. If logo placement, shape, mounting, or clearance changes, remeasure J4 and update its soft limits and affected leader mapping before powered operation.
+
+Current soft limits: -2.134 to 1.433 rad (-122.3 to 82.1 degrees).
+Stop margin: 0.05 rad at each end.
+Capture evidence: j4-rom-zeroed.json.
+Profile: viscous_waterproof_01.yaml.
+
+The reduced rearward clearance is an operator-reported mechanical constraint, not an encoder fault. The current reading does not establish which CAD feature must change.

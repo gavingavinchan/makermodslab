@@ -1,0 +1,57 @@
+{
+  "timestamp_utc": "2026-10-09T06:31:30.846076+00:00",
+  "query": "Existing RobstrideMotorsBus MIT handshake/status query; no enable or position-target packets.",
+  "fault_status_query_note": "FF FF FF FF FF FF 00 FB returned five-byte frames with zero fault bits from all seven IDs; standard driver query FF FF FF FF FF FF FF FB returned position/temperature telemetry.",
+  "enable_commands_sent": false,
+  "records": [
+    {
+      "joint": "shoulder_pan",
+      "can_id": 1,
+      "position_deg": -2.9342415845580856,
+      "near_zero_modulo_turn_deg": -2.9342415845580945,
+      "temperature_c": 27.0
+    },
+    {
+      "joint": "shoulder_lift",
+      "can_id": 2,
+      "position_deg": -0.42859708538486374,
+      "near_zero_modulo_turn_deg": -0.4285970853848653,
+      "temperature_c": 27.0
+    },
+    {
+      "joint": "elbow_flex",
+      "can_id": 3,
+      "position_deg": -0.010989668856061292,
+      "near_zero_modulo_turn_deg": -0.010989668856069557,
+      "temperature_c": 27.0
+    },
+    {
+      "joint": "wrist_flex",
+      "can_id": 4,
+      "position_deg": 0.032969006568082104,
+      "near_zero_modulo_turn_deg": 0.03296900656809498,
+      "temperature_c": 27.0
+    },
+    {
+      "joint": "wrist_yaw",
+      "can_id": 5,
+      "position_deg": 4.231022509568739,
+      "near_zero_modulo_turn_deg": 4.2310225095687315,
+      "temperature_c": 28.0
+    },
+    {
+      "joint": "wrist_roll",
+      "can_id": 6,
+      "position_deg": -3.0441382731182913,
+      "near_zero_modulo_turn_deg": -3.0441382731182784,
+      "temperature_c": 28.0
+    },
+    {
+      "joint": "gripper",
+      "can_id": 7,
+      "position_deg": -0.07692768199212371,
+      "near_zero_modulo_turn_deg": -0.07692768199211741,
+      "temperature_c": 27.0
+    }
+  ]
+}

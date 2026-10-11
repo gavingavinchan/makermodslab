@@ -107,6 +107,54 @@ def test_start_teleoperation_reports_connection_failure(
     assert teleop.teleoperation_active is False
 
 
+@pytest.mark.parametrize("missing_slot", ["follower", "leader"])
+def test_missing_can_usb_fails_before_opening_either_arm(monkeypatch, missing_slot) -> None:
+    """A missing leader must not energize the follower before failing."""
+    import makermodslab.teleoperate as teleop
+
+    monkeypatch.setattr(teleop, "teleoperation_active", False)
+    monkeypatch.setattr(teleop, "teleoperation_thread", None)
+    ports = {"follower": "/dev/missing-viscous-can", "leader": "/dev/missing-star-leader"}
+    monkeypatch.setattr(teleop.os.path, "exists", lambda path: path != ports[missing_slot])
+
+    def must_not_build(*args, **kwargs):
+        pytest.fail("Missing USB must be detected before device construction or calibration staging")
+
+    monkeypatch.setattr(teleop, "build_single_configs", must_not_build)
+    request = teleop.TeleoperateRequest(
+        arm_type="viscous",
+        leader_port=ports["leader"],
+        follower_port=ports["follower"],
+        leader_config="star_viscous",
+        follower_config="viscous_01",
+    )
+    result = teleop.handle_start_teleoperation(request)
+    assert result["success"] is False
+    assert ports[missing_slot] in result["message"]
+    assert "USB device is not detected" in result["message"]
+    assert "warning" not in result
+    status = teleop.handle_teleoperation_status()
+    assert status["teleoperation_active"] is False
+    assert status["last_cleanup_error"] is None
+    assert status["outcome"] == "failed"
+    assert ports[missing_slot] in status["error"]
+
+
+def test_not_connected_cleanup_closes_partial_resources_without_false_torque_alarm(monkeypatch) -> None:
+    import makermodslab.teleoperate as teleop
+
+    closed = []
+
+    class PartialDevice:
+        def disconnect(self):
+            raise teleop.DeviceNotConnectedError("connect never finished")
+
+    device = PartialDevice()
+    monkeypatch.setattr(teleop, "_force_close_device_resources", lambda target, logger: closed.append(target))
+    assert teleop._safe_disconnect(device, "Star leader") is None
+    assert closed == [device]
+
+
 def test_start_teleoperation_disconnects_follower_when_leader_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

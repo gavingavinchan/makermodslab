@@ -1,0 +1,23 @@
+{
+  "name": "viscous_waterproof_01",
+  "mode": "single",
+  "arms": "both",
+  "arm_type": "viscous",
+  "leader_kind": "star",
+  "motor_power": 38,
+  "gripper_current_limit_a": null,
+  "gripper_hold_torque_nm": null,
+  "leader_port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "follower_port": "/dev/serial/by-id/usb-Openlight_Labs_CANable2_b158aa7_github.com_normaldotcom_canable2.git_205038953846-if00",
+  "leader_config": "star_viscous_waterproof_01",
+  "follower_config": "viscous_waterproof_01",
+  "right_leader_port": "",
+  "right_follower_port": "",
+  "right_leader_config": "",
+  "right_follower_config": "",
+  "cameras": [],
+  "arm_available": true,
+  "is_clean": true,
+  "follower_ready": true,
+  "leader_ready": true
+}

@@ -1,0 +1,233 @@
+{
+  "arm": "new waterproof all-RS00 Viscous Arm",
+  "started": "2026-10-08",
+  "sdk_commit": "8d3998d774650c239bc1b42f73c3f7d569e2c59d",
+  "joints": {
+    "1": {
+      "can_id": 1,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 4.815,
+      "temperature_c": 24.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 1,
+        "motor_id": 1,
+        "min": -2.2639,
+        "max": 3.323,
+        "written": true,
+        "lo": -2.214,
+        "hi": 3.273,
+        "artifact": "j1-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      }
+    },
+    "2": {
+      "can_id": 2,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 3.903,
+      "temperature_c": 25.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 2,
+        "motor_id": 2,
+        "min": -3.5306,
+        "max": 0.0013,
+        "written": true,
+        "lo": -3.481,
+        "hi": -0.049,
+        "artifact": "j2-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      },
+      "hardware_change_operator_report": "Rear folded stop unchanged; forward cutout enlarged to allow more travel (Gavin, 2026-10-09)."
+    },
+    "3": {
+      "can_id": 3,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 0.029,
+      "temperature_c": 25.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 3,
+        "motor_id": 3,
+        "min": 0.0002,
+        "max": 4.4144,
+        "written": true,
+        "lo": 0.05,
+        "hi": 4.364,
+        "artifact": "j3-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      }
+    },
+    "4": {
+      "can_id": 4,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 5.929,
+      "temperature_c": 24.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 4,
+        "motor_id": 4,
+        "min": -2.1845,
+        "max": 1.4829,
+        "written": true,
+        "lo": -2.134,
+        "hi": 1.433,
+        "artifact": "j4-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      },
+      "hardware_constraint_operator_report": "Gavin reports that the added arm logo physically blocks some J4 rearward travel. These limits were measured with the current logo installed. If logo placement, shape, mounting, or clearance changes, remeasure J4 and update its soft limits and affected leader mapping before powered operation."
+    },
+    "5": {
+      "can_id": 5,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 3.142,
+      "temperature_c": 25.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 5,
+        "motor_id": 5,
+        "min": -1.5519,
+        "max": 1.5742,
+        "written": true,
+        "lo": -1.502,
+        "hi": 1.524,
+        "artifact": "j5-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      }
+    },
+    "6": {
+      "can_id": 6,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 3.274,
+      "temperature_c": 25.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 6,
+        "motor_id": 6,
+        "min": -2.7549,
+        "max": 2.6682,
+        "written": true,
+        "lo": -2.705,
+        "hi": 2.618,
+        "artifact": "j6-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      }
+    },
+    "7": {
+      "can_id": 7,
+      "assignment_saved_to_flash": true,
+      "verified_private_protocol": true,
+      "last_raw_position_rad": 1.44,
+      "temperature_c": 24.0,
+      "fault": "no fault",
+      "range_capture": {
+        "joint": 7,
+        "motor_id": 7,
+        "min": -2.0594,
+        "max": -0.0006,
+        "written": true,
+        "lo": -2.009,
+        "hi": -0.051,
+        "artifact": "j7-rom-zeroed.json",
+        "backoff_rad": 0.05,
+        "operator_confirmed_both_stops": true
+      }
+    }
+  },
+  "mechanical_zero_set": true,
+  "joint_limits_captured": true,
+  "watchdog_persisted": true,
+  "mit_switch_done": true,
+  "lerobot_calibration_created": true,
+  "updated_utc": "2026-10-10T03:19:08.554083+00:00",
+  "id_assignment_complete": true,
+  "reference_pose": {
+    "description": "Folded resting pose, J2/J3 at folded stops, gripper fully closed, supported torque-off",
+    "operator_confirmed": true
+  },
+  "zero_capture": {
+    "pre_zero_raw_rad": [
+      4.582,
+      3.901,
+      0.029,
+      5.928,
+      3.172,
+      3.852,
+      1.359
+    ],
+    "post_zero_reported_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "saved_to_flash_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "power_cycle_persistence_verified": true,
+    "timestamp_utc": "2026-10-09T05:58:00.184835+00:00",
+    "power_cycle_check_basis": "Operator returned arm folded; seven positions checked modulo full turns, allowing small manual settling."
+  },
+  "watchdog_timeout_ms": 200,
+  "watchdog_readback_verified_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "lerobot_robot_id": "viscous_waterproof_01",
+  "lerobot_calibration_path": "/home/gavin/.cache/huggingface/lerobot/calibration/robots/viscous_follower/viscous_waterproof_01.json",
+  "runtime_robot_settings": "/home/gavin/Documents/viscous-arm-calib/waterproof-2026-10-08/waterproof-robot-settings.json",
+  "leader_mapping_status": "Same leader archived ranges used; folded starting pose passed with new mapping. Powered tracking remains unverified.",
+  "leader_identity_operator_confirmed": "Same purple Star Arm 102-HD leader as the prior arm.",
+  "leader_runtime_settings": "/home/gavin/Documents/viscous-arm-calib/waterproof-2026-10-08/waterproof-leader-settings.json",
+  "mit_switch_command_acked_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "protocol_state": "All seven motors verified in MIT after operator power cycle; no torque enabled.",
+  "mit_verification_artifact": "mit-power-cycle-verification.json",
+  "leader_start_pose_verified": true,
+  "leader_start_pose_artifact": "leader-start-pose-verification.json",
+  "lab_integration": {
+    "robot_record": "viscous_waterproof_01",
+    "leader_calibration_id": "star_viscous_waterproof_01",
+    "profile_root": "/home/gavin/.makermods/makermodslab-viscous/viscous_profiles",
+    "backend_commit": "94f0d669faafcd3ffd0f0179b9fd3837d536fa71",
+    "tests": "16 passed; Ruff checks and formatting passed",
+    "configs_verified_without_hardware": true,
+    "backend_restarted": true,
+    "gui_selected_robot": true,
+    "powered_teleop_verified": false,
+    "next_step": "Confirm mounted/supported and folded, hands clear; then start existing Lab teleoperation."
+  }
+}

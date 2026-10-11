@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-11",
+  "joint": "shoulder_pan",
+  "motor_id": 1,
+  "reason": "Arm mounted on the ROV; Gavin posed J1 at its new neutral (leader at its neutral) and asked for this pose to be J1 zero.",
+  "method": "RobStride SET_ZERO (0xFE) on motor 1 only, bus opened without handshake, torque disabled before and after. Persists across power cycles.",
+  "reading_before_deg": 265.52,
+  "reading_before_old_frame_deg": -94.48,
+  "old_frame_note": "265.52 lies outside J1's captured stops [-129.7, 190.4] deg, so it is the -94.48 deg branch (driver whole-turn correction). Old frame = new frame - 94.48.",
+  "reading_after_deg": -0.01,
+  "other_joints_unchanged_deg": {"shoulder_lift": 0.03, "elbow_flex": 0.16, "wrist_flex": 0.25, "wrist_yaw": 2.76, "wrist_roll": 1.95, "gripper": -0.41},
+  "captured_stops_new_frame_deg": {"backed_off_soft_limits_shifted": [-32.37, 282.01]},
+  "lab_profiles_changed": false,
+  "lab_profile_note": "Soft limits in viscous_profiles/viscous_waterproof_01.json and the leader mapping were deliberately left in the old frame (Gavin: no remap, pilot carefully). Lab J1 soft range is still [-126.85, 187.53] in the NEW frame: it allows ~94 deg past the real negative stop (~-32 deg) and stops short of the positive one.",
+  "post_check": "Powered teleop from the Lab GUI worked after the re-zero (Gavin)."
+}

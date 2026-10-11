@@ -1,0 +1,42 @@
+{
+  "units": "degrees",
+  "joint_limits": {
+    "shoulder_pan": [
+      -126.85285584196426,
+      187.52908634631845
+    ],
+    "shoulder_lift": [
+      -199.44660848503955,
+      -2.807493196141034
+    ],
+    "elbow_flex": [
+      2.8647889756541165,
+      250.03878179509124
+    ],
+    "wrist_flex": [
+      -122.26919348091766,
+      82.10485204224697
+    ],
+    "wrist_yaw": [
+      -86.05826082864965,
+      87.31876797793745
+    ],
+    "wrist_roll": [
+      -154.98508358288768,
+      150.00035076524952
+    ],
+    "gripper": [
+      -115.10722104178238,
+      -2.9220847551671985
+    ]
+  },
+  "source_profile": "viscous_waterproof_01.yaml",
+  "zero_reference": {
+    "description": "Folded resting pose, J2/J3 at folded stops, gripper fully closed, supported torque-off",
+    "operator_confirmed": true
+  },
+  "stop_backoff_rad": 0.05,
+  "hardware_notes": {
+    "wrist_flex": "Gavin reports that the added arm logo physically blocks some J4 rearward travel. These limits were measured with the current logo installed. If logo placement, shape, mounting, or clearance changes, remeasure J4 and update its soft limits and affected leader mapping before powered operation."
+  }
+}
