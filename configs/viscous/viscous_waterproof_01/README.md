@@ -11,6 +11,16 @@ Wider tracking and direction checks are pending cable management. J4's rearward
 travel is restricted by the current logo; remeasure J4 if that clearance changes.
 See `evidence/first-small-motion-test.json` and `evidence/j4-logo-clearance-note.txt`.
 
+**J1 was re-zeroed on the ROV mount on 2026-10-11** (motor 1 only, at Gavin's
+request; zero now = the mounted neutral, which was -94.48 deg in the commissioning
+frame). The new zero lives in motor flash, so restoring these files does not undo
+it. The profiles' J1 soft limits were deliberately left in the old frame. The
+captured J1 stops are now about -32.4 / +282.0 deg, but Lab still allows J1 down to
+-127 deg, so take J1 negative slowly. Pre-2026-10-11 J1 data and
+`joint-limits-zeroed-frame.json` are in the old frame. Powered teleop through the
+Lab GUI worked after the re-zero. See `evidence/j1-rezero-2026-10-11.json`; the
+planned ROV safe-workspace envelope is `docs/viscous-rov-envelope-plan.md`.
+
 ## Restore on another machine
 
 1. Clone `https://github.com/gavingavinchan/makermodslab.git`, branch
@@ -47,7 +57,7 @@ The restore writes these five files:
 - `<lab-home>/robots/viscous_waterproof_01.json`
 
 Calibration JSON alone does not replace the driver's limits: restore the profiles
-as well. Do not re-zero this commissioned follower or recalibrate the same leader
+as well. Do not re-zero this commissioned follower (beyond the deliberate 2026-10-11 J1 change) or recalibrate the same leader
 just because the computer changed. IDs, motor zero and watchdog live in actuator
 flash; the restore script writes only disk files and never opens hardware.
 

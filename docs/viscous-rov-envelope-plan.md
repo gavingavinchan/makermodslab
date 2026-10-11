@@ -15,7 +15,7 @@ painted by hand rather than computed from the hull model.
   2026-10-11. Only motor 1 was zeroed. Just before the write it read 265.52 deg,
   which is -94.48 deg in the old table-calibrated frame. Datasets recorded on
   this unit before that date have J1 in the old frame. The unit's record is
-  `~/Documents/viscous-arm-calib/waterproof-2026-10-08/j1-rezero-2026-10-11.json`.
+  `configs/viscous/viscous_waterproof_01/evidence/j1-rezero-2026-10-11.json`.
 - Soft limits and the leader mapping were left unchanged. If J1 really sat a
   quarter turn from its old zero (near-certain: 265.52 deg is outside the
   captured stops, so the reading is a whole turn off), the measured stops are

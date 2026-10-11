@@ -20,3 +20,5 @@ Lab retains the installed driver's startup sync (1 degree target increment per j
 Do not rerun follower calibration/zero on this commissioned arm. ID/zero/watchdog persisted to actuator flash; software profiles live on disk. SDK YAML has kp/kd=0 for capture and is not the powered runtime profile. This Lab change is deployed on Linux only; the Mac installation has not been updated.
 
 Policy rollout remains unverified: its subprocess CLI path does not consume Lab's hardware profile loader; provide explicit matching driver limits before considering policy execution.
+
+2026-10-11 J1 RE-ZERO ON ROV MOUNT (overrides "do not rerun zero" for J1 only, at Gavin's request): J1 zero moved to the ROV-mounted neutral; it was -94.48 deg in the commissioning frame. Only motor 1 was zeroed. The captured J1 stops are now about -32.4 / +282.0 deg, but Lab's J1 soft limits were NOT shifted, so Lab allows travel past the negative stop. Take J1 negative slowly. Details: j1-rezero-2026-10-11.json. J1 values in joint-limits-zeroed-frame.json and j1-rom-zeroed.json are in the old frame. Planned ROV safe-workspace envelope: makermodslab-viscous docs/viscous-rov-envelope-plan.md.
