@@ -15,6 +15,7 @@
 import contextlib
 import logging
 import math
+import os
 import threading
 import time
 from typing import Any
@@ -441,6 +442,14 @@ def _safe_disconnect(device, label: str = "device") -> str | None:
     try:
         device.disconnect()
         return None
+    except DeviceNotConnectedError:
+        # A failed connect can leave lower-level resources open even though
+        # the device-level guard says disconnected. Release those, but do not
+        # invent a torque alarm: the caller's explicit torque pass owns that.
+        for target in (device, getattr(device, "left_arm", None), getattr(device, "right_arm", None)):
+            if target is not None:
+                _force_close_device_resources(target, logger)
+        return None
     except Exception as e:
         message = (
             f"Failed to disconnect the {label} ({_device_ports(device)}): {e}. "
@@ -686,6 +695,24 @@ def _connect_can(request: TeleoperateRequest):
     family = _can_family_label(request)
     arm_family = arm_registry.get(request_arm_type(request))
     leader_label = arm_family.leader_option(request.leader_kind).label
+    # Check every serial endpoint before opening either arm. In particular a
+    # missing leader must not be discovered only after energizing the follower.
+    # SocketCAN names and gs_usb URIs are validated by their own transports.
+    ports = [(request.follower_port, f"{family} follower CAN adapter"), (request.leader_port, leader_label)]
+    if request.mode == "bimanual":
+        ports += [
+            (request.right_follower_port, f"right {family} follower CAN adapter"),
+            (request.right_leader_port, f"right {leader_label}"),
+        ]
+    for port, label in ports:
+        if port.startswith("/dev/") and not os.path.exists(port):
+            error = RuntimeError(
+                f"The {label} USB device is not detected at {port}. "
+                "Unplug and reconnect this device's USB cable at the computer. "
+                "If it stays missing, try another data cable or a direct computer USB port."
+            )
+            error.cleanup_error = None  # Neither device has been opened.
+            raise error
     if request.mode == "bimanual":
         robot_config, teleop_config = build_bimanual_configs(request)
     else:
@@ -704,16 +731,17 @@ def _connect_can(request: TeleoperateRequest):
 
         install_metal_gripper(robot, request.robot_name)
 
+    recovery_problems: list[str] = []
     try:
         logger.info(f"Connecting to {family} follower arm(s)...")
         try:
             robot.connect(calibrate=False)
         except Exception as e:
-            de_energize_can_device(robot, f"{family} follower arm")
+            recovery_problems += de_energize_can_device(robot, f"{family} follower arm")
             raise RuntimeError(
                 f"Could not connect to the {family} follower arm on {request.follower_port}. "
                 "Check that the CAN adapter is plugged in, the arm is powered, and the "
-                "motors are in MIT mode, then try again."
+                f"motors are in MIT mode, then try again. Details: {e}"
             ) from e
 
         logger.info(f"Connecting to {leader_label} arm(s)...")
@@ -726,10 +754,10 @@ def _connect_can(request: TeleoperateRequest):
             # torque left on when the gravity model fails to load. Same
             # recovery as the follower; a no-op on the Star leader (no CAN
             # bus of its own to release).
-            de_energize_can_device(teleop_device, f"{leader_label} arm")
+            recovery_problems += de_energize_can_device(teleop_device, f"{leader_label} arm")
             raise RuntimeError(
                 f"Could not connect to the {leader_label} on {request.leader_port}. "
-                "Make sure it's plugged in and powered on, then try again."
+                f"Make sure it's plugged in and powered on, then try again. Details: {e}"
             ) from e
 
         logger.info(f"Successfully connected to the {family} arm pair")
@@ -738,9 +766,10 @@ def _connect_can(request: TeleoperateRequest):
         # Same contract as _connect_bimanual: stash the cleanup outcome on the
         # exception so the caller (which holds no device of its own yet) can
         # surface it as a warning instead of losing it.
-        e.cleanup_error = _cleanup_after_setup_failure(
+        cleanup_error = _cleanup_after_setup_failure(
             robot, teleop_device, f"{family} follower arm", f"{leader_label} arm"
         )
+        e.cleanup_error = " ".join(recovery_problems + ([cleanup_error] if cleanup_error else [])) or None
         raise
 
 
@@ -1135,6 +1164,8 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         teleoperation_active = False
         current_robot = None
         current_teleop = None
+        last_session_error = format_exception(e)
+        last_session_outcome = "failed"
         # The claim above already broadcast active=True; undo the hint now
         # that the setup failure released everything.
         notify_session_changed("teleoperation", False)

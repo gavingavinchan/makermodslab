@@ -641,8 +641,8 @@ def test_a_failed_metal_follower_connect_de_energizes_the_bus(
     monkeypatch.setattr(metal_gripper, "install_metal_gripper", lambda robot, name: None)
 
     request = teleoperate.TeleoperateRequest(
-        leader_port="/dev/star",
-        follower_port="/dev/can0",
+        leader_port="COM_STAR",
+        follower_port="can0",
         leader_config="L",
         follower_config="F",
         arm_type="metal",
