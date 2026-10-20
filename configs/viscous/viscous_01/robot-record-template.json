@@ -1,0 +1,38 @@
+{
+  "name": "viscous_01",
+  "mode": "single",
+  "arms": "both",
+  "arm_type": "viscous",
+  "leader_kind": "star",
+  "motor_power": 38,
+  "gripper_current_limit_a": null,
+  "gripper_hold_torque_nm": null,
+  "leader_port": "",
+  "follower_port": "",
+  "leader_config": "star_viscous",
+  "follower_config": "viscous_01",
+  "right_leader_port": "",
+  "right_follower_port": "",
+  "right_leader_config": "",
+  "right_follower_config": "",
+  "cameras": [
+    {
+      "name": "wrist",
+      "type": "opencv",
+      "camera_index": 0,
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "fourcc": "MJPG"
+    },
+    {
+      "name": "front",
+      "type": "opencv",
+      "camera_index": 2,
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "fourcc": "MJPG"
+    }
+  ]
+}

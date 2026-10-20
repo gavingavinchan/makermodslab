@@ -1,0 +1,26 @@
+# Viscous Arm v1 — ALL SEVEN JOINTS ARE RS00 (unlike the Maker Arm, whose J2/J3 are RS02).
+#
+# ⚠️ CAPTURE-ONLY PROFILE — NOT SAFE TO ENABLE YET.
+#    lo/hi below are wide placeholders, not this arm's limits, and the gains are untuned
+#    placeholders. Use this file ONLY with the read-only (not enabled) engineering capture
+#    tools until real limits are captured and gains are bench-tuned.
+#
+# ⚠️ Gains: do NOT copy the Maker Arm's J2/J3 values (kp 150 / 90). Those are RS02 numbers.
+#    J2/J3 here are RS00 and are placeholdered soft (kp 30) so the failure mode is sag,
+#    not a slam. Tune upward on the bench after a static torque check.
+#
+# Joint map: J1 base yaw, J2 shoulder pitch, J3 elbow pitch, J4 wrist pitch,
+#            J5 wrist yaw, J6 wrist roll, J7 gripper (zero = fully open).
+control_rate_hz: 200
+max_velocity: 5.0
+limit_margin: 0.0          # capture applies its own 0.05-rad stop backoff
+feedback_timeout: 0.2
+motor_can_timeout_ms: 200
+joints:
+  - {motor_id: 1, model: RS00, direction: 1, offset: 0.0, lo: 2.736, hi: 8.198, kp: 60, kd: 4.0}
+  - {motor_id: 2, model: RS00, direction: 1, offset: 0.0, lo: -0.055, hi: 2.981, kp: 30, kd: 2.0}
+  - {motor_id: 3, model: RS00, direction: 1, offset: 0.0, lo: 6.158, hi: 10.491, kp: 30, kd: 2.0}
+  - {motor_id: 4, model: RS00, direction: 1, offset: 0.0, lo: 2.49, hi: 6.205, kp: 30, kd: 2.0}
+  - {motor_id: 5, model: RS00, direction: 1, offset: 0.0, lo: 0.428, hi: 0.963, kp: 30, kd: 2.0}
+  - {motor_id: 6, model: RS00, direction: 1, offset: 0.0, lo: -0.364, hi: 4.957, kp: 30, kd: 2.0}
+  - {motor_id: 7, model: RS00, direction: 1, offset: 0.0, lo: -0.225, hi: 1.821, kp: 20, kd: 0.5}  # gripper: grip force = kp x position error
