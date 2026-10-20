@@ -49,11 +49,15 @@ LOG_PERIOD_S = 2.0
 FRESH_S = 0.005  # one model evaluation per send_action tick
 
 
-def load_model(path: str | Path):
+def load_model(path: str | Path, *, telemetry_offsets: bool = False):
+    """The fit file and its model. ``telemetry_offsets`` adds the fit's per-joint
+    telemetry bias to the model's torques: right for predicting what the motors
+    REPORT (contact_torque), wrong for what to command (the feedforward here)."""
     from .arm_gravity import GravityModel, repo_path
 
     fit = json.loads(repo_path(path).read_text())
-    model = GravityModel(repo_path(fit["urdf"]), fit["joints"], params=fit["params"])
+    offsets = fit.get("offsets_nm") if telemetry_offsets else None
+    model = GravityModel(repo_path(fit["urdf"]), fit["joints"], params=fit["params"], offsets=offsets)
     if model.urdf_sha256 != fit["urdf_sha256"]:
         raise ValueError(f"The URDF at {fit['urdf']} changed since this fit was made")
     return fit, model
@@ -63,7 +67,9 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
     """Wrap ``robot.bus.write`` so Goal_Position frames carry gravity torque.
 
     Returns a live status dict (latest feedforward and stiffness torque per
-    joint) that the wrapper keeps updated.
+    joint) that the wrapper keeps updated. Its ``scale`` is read on every
+    frame, so a bench script can change it mid-session; ramp it, because a step
+    moves the arm by the torque change over kp.
     """
     if not 0.0 <= scale <= 1.0:
         raise ValueError("Gravity feedforward scale must be within 0..1")
@@ -100,6 +106,9 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
                     state["tau"] = {}
                 state["computed"] = now
             ramp = min(1.0, (now - state["started"]) / RAMP_S)
+            scale = status["scale"]
+            if isinstance(scale, bool) or not isinstance(scale, (int, float)) or not 0.0 <= scale <= 1.0:
+                scale = 0.0  # a bad live value must not command torque
             torque = max(-CLAMP_NM, min(CLAMP_NM, scale * ramp * state["tau"].get(name, 0.0)))
             kp = bus._gains[name]["kp"]
             raw = robot._last_positions.get(name)

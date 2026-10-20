@@ -307,6 +307,36 @@ session, in parallel with a haptics session.
   Run B = the Viscous in Dream's scene doing the apple task, with the baseline's
   executor (48 rows, no extra clip, gripper open). Which cell fails names the cause.
 
+## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
+
+*Intent:* prove the haptic signal on the arm before building the leader loop
+(A3) on it: contact torque near zero in free motion, a push standing clear of
+that floor, and the feedforward removing sag. "If we hit something, yes, we
+should feel that."
+
+- Code: `makermodslab/contact_torque.py` (`ContactEstimator`: reported torque
+  minus fitted gravity minus the fit's telemetry bias; the feedforward never
+  commands that bias). `gravity_feedforward.install` reads `status["scale"]`
+  every frame so one session can A/B it. `scripts/viscous-contact-check.py`
+  runs it; `scripts/viscous_bench.py` holds the helpers it shares with the
+  gravity collector.
+- Run: three poses x feedforward 0/100 % x approach above/below, 50 Hz log of
+  every move, then a 60 s push hold at `forward`. `--analyze run.json` prints
+  sag, telemetry-vs-(kp*err + ff) slope, the free-motion floor (p99) and how
+  much of the push window clears it.
+- Pose choice: the planner caps fitted load at the 0 % sag of both approaches,
+  not just the nominal pose. With the 3.5 N m dry cap that limits the shoulder
+  to ~1.5 N m, so the first-draft poses (up to 2.8 N m) were refused and
+  replaced. The legs out of and back into the fold are exempt from the cap
+  (collision-checked only): leaving the fold carries ~4 N m on any route, as
+  every Lab teleop unfold does.
+- Status: offline only. Unit tests and a synthetic run through `--analyze`
+  pass; the detached stop test on gavin-linux passed (SIGTERM, `kill -0`).
+  The read-only dry run on gavin-linux got no handshake reply from any of the
+  seven motors (arm power off?), so no plan from the real pose yet.
+- Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
+  (missing commissioned `cal-f` profile), present at `HEAD` too.
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -369,3 +399,4 @@ How Gavin wants the work done. These apply to every agent and tool.
   switch is the hard stop. The thermal ceiling is the driver's 85 °C stop;
   scripts abort just below it (82 °C) and cool at 80 °C. On the dry arm keep
   planned loads ≤ ~3.5 Nm (see Results: the shoulder dropped the arm at ~5.6 Nm).
+

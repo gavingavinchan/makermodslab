@@ -25,9 +25,7 @@ start pose); every leg is re-routed from wherever the arm actually is.
 """
 
 import argparse
-import contextlib
 import datetime
-import json
 import os
 import signal
 import sys
@@ -39,17 +37,29 @@ os.environ.setdefault("MAKERMODSLAB_HOME", str(Path.home() / ".makermods/makermo
 sys.path.insert(0, str(REPO))
 
 import numpy as np  # noqa: E402
+from viscous_bench import (  # noqa: E402
+    ARM,
+    COOL,
+    HUB,
+    RunAbortError,
+    Runner,
+    _interrupt,
+    build_robot,
+    clipped,
+    load_record,
+    read_pose_readonly,
+    summarize,
+    write_json,
+)
 
 from makermodslab.arm_gravity import (  # noqa: E402
     CollisionChecker,
     GravityModel,
-    interpolate,
     path_clear,
     plan_poses,
     stored_path,
 )
 
-ARM = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_yaw", "wrist_roll")
 # Where poses are drawn from. Pan stays where the arm starts: its axis is
 # vertical, so it never carries gravity.
 BOX = {
@@ -59,54 +69,7 @@ BOX = {
     "wrist_yaw": (-50.0, 50.0),
     "wrist_roll": (-90.0, 90.0),
 }
-HUB = {"shoulder_lift": -90.0, "elbow_flex": 90.0, "wrist_flex": 0.0, "wrist_yaw": 0.0, "wrist_roll": 0.0}
-# Near-balanced upright pose: CAD gravity under 0.1 N m on every joint.
-COOL = {"shoulder_lift": -92.0, "elbow_flex": 160.0, "wrist_flex": 20.0, "wrist_yaw": 0.0, "wrist_roll": 0.0}
-TICK_S = 0.02
 DEFAULT_MODEL_DIR = REPO / "configs/viscous/model"
-
-
-class RunAbortError(RuntimeError):
-    pass
-
-
-def _interrupt(signum, frame):
-    # Explicit, because a process launched in the background (nohup, &) starts
-    # with SIGINT ignored and Python then installs no Ctrl-C handler at all.
-    raise KeyboardInterrupt
-
-
-def load_record(name):
-    path = Path(os.environ["MAKERMODSLAB_HOME"]) / "robots" / f"{name}.json"
-    record = json.loads(path.read_text())
-    if record.get("arm_type") != "viscous" or record.get("mode", "single") != "single":
-        raise SystemExit(f"{name} is not a single Viscous arm")
-    return record
-
-
-def build_robot(record):
-    from lerobot.robots import make_robot_from_config
-    from makermodslab.arms import registry
-
-    config = registry.get("viscous").single_follower_config(
-        record["follower_port"], record["follower_config"]
-    )
-    return make_robot_from_config(config)
-
-
-def read_pose_readonly(robot):
-    """Present joint angles without enabling torque (the RobStride handshake only pings)."""
-    try:
-        robot.bus.connect()
-        robot._detect_full_turn_offsets()
-        return robot._read_present_positions()
-    finally:
-        with contextlib.suppress(Exception):
-            robot.bus.disconnect(disable_torque=False)
-
-
-def clipped(pose, limits):
-    return {k: min(limits[k][1], max(limits[k][0], v)) for k, v in pose.items()}
 
 
 def plan(args, robot, start):
@@ -190,52 +153,6 @@ def describe(model, start_arm, visits, home_via, args):
         )
     worst = max(max(abs(t) for t in model.torque(v.pose).values()) for v in visits)
     print(f"Highest CAD-predicted holding torque: {worst:.2f} Nm (cap {args.max_torque:.1f})")
-
-
-class Runner:
-    def __init__(self, robot, args, gripper):
-        self.robot, self.args, self.gripper = robot, args, gripper
-        self.command = None
-        self.last_obs = None
-
-    def _tick(self, target):
-        started = time.monotonic()
-        self.robot.send_action({**{f"{k}.pos": v for k, v in target.items()}, "gripper.pos": self.gripper})
-        obs = self.robot.get_observation()
-        self.last_obs = obs
-        hot = {k: obs[f"{k}.temp"] for k in (*ARM, "gripper") if obs[f"{k}.temp"] >= self.args.max_temp}
-        if hot:
-            raise RunAbortError(f"Too hot: {hot}")
-        lag = {k: target[k] - obs[f"{k}.pos"] for k in ARM}
-        worst = max(lag, key=lambda k: abs(lag[k]))
-        if abs(lag[worst]) > self.args.max_lag:
-            raise RunAbortError(f"{worst} lags its command by {lag[worst]:+.1f} deg: blocked or overloaded")
-        time.sleep(max(0.0, TICK_S - (time.monotonic() - started)))
-        return obs
-
-    def move(self, target, speed):
-        for p in interpolate(self.command, target, speed * TICK_S):
-            self._tick(p)
-            self.command = p
-
-    def hold(self, seconds):
-        frames, end = [], time.monotonic() + seconds
-        while time.monotonic() < end:
-            frames.append(self._tick(self.command))
-        return frames
-
-
-def summarize(frames, key):
-    values = np.array([[f[f"{k}.{key}"] for k in ARM] for f in frames])
-    return dict(zip(ARM, values.mean(axis=0).tolist(), strict=True)), dict(
-        zip(ARM, values.std(axis=0).tolist(), strict=True)
-    )
-
-
-def write_json(path, data):
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(data, indent=1))
-    tmp.replace(path)
 
 
 def main():

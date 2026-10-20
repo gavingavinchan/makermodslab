@@ -166,3 +166,16 @@ def test_feedforward_never_bypasses_a_rate_limiting_bus_wrapper(urdf, wrap_first
     clock[0] = 10.0
     robot.bus.write("Goal_Position", "lift", -60.0)
     assert robot.bus._base.frames[-1][3] == -2.0 and robot.bus._base.frames[-1][5] != 0.0
+
+
+@pytest.mark.parametrize("bad", [-0.1, 1.1, math.nan, math.inf, None, "bad", True])
+def test_live_scale_changes_each_frame_and_bad_values_zero_torque(urdf, bad):  # noqa: F811
+    model = GravityModel(urdf, JOINTS)
+    robot, clock = FakeRobot(POSE), [0.0]
+    status = ff.install(robot, model, clock=lambda: clock[0])
+    drive(robot, clock, 0.0)
+    full = drive(robot, clock, 3.0)
+    status["scale"] = 0.25
+    assert drive(robot, clock, 3.0)["lift"] == pytest.approx(full["lift"] * 0.25)
+    status["scale"] = bad
+    assert all(tau == 0 for tau in drive(robot, clock, 3.0).values())
