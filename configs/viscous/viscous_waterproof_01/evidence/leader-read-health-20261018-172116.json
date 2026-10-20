@@ -1,0 +1,5693 @@
+{
+  "recorded_at": "2026-10-18T17:21:16.153998-05:00",
+  "reason": "Investigate wrist-yaw missed replies that stopped the first posture trial. Leader sensor reads only; no configure, zero reset, enable, disable or follower connection.",
+  "port": "/dev/cu.wchusbserial10",
+  "summary": {
+    "sync_monitor": {
+      "cycles": 80,
+      "errors": 0,
+      "median_cycle_ms": 2.9366040835157037,
+      "joints": {
+        "0": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "1": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "2": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "3": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "4": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "5": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "6": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        }
+      }
+    },
+    "read_angle": {
+      "cycles": 80,
+      "errors": 0,
+      "median_cycle_ms": 9.430145961232483,
+      "joints": {
+        "0": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "1": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "2": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "3": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "4": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "5": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        },
+        "6": {
+          "fresh": 80,
+          "missed": 0,
+          "max_consecutive_misses": 0
+        }
+      }
+    }
+  },
+  "samples": [
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.159979,
+      "elapsed_s": 0.002866291906684637,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.1950731,
+      "elapsed_s": 0.0029353750869631767,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.22629,
+      "elapsed_s": 0.002729458035901189,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.261438,
+      "elapsed_s": 0.0028584999963641167,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.293215,
+      "elapsed_s": 0.0029759579338133335,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.328017,
+      "elapsed_s": 0.0027571250684559345,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.360424,
+      "elapsed_s": 0.002729750005528331,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.3947341,
+      "elapsed_s": 0.002792125102132559,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.4298902,
+      "elapsed_s": 0.0029292500112205744,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.4649029,
+      "elapsed_s": 0.0029196669347584248,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.499197,
+      "elapsed_s": 0.00306433392688632,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.5338361,
+      "elapsed_s": 0.002860083943232894,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.568841,
+      "elapsed_s": 0.0028429999947547913,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.604151,
+      "elapsed_s": 0.0031275420915335417,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.6379452,
+      "elapsed_s": 0.002738167066127062,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.671755,
+      "elapsed_s": 0.003045707941055298,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.7017741,
+      "elapsed_s": 0.002779125003144145,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.736953,
+      "elapsed_s": 0.0029360000044107437,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.771915,
+      "elapsed_s": 0.0028769171331077814,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.8068979,
+      "elapsed_s": 0.0028347501065582037,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.840737,
+      "elapsed_s": 0.0028695419896394014,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.875563,
+      "elapsed_s": 0.002918583108112216,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.910645,
+      "elapsed_s": 0.0029754999559372663,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.942223,
+      "elapsed_s": 0.00282775005325675,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362076.9761941,
+      "elapsed_s": 0.0029091660398989916,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.008147,
+      "elapsed_s": 0.002870584139600396,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.043253,
+      "elapsed_s": 0.002954040886834264,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.0764349,
+      "elapsed_s": 0.002864958019927144,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.111378,
+      "elapsed_s": 0.002789708087220788,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.299999952316284
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.146386,
+      "elapsed_s": 0.0027725829277187586,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.179179,
+      "elapsed_s": 0.0030017918907105923,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.214091,
+      "elapsed_s": 0.003087374847382307,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.244823,
+      "elapsed_s": 0.0028053750284016132,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.2801301,
+      "elapsed_s": 0.003086542012169957,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.3100002,
+      "elapsed_s": 0.002805874915793538,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.3451571,
+      "elapsed_s": 0.0029372081626206636,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.3762538,
+      "elapsed_s": 0.0029698750004172325,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.409833,
+      "elapsed_s": 0.0029289170634001493,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.44414,
+      "elapsed_s": 0.0027846249286085367,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.47759,
+      "elapsed_s": 0.002960541984066367,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.509847,
+      "elapsed_s": 0.0029384579975157976,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.543475,
+      "elapsed_s": 0.003240167163312435,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.576117,
+      "elapsed_s": 0.003131916979327798,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.610017,
+      "elapsed_s": 0.0031028748489916325,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.642922,
+      "elapsed_s": 0.003023541998118162,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.676757,
+      "elapsed_s": 0.003057125024497509,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.7103932,
+      "elapsed_s": 0.003518291050568223,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.742971,
+      "elapsed_s": 0.0029005419928580523,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.777825,
+      "elapsed_s": 0.003242833074182272,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.8112268,
+      "elapsed_s": 0.002804666990414262,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.8436701,
+      "elapsed_s": 0.0031739999540150166,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.875749,
+      "elapsed_s": 0.0031279579270631075,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.909888,
+      "elapsed_s": 0.0029768331442028284,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.943855,
+      "elapsed_s": 0.003295874921604991,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362077.9764311,
+      "elapsed_s": 0.0028132079169154167,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.010941,
+      "elapsed_s": 0.004027791088446975,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.0447,
+      "elapsed_s": 0.0029969580937176943,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.077815,
+      "elapsed_s": 0.002801417140290141,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.1109161,
+      "elapsed_s": 0.002986124949529767,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.143863,
+      "elapsed_s": 0.0035246661864221096,
+      "values": {
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.1773062,
+      "elapsed_s": 0.003590417094528675,
+      "values": {
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.211468,
+      "elapsed_s": 0.002973583061248064,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.243864,
+      "elapsed_s": 0.002798207802698016,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.276681,
+      "elapsed_s": 0.0029990840703248978,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.30973,
+      "elapsed_s": 0.0028031659312546253,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.3436952,
+      "elapsed_s": 0.0027938750572502613,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.375652,
+      "elapsed_s": 0.0027862079441547394,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.4097521,
+      "elapsed_s": 0.002832458121702075,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.4425302,
+      "elapsed_s": 0.002873749937862158,
+      "values": {
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.4759722,
+      "elapsed_s": 0.0027157089207321405,
+      "values": {
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.510616,
+      "elapsed_s": 0.0036412919871509075,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.544905,
+      "elapsed_s": 0.0030842500273138285,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.576685,
+      "elapsed_s": 0.0030700829811394215,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.611666,
+      "elapsed_s": 0.0030237920582294464,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.6444201,
+      "elapsed_s": 0.0038297499995678663,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.676354,
+      "elapsed_s": 0.0028717501554638147,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.7102861,
+      "elapsed_s": 0.0029976670630276203,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.742771,
+      "elapsed_s": 0.0029536669608205557,
+      "values": {
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.777523,
+      "elapsed_s": 0.0038611250929534435,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        }
+      }
+    },
+    {
+      "mode": "sync_monitor",
+      "at": 1792362078.810982,
+      "elapsed_s": 0.002940958132967353,
+      "values": {
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362078.849247,
+      "elapsed_s": 0.009722666814923286,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362078.8820648,
+      "elapsed_s": 0.009146499913185835,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362078.914463,
+      "elapsed_s": 0.009467707946896553,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362078.948905,
+      "elapsed_s": 0.009585167048498988,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362078.983767,
+      "elapsed_s": 0.009162875125184655,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.0174441,
+      "elapsed_s": 0.010506457882001996,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.051102,
+      "elapsed_s": 0.010684500215575099,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.083151,
+      "elapsed_s": 0.009544957894831896,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.118232,
+      "elapsed_s": 0.010777124902233481,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.1473,
+      "elapsed_s": 0.009036165894940495,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.299999952316284
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.182085,
+      "elapsed_s": 0.009430708829313517,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.217013,
+      "elapsed_s": 0.010047249961644411,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.249095,
+      "elapsed_s": 0.008850874844938517,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.281656,
+      "elapsed_s": 0.00942958309315145,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.312625,
+      "elapsed_s": 0.00875833397731185,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.34759,
+      "elapsed_s": 0.008699750062078238,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.38224,
+      "elapsed_s": 0.008948500035330653,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.416936,
+      "elapsed_s": 0.008932875003665686,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.4498172,
+      "elapsed_s": 0.009574624942615628,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.484064,
+      "elapsed_s": 0.00885041686706245,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.515821,
+      "elapsed_s": 0.008854124927893281,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.5499341,
+      "elapsed_s": 0.008977292105555534,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.5832162,
+      "elapsed_s": 0.009538500104099512,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.616524,
+      "elapsed_s": 0.009574666852131486,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.650113,
+      "elapsed_s": 0.009806457906961441,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.683947,
+      "elapsed_s": 0.008819625014439225,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.71694,
+      "elapsed_s": 0.009980374947190285,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.7489579,
+      "elapsed_s": 0.009934875182807446,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.7831712,
+      "elapsed_s": 0.009261708939447999,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.817458,
+      "elapsed_s": 0.009002459002658725,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.8499799,
+      "elapsed_s": 0.009163500042632222,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.882868,
+      "elapsed_s": 0.009200833039358258,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.9151528,
+      "elapsed_s": 0.009166833944618702,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.950093,
+      "elapsed_s": 0.009076958056539297,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362079.982243,
+      "elapsed_s": 0.00896016601473093,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.016472,
+      "elapsed_s": 0.009546125074848533,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.0507698,
+      "elapsed_s": 0.010486084036529064,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.0835662,
+      "elapsed_s": 0.009974792134016752,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.116786,
+      "elapsed_s": 0.009860499994829297,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.149536,
+      "elapsed_s": 0.009222958935424685,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.183025,
+      "elapsed_s": 0.009090624982491136,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.216534,
+      "elapsed_s": 0.009503457928076386,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.2493582,
+      "elapsed_s": 0.00898670800961554,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.283796,
+      "elapsed_s": 0.009149875026196241,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.3174431,
+      "elapsed_s": 0.008788874838501215,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.3505669,
+      "elapsed_s": 0.008758332813158631,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.382842,
+      "elapsed_s": 0.00917708408087492,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.416327,
+      "elapsed_s": 0.009393541840836406,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.449142,
+      "elapsed_s": 0.009433124912902713,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.482292,
+      "elapsed_s": 0.009563457919284701,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.516791,
+      "elapsed_s": 0.00983470887877047,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.299999952316284
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.549827,
+      "elapsed_s": 0.009466542163863778,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.299999952316284
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.584513,
+      "elapsed_s": 0.009223375003784895,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.618967,
+      "elapsed_s": 0.011002250015735626,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.653732,
+      "elapsed_s": 0.013416457921266556,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.684468,
+      "elapsed_s": 0.009442250011488795,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.716882,
+      "elapsed_s": 0.009858957957476377,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.751032,
+      "elapsed_s": 0.01018308405764401,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.7859032,
+      "elapsed_s": 0.009670125087723136,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.816792,
+      "elapsed_s": 0.009766707895323634,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.851634,
+      "elapsed_s": 0.011222083121538162,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.884162,
+      "elapsed_s": 0.009407417150214314,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.917299,
+      "elapsed_s": 0.009445416973903775,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.951413,
+      "elapsed_s": 0.010986417066305876,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362080.982327,
+      "elapsed_s": 0.009664792101830244,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.01669,
+      "elapsed_s": 0.009836707962676883,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.0505311,
+      "elapsed_s": 0.009421416092664003,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.083562,
+      "elapsed_s": 0.009886041982099414,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.1159968,
+      "elapsed_s": 0.010000625159591436,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.1506739,
+      "elapsed_s": 0.009272666880860925,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.184545,
+      "elapsed_s": 0.010822875192388892,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.217816,
+      "elapsed_s": 0.009265125030651689,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.2491689,
+      "elapsed_s": 0.008918332867324352,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.19999694824219
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.281183,
+      "elapsed_s": 0.009221083018928766,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.315678,
+      "elapsed_s": 0.008762875106185675,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.3505988,
+      "elapsed_s": 0.008681625127792358,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.383144,
+      "elapsed_s": 0.009455832885578275,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.0
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.4174888,
+      "elapsed_s": 0.008922833018004894,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.299999952316284
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.450762,
+      "elapsed_s": 0.008912332821637392,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    },
+    {
+      "mode": "read_angle",
+      "at": 1792362081.481915,
+      "elapsed_s": 0.008750832872465253,
+      "values": {
+        "0": {
+          "reliable": true,
+          "angle_deg": 22.100000381469727
+        },
+        "1": {
+          "reliable": true,
+          "angle_deg": 112.30000305175781
+        },
+        "2": {
+          "reliable": true,
+          "angle_deg": -2.200000047683716
+        },
+        "3": {
+          "reliable": true,
+          "angle_deg": -104.30000305175781
+        },
+        "4": {
+          "reliable": true,
+          "angle_deg": -22.100000381469727
+        },
+        "5": {
+          "reliable": true,
+          "angle_deg": 9.399999618530273
+        },
+        "6": {
+          "reliable": true,
+          "angle_deg": -1.2000000476837158
+        }
+      }
+    }
+  ]
+}
