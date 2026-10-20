@@ -24,6 +24,7 @@ class ViscousFamily(CanArmFamily):
     indefinite_label = "a Viscous arm"
     supports_bimanual = False
     supports_teleop_speed_limit = True
+    supports_joint_posture_mapping = True
     single_robot_type = "viscous_follower"
     # No bimanual Viscous driver exists. All public starts check the capability;
     # the builder below also refuses direct callers before touching hardware.

@@ -64,6 +64,7 @@ export interface EndedSessionInfo {
 export interface TeleoperationSessionOptions {
   skip_identity_check?: boolean;
   speed_limit_deg_s?: number;
+  joint_posture_mapping?: boolean;
 }
 
 export interface RecordingSessionOptions {

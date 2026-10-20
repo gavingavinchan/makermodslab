@@ -380,6 +380,8 @@ class ArmFamily(ABC):
     # The local teleop target slew cap (can_speed_limit.py): RobStride CAN
     # followers whose bus the limiter knows how to wrap.
     supports_teleop_speed_limit: bool = False
+    # The opt-in 1:1 joint-posture teleop trial (joint_posture_mapping.py).
+    supports_joint_posture_mapping: bool = False
     # Opt-in for the local MIT holding / mode-4 gripper adapters.
     supports_gripper_effort_control: bool = False
 

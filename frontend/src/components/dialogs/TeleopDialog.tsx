@@ -17,6 +17,7 @@ export interface TeleopDialogProps {
    * this dialog heartbeats its lease and stops it by id. */
   sessionId: string | null;
   speedLimitDegS?: number | null;
+  postureMapping?: boolean;
 }
 
 /**
@@ -32,6 +33,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
   onOpenChange,
   sessionId,
   speedLimitDegS,
+  postureMapping,
 }) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -52,12 +54,23 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
     error: string | null;
     hint: string | null;
   } | null>(null);
+  const [mappingStatus, setMappingStatus] = useState<{
+    phase: "warming_up" | "tracking" | "catching_up";
+    max_error_deg?: number | null;
+    worst_joint?: string;
+    limited_joints?: string[];
+  }>({ phase: "warming_up" });
+  const jointNumber = (name: string) => ({
+    shoulder_pan: "J1", shoulder_lift: "J2", elbow_flex: "J3",
+    wrist_flex: "J4", wrist_yaw: "J5", wrist_roll: "J6",
+  })[name] ?? name;
 
   // Fresh session per open.
   useEffect(() => {
     if (open) {
       stoppedRef.current = false;
       setFinished(null);
+      setMappingStatus({ phase: "warming_up" });
     }
   }, [open]);
 
@@ -86,6 +99,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
         if (!res.ok) return;
         const status = await res.json();
         if (cancelled || stoppedRef.current) return;
+        if (status.posture_mapping?.phase) setMappingStatus(status.posture_mapping);
         if (
           !status.teleoperation_active &&
           !status.releasing &&
@@ -105,6 +119,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
       }
     };
     const id = setInterval(tick, 2000);
+    void tick();
     return () => {
       cancelled = true;
       clearInterval(id);
@@ -251,6 +266,20 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
       </div>
 
       <div className="flex flex-col gap-3 p-3">
+        {postureMapping && (
+          <p className="text-sm text-muted-foreground">
+            {t(mappingStatus.phase === "tracking" ? "robot.teleop.postureTracking" :
+              mappingStatus.phase === "catching_up" ? "robot.teleop.postureCatchingUp" : "robot.teleop.postureWarmup")}
+            {mappingStatus.max_error_deg != null && mappingStatus.worst_joint && (
+              <> {t("robot.teleop.postureError", {
+                joint: jointNumber(mappingStatus.worst_joint), error: mappingStatus.max_error_deg.toFixed(1),
+              })}</>
+            )}
+            {!!mappingStatus.limited_joints?.length && (
+              <> {t("robot.teleop.postureLimited", { joints: mappingStatus.limited_joints.map(jointNumber).join(", ") })}</>
+            )}
+          </p>
+        )}
         {finished && (
           <div
             className={`shrink-0 rounded-lg border p-4 ${

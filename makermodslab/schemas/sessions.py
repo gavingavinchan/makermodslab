@@ -96,6 +96,7 @@ class TeleoperationOptions(BaseModel):
 
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
+    joint_posture_mapping: bool = False
 
 
 class HostingOptions(BaseModel):

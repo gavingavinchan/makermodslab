@@ -104,6 +104,13 @@ export default {
   },
   teleop: {
     slowMode: "Arm · 15°/s",
+    postureMapping: "1:1 posture trial",
+    postureWarmup: "Warm-up: approaching the mapped leader posture for five seconds, then tracking at the same target speed limit.",
+    postureTracking: "1:1 posture tracking · Gripper uses its existing mapping.",
+    postureCatchingUp: "Following — catching up to the mapped pose at the selected target speed.",
+    postureError: "Largest tracking error: {{joint}} {{error}}°.",
+    postureLimited: "Joint limit active: {{joints}}.",
+    postureMappingHint: "1:1 posture trial: five-second warm-up, then tracking with the same gains and target speed limit. Remaining joint error stays visible. Gripper uses its existing mapping.",
     activeSpeed: "Arm target limit: {{speed}}°/s · Gripper: normal speed",
     startedTitle: "Teleoperation started",
     startedFallback: "Started teleoperation for {{name}}.",

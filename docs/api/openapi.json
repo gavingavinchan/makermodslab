@@ -7350,6 +7350,11 @@
             "title": "Follower Port",
             "type": "string"
           },
+          "joint_posture_mapping": {
+            "default": false,
+            "title": "Joint Posture Mapping",
+            "type": "boolean"
+          },
           "leader_config": {
             "title": "Leader Config",
             "type": "string"

@@ -85,6 +85,43 @@ machines. No `makermods` alias is installed.
 
 ## Supported behavior
 
+### Aquarium posture trial (18 October 2026)
+
+For `viscous_waterproof_01`, the local Teleop launcher offers **1:1 posture
+trial**. It uses signed unit angular gain for the six arm joints, the existing
+commissioned direction signs and fixed encoder offsets, and an independent raw
+leader unwrap window. The gripper retains its existing mapping. The physical
+encoder reference offsets remain provisional: the matching CAD models do not
+by themselves verify real encoder zeros. Powered operator feedback is still
+needed to qualify the physical match. Recording retains its original mapping
+until the trial is verified and integrated there; do not mix trial teleop and
+recording as if their mappings were identical.
+
+The posture trial reuses the raw angles already collected by the leader's
+normal `get_action()` call. Its established polling, cached-read handling and
+button behavior are unchanged; the mapping adds no leader freshness shutdown
+rule or separate encoder polling.
+
+Startup does not turn a mismatched pose into a new reference. During warm-up,
+the outgoing arm command reference starts at the measured engage pose and
+advances toward the mapped leader target at the existing 15-degree/second
+target limit. Normal gains apply throughout: the command is not kept just one
+degree ahead of the measured position, which prevented sufficient lifting
+torque. Warm-up is a startup indicator lasting five seconds from the first
+mapped action, then the UI stays in tracking regardless of remaining error.
+It does not declare alignment or restart when the leader moves; gravity can
+leave a persistent position error. The GUI displays the worst joint/error
+and active joint limits throughout; those
+values are also logged every two seconds. Phase labels do not change gains or
+the persistent target speed cap. True communication/thermal failures retain
+their existing stop path.
+
+The trial corrects J1's soft-limit frame in memory using the documented ROV
+re-zero (`old = current - 94.48 degrees`). It does not rewrite motor zero,
+calibration, the saved profiles, or the aquarium reference. Normal startup
+position validation still applies. Stop retains the existing return to the
+session-start pose and torque release.
+
 - Seven RS00 motors, Viscous limits and follow gains, matched Star mapping,
   and the existing 85 C thermal stop come from the Viscous driver.
 - Teleoperation, recording and replay reuse the CAN return-to-rest and

@@ -42,7 +42,12 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const { byId } = useArms();
   const supportsSlowTeleop = !!byId(selectedRecord?.arm_type)?.capabilities.supports_teleop_speed_limit;
   const [slowTeleop, setSlowTeleop] = useState(true);
+  const [postureMapping, setPostureMapping] = useState(true);
+  const supportsPostureMapping = selectedRecord?.arm_type === "viscous" &&
+    selectedRecord?.follower_config === "viscous_waterproof_01";
+  const usePostureMapping = supportsPostureMapping && postureMapping;
   const [activeSpeedLimit, setActiveSpeedLimit] = useState<number | null>(null);
+  const [activePostureMapping, setActivePostureMapping] = useState(false);
   const [teleopStarting, setTeleopStarting] = useState(false);
   const [teleopOpen, setTeleopOpen] = useState(false);
   const [teleopSessionId, setTeleopSessionId] = useState<string | null>(null);
@@ -66,10 +71,12 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         robot: robot.name,
         owner: tabOwnerId(),
         options: {
-          ...(supportsSlowTeleop && slowTeleop ? { speed_limit_deg_s: 15 } : {}),
+          ...(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? { speed_limit_deg_s: 15 } : {}),
+          ...(usePostureMapping ? { joint_posture_mapping: true } : {}),
         },
       });
-      setActiveSpeedLimit(supportsSlowTeleop && slowTeleop ? 15 : null);
+      setActiveSpeedLimit(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? 15 : null);
+      setActivePostureMapping(usePostureMapping);
       setTeleopSessionId(session.id);
       if (warnings?.length) {
         // A success can carry a warn-but-allow arm-identity finding (e.g. the
@@ -237,11 +244,22 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         <label className="flex items-center gap-1 px-2 text-xs whitespace-nowrap">
           <input
             type="checkbox"
-            checked={slowTeleop}
-            disabled={teleopStarting || teleopOpen}
+            checked={slowTeleop || usePostureMapping}
+            disabled={teleopStarting || teleopOpen || usePostureMapping}
             onChange={(e) => setSlowTeleop(e.target.checked)}
           />
           {t("robot.teleop.slowMode")}
+        </label>
+      )}
+      {arms === "both" && supportsPostureMapping && (
+        <label className="flex items-center gap-1 px-2 text-xs whitespace-nowrap" title={t("robot.teleop.postureMappingHint")}>
+          <input
+            type="checkbox"
+            checked={postureMapping}
+            disabled={teleopStarting || teleopOpen}
+            onChange={(e) => setPostureMapping(e.target.checked)}
+          />
+          {t("robot.teleop.postureMapping")}
         </label>
       )}
       {arms === "both" && actionButton(
@@ -265,6 +283,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         onOpenChange={setTeleopOpen}
         sessionId={teleopSessionId}
         speedLimitDegS={activeSpeedLimit}
+        postureMapping={activePostureMapping}
       />
 
       <HostingDialog

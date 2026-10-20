@@ -321,6 +321,7 @@ class TeleoperateRequest(BaseModel):
     # when true, start even if the connected arms don't match their calibrations.
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
+    joint_posture_mapping: bool = False
 
 
 def get_joint_positions_from_robot(
@@ -738,6 +739,10 @@ def _connect_can(request: TeleoperateRequest):
     # only mapping guaranteed to stay correct if that changes upstream.
     robot = make_robot_from_config(robot_config)
     teleop_device = make_teleoperator_from_config(teleop_config)
+    if request.joint_posture_mapping:
+        from .joint_posture_mapping import prepare_test
+
+        prepare_test(request, robot)
     if arm_family.supports_teleop_speed_limit:
         from .maker_rest_pose import maker_follower_arms
         from .monitored_can import supervised_speed_limit
@@ -788,6 +793,10 @@ def _connect_can(request: TeleoperateRequest):
                 f"Make sure it's plugged in and powered on, then try again. Details: {e}"
             ) from e
 
+        if request.joint_posture_mapping:
+            from .joint_posture_mapping import install as install_posture_mapping
+
+            install_posture_mapping(robot, teleop_device)
         logger.info(f"Successfully connected to the {family} arm pair")
         return robot, teleop_device, []
     except Exception as e:
@@ -937,6 +946,10 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         )
 
         family = arm_registry.get(request_arm_type(request))
+        if request.joint_posture_mapping and (
+            not family.supports_joint_posture_mapping or request.mode != "single"
+        ):
+            raise ValueError("Joint posture mapping requires a single Viscous arm")
         if request.speed_limit_deg_s is not None and not family.supports_teleop_speed_limit:
             raise ValueError("This arm does not support the local teleop target speed limit")
         if not family.uses_feetech_bus:
@@ -1292,6 +1305,7 @@ def handle_teleoperation_status() -> dict[str, Any]:
     )
     return {
         "teleoperation_active": teleoperation_active,
+        "posture_mapping": getattr(current_teleop, "posture_mapping_status", None),
         "available_controls": {
             "stop_teleoperation": teleoperation_active,
         },

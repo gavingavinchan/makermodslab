@@ -77,6 +77,13 @@ export default {
   },
   teleop: {
     slowMode: "机械臂 · 15°/秒",
+    postureMapping: "1:1 姿态试用",
+    postureWarmup: "预热中：接近主臂映射姿态，五秒后进入跟踪，目标速度上限保持不变。",
+    postureTracking: "1:1 姿态跟踪 · 夹爪使用现有映射。",
+    postureCatchingUp: "跟随中：正在按选定的目标速度接近映射姿态。",
+    postureError: "最大跟踪误差：{{joint}} {{error}}°。",
+    postureLimited: "关节限位生效：{{joints}}。",
+    postureMappingHint: "1:1 姿态试用：预热五秒后进入跟踪，增益和目标速度上限保持不变。剩余关节误差持续显示。夹爪使用现有映射。",
     activeSpeed: "机械臂目标速度上限：{{speed}}°/秒 · 夹爪：正常速度",
     startedTitle: "遥操作已启动",
     startedFallback: "已为 {{name}} 启动遥操作。",
