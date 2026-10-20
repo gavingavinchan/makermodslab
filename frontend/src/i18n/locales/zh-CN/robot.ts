@@ -76,6 +76,8 @@ export default {
     confirm: "删除机器人",
   },
   teleop: {
+    slowMode: "机械臂 · 15°/秒",
+    activeSpeed: "机械臂目标速度上限：{{speed}}°/秒 · 夹爪：正常速度",
     startedTitle: "遥操作已启动",
     startedFallback: "已为 {{name}} 启动遥操作。",
     startedWarningTitle: "已启动，但有警告",

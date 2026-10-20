@@ -16,6 +16,7 @@ export interface TeleopDialogProps {
   /** Identity of the session the launcher started via POST /api/v1/sessions —
    * this dialog heartbeats its lease and stops it by id. */
   sessionId: string | null;
+  speedLimitDegS?: number | null;
 }
 
 /**
@@ -30,6 +31,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
   open,
   onOpenChange,
   sessionId,
+  speedLimitDegS,
 }) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -234,6 +236,11 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
       <div className="flex items-center gap-2 border-b border-border px-4 py-2">
         <span className="h-2 w-2 animate-pulse rounded-full bg-destructive" />
         <span className="text-sm font-semibold text-foreground">{title}</span>
+        {speedLimitDegS != null && (
+          <span className="text-xs text-muted-foreground">
+            {t("robot.teleop.activeSpeed", { speed: speedLimitDegS })}
+          </span>
+        )}
         <Button
           size="sm"
           onClick={handleDone}

@@ -20,7 +20,7 @@ import threading
 import time
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from lerobot.robots import make_robot_from_config
 from lerobot.robots.bi_so_follower import BiSOFollower
@@ -248,7 +248,7 @@ def finish_pending_release(timeout: float = 10.0) -> bool:
 _STOP_AND_WAIT_TIMEOUT_S = RETURN_CEILING_S + 5.0
 
 
-def stop_and_wait(timeout: float = _STOP_AND_WAIT_TIMEOUT_S) -> None:
+def stop_and_wait(timeout: float | None = None) -> None:
     """Stop teleoperation and block until the worker has actually released
     the arm(s), for a caller with no UI to poll and no "press Stop again"
     gesture available (shutdown).
@@ -263,6 +263,16 @@ def stop_and_wait(timeout: float = _STOP_AND_WAIT_TIMEOUT_S) -> None:
     "second stop" mechanism a human pressing Stop twice would trigger) if it
     hasn't finished within the bound. A no-op when idle.
     """
+    if timeout is None:
+        timeout = _STOP_AND_WAIT_TIMEOUT_S
+        if current_robot is not None:
+            from .maker_rest_pose import maker_follower_arms
+
+            for arm, _label in maker_follower_arms(current_robot):
+                cap = getattr(getattr(arm, "bus", None), "speed_limit_deg_s", None)
+                if isinstance(cap, (int, float)) and cap > 0:
+                    spans = [hi - lo for lo, hi in arm.config.joint_limits.values()]
+                    timeout = max(timeout, max(spans, default=360) / cap + 8)
     if teleoperation_active:
         handle_stop_teleoperation()
     worker = teleoperation_thread
@@ -310,6 +320,7 @@ class TeleoperateRequest(BaseModel):
     # Escape hatch for the arm-identity guard (see makermodslab/arm_identity.py):
     # when true, start even if the connected arms don't match their calibrations.
     skip_identity_check: bool = False
+    speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
 
 
 def get_joint_positions_from_robot(
@@ -694,6 +705,8 @@ def _connect_can(request: TeleoperateRequest):
     """
     family = _can_family_label(request)
     arm_family = arm_registry.get(request_arm_type(request))
+    if request.speed_limit_deg_s is not None and not arm_family.supports_teleop_speed_limit:
+        raise ValueError("This arm does not support the local teleop target speed limit")
     leader_label = arm_family.leader_option(request.leader_kind).label
     # Check every serial endpoint before opening either arm. In particular a
     # missing leader must not be discovered only after energizing the follower.
@@ -725,6 +738,21 @@ def _connect_can(request: TeleoperateRequest):
     # only mapping guaranteed to stay correct if that changes upstream.
     robot = make_robot_from_config(robot_config)
     teleop_device = make_teleoperator_from_config(teleop_config)
+    if arm_family.supports_teleop_speed_limit:
+        from .maker_rest_pose import maker_follower_arms
+        from .monitored_can import supervised_speed_limit
+
+        for arm, _label in maker_follower_arms(robot):
+            request.speed_limit_deg_s = supervised_speed_limit(
+                arm.config.port,
+                arm.config.id,
+                request.speed_limit_deg_s,
+            )
+    if request.speed_limit_deg_s is not None:
+        from .can_speed_limit import install
+
+        install(robot, request.speed_limit_deg_s)
+        logger.info("Local teleop target speed cap: %.2f deg/s", request.speed_limit_deg_s)
 
     if arm_family.supports_gripper_effort_control:
         from .metal_gripper import install_metal_gripper
@@ -909,6 +937,8 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         )
 
         family = arm_registry.get(request_arm_type(request))
+        if request.speed_limit_deg_s is not None and not family.supports_teleop_speed_limit:
+            raise ValueError("This arm does not support the local teleop target speed limit")
         if not family.uses_feetech_bus:
             robot, teleop_device, identity_warnings = _connect_can(request)
         elif request.mode == "bimanual":

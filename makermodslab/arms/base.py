@@ -377,6 +377,9 @@ class ArmFamily(ABC):
     # True when identify_by_gripper_wiggle is implemented: the family can drive
     # one port's gripper a visible stroke to tell two look-alike arms apart.
     supports_gripper_wiggle: bool = False
+    # The local teleop target slew cap (can_speed_limit.py): RobStride CAN
+    # followers whose bus the limiter knows how to wrap.
+    supports_teleop_speed_limit: bool = False
     # Opt-in for the local MIT holding / mode-4 gripper adapters.
     supports_gripper_effort_control: bool = False
 

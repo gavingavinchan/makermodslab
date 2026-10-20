@@ -63,6 +63,7 @@ export interface EndedSessionInfo {
 
 export interface TeleoperationSessionOptions {
   skip_identity_check?: boolean;
+  speed_limit_deg_s?: number;
 }
 
 export interface RecordingSessionOptions {

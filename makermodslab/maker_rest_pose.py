@@ -602,6 +602,7 @@ def return_maker_arms_to_rest(
     target_fns: list[Callable[[], dict[str, float] | None] | None] | None = None,
     speed_deg_s: float = MAKER_RETURN_SPEED_DEG_S,
     ensure_target: bool = False,
+    ceiling_s: float = MAKER_RETURN_CEILING_S,
 ) -> list[tuple[bool, str]]:
     """Return every captured Maker arm concurrently, then wait for all of them.
 
@@ -644,6 +645,7 @@ def return_maker_arms_to_rest(
                 target_fn=_fn_for(0),
                 speed_deg_s=speed_deg_s,
                 ensure_target=ensure_target,
+                ceiling_s=ceiling_s,
             )
         ]
 
@@ -663,6 +665,7 @@ def return_maker_arms_to_rest(
             target_fn=group.target,
             speed_deg_s=speed_deg_s,
             ensure_target=ensure_target,
+            ceiling_s=ceiling_s,
         )
         return [verdict] * len(rest_poses)
 
@@ -678,6 +681,7 @@ def return_maker_arms_to_rest(
             target_fn=_fn_for(index),
             speed_deg_s=speed_deg_s,
             ensure_target=ensure_target,
+            ceiling_s=ceiling_s,
         )
 
     threads = [
@@ -694,5 +698,5 @@ def return_maker_arms_to_rest(
     # Bounded by each return's own ceiling; the join guard is belt-and-braces
     # so a wedged CAN read can't hold the stop path open indefinitely.
     for t in threads:
-        t.join(timeout=MAKER_RETURN_CEILING_S + 2.0)
+        t.join(timeout=ceiling_s + 2.0)
     return results

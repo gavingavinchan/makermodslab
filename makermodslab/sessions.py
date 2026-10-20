@@ -518,6 +518,7 @@ def _build_teleoperation_request(record: dict, opts: TeleoperationOptions):
         arm_type=record["arm_type"],
         leader_kind=record["leader_kind"],
         skip_identity_check=opts.skip_identity_check,
+        speed_limit_deg_s=opts.speed_limit_deg_s,
     )
 
 

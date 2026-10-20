@@ -103,6 +103,8 @@ export default {
     confirm: "Delete robot",
   },
   teleop: {
+    slowMode: "Arm · 15°/s",
+    activeSpeed: "Arm target limit: {{speed}}°/s · Gripper: normal speed",
     startedTitle: "Teleoperation started",
     startedFallback: "Started teleoperation for {{name}}.",
     startedWarningTitle: "Started with a warning",

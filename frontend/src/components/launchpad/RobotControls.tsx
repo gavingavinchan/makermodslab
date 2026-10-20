@@ -19,6 +19,7 @@ import type { HostingPhase } from "@/lib/remoteApi";
 import { tabOwnerId } from "@/lib/sessionOwner";
 import { formatRobotSetupGap } from "@/lib/robotSetupGap";
 import { cn } from "@/lib/utils";
+import { useArms } from "@/hooks/useArms";
 
 const HOSTING_PHASE_KEYS: Record<HostingPhase, string> = {
   parked: "robot.corner.hosting.phase.parked",
@@ -38,6 +39,10 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const { baseUrl, fetchWithHeaders } = useApi();
   const { toast } = useToast();
   const { selectedRecord } = useRobots();
+  const { byId } = useArms();
+  const supportsSlowTeleop = !!byId(selectedRecord?.arm_type)?.capabilities.supports_teleop_speed_limit;
+  const [slowTeleop, setSlowTeleop] = useState(true);
+  const [activeSpeedLimit, setActiveSpeedLimit] = useState<number | null>(null);
   const [teleopStarting, setTeleopStarting] = useState(false);
   const [teleopOpen, setTeleopOpen] = useState(false);
   const [teleopSessionId, setTeleopSessionId] = useState<string | null>(null);
@@ -60,8 +65,11 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         kind: "teleoperation",
         robot: robot.name,
         owner: tabOwnerId(),
-        options: {},
+        options: {
+          ...(supportsSlowTeleop && slowTeleop ? { speed_limit_deg_s: 15 } : {}),
+        },
       });
+      setActiveSpeedLimit(supportsSlowTeleop && slowTeleop ? 15 : null);
       setTeleopSessionId(session.id);
       if (warnings?.length) {
         // A success can carry a warn-but-allow arm-identity finding (e.g. the
@@ -225,6 +233,17 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         </Tooltip>
       )}
 
+      {arms === "both" && supportsSlowTeleop && (
+        <label className="flex items-center gap-1 px-2 text-xs whitespace-nowrap">
+          <input
+            type="checkbox"
+            checked={slowTeleop}
+            disabled={teleopStarting || teleopOpen}
+            onChange={(e) => setSlowTeleop(e.target.checked)}
+          />
+          {t("robot.teleop.slowMode")}
+        </label>
+      )}
       {arms === "both" && actionButton(
         t("robot.corner.teleop"),
         <Gamepad2 className="h-3.5 w-3.5" />,
@@ -245,6 +264,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         open={teleopOpen}
         onOpenChange={setTeleopOpen}
         sessionId={teleopSessionId}
+        speedLimitDegS={activeSpeedLimit}
       />
 
       <HostingDialog

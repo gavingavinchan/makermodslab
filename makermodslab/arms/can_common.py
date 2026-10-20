@@ -433,7 +433,28 @@ class CanArmFamily(ArmFamily):
         # CONVERGENCE (a loaded joint holds a standing error), all arms at once.
         from .. import maker_rest_pose
 
-        maker_rest_pose.return_maker_arms_to_rest(rest_poses, abort_event)
+        caps = [
+            getattr(getattr(device, "bus", None), "speed_limit_deg_s", None) for device, _pose in rest_poses
+        ]
+        caps = [cap for cap in caps if isinstance(cap, (int, float)) and cap > 0]
+        if not caps:
+            maker_rest_pose.return_maker_arms_to_rest(rest_poses, abort_event)
+            return
+        speed = min(maker_rest_pose.MAKER_RETURN_SPEED_DEG_S, *caps)
+        # A slower return needs time to finish, never extra speed to meet a
+        # deadline designed for the standard 30 deg/s return.
+        spans = [
+            hi - lo
+            for device, _pose in rest_poses
+            for lo, hi in getattr(getattr(device, "config", None), "joint_limits", {}).values()
+        ]
+        ceiling = max(maker_rest_pose.MAKER_RETURN_CEILING_S, max(spans, default=360) / speed + 3)
+        maker_rest_pose.return_maker_arms_to_rest(
+            rest_poses,
+            abort_event,
+            speed_deg_s=speed,
+            ceiling_s=ceiling,
+        )
 
     def release_torque(self, device: Any, label: str = "device") -> list[str]:
         # One whole-bus disable per bus; the Star leader has no motors and is

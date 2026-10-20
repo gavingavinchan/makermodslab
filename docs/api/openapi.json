@@ -151,6 +151,11 @@
             "title": "Supports Remote Inference",
             "type": "boolean"
           },
+          "supports_teleop_speed_limit": {
+            "default": false,
+            "title": "Supports Teleop Speed Limit",
+            "type": "boolean"
+          },
           "uses_feetech_bus": {
             "title": "Uses Feetech Bus",
             "type": "boolean"
@@ -7398,6 +7403,19 @@
             "default": false,
             "title": "Skip Identity Check",
             "type": "boolean"
+          },
+          "speed_limit_deg_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 30.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Limit Deg S"
           }
         },
         "required": [

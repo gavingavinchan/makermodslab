@@ -302,6 +302,7 @@ class ArmCapabilities(BaseModel):
     # (POST /api/v1/maker/wiggle-gripper) — the identification of last resort
     # when neither the probe nor the gesture can tell two arms apart.
     supports_gripper_wiggle: bool
+    supports_teleop_speed_limit: bool = False
 
 
 class LeaderOptionInfo(BaseModel):

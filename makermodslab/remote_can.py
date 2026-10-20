@@ -55,14 +55,22 @@ def rest_pose(pose: dict[str, float]) -> dict[str, float]:
     }
 
 
-def limit_action(previous: dict[str, float], action: dict, elapsed_s: float) -> dict[str, float]:
+def limit_action(
+    previous: dict[str, float],
+    action: dict,
+    elapsed_s: float,
+    *,
+    speed_deg_s: float = CAN_TRACKING_SPEED_DEG_S,
+) -> dict[str, float]:
     """Limit target travel in degrees per second, including after packet gaps.
 
     A late packet gets at most 100 ms of travel; a network stall must not
     authorize a large jump. Device soft limits still apply in send_action.
     """
     target = checked_pose(action, previous)
-    step = CAN_TRACKING_SPEED_DEG_S * min(0.1, max(0.0, elapsed_s))
+    if not math.isfinite(speed_deg_s) or speed_deg_s <= 0 or not math.isfinite(elapsed_s):
+        raise ValueError("Speed must be positive and timing finite")
+    step = speed_deg_s * min(0.1, max(0.0, elapsed_s))
     return {key: value + max(-step, min(step, target[key] - value)) for key, value in previous.items()}
 
 
