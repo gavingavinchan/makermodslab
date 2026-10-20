@@ -1,0 +1,36 @@
+{
+  "queued_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_grip",
+    "state.right_arm",
+    "state.right_grip",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "prepared_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_eef_rot6",
+    "state.left_eef_xyz",
+    "state.left_grip",
+    "state.left_gripper",
+    "state.right_arm",
+    "state.right_eef_rot6",
+    "state.right_eef_xyz",
+    "state.right_grip",
+    "state.right_gripper",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "resolved_robot": "other_embodiment",
+  "queued_camera_lengths": {
+    "video.overhead": 9,
+    "video.wrist_l": 9,
+    "video.wrist_r": 9
+  },
+  "input_conversion_passed": true,
+  "inference_calls": 0
+}

@@ -1,0 +1,1023 @@
+{
+  "yam_vision_live2": {
+    "summary": {
+      "mode": "vision",
+      "rig": "yam",
+      "task": "put apple into the bowl",
+      "successful_billed_calls": 15,
+      "closest_apple_to_bowl_xy_m": 0.001489,
+      "executed_rows": 720,
+      "completed_chunks": 15,
+      "termination_reason": null,
+      "ever_success": true,
+      "final_success": true
+    },
+    "sides": {
+      "left": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.004948694503359625,
+            "p95": 0.021362301991845592
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.6816690398349246,
+            "p95": 2.0469901556028076
+          },
+          "filtered_position_error_m": {
+            "median": 0.0012984553139548578,
+            "p95": 0.020624173583259305
+          },
+          "filtered_rotation_error_deg": {
+            "median": 0.2973879699559848,
+            "p95": 1.8842836575046442
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.0029162349125754885,
+        "min_requested_to_initial_apple_m": 0.00664451933215554,
+        "closest_request": {
+          "call": 8,
+          "row": 4,
+          "requested_xyz": [
+            0.269235223531723,
+            -0.2622167468070984,
+            0.23372410237789154
+          ],
+          "apple_xyz": [
+            0.27081405387455393,
+            -0.26440996835101244,
+            0.23482023196566476
+          ],
+          "fk_xyz": [
+            0.2671439051628113,
+            -0.2542056739330292,
+            0.236856147646904
+          ],
+          "raw_position_error_m": 0.008852152770989581,
+          "raw_rotation_error_deg": 1.9175223933344674,
+          "filtered_position_error_m": 0.008986559571207696,
+          "filtered_rotation_error_deg": 1.4969395467065267
+        },
+        "min_command_fk_to_apple_m": 0.0066083268149061385,
+        "min_measured_fk_to_apple_m": 0.010731235184485289,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.007735537899962796,
+            "p95": 0.027432429876226568
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.9246701524149284,
+            "p95": 3.3095851536178342
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.015302122001845848,
+          "p95": 0.06575974054895788
+        },
+        "miss_rows": 8,
+        "joint_diagnostics": [
+          {
+            "joint": "joint1",
+            "command_min_rad": -1.0997114239872752,
+            "command_max_rad": 0.17862886669752473,
+            "solver_lo_rad": -2.583083391189575,
+            "solver_hi_rad": 3.0950934886932373,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.18333333333333332,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.6898514691164579
+          },
+          {
+            "joint": "joint2",
+            "command_min_rad": 0.03446331205137403,
+            "command_max_rad": 1.8648345478764778,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 3.615093469619751,
+            "rest_rad": 0.5,
+            "all_fraction_within_0.02rad_lower_limit": 0.1375,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.005555555555555556,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 1.2420177835404036
+          },
+          {
+            "joint": "joint3",
+            "command_min_rad": 0.03490658476948736,
+            "command_max_rad": 1.72286600602698,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 3.0950934886932373,
+            "rest_rad": 0.5,
+            "all_fraction_within_0.02rad_lower_limit": 0.14027777777777778,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.06111111111111111,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.9608333045976052
+          },
+          {
+            "joint": "joint4",
+            "command_min_rad": -1.28784096827611,
+            "command_max_rad": 0.02466358578740022,
+            "solver_lo_rad": -1.5358933210372925,
+            "solver_hi_rad": 1.5358933210372925,
+            "rest_rad": -0.35,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.004166666666666667,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.4645119272690845
+          },
+          {
+            "joint": "joint5",
+            "command_min_rad": -0.037287349070233504,
+            "command_max_rad": 0.5587933446372693,
+            "solver_lo_rad": -1.5358933210372925,
+            "solver_hi_rad": 1.5358933210372925,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.15138888888888888,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.32857167518595487
+          },
+          {
+            "joint": "joint6",
+            "command_min_rad": -0.009658591522203459,
+            "command_max_rad": 0.8345895687461177,
+            "solver_lo_rad": -2.05949330329895,
+            "solver_hi_rad": 2.05949330329895,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.14583333333333334,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.4298272040076947
+          }
+        ]
+      },
+      "right": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.0046007690076723465,
+            "p95": 0.014092527985324215
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.5612133948312571,
+            "p95": 1.2626133767393086
+          },
+          "filtered_position_error_m": {
+            "median": 0.001122983180636737,
+            "p95": 0.013292968026848848
+          },
+          "filtered_rotation_error_deg": {
+            "median": 0.18429612353923325,
+            "p95": 1.008126205307456
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.25129435041754306,
+        "min_requested_to_initial_apple_m": 0.4630629973711914,
+        "closest_request": {
+          "call": 9,
+          "row": 10,
+          "requested_xyz": [
+            0.247621089220047,
+            0.02773120254278183,
+            0.17218329012393951
+          ],
+          "apple_xyz": [
+            0.26916030601536906,
+            0.2761760387384889,
+            0.14119819597679664
+          ],
+          "fk_xyz": [
+            0.2448699176311493,
+            0.022902904078364372,
+            0.1738673895597458
+          ],
+          "raw_position_error_m": 0.005806685981068454,
+          "raw_rotation_error_deg": 0.9850378080558906,
+          "filtered_position_error_m": 0.0031988953880706873,
+          "filtered_rotation_error_deg": 0.25060412593821235
+        },
+        "min_command_fk_to_apple_m": 0.25563551962215825,
+        "min_measured_fk_to_apple_m": 0.25590919459269185,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.004600475139156037,
+            "p95": 0.014242109185406693
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.5653355957753939,
+            "p95": 1.1944189971144394
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.0046122076948135835,
+          "p95": 0.016720629725900108
+        },
+        "miss_rows": 0,
+        "joint_diagnostics": [
+          {
+            "joint": "joint1",
+            "command_min_rad": -0.1776182605607445,
+            "command_max_rad": 0.11131337102684942,
+            "solver_lo_rad": -2.583083391189575,
+            "solver_hi_rad": 3.0950934886932373,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.9138888888888889,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "joint2",
+            "command_min_rad": 0.03303508689770328,
+            "command_max_rad": 0.20744093070498507,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 3.615093469619751,
+            "rest_rad": 0.5,
+            "all_fraction_within_0.02rad_lower_limit": 0.15138888888888888,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "joint3",
+            "command_min_rad": 0.03457576152814295,
+            "command_max_rad": 0.21575430300920043,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 3.0950934886932373,
+            "rest_rad": 0.5,
+            "all_fraction_within_0.02rad_lower_limit": 0.30972222222222223,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "joint4",
+            "command_min_rad": -0.1111939160939141,
+            "command_max_rad": 0.03382018301857424,
+            "solver_lo_rad": -1.5358933210372925,
+            "solver_hi_rad": 1.5358933210372925,
+            "rest_rad": -0.35,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "joint5",
+            "command_min_rad": -0.2501654439132477,
+            "command_max_rad": 0.013749566093078511,
+            "solver_lo_rad": -1.5358933210372925,
+            "solver_hi_rad": 1.5358933210372925,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.3472222222222222,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "joint6",
+            "command_min_rad": -0.017429267059274205,
+            "command_max_rad": 0.11303310400191997,
+            "solver_lo_rad": -2.05949330329895,
+            "solver_hi_rad": 2.05949330329895,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.9263888888888889,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          }
+        ]
+      }
+    },
+    "billed_calls": 15,
+    "pool_warming_refusals": 0,
+    "combined_tracking": {
+      "raw_position_error_m": {
+        "median": 0.00477078227754993,
+        "p95": 0.018807235268649143
+      },
+      "raw_rotation_error_deg": {
+        "median": 0.6115142604541054,
+        "p95": 1.6939615388518212
+      }
+    },
+    "object": {
+      "max_z_m": 1.007,
+      "min_bowl_xy_m": 0.001489,
+      "contact_rows": 267,
+      "ever_success": true
+    }
+  },
+  "viscous_apple_vision_live2": {
+    "summary": {
+      "mode": "vision",
+      "rig": "viscous",
+      "task": "put apple into the bowl",
+      "successful_billed_calls": 15,
+      "closest_apple_to_bowl_xy_m": 0.208648,
+      "executed_rows": 720,
+      "completed_chunks": 15,
+      "termination_reason": null,
+      "ever_success": false,
+      "final_success": false
+    },
+    "sides": {
+      "left": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.006710934551688896,
+            "p95": 0.016838564244083917
+          },
+          "raw_rotation_error_deg": {
+            "median": 1.071171607843305,
+            "p95": 4.053147168129109
+          },
+          "filtered_position_error_m": {
+            "median": 0.002661924531683665,
+            "p95": 0.014789845608002263
+          },
+          "filtered_rotation_error_deg": {
+            "median": 0.6925376979675955,
+            "p95": 3.847290155742674
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.19053836659217985,
+        "min_requested_to_initial_apple_m": 0.19053862626764273,
+        "closest_request": {
+          "call": 3,
+          "row": 44,
+          "requested_xyz": [
+            0.20899680256843567,
+            -0.016260700300335884,
+            0.12690792977809906
+          ],
+          "apple_xyz": [
+            0.13493278155683147,
+            -0.15499405554857457,
+            0.019332625563913467
+          ],
+          "fk_xyz": [
+            0.2211260050535202,
+            -0.008662622421979904,
+            0.130611389875412
+          ],
+          "raw_position_error_m": 0.014783908720704833,
+          "raw_rotation_error_deg": 1.8352013124706952,
+          "filtered_position_error_m": 0.010322705484068141,
+          "filtered_rotation_error_deg": 2.2421302753384813
+        },
+        "min_command_fk_to_apple_m": 0.1992291879217103,
+        "min_measured_fk_to_apple_m": 0.19914669631910198,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.006693612240661026,
+            "p95": 0.01843645031299579
+          },
+          "raw_rotation_error_deg": {
+            "median": 1.0975410307566942,
+            "p95": 4.178533796965453
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.0045322026191744105,
+          "p95": 0.015730713532187746
+        },
+        "miss_rows": 0,
+        "joint_diagnostics": [
+          {
+            "joint": "shoulder_pan",
+            "command_min_rad": -0.8189722724727815,
+            "command_max_rad": 0.47564413428028696,
+            "solver_lo_rad": -3.2000932693481445,
+            "solver_hi_rad": 2.1920933723449707,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.2972222222222222,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "shoulder_lift",
+            "command_min_rad": -1.981845427226353,
+            "command_max_rad": -4.7622477875694344e-05,
+            "solver_lo_rad": -3.04309344291687,
+            "solver_hi_rad": -0.03490658476948738,
+            "rest_rad": -1.895,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.18333333333333332,
+            "all_fraction_within_0.1rad_rest": 0.022222222222222223,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "elbow_flex",
+            "command_min_rad": 0.00011370568341857058,
+            "command_max_rad": 1.1992100768989618,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 4.348093509674072,
+            "rest_rad": 2.094,
+            "all_fraction_within_0.02rad_lower_limit": 0.31666666666666665,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_flex",
+            "command_min_rad": -0.25147396263542704,
+            "command_max_rad": 1.5712045372782888,
+            "solver_lo_rad": -2.0740933418273926,
+            "solver_hi_rad": 1.5710933208465576,
+            "rest_rad": -1.608,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0625,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_yaw",
+            "command_min_rad": -0.3955359583968049,
+            "command_max_rad": 0.3899718192394877,
+            "solver_lo_rad": -1.5210933685302734,
+            "solver_hi_rad": 1.4700933694839478,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.30833333333333335,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_roll",
+            "command_min_rad": -2.4045326059514833,
+            "command_max_rad": 0.17372789874777092,
+            "solver_lo_rad": -2.606093406677246,
+            "solver_hi_rad": 2.6450934410095215,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.3347222222222222,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          }
+        ]
+      },
+      "right": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.00586018027756444,
+            "p95": 0.011419365370255626
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.7697614414558412,
+            "p95": 1.461454898025942
+          },
+          "filtered_position_error_m": {
+            "median": 0.0019575587349062347,
+            "p95": 0.009583033512627966
+          },
+          "filtered_rotation_error_deg": {
+            "median": 0.43276079649977434,
+            "p95": 0.8623272039991776
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.44814327704679763,
+        "min_requested_to_initial_apple_m": 0.44814932488806725,
+        "closest_request": {
+          "call": 8,
+          "row": 32,
+          "requested_xyz": [
+            0.17694461345672607,
+            0.04700414091348648,
+            0.1999068558216095
+          ],
+          "apple_xyz": [
+            0.13494274111894455,
+            0.4550006958259216,
+            0.019332631022088823
+          ],
+          "fk_xyz": [
+            0.18006280064582825,
+            0.0401931069791317,
+            0.20137248933315277
+          ],
+          "raw_position_error_m": 0.007632912693813022,
+          "raw_rotation_error_deg": 0.9673195825654353,
+          "filtered_position_error_m": 0.00164806592001111,
+          "filtered_rotation_error_deg": 0.46695180318095775
+        },
+        "min_command_fk_to_apple_m": 0.45453845826293865,
+        "min_measured_fk_to_apple_m": 0.45437448812156794,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.006035007867137936,
+            "p95": 0.011704889204619913
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.7557251781937201,
+            "p95": 1.4319619770317635
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.0032628184409018283,
+          "p95": 0.012568718863377983
+        },
+        "miss_rows": 0,
+        "joint_diagnostics": [
+          {
+            "joint": "shoulder_pan",
+            "command_min_rad": -1.4701819987052094,
+            "command_max_rad": 9.040684079141354e-05,
+            "solver_lo_rad": -3.2000932693481445,
+            "solver_hi_rad": 2.1920933723449707,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.09861111111111111,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "shoulder_lift",
+            "command_min_rad": -0.5234347817852569,
+            "command_max_rad": -4.235418691042074e-05,
+            "solver_lo_rad": -3.04309344291687,
+            "solver_hi_rad": -0.03490658476948738,
+            "rest_rad": -1.895,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.14166666666666666,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "elbow_flex",
+            "command_min_rad": 0.00014588470941969304,
+            "command_max_rad": 0.8491097740603429,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 4.348093509674072,
+            "rest_rad": 2.094,
+            "all_fraction_within_0.02rad_lower_limit": 0.044444444444444446,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_flex",
+            "command_min_rad": -0.9681834039024527,
+            "command_max_rad": 0.010453530196491239,
+            "solver_lo_rad": -2.0740933418273926,
+            "solver_hi_rad": 1.5710933208465576,
+            "rest_rad": -1.608,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_yaw",
+            "command_min_rad": -0.008138838602491372,
+            "command_max_rad": 1.3083249539551414,
+            "solver_lo_rad": -1.5210933685302734,
+            "solver_hi_rad": 1.4700933694839478,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.10138888888888889,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_roll",
+            "command_min_rad": -0.7147279297795788,
+            "command_max_rad": 0.04129722515677256,
+            "solver_lo_rad": -2.606093406677246,
+            "solver_hi_rad": 2.6450934410095215,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.43472222222222223,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          }
+        ]
+      }
+    },
+    "billed_calls": 15,
+    "pool_warming_refusals": 0,
+    "combined_tracking": {
+      "raw_position_error_m": {
+        "median": 0.006216485637452674,
+        "p95": 0.013501445295784223
+      },
+      "raw_rotation_error_deg": {
+        "median": 0.8741972335401417,
+        "p95": 2.5538806897592243
+      }
+    },
+    "object": {
+      "max_z_m": 0.791,
+      "min_bowl_xy_m": 0.208648,
+      "contact_rows": 0,
+      "ever_success": false
+    }
+  },
+  "replay_yam_path_on_viscous": {
+    "summary": {
+      "source": "runs/yam_vision_live2/chunks.jsonl",
+      "inference_calls": 0,
+      "executed_rows": 720,
+      "ever_success": false,
+      "final_success": false,
+      "max_apple_lift_m": 0.005667181023051082,
+      "seam": "Fresh Viscous neutral/open start; own measured joints and prior Viscous commands; source RTT; default traj/filter/seam. Raw base-frame poses unchanged."
+    },
+    "sides": {
+      "left": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.011651228834076089,
+            "p95": 0.05088972731601513
+          },
+          "raw_rotation_error_deg": {
+            "median": 2.5342979400868413,
+            "p95": 17.316583118546593
+          },
+          "filtered_position_error_m": {
+            "median": 0.01030212702886451,
+            "p95": 0.049104254582113115
+          },
+          "filtered_rotation_error_deg": {
+            "median": 2.449846686630166,
+            "p95": 17.226597495610168
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.006635536581737196,
+        "min_requested_to_initial_apple_m": 0.006640290047977334,
+        "closest_request": {
+          "call": 4,
+          "row": 28,
+          "requested_xyz": [
+            0.14117535948753357,
+            -0.15402446687221527,
+            0.02137373760342598
+          ],
+          "apple_xyz": [
+            0.1349367766843538,
+            -0.1549964534079513,
+            0.019332739683341264
+          ],
+          "fk_xyz": [
+            0.14659254252910614,
+            -0.15423040091991425,
+            0.02392338216304779
+          ],
+          "raw_position_error_m": 0.0059907402145571486,
+          "raw_rotation_error_deg": 0.6102462381472128,
+          "filtered_position_error_m": 0.0019290345031593482,
+          "filtered_rotation_error_deg": 0.492378470773416
+        },
+        "min_command_fk_to_apple_m": 0.011556104273907509,
+        "min_measured_fk_to_apple_m": 0.036000103313390854,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.08725706154958268,
+            "p95": 0.27311023174590443
+          },
+          "raw_rotation_error_deg": {
+            "median": 11.503704933859119,
+            "p95": 24.95770772484723
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.21789140242490793,
+          "p95": 0.6330255730032679
+        },
+        "miss_rows": 114,
+        "joint_diagnostics": [
+          {
+            "joint": "shoulder_pan",
+            "command_min_rad": -0.17565148235200995,
+            "command_max_rad": 1.0989054816586152,
+            "solver_lo_rad": -3.2000932693481445,
+            "solver_hi_rad": 2.1920933723449707,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.18333333333333332,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.02631578947368421,
+            "miss_median_distance_to_rest_rad": 0.632057354198668
+          },
+          {
+            "joint": "shoulder_lift",
+            "command_min_rad": -2.5309749160891086,
+            "command_max_rad": 0.0,
+            "solver_lo_rad": -3.04309344291687,
+            "solver_hi_rad": -0.03490658476948738,
+            "rest_rad": -1.895,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.002777777777777778,
+            "all_fraction_within_0.1rad_rest": 0.030555555555555555,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.08771929824561403,
+            "miss_median_distance_to_rest_rad": 0.49628819795755197
+          },
+          {
+            "joint": "elbow_flex",
+            "command_min_rad": 0.0,
+            "command_max_rad": 2.763575671390291,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 4.348093509674072,
+            "rest_rad": 2.094,
+            "all_fraction_within_0.02rad_lower_limit": 0.002777777777777778,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.004166666666666667,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.6389847254119552
+          },
+          {
+            "joint": "wrist_flex",
+            "command_min_rad": -1.451931465477932,
+            "command_max_rad": 0.48091773977090696,
+            "solver_lo_rad": -2.0740933418273926,
+            "solver_hi_rad": 1.5710933208465576,
+            "rest_rad": -1.608,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.5491942603297467
+          },
+          {
+            "joint": "wrist_yaw",
+            "command_min_rad": -0.00050140415161733,
+            "command_max_rad": 0.5813170627005788,
+            "solver_lo_rad": -1.5210933685302734,
+            "solver_hi_rad": 1.4700933694839478,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.14722222222222223,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.5237573062206482
+          },
+          {
+            "joint": "wrist_roll",
+            "command_min_rad": -0.8421234860842599,
+            "command_max_rad": 0.007038988111136884,
+            "solver_lo_rad": -2.606093406677246,
+            "solver_hi_rad": 2.6450934410095215,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.14583333333333334,
+            "miss_fraction_within_0.02rad_lower_limit": 0.0,
+            "miss_fraction_within_0.02rad_upper_limit": 0.0,
+            "miss_fraction_within_0.1rad_rest": 0.0,
+            "miss_median_distance_to_rest_rad": 0.4436006920112596
+          }
+        ]
+      },
+      "right": {
+        "tracking": {
+          "raw_position_error_m": {
+            "median": 0.004622067378366047,
+            "p95": 0.009235428297369943
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.6911450771768111,
+            "p95": 2.204129256737069
+          },
+          "filtered_position_error_m": {
+            "median": 0.0015999725843123562,
+            "p95": 0.006363164657034053
+          },
+          "filtered_rotation_error_deg": {
+            "median": 0.4778123160368397,
+            "p95": 2.3137782561376494
+          }
+        },
+        "min_requested_to_moving_apple_m": 0.3788582063270749,
+        "min_requested_to_initial_apple_m": 0.4630585744400752,
+        "closest_request": {
+          "call": 13,
+          "row": 39,
+          "requested_xyz": [
+            0.2406066209077835,
+            0.03800487518310547,
+            0.19069741666316986
+          ],
+          "apple_xyz": [
+            0.19428544015866533,
+            0.3721724719624561,
+            0.018302793840735857
+          ],
+          "fk_xyz": [
+            0.24434560537338257,
+            0.03510254994034767,
+            0.19504651427268982
+          ],
+          "raw_position_error_m": 0.006427919310777976,
+          "raw_rotation_error_deg": 0.9415639714998106,
+          "filtered_position_error_m": 0.0013715141574435691,
+          "filtered_rotation_error_deg": 0.3991658710793077
+        },
+        "min_command_fk_to_apple_m": 0.38296321027947616,
+        "min_measured_fk_to_apple_m": 0.38297547840247925,
+        "measured_tracking": {
+          "raw_position_error_m": {
+            "median": 0.0046746446321809226,
+            "p95": 0.009248704934546919
+          },
+          "raw_rotation_error_deg": {
+            "median": 0.6987276074809288,
+            "p95": 2.1393448098721795
+          }
+        },
+        "joint_servo_error_rad": {
+          "median": 0.0014732619922225205,
+          "p95": 0.0032341453953763193
+        },
+        "miss_rows": 0,
+        "joint_diagnostics": [
+          {
+            "joint": "shoulder_pan",
+            "command_min_rad": -0.1080618253225213,
+            "command_max_rad": 0.10457658079088726,
+            "solver_lo_rad": -3.2000932693481445,
+            "solver_hi_rad": 2.1920933723449707,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.9416666666666667,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "shoulder_lift",
+            "command_min_rad": -0.47487801644647565,
+            "command_max_rad": 0.0,
+            "solver_lo_rad": -3.04309344291687,
+            "solver_hi_rad": -0.03490658476948738,
+            "rest_rad": -1.895,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.004166666666666667,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "elbow_flex",
+            "command_min_rad": 0.0,
+            "command_max_rad": 0.333497826498826,
+            "solver_lo_rad": 0.03490658476948738,
+            "solver_hi_rad": 4.348093509674072,
+            "rest_rad": 2.094,
+            "all_fraction_within_0.02rad_lower_limit": 0.1986111111111111,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_flex",
+            "command_min_rad": 0.0014671005359101696,
+            "command_max_rad": 0.4908987750554174,
+            "solver_lo_rad": -2.0740933418273926,
+            "solver_hi_rad": 1.5710933208465576,
+            "rest_rad": -1.608,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.0,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_yaw",
+            "command_min_rad": -0.16541967650049302,
+            "command_max_rad": -2.9357478683618633e-05,
+            "solver_lo_rad": -1.5210933685302734,
+            "solver_hi_rad": 1.4700933694839478,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.3486111111111111,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          },
+          {
+            "joint": "wrist_roll",
+            "command_min_rad": -0.11203456647468335,
+            "command_max_rad": 0.0067901277441383785,
+            "solver_lo_rad": -2.606093406677246,
+            "solver_hi_rad": 2.6450934410095215,
+            "rest_rad": 0.0,
+            "all_fraction_within_0.02rad_lower_limit": 0.0,
+            "all_fraction_within_0.02rad_upper_limit": 0.0,
+            "all_fraction_within_0.1rad_rest": 0.9277777777777778,
+            "miss_fraction_within_0.02rad_lower_limit": null,
+            "miss_fraction_within_0.02rad_upper_limit": null,
+            "miss_fraction_within_0.1rad_rest": null,
+            "miss_median_distance_to_rest_rad": null
+          }
+        ]
+      }
+    },
+    "combined_tracking": {
+      "raw_position_error_m": {
+        "median": 0.005752452382135776,
+        "p95": 0.046020774908174716
+      },
+      "raw_rotation_error_deg": {
+        "median": 0.9029168041450293,
+        "p95": 16.219978220405267
+      }
+    },
+    "object": {
+      "max_z_m": 0.797,
+      "min_bowl_xy_m": 0.107324,
+      "contact_rows": 1,
+      "ever_success": false
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "source": "runs/yam_vision_live2/chunks.jsonl",
+  "inference_calls": 0,
+  "executed_rows": 720,
+  "ever_success": false,
+  "final_success": false,
+  "max_apple_lift_m": 0.005667181023051082,
+  "seam": "Fresh Viscous neutral/open start; own measured joints and prior Viscous commands; source RTT; default traj/filter/seam. Raw base-frame poses unchanged."
+}

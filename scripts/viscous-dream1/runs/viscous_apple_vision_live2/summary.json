@@ -1,0 +1,12 @@
+{
+ "mode": "vision",
+ "rig": "viscous",
+ "task": "put apple into the bowl",
+ "successful_billed_calls": 15,
+ "closest_apple_to_bowl_xy_m": 0.208648,
+ "executed_rows": 720,
+ "completed_chunks": 15,
+ "termination_reason": null,
+ "ever_success": false,
+ "final_success": false
+}

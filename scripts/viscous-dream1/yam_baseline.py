@@ -201,6 +201,10 @@ def main():
         # without get_action or any inference request, in dry AND live preflight.
         queued = client._window.build_observation()
         ik = client._policy._ik
+        trace = None
+        if not station:
+            from hand_path_tools import IKTrace, tracking, clip_viscous_grips, apple_in_base
+            trace = IKTrace(ik)
         prepared = queued if ik is None else ik.observe(queued)
         (args.out / "preflight.json").write_text(json.dumps({
             "queued_keys": sorted(queued), "prepared_keys": sorted(prepared),
@@ -231,8 +235,13 @@ def main():
                 ledger.write(json.dumps({"event": "success", "call": calls}) + "\n")
             rtt = time.monotonic() - started
             adjustments = []
+            if trace is not None:
+                chunk_record = trace.chunk(calls, reply, env, args.actions)
+                with (args.out / "chunks.jsonl").open("a") as chunks:
+                    chunks.write(json.dumps(chunk_record) + "\n")
+            executable_reply = clip_viscous_grips(reply, adjustments) if args.rig == "viscous" else reply
             try:
-                left, right = validate_chunk(env, reply, args.actions, verbose=False, adjustments=adjustments)
+                left, right = validate_chunk(env, executable_reply, args.actions, verbose=False, adjustments=adjustments)
             except ValueError as error:
                 (args.out / f"rejected_reply_{calls:02d}.json").write_text(json.dumps(
                     reply, indent=1, default=lambda value: np.asarray(value).tolist()))
@@ -247,13 +256,19 @@ def main():
                 rec.milestones.append(len(rec.frames) - 1)
                 print(json.dumps(entry), flush=True)
                 raise
-            for l_row, r_row in zip(left, right):
+            errors = tracking(ik, reply["per_key"], left, right) if trace is not None else None
+            for row_index, (l_row, r_row) in enumerate(zip(left, right)):
+                apple_before = {s: apple_in_base(env, s).tolist() for s in ("left", "right")} if trace else None
                 env.step(l_row, r_row)
                 row_success = success(env, args.fruit)
                 ever_success |= row_success
                 sample = {"call": calls, "step": steps, "success": row_success,
                           "commanded_left": l_row.tolist(), "commanded_right": r_row.tolist(),
                           **objects(env, args.fruit)}
+                if trace is not None:
+                    sample.update({"row": row_index, "tracking": errors[row_index],
+                                   "apple_base_before_step": apple_before,
+                                   "arm_joints": {s: env.state()[s][:6].tolist() for s in ("left", "right")}})
                 trajectory.append(sample)
                 best = min(best, sample[distance_key])
                 commanded = {"q_l_chunk": l_row, "q_r_chunk": r_row}

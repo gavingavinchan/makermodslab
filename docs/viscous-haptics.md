@@ -81,6 +81,11 @@ restore paths in the DAgger runner.
 - *Status (2026-10-20):* zero-shot MuJoCo trial done; the result is "completely
   stupid ... hopelessly bad, no resemblance of any meaningful actions". Gavin wants
   to find out why. See "Dream-1 trial" below.
+- *Status (2026-10-20, later):* cause found. Dream-1 never sees a non-YAM arm's
+  state, and from images alone it does not aim at the object when the arm is the
+  Viscous (it does on YAM). The Viscous IK and frames are fine. The task (2 cm white
+  cube) also fails even on YAM. Next: a Maker-tuned checkpoint or a Viscous fine-tune,
+  after Gavin sets the tool point with `dreamcli tcp`. Details under "Findings".
 
 ### P. How the work is done (process intent)
 
@@ -325,6 +330,34 @@ session, in parallel with a haptics session.
   hand went, not the poses the model asked for, so log the reply's hand poses and the
   IK's tracking error, then replay YAM's successful hand path through the Viscous IK
   offline (free).
+- *Verdict: the model aims wrong; the Viscous reaches fine* (`runs/ik_reach_report.md`,
+  15 billed calls per arm, checked against the raw `chunks.jsonl`). On YAM the
+  requested left-hand path goes straight to the apple by call 3-4 (within 7 mm),
+  closes, lifts, carries and opens over the bowl. On the Viscous, with the same scene,
+  prompt and executor, the requests dither around the start for five calls, then
+  drift up and away, never closer than 19 cm. The Viscous IK follows those
+  requests to 6.7 mm / 1.1° median, as close as YAM's own (4.9 mm / 0.7°), with no
+  joint at a limit when it matters. So with the state withheld, what the model sees
+  of the Viscous (its look in the top camera, and/or its wrist camera views) makes
+  it act without purpose. Nothing in our kinematics, frames or executor causes it.
+- *A second, smaller problem: the tool point.* Replaying YAM's successful hand path
+  on the Viscous (no calls), the commanded joints track it to ~5 mm, but the Viscous
+  fingers hit the table on the way down. The real hand ends ~8 cm off and only
+  nudges the apple. The arm file's `tcp` is the finger-pad midpoint; Dream defines it
+  as "the point between the closed fingertips", and says a person sets it on the real
+  gripper with `dreamcli tcp`, never an agent. Gavin to do that before any model that
+  does aim right (a fine-tune, a Maker checkpoint) is run.
+- *What this means for B3 (2026-10-20):* zero-shot Dream-1 will not drive the
+  Viscous; disguising it as a Maker arm changes nothing with the public YAM
+  checkpoints, because the model reads images, not the arm's identity. The realistic
+  routes are (1) a checkpoint that has seen a Maker-like arm (ask Ryan/DreamLabs for
+  the Maker fine-tune; Gavin's translation-layer idea fits that checkpoint) or (2)
+  ~50 Viscous demos through Dream's fine-tune service (LeRobot v2.1; we record v3.0).
+  Either way, use objects and prompts the model knows. Optional cheap diagnostic
+  (~30 calls): black out the wrist cameras on both arms to see whether the wrist
+  view or the top view of the Viscous causes the confusion. Total billed today: 100
+  calls (40 baseline, 30 2x2, 30 reach), about the same per call as 2026-10-20's ~10¢
+  for 79.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

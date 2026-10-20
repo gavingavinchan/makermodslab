@@ -1,0 +1,22 @@
+{
+  "contact_check_run": "runs/replay_yam_path_on_viscous_contact_check",
+  "rows_touching_table": 155,
+  "rows_touching_bowl": 357,
+  "first_table_contact": {
+    "call": 3,
+    "row": 45,
+    "contacts": [
+      {
+        "geoms": [
+          "table",
+          "left_collision_043_22"
+        ],
+        "bodies": [
+          "world",
+          "left_gripper_left"
+        ],
+        "distance_m": -0.00028396289097354366
+      }
+    ]
+  }
+}
