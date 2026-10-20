@@ -1,0 +1,186 @@
+[
+ {
+  "call": 1,
+  "sim_time": 1.6,
+  "rtt_s": 0.021,
+  "rows": 48,
+  "keys": [
+   "per_key",
+   "q_l_chunk",
+   "q_r_chunk"
+  ],
+  "clipped_rows": 0,
+  "limit_rows": 0,
+  "request": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "session_id": null,
+   "reset": false,
+   "observation": {
+    "state.left_arm": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "state.left_grip": [
+     0.0
+    ],
+    "state.right_arm": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "state.right_grip": [
+     0.0
+    ],
+    "prompt": "pick up the white cube and place into black square",
+    "state.right_eef_xyz": [
+     0.2223,
+     -0.0,
+     0.13
+    ],
+    "state.right_eef_rot6": [
+     0.0,
+     1.0,
+     0.0,
+     0.1608,
+     0.0,
+     0.987
+    ],
+    "state.right_gripper": [
+     0.0
+    ],
+    "state.left_eef_xyz": [
+     0.2223,
+     -0.0,
+     0.13
+    ],
+    "state.left_eef_rot6": [
+     0.0,
+     1.0,
+     0.0,
+     0.1608,
+     0.0,
+     0.987
+    ],
+    "state.left_gripper": [
+     0.0
+    ],
+    "video.overhead": "<9 jpegs>",
+    "video.wrist_l": "<9 jpegs>",
+    "video.wrist_r": "<9 jpegs>",
+    "embodiment": "other_embodiment"
+   }
+  },
+  "tool_z_m": 0.887,
+  "cube_xyz_m": [
+   0.235,
+   0.04,
+   0.77
+  ]
+ },
+ {
+  "call": 2,
+  "sim_time": 3.1,
+  "rtt_s": 0.018,
+  "rows": 48,
+  "keys": [
+   "per_key",
+   "q_l_chunk",
+   "q_r_chunk"
+  ],
+  "clipped_rows": 0,
+  "limit_rows": 4,
+  "request": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "session_id": "dry-run",
+   "reset": false,
+   "observation": {
+    "state.left_arm": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "state.left_grip": [
+     0.1235
+    ],
+    "state.right_arm": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "state.right_grip": [
+     0.0
+    ],
+    "prompt": "pick up the white cube and place into black square",
+    "state.right_eef_xyz": [
+     0.2223,
+     -0.0,
+     0.13
+    ],
+    "state.right_eef_rot6": [
+     0.0,
+     1.0,
+     0.0,
+     0.1608,
+     0.0,
+     0.987
+    ],
+    "state.right_gripper": [
+     0.0
+    ],
+    "state.left_eef_xyz": [
+     0.2277,
+     0.0,
+     0.1273
+    ],
+    "state.left_eef_rot6": [
+     -0.0,
+     1.0,
+     0.0,
+     0.1796,
+     -0.0,
+     0.9837
+    ],
+    "state.left_gripper": [
+     0.1235
+    ],
+    "video.overhead": "<9 jpegs>",
+    "video.wrist_l": "<9 jpegs>",
+    "video.wrist_r": "<9 jpegs>",
+    "embodiment": "other_embodiment"
+   }
+  },
+  "limit_details": [
+   {
+    "elbow_flex": -4.734316820215678e-06
+   },
+   {
+    "elbow_flex": -5.760450381860711e-06
+   },
+   {
+    "elbow_flex": -1.7595125924722062e-06
+   },
+   {
+    "elbow_flex": -4.25225294975462e-08
+   }
+  ],
+  "tool_z_m": 0.884,
+  "cube_xyz_m": [
+   0.235,
+   0.04,
+   0.77
+  ]
+ }
+]

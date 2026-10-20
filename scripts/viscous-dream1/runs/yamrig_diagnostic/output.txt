@@ -1,0 +1,22 @@
+/home/gavin/dreamtrial/viscous_sim/viscous_dream_sim.py:404: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  client.policy(config)
+2026-10-20 02:28:28.745 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-20 02:28:28.791 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-20 02:28:28.803 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-20 02:28:28.812 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-20 02:28:28.818 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-20 02:28:29.575 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-20 02:28:29.584 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-20 02:28:29.620 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-20 02:28:29.635 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-20 02:28:29.643 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-20 02:28:29.655 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-20 02:28:29.667 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+DRY RUN: model=dreamlabs/dream-1-beta task='pick up the white cube and place into black square' max_calls=3 out=runs/yamrig_diagnostic2026-10-20 02:28:29.678 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+
+2026-10-20 02:28:29.684 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+{"call": 1, "sim_time": 1.6, "rtt_s": 0.021, "rows": 48, "keys": ["per_key", "q_l_chunk", "q_r_chunk"], "clipped_rows": 0, "limit_rows": 0, "tool_z_m": 0.887, "cube_xyz_m": [0.235, 0.04, 0.77]}
+{"call": 2, "sim_time": 3.1, "rtt_s": 0.018, "rows": 48, "keys": ["per_key", "q_l_chunk", "q_r_chunk"], "clipped_rows": 0, "limit_rows": 4, "limit_details": [{"elbow_flex": -4.734316820215678e-06}, {"elbow_flex": -5.760450381860711e-06}, {"elbow_flex": -1.7595125924722062e-06}, {"elbow_flex": -4.25225294975462e-08}], "tool_z_m": 0.884, "cube_xyz_m": [0.235, 0.04, 0.77]}
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+2 calls (none billed); log in runs/yamrig_diagnostic

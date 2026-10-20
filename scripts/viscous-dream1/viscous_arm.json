@@ -1,0 +1,28 @@
+{
+ "urdf": "../../Documents/viscous-arm-model/model/viscous_arm.urdf",
+ "base": "base_link",
+ "flange": "wrist_roll_link",
+ "tcp": [
+  0.132425,
+  -0.0,
+  -0.021571
+ ],
+ "approach": [
+  0.986991,
+  0.0,
+  -0.160775
+ ],
+ "jaw": [
+  0.0,
+  1.0,
+  0.0
+ ],
+ "rest": [
+  0.0,
+  -1.895,
+  2.094,
+  -1.608,
+  0.0,
+  0.0
+ ]
+}

@@ -73,6 +73,15 @@ restore paths in the DAgger runner.
 
 **B2. Policy data and rollouts** (ACT/SmolVLA, `scripts/record-rollouts.sh`).
 
+**B3. Dream-1 (DreamLabs' hosted world action model) on the Viscous arm.**
+- *Intent:* the Viscous arm is very close to the Maker Arm, which Dream-1
+  officially supports, so Gavin wants Dream-1 to drive it, possibly through "a
+  translation layer ... so that ... the Dream One model just pretends that it is
+  ... using the maker arm but then in reality it's using my arm" (2026-10-20).
+- *Status (2026-10-20):* zero-shot MuJoCo trial done; the result is "completely
+  stupid ... hopelessly bad, no resemblance of any meaningful actions". Gavin wants
+  to find out why. See "Dream-1 trial" below.
+
 ### P. How the work is done (process intent)
 
 - **Nothing lost.** Commit and push across both machines. The repo must be
@@ -205,6 +214,68 @@ buoyancy.
 6. Water fit in the aquarium (waterproof unit).
 7. Stop path: avoid the tip-forward on release at the fold.
 
+## Dream-1 trial (2026-10-20, MuJoCo only, goal B3)
+
+**Where it ran:** gavin-linux, scratch venv `~/dreamtrial/.venv` (Python 3.12,
+`dreamlabs==1.0.1`, `dreamlabs_client==1.0.3`), API key in
+`~/.dreamlabs/credentials` (0600, `DREAM_API_KEY=`; never commit it). The key was
+pasted into a chat during the trial: revoke and replace it. The trial's code,
+briefs, reports and the two live runs' `log.json` + `run.mp4` are committed in
+[`scripts/viscous-dream1/`](../scripts/viscous-dream1/). The script reads the
+scene from `~/Documents/viscous-arm-model/demo/pick_place_scene.xml` and
+`viscous_arm.json` points at that repo's URDF by a relative path; run it from
+`~/dreamtrial/viscous_sim` or fix those paths. Modes: `--preview` (no client),
+default dry run (client path with a local stub, no network), `--live` (billed,
+capped by `--max-calls`); `--rig bench|yam`, `--start neutral|work`, `--model beta|flash`.
+
+**How Dream-1 handles robots (read from the installed client, not their website):**
+- The client's `robot` setting takes only `"yam"` or `"other_embodiment"`
+  (`dream/client.py:68-72`). The checkpoints the key may run are only
+  `dreamlabs/dream-1-beta` and `-beta-flash`, both `embodiment: yam`, cameras
+  `overhead`, `wrist_l`, `wrist_r`.
+- On `"other_embodiment"` the model gets zeros in its joint slots. It reads the
+  cameras, the prompt and each arm's hand pose (`state.<side>_eef_xyz`, `_eef_rot6`,
+  grip), and answers hand poses in 48-row chunks at 20 Hz. The client's own IK
+  (`dream_ik`) solves them onto the arm.
+- "Maker support" is client-side: `ik: {"arm": "makers"}` selects
+  `dream_ik/specs.py` `MAKERS_ARM` (`maker_arm_ik.urdf`, tool point 0.1696 m along
+  `link_007` -z relabelled into YAM axes, rest pose from 94 Maker episodes, camera
+  mount "not measured", no joint mapping to YAM). `"metal"` (`METAL_ARM`) is the
+  same plus a YAM joint-sign map and "our Metal policy" tuning. With the public
+  YAM checkpoints, Maker and Metal are `other_embodiment` exactly like Viscous, so
+  disguising Viscous as a Maker changes nothing the model sees. It only matters
+  with a Maker- or Metal-fine-tuned checkpoint ("Metal and Makers checkpoints read
+  the URDF's joints"), which this key cannot run. Ask Ryan/DreamLabs for one.
+- Today's runs used `ik.arm` = `viscous_arm.json` (tool point `tool0`, the
+  finger-pad midpoint, never confirmed with `dreamcli tcp`), head `eef`.
+
+**Results (both on beta, 79 billed calls, about 10¢):**
+1. `runs/live_beta_1`, bench rig (overhead camera beside the arm, ~0.28 m up;
+   `wrist_r` black): 40 calls. Cube never moved; the arm swung away then rose to
+   z 0.57 m; up to 13 of 30 executed rows per chunk clipped by the 2 rad/s cap.
+2. `runs/live_yamrig_1`, Viscous placed where YAM's left arm sits in Dream's own
+   station, YAM's calibrated overhead camera (`yamrig_report.md`): 39 calls. The
+   gripper opened and hovered 13-23 cm above the table; cube never moved.
+
+**Why it might be failing, to check in this order (2026-10-21):**
+1. *Baseline:* run Dream's own `dream_examples/yam_mujoco` (installed in the
+   venv) on a similar pick-and-place. If YAM also flails, the fault is in how we
+   call the API, not the Viscous arm.
+2. *Start state out of distribution:* both live runs used `--start neutral`
+   (all joints 0, gripper closed); YAM resets with its gripper open, and
+   `--start work` (the arm file's rest, gripper open) was never run live.
+   Compare the hand pose we send at step 0 with what `yam_mujoco` sends at its reset.
+3. *Hand-pose frame:* base-local EEF with no world transform, and the
+   tool-point axes (`approach`, `jaw` in `viscous_arm.json`) never checked
+   against YAM's convention (z = approach, x = jaw travel). A wrong frame makes the
+   model see a nonsense hand pose and its answers solve to nonsense.
+4. *Images:* Viscous meshes look nothing like YAM; the cube is ~5 px wide in the
+   320x176 overhead; wrist camera mount differs from YAM's.
+5. *Execution:* 30 of 48 rows run per chunk, speed clipping, IK fallbacks.
+6. Only after 1-5: zero-shot on an unseen arm may simply not work. Then the
+   options are a Maker/Metal fine-tuned checkpoint, or ~50 Viscous demos and
+   Dream's fine-tune service (LeRobot v2.1 only; we record v3.0, so convert).
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -238,7 +309,9 @@ file instead.
 - Pinocchio is installed in both venvs. On a new machine: `uv sync --extra test
   --extra arm-dynamics`.
 
-**Resume here:** next step 2 (automated feedforward A/B), then 1 (live
+**Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
+Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial"
+in order. Haptics: next step 2 (automated feedforward A/B), then 1 (live
 contact-signal validation). Before energizing, show Gavin the dry-run plan and
 say exactly which joints will move.
 
