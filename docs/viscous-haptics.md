@@ -432,8 +432,15 @@ should feel that."
   the still noise but only ~2x the free-motion floor, so A3 needs the floor
   brought down (friction compensation, a shoulder refit) before it can gate on
   contact during motion. The wrist's still offset stepped -0.4 to +0.2 N m
-  across the first push: stiction, the floor for a held pose. No sideways push
-  showed on pan, yaw or roll (pan peaked at 0.27 N m).
+  across the first push: stiction, the floor for a held pose. Gavin pushed
+  only up and down that run, so nothing showed on pan, yaw or roll.
+- *Sideways (rerun `evidence/contact-check-20261020-182410.json`, down / up /
+  left / right):* down and up repeat run 2 (lift +1.5 / -1.7, elbow +2.0 /
+  -1.5 N m). Left and right land on `shoulder_pan`, +1.65 / -2.25 N m against
+  a still baseline of about +/-0.03 N m: pan carries no gravity, so its
+  contact is raw torque and it is the cleanest channel (50-70x its noise). The
+  right push also showed +1.0 N m on `wrist_yaw`. Yaw and roll sit at a steady
+  -0.15 to -0.2 N m at rest, a bias the fit's offsets do not remove.
 - Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
   (missing commissioned `cal-f` profile), present at `HEAD` too.
 
