@@ -3,7 +3,91 @@
 A running record of **why** this work exists and how decisions were made, so the
 history can be reconstructed later. Newest results at the bottom of each section.
 
-## Objective
+Everything here is a subtask of a larger goal. Each one is recorded with its
+objective, **Gavin's intent** (why it matters, in his framing), what it unblocks
+and where it stands. Quotes are Gavin's words from the working sessions. When a
+subtask changes direction, add a dated line rather than rewriting the old one.
+
+## Goal tree
+
+**Mission: make the Viscous arm something ROV operators want.** Two branches:
+pilot teleoperation that feels right, and autonomy through learned policies.
+The 2026-10-19 session opened with autonomy ("I'm trying to make the viscous arm
+autonomous") and asked for the Star leader to follow the follower for DAgger.
+Gavin then reprioritised.
+
+### A. Pilot teleoperation with force feedback (current priority)
+
+- **Objective:** a pilot driving the Viscous with the Star leader feels what the
+  follower touches.
+- **Intent:** "a lot of the ROV pilots, people in the industry, kind of want force
+  feedback or some haptic feeling" (2026-10-19). DAgger "is not my most important
+  thing right now; my most important thing right now is teleoperation."
+- **Guiding rule:** the pilot should feel contact, not the arm's own effort.
+  "Lifting itself up because of its own weight ... is not something that is
+  meaningful for the pilot to feel. If we hit something, yes, we should feel that."
+
+**A1. A clean contact signal.** contact torque = measured motor torque − predicted
+gravity torque.
+- *Intent:* the haptic effort must exclude self-weight (the guiding rule above).
+- *Unblocks:* A3. *Status:* model done for unit 1 dry; live validation next.
+
+**A1a. Gravity model, measured on the arm.**
+- *Intent:* not what gravity compensation was for the Metal arm. "Before,
+  gravity compensation for Ethan was mainly so that the leader arm would not
+  feel so heavy. That's not really the case for us because our leader arm is
+  very light." Here it exists to separate contact from load.
+- *Method intent:* "Dry arm first, and once we've perfected this method, then we
+  can do it for the wet one." The dry bench proves the method; the aquarium fit
+  (buoyancy) is the one that matters in use.
+- *Status:* dry fit done 2026-10-20 (results below). Wet fit pending.
+
+**A1b. Gravity feedforward on the follower.**
+- *Intent:* a side benefit, not the goal. Removing sag makes position error mean
+  contact, and the follower goes where it is told.
+- *Status:* sign verified at 50% in GUI teleop; A/B in degrees pending.
+
+**A2. A position-drivable leader.** The Star's servos must be commanded toward
+the follower with capped effort (`star_follow.py` draft).
+- *Intent:* serves A3 and, later, DAgger (B1): one piece of hardware work for both.
+- *Status:* draft code; Star actuation not yet characterised on hardware.
+
+**A3. Input-gated bilateral loop** (approach section below).
+- *Intent:* the "spring between leader and follower" Gavin described, made to feel
+  light in free motion and firm on contact. Chosen after checking how others do it.
+- *Status:* not started; needs A1 and A2.
+
+**A4. 1:1 posture mapping.** A horizontal leader gives a horizontal follower.
+- *Intent:* pilots expect the follower to mirror their pose. It is also needed to
+  judge the rest by eye: "When I hold [the wrist] horizontal, the follower arm is
+  not horizontal, so then I can't really tell whether the gravity compensation
+  is working."
+- *Status:* waterproof unit trial "worked very well" (committed 2026-10-20).
+  Unit 1 has a draft profile in viscous-arm-simulation, not yet in Lab.
+
+### B. Autonomy (deferred, not abandoned)
+
+**B1. DAgger handover.** The leader tracks a policy-driven follower so the
+operator can take over without a jump. Needs A2, plus CAN-safe go-limp and
+restore paths in the DAgger runner.
+
+**B2. Policy data and rollouts** (ACT/SmolVLA, `scripts/record-rollouts.sh`).
+
+### P. How the work is done (process intent)
+
+- **Nothing lost.** Commit and push across both machines. The repo must be
+  self-contained: "If I have a brand new machine, I can just get everything from
+  GitHub and then it's all there."
+- **Record intent, not just objectives.** "Record down the intention of the
+  objective ... so that when we go back in history ... we can see the thought
+  process." This document is that record.
+- **Hardware runs:** say plainly which joints move. Prove the stop works before
+  energizing. Gavin keeps the power switch as the hard stop. Gavin accepts
+  motion that is surprising but not dangerous: "it actually was not doing
+  anything dangerous, just surprised me." He set the thermal ceiling to 85 °C,
+  the driver's own stop, so scripts abort just below it.
+
+## Objective (haptics detail)
 
 ROV pilots teleoperating the Viscous arm with the purple Star Arm 102-HD leader
 should **feel** what the follower touches (contact, collisions, grip) through
