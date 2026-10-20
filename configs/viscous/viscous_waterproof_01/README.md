@@ -68,3 +68,11 @@ datasets, policies or the entire Linux machine state. The original per-joint raw
 capture logs (`*-capture.log.gz`; `gunzip -k` to read), per-joint ROM captures and
 the remaining commissioning settings files are in `evidence/raw-captures/`;
 captured extrema are summarized in `evidence/commissioning-progress.json`.
+
+## How it is waterproofed (recorded 2026-10-19)
+
+This arm has **no seals**: no O-rings, no shaft seals. Gavin waterproofed it by
+epoxy-potting the whole arm. Some exposed steel parts were already visibly rusting
+on 2026-10-19. It goes into an aquarium of clean tap water when in use, comes out
+when not, and is sometimes left in for days. For water-exposure or durability
+questions, reason about epoxy potting plus exposed steel, not seal leakage.

@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Viscous arm work (branch feat/viscous-arm)
+
+Read [docs/viscous-haptics.md](docs/viscous-haptics.md) first: goal tree with the
+intent behind each subtask, current state and how to resume, machines and arms,
+and the working rules (commit and push on both machines, self-contained repo,
+record the why, powered-run safety). Keep it updated rather than relying on any
+assistant's private memory. `AGENTS.md` points other tools to the same place.
+
 ## Repository purpose
 
 MakerMods Lab is a FastAPI + React web UI for policy development, wrapping the [LeRobot](https://github.com/huggingface/lerobot) framework for the SO-101, Maker Arm v1 and Metal Arm leader/follower arms (each single or bimanual). It exposes teleoperation, dataset recording, curation, calibration, training, inference, and replay as HTTP/WebSocket endpoints, replacing LeRobot's CLI + keyboard-driven flows. It is a fork of Hugging Face's [leLab](https://github.com/huggingface/leLab), heavily extended by [makermods-robotics](https://github.com/makermods-robotics).

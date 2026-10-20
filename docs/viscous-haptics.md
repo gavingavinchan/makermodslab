@@ -204,3 +204,64 @@ buoyancy.
    `leader/mapping/profiles/viscous_01.json`).
 6. Water fit in the aquarium (waterproof unit).
 7. Stop path: avoid the tip-forward on release at the fold.
+
+## Handoff: state and how to resume (any agent, any tool)
+
+This section is the source of truth for picking the work back up. Nothing about
+this project should live only in one assistant's private memory: update this
+file instead.
+
+**Machines** (Gavin's):
+- **MacBook Air** (this repo at `~/Documents/makermodslab-viscous`). The
+  waterproof arm `viscous_waterproof_01` is connected here: CANable serial
+  `205038953846` (`/dev/cu.usbmodem2050389538461`), Star leader on
+  `/dev/cu.wchusbserial*`. Lab state lives in `~/.makermods/makermodslab-viscous`.
+- **gavin-linux** (Tailscale `100.64.91.4`, `ssh gavin-linux`; same repo path).
+  Unit 1 `viscous_01` (dry, non-waterproof) is connected here: CANable
+  `/dev/serial/by-id/usb-Openlight_Labs_CANable2_..._207E37A55445-if00`, Star on
+  `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`. Lab runs as the user
+  service `makermodslab-viscous` (`http://100.64.91.4:8000`).
+- The Mac repo has a `linux` remote (`gavin-linux:Documents/makermodslab-viscous`)
+  for moving unpushed work between machines. Git on Linux authenticates through
+  `gh` (`gh auth setup-git` is done); its GitHub fetches occasionally time out, so retry.
+
+**State at the end of 2026-10-20:**
+- Everything is committed and pushed on both machines (`feat/viscous-arm`).
+- On gavin-linux the service has a drop-in,
+  `~/.config/systemd/user/makermodslab-viscous.service.d/gravity-ff.conf`, that turns
+  on gravity feedforward for `viscous_01` teleop at 50%
+  (`MAKERMODSLAB_GRAVITY_FF`, `MAKERMODSLAB_GRAVITY_FF_SCALE=0.5`). Delete it and
+  `systemctl --user restart makermodslab-viscous` to turn it off.
+- Unit 1 was left torque-off, tipped forward ~25° onto its gripper (the release
+  tip described under Safety lessons). Refold it before any powered run; the
+  collection planner refuses to start from the tipped pose.
+- Pinocchio is installed in both venvs. On a new machine: `uv sync --extra test
+  --extra arm-dynamics`.
+
+**Resume here:** next step 2 (automated feedforward A/B), then 1 (live
+contact-signal validation). Before energizing, show Gavin the dry-run plan and
+say exactly which joints will move.
+
+## Working rules for this project
+
+How Gavin wants the work done. These apply to every agent and tool.
+
+- **Frame every task as a subtask of the goal tree** above. Record the objective
+  and Gavin's intent behind it (his words where possible) in this file, adding
+  dated lines rather than rewriting history. Commit messages say *why*.
+- **Never leave progress unsaved.** At milestones, check `git status -sb` and
+  unpushed commits on BOTH machines and all related repos (`makermodslab-viscous`,
+  `viscous-arm-simulation` a.k.a. `~/Documents/viscous-arm-model`, the lerobot
+  forks). Commit AND push.
+- **The repo must be self-contained.** A fresh clone must have every URDF, mesh,
+  calibration, profile, fit and config it needs. Committed data stores
+  repo-relative paths, never `~/Documents/...`. Never commit `frontend/dist`
+  (rebuild locally) or multi-GB render output.
+- **No AI attribution trailers** (no `Co-Authored-By`) in commits or PRs.
+- **Powered hardware runs:** say exactly which joints move before energizing.
+  Prove the stop path on the actual launch method first; a process started in the
+  background ignores SIGINT unless it installs its own handler. Check liveness
+  with `kill -0 <pid>`, not `pgrep -f` inside the same ssh command. Gavin's power
+  switch is the hard stop. The thermal ceiling is the driver's 85 °C stop;
+  scripts abort just below it (82 °C) and cool at 80 °C. On the dry arm keep
+  planned loads ≤ ~3.5 Nm (see Results: the shoulder dropped the arm at ~5.6 Nm).
