@@ -72,6 +72,9 @@ class Runner:
         self.command = None
         self.last_obs = None
         self.on_tick = None  # called with (target, obs) after every tick
+        # obs -> {joint: deg} of lag the trip discounts (sag the run expects);
+        # the trip is for lag nothing explains: a block or a lost hold.
+        self.expected_lag = None
 
     def _tick(self, target):
         started = time.monotonic()
@@ -84,10 +87,14 @@ class Runner:
         hot = {k: obs[f"{k}.temp"] for k in (*ARM, "gripper") if obs[f"{k}.temp"] >= self.args.max_temp}
         if hot:
             raise RunAbortError(f"Too hot: {hot}")
-        lag = {k: target[k] - obs[f"{k}.pos"] for k in ARM}
+        expected = self.expected_lag(obs) if self.expected_lag is not None else {}
+        lag = {k: target[k] - obs[f"{k}.pos"] - expected.get(k, 0.0) for k in ARM}
         worst = max(lag, key=lambda k: abs(lag[k]))
         if abs(lag[worst]) > self.args.max_lag:
-            raise RunAbortError(f"{worst} lags its command by {lag[worst]:+.1f} deg: blocked or overloaded")
+            beyond = " beyond its expected sag" if worst in expected else ""
+            raise RunAbortError(
+                f"{worst} lags its command by {lag[worst]:+.1f} deg{beyond}: blocked or overloaded"
+            )
         time.sleep(max(0.0, TICK_S - (time.monotonic() - started)))
         return obs
 

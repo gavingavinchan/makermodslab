@@ -169,7 +169,9 @@ def describe(model, robot, start, start_arm, cool, poses, args):
         f"~{holds / 60:.1f} min holding"
     )
     print(f"Push test: {args.push_seconds:.0f} s at '{PUSH_POSE}' with feedforward at 100 %")
-    print(f"Trips: lag > {args.max_lag:.0f} deg, winding >= {args.max_temp:.0f} C. Start pose: {start_arm}")
+    print(
+        f"Trips: lag > {args.max_lag:.0f} deg beyond expected sag, winding >= {args.max_temp:.0f} C. Start pose: {start_arm}"
+    )
 
 
 def ramp_scale(run, status, target):
@@ -224,6 +226,15 @@ def run_check(args, record, start, model, estimator):
         )
 
     run.on_tick = on_tick
+    kp = {k: robot._resolved_gains[k][0] for k in ARM}
+
+    def expected_lag(obs):
+        # Sag the feedforward leaves: (1 - scale) x gravity / kp. Without this
+        # the 0 % unfold (~4 N m on the elbow, ~8 deg at kp 30) tripped 10 deg.
+        tau = model.torque({k: obs[f"{k}.pos"] for k in ARM})
+        return {k: (1.0 - status["scale"]) * math.degrees(tau[k] / kp[k]) for k in GRAVITY_JOINTS}
+
+    run.expected_lag = expected_lag
 
     def go(target, label, capped=True):
         phase["name"] = f"move:{label}"
@@ -239,6 +250,12 @@ def run_check(args, record, start, model, estimator):
             first = robot.get_observation()
             run.last_obs = first
             run.command = clipped({k: first[f"{k}.pos"] for k in ARM}, limits)
+            # Feedforward on before leaving the fold: stiffness alone cannot lift
+            # the forearm off its stop (the driver's startup sync stalls), and
+            # the unfold then runs without sag. Held past install's own 2 s ramp.
+            phase["name"] = "ramp:fold"
+            ramp_scale(run, status, 1.0)
+            run.hold(gravity_feedforward.RAMP_S)
             phase["name"] = "move:start"
             run.move(start_arm, args.approach_speed)
             go(cool, "cooling", capped=False)
