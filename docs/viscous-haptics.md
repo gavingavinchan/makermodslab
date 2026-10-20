@@ -369,6 +369,16 @@ session, in parallel with a haptics session.
   view or the top view of the Viscous causes the confusion. Total billed today: 100
   calls (40 baseline, 30 2x2, 30 reach), about the same per call as 2026-10-20's ~10¢
   for 79.
+- *Object size, confirmed (2026-10-20, Gavin's idea).* Gavin guessed Dream-1 was
+  not trained on objects as small as the 2 cm cube and put the real Feetech servo
+  box (about 5 x 5 x 3 cm, white top, black sides; `real/topdown_box_20261020.jpg`)
+  on the bench beside it. The same box in Dream's scene, YAM, vision-only mode,
+  "pick up the black and white box and put it on the black square": the left arm
+  grasps it at about call 6, lifts it 17.6 cm, carries it and sets it on the square
+  by call 13 (centre about 2 cm from the square's centre; the 5 cm box covers the
+  4.5 cm square). Later calls nudge it a little. 20 billed calls,
+  `runs/yam_box_vision_live1`, `runs/box_report.md`. So on a real bench, use
+  objects of about this size or larger for any Dream-1 trial; 120 billed calls today.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

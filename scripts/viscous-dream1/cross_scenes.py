@@ -14,14 +14,27 @@ JOINTS = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_ya
 OPEN = 0.0524125
 
 
-def cube_xml():
+def cube_xml(object_name="cube"):
     root = ET.fromstring(yam_env.build_xml())
     world = root.find("worldbody")
     apple, bowl = world.find("body[@name='apple']"), world.find("body[@name='bowl']")
-    cube = ET.SubElement(world, "body", name="cube", pos=apple.get("pos"))
-    ET.SubElement(cube, "freejoint", name="cube_free")
-    ET.SubElement(cube, "geom", name="cube_geom", type="box", size=".01 .01 .01",
-                  mass=".01", rgba=".95 .95 .95 1")
+    cube = ET.SubElement(world, "body", name=object_name, pos=apple.get("pos"))
+    ET.SubElement(cube, "freejoint", name=f"{object_name}_free")
+    ET.SubElement(cube, "geom", name=f"{object_name}_geom", type="box",
+                  size=".025 .025 .015" if object_name == "box" else ".01 .01 .01",
+                  mass=".04" if object_name == "box" else ".01",
+                  rgba=".025 .025 .025 1" if object_name == "box" else ".95 .95 .95 1")
+    if object_name == "box":
+        # Thin, massless, non-contact lid graphics: the collision solid remains
+        # exactly 5 x 5 x 3 cm and inherits Dream's fruit friction/defaults.
+        def mark(name, pos, size, color):
+            ET.SubElement(cube, "geom", name=f"box_{name}", type="box", pos=pos, size=size,
+                          rgba=color, mass="0", contype="0", conaffinity="0")
+        mark("lid", "0 0 .01505", ".025 .025 .00005", ".95 .95 .93 1")
+        mark("band", ".015 0 .01515", ".007 .024 .000025", ".025 .025 .025 1")
+        for i, width in enumerate((.010, .006, .008)):
+            mark(f"logo_{i}", f"-.007 {-.006 + i * .005} .01515",
+                 f"{width} .001 .000025", ".03 .03 .03 1")
     square = ET.SubElement(world, "body", name="place_square", pos=bowl.get("pos"))
     for axis in range(2):
         for sign in (-1, 1):
@@ -38,6 +51,14 @@ def cube_xml():
 class CubeYamEnv(yam_env.YamEnv):
     def __init__(self):
         self.model = mujoco.MjModel.from_xml_string(cube_xml())
+        self.data = mujoco.MjData(self.model)
+        self.renderer = None
+        self.reset()
+
+
+class BoxYamEnv(yam_env.YamEnv):
+    def __init__(self):
+        self.model = mujoco.MjModel.from_xml_string(cube_xml("box"))
         self.data = mujoco.MjData(self.model)
         self.renderer = None
         self.reset()
@@ -156,6 +177,11 @@ def success(env, task):
     p = env.data.body(name).xpos
     joint = env.model.joint(f"{name}_free")
     speed = np.linalg.norm(env.data.qvel[joint.dofadr[0]:joint.dofadr[0] + 6])
+    if task == "box":
+        # A 5 cm box overhangs the 4.5 cm outline: judge its centre, not corners.
+        centered = p - env.data.body("place_square").xpos
+        extent_z = np.abs(env.data.xmat[body.id].reshape(3, 3)[2]) @ np.array([.025, .025, .015])
+        return bool(np.all(np.abs(centered[:2]) <= .0225) and abs(p[2] - extent_z - .76) < .002 and speed < .05)
     if task == "cube":
         corners = np.array([[x, y, z] for x in (-.01, .01) for y in (-.01, .01) for z in (-.01, .01)])
         corners = corners @ env.data.xmat[body.id].reshape(3, 3).T + p
@@ -177,4 +203,3 @@ def preview_comparison(env, out):
     draw.text((12, 8), "YAM vision live1 frame_00: top camera", fill="black")
     draw.text((652, 8), "Viscous / Dream apple scene: top camera", fill="black")
     canvas.save(out / "compare_top_yam_vs_viscous.png")
-

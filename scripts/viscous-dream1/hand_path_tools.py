@@ -11,25 +11,34 @@ def plain(value):
     return json.loads(json.dumps(value, default=lambda v: np.asarray(v).tolist()))
 
 
-def apple_in_base(env, side):
+def apple_in_base(env, side, object_name=None):
     try:
         env.model.body(f"{side}_base")
         name = f"{side}_base"
     except KeyError:
         name = f"{side}_base_link"
     base = env.data.body(name)
-    try:
-        fruit = env.data.body("apple")
-    except KeyError:
-        fruit = env.data.body("cube")
+    if object_name is None:
+        object_name = next(name for name in ("apple", "cube", "box")
+                           if mujoco_body_exists(env, name))
+    fruit = env.data.body(object_name)
     return base.xmat.reshape(3, 3).T @ (fruit.xpos - base.xpos)
+
+
+def mujoco_body_exists(env, name):
+    try:
+        env.model.body(name)
+        return True
+    except KeyError:
+        return False
 
 
 class IKTrace:
     """Wrap instance methods; return the exact objects the original methods returned."""
 
-    def __init__(self, ik):
+    def __init__(self, ik, object_name=None):
         self.ik = ik
+        self.object_name = object_name
         self.anchor = None
         self.context = None
         observe, solve = ik.observe, ik.solve
@@ -58,10 +67,12 @@ class IKTrace:
         ik.observe, ik.solve = observed, solved
 
     def chunk(self, call, reply, env, rows):
+        object_key = self.object_name or "apple"
         return {"call": call, "anchor": self.anchor, "per_key": plain(reply["per_key"]),
                 "solved_joint_chunk": plain({k: reply[k] for k in ("q_l_chunk", "q_r_chunk")}),
                 "executed_rows": rows, "client_ik": self.context,
-                "apple_base_at_request": {s: apple_in_base(env, s).tolist() for s in SIDES}}
+                f"{object_key}_base_at_request": {
+                    s: apple_in_base(env, s, self.object_name).tolist() for s in SIDES}}
 
 
 def tracking(ik, per_key, left, right):

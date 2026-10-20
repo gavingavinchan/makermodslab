@@ -9,7 +9,7 @@ Two modes, both in Dream's shipped `dream_examples/yam_mujoco` scene and through
                   `eef`) with `robot` `other_embodiment`, on which the serve withholds the whole state, so the model
                   sees only the cameras and the prompt and its hand poses are composed on the pose sent.
 
---task cube swaps the apple/bowl for the local cube/square task. --rig viscous swaps
+--task cube or box swaps the apple/bowl for a local object/square task. --rig viscous swaps
 both arms for Viscous in the unchanged apple scene (vision only).
 
 If station works and vision fails the same way the Viscous did, the Viscous failure is the vision-only mode, not
@@ -113,7 +113,7 @@ class CustomGripFeed:
 
 def objects(env, fruit):
     p = env.data.body(fruit).xpos
-    target = "square" if fruit == "cube" else "bowl"
+    target = "square" if fruit in ("cube", "box") else "bowl"
     object_id = env.model.body(fruit).id
     touched = set()
     for contact in env.data.contact:
@@ -140,7 +140,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--mode", choices=("station", "vision"), required=True)
     p.add_argument("--fruit", choices=sorted(TASKS), default="apple")
-    p.add_argument("--task", choices=("apple", "orange", "cube"), help="Defaults to --fruit; cube replaces apple/bowl")
+    p.add_argument("--task", choices=("apple", "orange", "cube", "box"), help="Defaults to --fruit; cube/box replaces apple/bowl")
+    p.add_argument("--prompt", help="Override the task's default instruction")
     p.add_argument("--rig", choices=("yam", "viscous"), default="yam")
     p.add_argument("--live", action="store_true")
     p.add_argument("--max-calls", type=int, default=20)
@@ -152,16 +153,19 @@ def main():
     if args.rig == "viscous" and (args.mode != "vision" or args.task not in (None, "apple") or args.fruit != "apple"):
         p.error("The Viscous comparison uses --mode vision and the apple task.")
     args.fruit = args.task or args.fruit
-    distance_key = f"{args.fruit}_to_{'square' if args.fruit == 'cube' else 'bowl'}_xy_m"
+    distance_key = f"{args.fruit}_to_{'square' if args.fruit in ('cube', 'box') else 'bowl'}_xy_m"
     args.out.mkdir(parents=True, exist_ok=True)
     if args.live and (args.out / "requests.jsonl").exists():
         p.error("This output already has live requests; preserve its call accounting.")
-    task = "pick up the white cube and place into black square" if args.fruit == "cube" else TASKS[args.fruit]
+    prompts = {**TASKS, "cube": "pick up the white cube and place into black square",
+               "box": "pick up the black and white box and put it on the black square"}
+    task = args.prompt or prompts[args.fruit]
     station = args.mode == "station"
 
-    from cross_scenes import CubeYamEnv, ViscousAppleEnv, preview_comparison, success
+    from cross_scenes import BoxYamEnv, CubeYamEnv, ViscousAppleEnv, preview_comparison, success
 
-    env = ViscousAppleEnv() if args.rig == "viscous" else CubeYamEnv() if args.fruit == "cube" else YamEnv()
+    env_class = ViscousAppleEnv if args.rig == "viscous" else {"cube": CubeYamEnv, "box": BoxYamEnv}.get(args.fruit, YamEnv)
+    env = env_class()
     rec = Recorder(env)
     windows = {name: deque(maxlen=FRAMES) for name in VIDEO_ROLES}
     steps = 0
@@ -193,6 +197,7 @@ def main():
             "policy": config, "frames_per_camera": FRAMES, "camera_hz": 5,
             "row_hz": 20, "rows_per_chunk": args.actions, "own_speed_clipping": False,
             "initial_joints": "zeros", "initial_grippers": "open", "sim_held_during_request": True,
+            "task": args.fruit, "prompt": task,
         }, indent=2))
         client.policy(config)
         feed_client = CustomGripFeed(client) if args.rig == "viscous" else client
@@ -204,7 +209,7 @@ def main():
         trace = None
         if not station:
             from hand_path_tools import IKTrace, tracking, clip_viscous_grips, apple_in_base
-            trace = IKTrace(ik)
+            trace = IKTrace(ik, args.fruit)
         prepared = queued if ik is None else ik.observe(queued)
         (args.out / "preflight.json").write_text(json.dumps({
             "queued_keys": sorted(queued), "prepared_keys": sorted(prepared),
@@ -258,7 +263,7 @@ def main():
                 raise
             errors = tracking(ik, reply["per_key"], left, right) if trace is not None else None
             for row_index, (l_row, r_row) in enumerate(zip(left, right)):
-                apple_before = {s: apple_in_base(env, s).tolist() for s in ("left", "right")} if trace else None
+                apple_before = {s: apple_in_base(env, s, args.fruit).tolist() for s in ("left", "right")} if trace else None
                 env.step(l_row, r_row)
                 row_success = success(env, args.fruit)
                 ever_success |= row_success
@@ -267,7 +272,7 @@ def main():
                           **objects(env, args.fruit)}
                 if trace is not None:
                     sample.update({"row": row_index, "tracking": errors[row_index],
-                                   "apple_base_before_step": apple_before,
+                                   f"{args.fruit}_base_before_step": apple_before,
                                    "arm_joints": {s: env.state()[s][:6].tolist() for s in ("left", "right")}})
                 trajectory.append(sample)
                 best = min(best, sample[distance_key])

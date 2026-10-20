@@ -1,0 +1,509 @@
+{
+  "mode": "vision",
+  "rig": "yam",
+  "task": "pick up the black and white box and put it on the black square",
+  "successful_billed_calls": 20,
+  "closest_box_to_square_xy_m": 0.01418,
+  "executed_rows": 960,
+  "completed_chunks": 20,
+  "termination_reason": null,
+  "ever_success": true,
+  "final_success": false,
+  "ledger_billed_calls": 20,
+  "warming_refusals": 0,
+  "minimum_requested_hand_to_box_m": {
+    "left": {
+      "distance_m": 0.009108170791499554,
+      "call": 12,
+      "row": 14
+    },
+    "right": {
+      "distance_m": 0.24994880389908378,
+      "call": 11,
+      "row": 14
+    }
+  },
+  "minimum_requested_hand_to_box_at_request_m": {
+    "left": 0.012256072712590382,
+    "right": 0.2555577347682089
+  },
+  "minimum_requested_hand_to_initial_box_m": {
+    "left": 0.012829687607387834,
+    "right": 0.4793560933115602
+  },
+  "box_height_range_above_table_m": [
+    0.0138,
+    0.1907
+  ],
+  "box_contact_rows": 436,
+  "bilateral_finger_contact_rows": 316,
+  "successful_contact_free_rest_s": 9.55,
+  "first_success": {
+    "call": 13,
+    "row": 27,
+    "box_xyz": [
+      -0.021,
+      -0.043,
+      0.775
+    ]
+  },
+  "final_box_xyz": [
+    -0.026,
+    -0.072,
+    0.781
+  ],
+  "per_call": [
+    {
+      "call": 1,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.208626,
+      "commanded_grip_range": {
+        "left": [
+          0.9733118444055943,
+          0.98467548076923
+        ],
+        "right": [
+          0.9798245396647413,
+          0.9933489952887683
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.23737831787798422,
+        "right": 0.4838936387639799
+      }
+    },
+    {
+      "call": 2,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.208626,
+      "commanded_grip_range": {
+        "left": [
+          0.9761436480186477,
+          0.9851307546620045
+        ],
+        "right": [
+          0.9804347529833688,
+          0.9877889342519229
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.24583775265270635,
+        "right": 0.48706783429036643
+      }
+    },
+    {
+      "call": 3,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.208626,
+      "commanded_grip_range": {
+        "left": [
+          0.9692781177156178,
+          0.9919006774475517
+        ],
+        "right": [
+          0.9831350800040715,
+          0.9932123839438374
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.0818660975860352,
+        "right": 0.4827045354654379
+      }
+    },
+    {
+      "call": 4,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.208626,
+      "commanded_grip_range": {
+        "left": [
+          0.7282424606643355,
+          0.9999726835664325
+        ],
+        "right": [
+          0.986099517845607,
+          0.9951841229603283
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.03461297389880711,
+        "right": 0.48160687922540296
+      }
+    },
+    {
+      "call": 5,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.208626,
+      "commanded_grip_range": {
+        "left": [
+          0.8082249781468526,
+          0.9293824664918413
+        ],
+        "right": [
+          0.9870740084937124,
+          0.9987314068354086
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.022784702054712877,
+        "right": 0.4813370716970588
+      }
+    },
+    {
+      "call": 6,
+      "box_robot_contact_rows": 19,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0152,
+      "box_to_square_min_m": 0.207405,
+      "commanded_grip_range": {
+        "left": [
+          0.594828999125874,
+          0.9571951486013982
+        ],
+        "right": [
+          0.9896377351456308,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.014472308800020862,
+        "right": 0.4793706668220451
+      }
+    },
+    {
+      "call": 7,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0186,
+      "box_to_square_min_m": 0.207752,
+      "commanded_grip_range": {
+        "left": [
+          0.49537669361888104,
+          0.6679755791083912
+        ],
+        "right": [
+          0.990061238929108,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.01223772250915403,
+        "right": 0.480611557510098
+      }
+    },
+    {
+      "call": 8,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.1358,
+      "box_to_square_min_m": 0.208282,
+      "commanded_grip_range": {
+        "left": [
+          0.5658701649912586,
+          0.5904788570804194
+        ],
+        "right": [
+          0.9875976853159477,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.020256227948193213,
+        "right": 0.45886845017143857
+      }
+    },
+    {
+      "call": 9,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.1907,
+      "box_to_square_min_m": 0.066647,
+      "commanded_grip_range": {
+        "left": [
+          0.4962047230113636,
+          0.5164001038024472
+        ],
+        "right": [
+          0.9898380910877856,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.018473518204494912,
+        "right": 0.33566482213516535
+      }
+    },
+    {
+      "call": 10,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.1905,
+      "box_to_square_min_m": 0.01418,
+      "commanded_grip_range": {
+        "left": [
+          0.4909343586101398,
+          0.5042139866968964
+        ],
+        "right": [
+          0.9893872692034791,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.014618690535134505,
+        "right": 0.25915470319735395
+      }
+    },
+    {
+      "call": 11,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.1384,
+      "box_to_square_min_m": 0.034375,
+      "commanded_grip_range": {
+        "left": [
+          0.4982807719624126,
+          0.5282588505244753
+        ],
+        "right": [
+          0.9912042070379902,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.01024070989729366,
+        "right": 0.24994880389908378
+      }
+    },
+    {
+      "call": 12,
+      "box_robot_contact_rows": 48,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0995,
+      "box_to_square_min_m": 0.023452,
+      "commanded_grip_range": {
+        "left": [
+          0.49840881774475515,
+          0.5767762510926572
+        ],
+        "right": [
+          0.9893599360972846,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.009108170791499554,
+        "right": 0.2684296007049976
+      }
+    },
+    {
+      "call": 13,
+      "box_robot_contact_rows": 22,
+      "contacts": [
+        "left_tip_left",
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0696,
+      "box_to_square_min_m": 0.021059,
+      "commanded_grip_range": {
+        "left": [
+          0.5484741495483684,
+          0.8077469405594402
+        ],
+        "right": [
+          0.9925384445068162,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.015745466767695605,
+        "right": 0.3010331595759292
+      }
+    },
+    {
+      "call": 14,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.021637,
+      "commanded_grip_range": {
+        "left": [
+          0.7659619026806526,
+          0.9558384324009322
+        ],
+        "right": [
+          0.9923744924140696,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.04108060727414453,
+        "right": 0.34238078344554324
+      }
+    },
+    {
+      "call": 15,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.021637,
+      "commanded_grip_range": {
+        "left": [
+          0.6825557255244751,
+          0.8631173513986009
+        ],
+        "right": [
+          0.9895102263608454,
+          0.9999472586425034
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.028783135585431992,
+        "right": 0.3466950381897911
+      }
+    },
+    {
+      "call": 16,
+      "box_robot_contact_rows": 0,
+      "contacts": [],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.021637,
+      "commanded_grip_range": {
+        "left": [
+          0.6855241113053611,
+          0.7619782561188808
+        ],
+        "right": [
+          0.9871650820289736,
+          0.9954117875554899
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.03229207533682011,
+        "right": 0.3497493047862865
+      }
+    },
+    {
+      "call": 17,
+      "box_robot_contact_rows": 23,
+      "contacts": [
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0152,
+      "box_to_square_min_m": 0.020984,
+      "commanded_grip_range": {
+        "left": [
+          0.447750491695804,
+          0.7850333260489505
+        ],
+        "right": [
+          0.984769869934428,
+          0.9947241740626885
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.014725642051431821,
+        "right": 0.3569108415735432
+      }
+    },
+    {
+      "call": 18,
+      "box_robot_contact_rows": 16,
+      "contacts": [
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0167,
+      "box_to_square_min_m": 0.019693,
+      "commanded_grip_range": {
+        "left": [
+          0.36716018356643354,
+          0.7897499635780882
+        ],
+        "right": [
+          0.9892552165718345,
+          1.0
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.022758327323922883,
+        "right": 0.37152624828549385
+      }
+    },
+    {
+      "call": 19,
+      "box_robot_contact_rows": 24,
+      "contacts": [
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0149,
+      "box_to_square_min_m": 0.02462,
+      "commanded_grip_range": {
+        "left": [
+          0.6993826486013984,
+          0.9063182910839158
+        ],
+        "right": [
+          0.9820057471871096,
+          0.9927069001542382
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.01635588838270336,
+        "right": 0.38104304215517887
+      }
+    },
+    {
+      "call": 20,
+      "box_robot_contact_rows": 44,
+      "contacts": [
+        "left_tip_right"
+      ],
+      "box_height_max_m": 0.0221,
+      "box_to_square_min_m": 0.028155,
+      "commanded_grip_range": {
+        "left": [
+          0.6638257575757576,
+          0.8172530594405589
+        ],
+        "right": [
+          0.9890093315731392,
+          0.9995556484847078
+        ]
+      },
+      "closest_requested_hand_m": {
+        "left": 0.022927674099503303,
+        "right": 0.3785751528512517
+      }
+    }
+  ]
+}
