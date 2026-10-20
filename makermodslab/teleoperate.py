@@ -731,6 +731,12 @@ def _connect_can(request: TeleoperateRequest):
 
         install_metal_gripper(robot, request.robot_name)
 
+    if request.mode != "bimanual":
+        # Bench switch, off unless MAKERMODSLAB_GRAVITY_FF names a fit for this robot.
+        from .gravity_feedforward import install_from_env
+
+        install_from_env(robot, request.robot_name)
+
     recovery_problems: list[str] = []
     try:
         logger.info(f"Connecting to {family} follower arm(s)...")
