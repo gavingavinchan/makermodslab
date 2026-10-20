@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "arm": "viscous_01",
+  "driver_commit": "2a5ea4e581c0d8956b6e58a8e1c6bf8e13486daa",
+  "hardware_profiles": "none: the driver's built-in ViscousFollowerConfig / RebotArm102LeaderViscousTeleopConfig presets were captured on this arm and are used when no viscous_profiles file exists for viscous_01 / star_viscous",
+  "physical_test": "Commissioned August 2026 (ROM capture and mechanical zero 2026-08-28, Star leader ranges 2026-08-29). Powered teleop through Lab confirmed by Gavin on Linux and macOS (docs/viscous-arm.md); recording and policy execution unverified. Dry-bench gravity identification on gavin-linux 2026-10-20 (evidence/gravity-air-*.json, gravity-air-fit.json).",
+  "files": {
+    "calibration/robots/viscous_follower/viscous_01.json": "95b40c39407fd0862b1f5f60c181753fea388be7376dc060da620623cbcf6e28",
+    "calibration/teleoperators/rebot_102_leader/star_viscous.json": "eb3622a7ced265277cd9dc491ff19993acaad33ae885863f7c0e0fba1b29f8fa",
+    "evidence/commissioning/joint-limits-zeroed-frame.json": "0ed3cd781a2794b6e2bf55e41867229c0919a80a09c9ce389de0062279f32b32",
+    "evidence/commissioning/rom-raw-2026-08-28.json": "d9a3491c6bbe55c126a29e21d7c3115c0543c9a9aaba05ea35999008ba5a6652",
+    "evidence/commissioning/rom-raw-j5-2026-08-28.json": "51dcdd195798e017c054b68b3ec6404f14881e163927e9717a0063aebc2e0ac6",
+    "evidence/commissioning/star-ranges-2026-08-29.json": "c29025d0d9f43e12b91d567a55ff01c372f2610da1cc51252387fc4ec7754c40",
+    "evidence/commissioning/viscous_arm_v1.yaml": "be93513eb06cea48e6989d77eebd9cd9874982aabd1b792aa53cdd0039f45e8c",
+    "evidence/commissioning/viscous_arm_v1.yaml.bak": "69fc67166ef714b954afff4c56696c4fb1a53b2f7d260c8190edaa246184a320",
+    "evidence/commissioning/viscous_arm_v1.yaml.prezero": "1c5900d9e44a449a558a652152104a90f42f443791e6e4dd154e88d71ff2c8e3",
+    "robot-record-template.json": "93dbec93ba404ae5d779c6a0d7291ace38f283d86965d5c73e96d2b047240c32"
+  },
+  "recovery_scope": "Runtime calibrations for the follower and its purple Star leader, the Lab robot-record template (ports blank, camera indices from gavin-linux) and the August 2026 commissioning captures. The gravity identification runs and fit are versioned by git and deliberately not checksummed here, so a refit does not invalidate the restore."
+}

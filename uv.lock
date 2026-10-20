@@ -1299,6 +1299,11 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+arm-dynamics = [
+    { name = "cmeel-tinyxml2" },
+    { name = "cmeel-urdfdom" },
+    { name = "pin" },
+]
 dev = [
     { name = "httpx" },
     { name = "pre-commit" },
@@ -1327,6 +1332,8 @@ test = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cmeel-tinyxml2", marker = "extra == 'arm-dynamics'", specifier = "<11" },
+    { name = "cmeel-urdfdom", marker = "extra == 'arm-dynamics'", specifier = ">=4,<5" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
     { name = "gs-usb", marker = "extra == 'gs-usb'", specifier = "==0.3.1" },
     { name = "httpx", marker = "extra == 'test'", specifier = ">=0.27" },
@@ -1337,6 +1344,7 @@ requires-dist = [
     { name = "livekit-api", specifier = ">=1.0" },
     { name = "livekit-portal", marker = "extra == 'remote'", specifier = "==0.2.4" },
     { name = "makermodslab", extras = ["test"], marker = "extra == 'dev'" },
+    { name = "pin", marker = "extra == 'arm-dynamics'", specifier = ">=3.1.0,<4.0.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.0" },
     { name = "psutil", specifier = ">=5.9.0" },
     { name = "pygrabber", marker = "sys_platform == 'win32'", specifier = ">=0.2" },
@@ -1348,7 +1356,7 @@ requires-dist = [
     { name = "uvicorn", specifier = ">=0.24.0" },
     { name = "websockets", specifier = ">=15.0.1" },
 ]
-provides-extras = ["gs-usb", "dev", "remote", "test", "metal-leader"]
+provides-extras = ["gs-usb", "dev", "remote", "test", "metal-leader", "arm-dynamics"]
 
 [[package]]
 name = "markdown-it-py"

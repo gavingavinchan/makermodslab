@@ -95,6 +95,16 @@ metal-leader = [
     "lerobot[pin-dep] @ git+https://github.com/gavingavinchan/lerobot-MakerMods.git@2a5ea4e581c0d8956b6e58a8e1c6bf8e13486daa",
 ]
 
+# Opt-in: the CAN arms' static gravity model (makermodslab/arm_gravity.py) and
+# the scripts that identify it on an arm (scripts/viscous-gravity-*.py).
+# Pinocchio for the same reason, in the same version range, as the fork's
+# `pin-dep` extra above, so the two extras install together.
+arm-dynamics = [
+    "pin>=3.1.0,<4.0.0",
+    "cmeel-urdfdom>=4,<5",
+    "cmeel-tinyxml2<11",
+]
+
 [project.scripts]
 # The installed command is `makermodslab`; the Python package/module is
 # `makermodslab` (imports, the wheel, `makermodslab.server:app`).

@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-10-09T01:03:50",
+  "backoff": 0.05,
+  "min_travel": 0.3,
+  "joints": [
+    {
+      "joint": 1,
+      "motor_id": 1,
+      "min": -0.1855,
+      "max": 0.1045,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    },
+    {
+      "joint": 2,
+      "motor_id": 2,
+      "min": -3.5306,
+      "max": 0.0013,
+      "written": true,
+      "lo": -3.481,
+      "hi": -0.049
+    },
+    {
+      "joint": 3,
+      "motor_id": 3,
+      "min": 0.0002,
+      "max": 3.7838,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    },
+    {
+      "joint": 4,
+      "motor_id": 4,
+      "min": -0.0017,
+      "max": 0.9446,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    },
+    {
+      "joint": 5,
+      "motor_id": 5,
+      "min": -0.0316,
+      "max": 0.0558,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    },
+    {
+      "joint": 6,
+      "motor_id": 6,
+      "min": -0.4222,
+      "max": 0.1916,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    },
+    {
+      "joint": 7,
+      "motor_id": 7,
+      "min": -0.0006,
+      "max": -0.0002,
+      "written": false,
+      "reason": "not selected (target motor 2)"
+    }
+  ]
+}
