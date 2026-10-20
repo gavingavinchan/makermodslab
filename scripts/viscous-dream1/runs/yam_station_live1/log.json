@@ -1,0 +1,977 @@
+[
+ {
+  "call": 1,
+  "rtt_s": 2.2,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 34 values, max correction 0.019052",
+   "left joint3: bounded 38 values, max correction 0.022924",
+   "right joint2: bounded 48 values, max correction 0.044821",
+   "right joint3: bounded 48 values, max correction 0.055433",
+   "right gripper: bounded 18 values, max correction 0.005945"
+  ],
+  "closest_so_far_m": 0.209,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9817207532051282,
+    0.9927884615384608
+   ],
+   "right": [
+    0.9945966758372342,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.15,
+   0.105,
+   0.791
+  ],
+  "apple_to_bowl_xy_m": 0.209,
+  "left_hand_z": 0.937,
+  "right_hand_z": 0.934,
+  "left_tcp_xyz": [
+   0.3067,
+   -0.0048,
+   0.9375
+  ],
+  "right_tcp_xyz": [
+   -0.3047,
+   -0.005,
+   0.9339
+  ],
+  "left_gripper": 0.9868,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 2,
+  "rtt_s": 0.74,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 30 values, max correction 0.024875",
+   "left joint3: bounded 40 values, max correction 0.022924",
+   "right joint2: bounded 48 values, max correction 0.044441",
+   "right joint3: bounded 48 values, max correction 0.048152",
+   "right gripper: bounded 14 values, max correction 0.011928"
+  ],
+  "closest_so_far_m": 0.209,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.982421875,
+    1.0
+   ],
+   "right": [
+    0.9955711885765715,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.15,
+   0.105,
+   0.791
+  ],
+  "apple_to_bowl_xy_m": 0.209,
+  "left_hand_z": 0.938,
+  "right_hand_z": 0.933,
+  "left_tcp_xyz": [
+   0.3077,
+   -0.0048,
+   0.9376
+  ],
+  "right_tcp_xyz": [
+   -0.3041,
+   -0.005,
+   0.9327
+  ],
+  "left_gripper": 0.9899,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 3,
+  "rtt_s": 0.9,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 8 values, max correction 0.024875",
+   "left joint3: bounded 7 values, max correction 0.014853",
+   "left gripper: bounded 9 values, max correction 0.004302",
+   "right joint2: bounded 47 values, max correction 0.041026",
+   "right joint3: bounded 48 values, max correction 0.048152",
+   "right gripper: bounded 47 values, max correction 0.016017"
+  ],
+  "closest_so_far_m": 0.209,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.97265625,
+    1.0
+   ],
+   "right": [
+    0.9993917137592822,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.15,
+   0.105,
+   0.791
+  ],
+  "apple_to_bowl_xy_m": 0.209,
+  "left_hand_z": 0.88,
+  "right_hand_z": 0.934,
+  "left_tcp_xyz": [
+   0.205,
+   0.1258,
+   0.8804
+  ],
+  "right_tcp_xyz": [
+   -0.2967,
+   -0.0048,
+   0.9335
+  ],
+  "left_gripper": 0.9896,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 4,
+  "rtt_s": 0.79,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.041962",
+   "right joint3: bounded 48 values, max correction 0.043527",
+   "right gripper: bounded 41 values, max correction 0.015835"
+  ],
+  "closest_so_far_m": 0.209,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.8249836101398597,
+    0.9989619755244754
+   ],
+   "right": [
+    0.9962997436523438,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.15,
+   0.105,
+   0.791
+  ],
+  "apple_to_bowl_xy_m": 0.209,
+  "left_hand_z": 0.839,
+  "right_hand_z": 0.934,
+  "left_tcp_xyz": [
+   0.1076,
+   0.0856,
+   0.8386
+  ],
+  "right_tcp_xyz": [
+   -0.2926,
+   -0.0046,
+   0.9339
+  ],
+  "left_gripper": 0.8314,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 5,
+  "rtt_s": 0.76,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.038121",
+   "right joint3: bounded 48 values, max correction 0.048411",
+   "right gripper: bounded 35 values, max correction 0.008021"
+  ],
+  "closest_so_far_m": 0.209,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.8603857080419579,
+    0.9816479093822841
+   ],
+   "right": [
+    0.9962769935736845,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.15,
+   0.105,
+   0.791
+  ],
+  "apple_to_bowl_xy_m": 0.209,
+  "left_hand_z": 0.817,
+  "right_hand_z": 0.936,
+  "left_tcp_xyz": [
+   0.1351,
+   0.1036,
+   0.817
+  ],
+  "right_tcp_xyz": [
+   -0.2914,
+   -0.0046,
+   0.936
+  ],
+  "left_gripper": 0.8622,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 6,
+  "rtt_s": 1.03,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.038121",
+   "right joint3: bounded 48 values, max correction 0.057465",
+   "right gripper: bounded 27 values, max correction 0.011928"
+  ],
+  "closest_so_far_m": 0.206,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.5309290319055944,
+    0.91796875
+   ],
+   "right": [
+    0.9865321516990662,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.145,
+   0.106,
+   0.794
+  ],
+  "apple_to_bowl_xy_m": 0.206,
+  "left_hand_z": 0.814,
+  "right_hand_z": 0.938,
+  "left_tcp_xyz": [
+   0.1346,
+   0.1002,
+   0.8138
+  ],
+  "right_tcp_xyz": [
+   -0.2901,
+   -0.0045,
+   0.9378
+  ],
+  "left_gripper": 0.6782,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 7,
+  "rtt_s": 0.98,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.033789",
+   "right joint3: bounded 48 values, max correction 0.071011",
+   "right gripper: bounded 27 values, max correction 0.008021"
+  ],
+  "closest_so_far_m": 0.021,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.5974411330856643,
+    0.66796875
+   ],
+   "right": [
+    0.9865321516990662,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.021,
+   0.961
+  ],
+  "apple_to_bowl_xy_m": 0.021,
+  "left_hand_z": 0.984,
+  "right_hand_z": 0.939,
+  "left_tcp_xyz": [
+   0.005,
+   -0.0209,
+   0.9837
+  ],
+  "right_tcp_xyz": [
+   -0.289,
+   -0.0044,
+   0.939
+  ],
+  "left_gripper": 0.6812,
+  "right_gripper": 0.9993
+ },
+ {
+  "call": 8,
+  "rtt_s": 1.14,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.033789",
+   "right joint3: bounded 48 values, max correction 0.051619",
+   "right gripper: bounded 45 values, max correction 0.019742"
+  ],
+  "closest_so_far_m": 0.01,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.5663015370046618,
+    0.9224349868881118
+   ],
+   "right": [
+    0.9943462610244751,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.013,
+   -0.046,
+   0.803
+  ],
+  "apple_to_bowl_xy_m": 0.014,
+  "left_hand_z": 0.904,
+  "right_hand_z": 0.943,
+  "left_tcp_xyz": [
+   -0.0245,
+   -0.0319,
+   0.9042
+  ],
+  "right_tcp_xyz": [
+   -0.2886,
+   -0.0043,
+   0.943
+  ],
+  "left_gripper": 0.9176,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 9,
+  "rtt_s": 1.4,
+  "rows": 48,
+  "limit_notices": [
+   "left gripper: bounded 16 values, max correction 0.007812",
+   "right joint2: bounded 48 values, max correction 0.034622",
+   "right joint3: bounded 48 values, max correction 0.066942",
+   "right gripper: bounded 48 values, max correction 0.015835"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9902890078671321,
+    1.0
+   ],
+   "right": [
+    1.0,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.035,
+   0.801
+  ],
+  "apple_to_bowl_xy_m": 0.009,
+  "left_hand_z": 0.87,
+  "right_hand_z": 0.948,
+  "left_tcp_xyz": [
+   -0.0199,
+   0.1168,
+   0.8699
+  ],
+  "right_tcp_xyz": [
+   -0.2877,
+   -0.004,
+   0.9479
+  ],
+  "left_gripper": 0.9914,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 10,
+  "rtt_s": 1.23,
+  "rows": 48,
+  "limit_notices": [
+   "left gripper: bounded 11 values, max correction 0.015625",
+   "right joint2: bounded 48 values, max correction 0.034622",
+   "right joint3: bounded 48 values, max correction 0.066942",
+   "right gripper: bounded 42 values, max correction 0.015835"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.7234484265734262,
+    1.0
+   ],
+   "right": [
+    0.9923927187919617,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.035,
+   0.801
+  ],
+  "apple_to_bowl_xy_m": 0.009,
+  "left_hand_z": 0.826,
+  "right_hand_z": 0.95,
+  "left_tcp_xyz": [
+   -0.0325,
+   0.1228,
+   0.8262
+  ],
+  "right_tcp_xyz": [
+   -0.2868,
+   -0.0038,
+   0.9499
+  ],
+  "left_gripper": 0.7259,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 11,
+  "rtt_s": 0.96,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.031164",
+   "right joint3: bounded 48 values, max correction 0.057921",
+   "right gripper: bounded 46 values, max correction 0.011928"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.6228624890734265,
+    0.76171875
+   ],
+   "right": [
+    0.9985538548800773,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.035,
+   0.801
+  ],
+  "apple_to_bowl_xy_m": 0.009,
+  "left_hand_z": 0.813,
+  "right_hand_z": 0.952,
+  "left_tcp_xyz": [
+   -0.0244,
+   0.1277,
+   0.8131
+  ],
+  "right_tcp_xyz": [
+   -0.285,
+   -0.0035,
+   0.9524
+  ],
+  "left_gripper": 0.6244,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 12,
+  "rtt_s": 1.01,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.031763",
+   "right joint3: bounded 48 values, max correction 0.056267",
+   "right gripper: bounded 31 values, max correction 0.008021"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.5266164499562935,
+    0.6640625
+   ],
+   "right": [
+    0.993572094501593,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.035,
+   0.801
+  ],
+  "apple_to_bowl_xy_m": 0.009,
+  "left_hand_z": 0.811,
+  "right_hand_z": 0.955,
+  "left_tcp_xyz": [
+   -0.0226,
+   0.1292,
+   0.8107
+  ],
+  "right_tcp_xyz": [
+   -0.284,
+   -0.0032,
+   0.9546
+  ],
+  "left_gripper": 0.5613,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 13,
+  "rtt_s": 1.06,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.032716",
+   "right joint3: bounded 48 values, max correction 0.052553",
+   "right gripper: bounded 25 values, max correction 0.011928"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.47742865858100225,
+    0.55078125
+   ],
+   "right": [
+    0.9884856343269348,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.008,
+   -0.035,
+   0.801
+  ],
+  "apple_to_bowl_xy_m": 0.01,
+  "left_hand_z": 0.918,
+  "right_hand_z": 0.954,
+  "left_tcp_xyz": [
+   -0.0238,
+   -0.0396,
+   0.9177
+  ],
+  "right_tcp_xyz": [
+   -0.2827,
+   -0.0031,
+   0.9544
+  ],
+  "left_gripper": 0.561,
+  "right_gripper": 0.9992
+ },
+ {
+  "call": 14,
+  "rtt_s": 1.43,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 48 values, max correction 0.032826",
+   "right joint3: bounded 48 values, max correction 0.055196",
+   "right gripper: bounded 47 values, max correction 0.013476"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.45499219205273883,
+    0.8962248688811186
+   ],
+   "right": [
+    0.9986130290931753,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 0.903,
+  "right_hand_z": 0.952,
+  "left_tcp_xyz": [
+   -0.0343,
+   -0.0503,
+   0.9031
+  ],
+  "right_tcp_xyz": [
+   -0.2821,
+   -0.0032,
+   0.952
+  ],
+  "left_gripper": 0.8938,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 15,
+  "rtt_s": 1.43,
+  "rows": 48,
+  "limit_notices": [
+   "right joint2: bounded 45 values, max correction 0.032826",
+   "right joint3: bounded 48 values, max correction 0.055196",
+   "right gripper: bounded 48 values, max correction 0.023649"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.974609375,
+    0.993507794289044
+   ],
+   "right": [
+    1.0,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 1.118,
+  "right_hand_z": 0.95,
+  "left_tcp_xyz": [
+   0.2756,
+   -0.0053,
+   1.1177
+  ],
+  "right_tcp_xyz": [
+   -0.2837,
+   -0.0038,
+   0.9501
+  ],
+  "left_gripper": 0.9872,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 16,
+  "rtt_s": 1.12,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 3 values, max correction 0.016251",
+   "right joint2: bounded 39 values, max correction 0.036228",
+   "right joint3: bounded 48 values, max correction 0.051901",
+   "right gripper: bounded 46 values, max correction 0.011099"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9813474286130535,
+    0.9975142045454544
+   ],
+   "right": [
+    0.9983762360952949,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 1.002,
+  "right_hand_z": 0.947,
+  "left_tcp_xyz": [
+   0.3251,
+   0.0087,
+   1.002
+  ],
+  "right_tcp_xyz": [
+   -0.2864,
+   -0.0039,
+   0.9474
+  ],
+  "left_gripper": 0.9971,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 17,
+  "rtt_s": 1.03,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 48 values, max correction 0.054000",
+   "right joint2: bounded 47 values, max correction 0.036228",
+   "right joint3: bounded 48 values, max correction 0.066531",
+   "right gripper: bounded 32 values, max correction 0.008021"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9795445439976688,
+    0.9921875
+   ],
+   "right": [
+    0.9923927187919617,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 0.951,
+  "right_hand_z": 0.945,
+  "left_tcp_xyz": [
+   0.3252,
+   -0.0018,
+   0.951
+  ],
+  "right_tcp_xyz": [
+   -0.288,
+   -0.0041,
+   0.9445
+  ],
+  "left_gripper": 0.9889,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 18,
+  "rtt_s": 1.05,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 42 values, max correction 0.053819",
+   "right joint2: bounded 48 values, max correction 0.037722",
+   "right joint3: bounded 48 values, max correction 0.071299",
+   "right gripper: bounded 47 values, max correction 0.015835"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9778145032051281,
+    0.9921875
+   ],
+   "right": [
+    0.9923927187919617,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 0.95,
+  "right_hand_z": 0.943,
+  "left_tcp_xyz": [
+   0.325,
+   -0.0022,
+   0.9499
+  ],
+  "right_tcp_xyz": [
+   -0.2876,
+   -0.0041,
+   0.9432
+  ],
+  "left_gripper": 0.9904,
+  "right_gripper": 0.9999
+ },
+ {
+  "call": 19,
+  "rtt_s": 1.53,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 37 values, max correction 0.022524",
+   "left joint3: bounded 2 values, max correction 0.003976",
+   "right joint2: bounded 48 values, max correction 0.039882",
+   "right joint3: bounded 48 values, max correction 0.051299",
+   "right gripper: bounded 45 values, max correction 0.012229"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9789845571095571,
+    0.9921875
+   ],
+   "right": [
+    0.9980802448479443,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 0.953,
+  "right_hand_z": 0.941,
+  "left_tcp_xyz": [
+   0.3259,
+   -0.0021,
+   0.953
+  ],
+  "right_tcp_xyz": [
+   -0.2873,
+   -0.0041,
+   0.9414
+  ],
+  "left_gripper": 0.9895,
+  "right_gripper": 1.0
+ },
+ {
+  "call": 20,
+  "rtt_s": 1.27,
+  "rows": 48,
+  "limit_notices": [
+   "left joint2: bounded 44 values, max correction 0.030886",
+   "right joint2: bounded 48 values, max correction 0.039882",
+   "right joint3: bounded 48 values, max correction 0.053569",
+   "right gripper: bounded 26 values, max correction 0.011928"
+  ],
+  "closest_so_far_m": 0.008,
+  "commanded_gripper_ranges": {
+   "left": [
+    0.9817662805944055,
+    0.9921875
+   ],
+   "right": [
+    0.9923927187919617,
+    1.0
+   ]
+  },
+  "reply_keys": [
+   "per_key",
+   "q_l",
+   "q_l_chunk",
+   "q_r",
+   "q_r_chunk"
+  ],
+  "apple_xyz": [
+   0.012,
+   -0.029,
+   0.802
+  ],
+  "apple_to_bowl_xy_m": 0.016,
+  "left_hand_z": 0.951,
+  "right_hand_z": 0.939,
+  "left_tcp_xyz": [
+   0.3267,
+   -0.002,
+   0.9514
+  ],
+  "right_tcp_xyz": [
+   -0.2873,
+   -0.0042,
+   0.9394
+  ],
+  "left_gripper": 0.9887,
+  "right_gripper": 0.9999
+ }
+]

@@ -276,6 +276,37 @@ capped by `--max-calls`); `--rig bench|yam`, `--start neutral|work`, `--model be
    options are a Maker/Metal fine-tuned checkpoint, or ~50 Viscous demos and
    Dream's fine-tune service (LeRobot v2.1 only; we record v3.0, so convert).
 
+**Findings (2026-10-20, second session).** Gavin chose to work B3 in its own
+session, in parallel with a haptics session.
+- *The model is blind to our arm's state, by design.* For any arm but YAM the
+  client sends `robot: other_embodiment`, and the serve then "withholds the whole
+  state, joints, hand pose and grip alike: the model reads none of it, and the hand
+  pose sent is only the anchor its answer is composed on" (`dream/client_ik.py`
+  docstring; `dream/__init__.py` on `robot`). On the Viscous, Dream-1 acts from
+  the three images and the prompt alone. Dream's own `yam_mujoco` example never
+  uses this mode: for beta it sends the YAM station keys and the model reads the
+  joints. So the earlier comparison with "YAM works in Dream's sim" was not like
+  for like.
+- *Hypothesis 3 (hand frame) ruled out* with dream's own FK
+  (`scripts/viscous-dream1/frame_check.py`): with the hand straight forward,
+  our arm file gives approach = +x and jaw = +y (left) in base, the same as YAM
+  and Makers and as Dream's convention requires. `--start neutral` puts the hand at
+  (0.22, 0, 0.13) m pointing forward 9° down, near YAM's rest (0.26, 0, 0.21) m.
+- *Hypothesis 1 done properly, and the vision-only mode is NOT the problem.*
+  `scripts/viscous-dream1/yam_baseline.py` runs Dream's YAM scene ("put apple
+  into the bowl") in two modes: `station` (the model reads the state) and
+  `vision` (`other_embodiment`, client IK: the Viscous path). 20 billed calls
+  each, beta. Both succeed: the left arm grasps, lifts and drops the apple in the
+  bowl (closest 0.008 m station, 0.004 m vision; vision did it by call 6-7, station
+  by 8-9). Evidence in `scripts/viscous-dream1/runs/yam_{station,vision}_live1/`.
+  So Dream-1 can act from images alone, and something specific to the Viscous
+  trial broke it: the arm's appearance, the task/scene (white cube into a black
+  square), or our executor (30 of 48 rows, 2 rad/s per-row clip, gripper
+  closed at start).
+- *Next: the 2x2.* Run A = YAM in Dream's scene doing our cube/square task;
+  Run B = the Viscous in Dream's scene doing the apple task, with the baseline's
+  executor (48 rows, no extra clip, gripper open). Which cell fails names the cause.
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
