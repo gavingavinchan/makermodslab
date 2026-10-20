@@ -30,7 +30,9 @@ Gavin then reprioritised.
 **A1. A clean contact signal.** contact torque = measured motor torque − predicted
 gravity torque.
 - *Intent:* the haptic effort must exclude self-weight (the guiding rule above).
-- *Unblocks:* A3. *Status:* model done for unit 1 dry; live validation next.
+- *Unblocks:* A3. *Status:* validated live on unit 1 dry, 2026-10-20 (see
+  "Contact-signal bench check"): a hand push reads ~2 N m against ~0.1 N m
+  still noise. Free-motion floor ~0.6-1.2 N m p99 still to bring down.
 
 **A1a. Gravity model, measured on the arm.**
 - *Intent:* not what gravity compensation was for the Metal arm. "Before,
@@ -45,7 +47,8 @@ gravity torque.
 **A1b. Gravity feedforward on the follower.**
 - *Intent:* a side benefit, not the goal. Removing sag makes position error mean
   contact, and the follower goes where it is told.
-- *Status:* sign verified at 50% in GUI teleop; A/B in degrees pending.
+- *Status:* A/B done 2026-10-20: sag 3.5-5.5 deg at 0 % falls to under 0.25 deg
+  at 100 % on every gravity joint.
 
 **A2. A position-drivable leader.** The Star's servos must be commanded toward
 the follower with capped effort (`star_follow.py` draft).
@@ -192,7 +195,13 @@ buoyancy.
   recover toward the low-load upright pose, cool before heavy poses, log per-tick
   torque and motor status.
 - Releasing torque at the fold tips the dry arm forward ~25° onto its gripper
-  (every stop, including Lab teleop's). Not yet fixed.
+  (every stop, including Lab teleop's). Not yet fixed. Cause (2026-10-20, from
+  the fit): the elbow is fine, gravity pushes the forearm INTO its fold stop
+  (~4.1 N m the stop carries). `shoulder_lift` sits just past balance at the
+  fold and gravity pulls it AWAY from its stop (0.2 N m, 0.6 N m by -25 deg),
+  so the arm rolls forward until the gripper lands. Gravity never holds the
+  shoulder in the fold; the fix is to lower the arm under control onto where it
+  ends up (gripper on the bench) and release there.
 
 ## How to use what exists
 
@@ -208,9 +217,11 @@ buoyancy.
 
 ## Next steps
 
-1. **Contact-torque signal** live in the log: measured − gravity, per joint;
-   verify ~0 in free motion and a clear jump when the follower is pushed.
-2. Automated A/B of the feedforward (0 vs 100%) at moderate poses: sag in degrees.
+1. ~~Contact-torque signal live~~ and ~~feedforward A/B~~: done 2026-10-20
+   (see "Contact-signal bench check"). Follow-up: lower the free-motion floor
+   with a Coulomb friction term per joint and a shoulder refit that adds these
+   holds, then re-run `viscous-contact-check.py` to compare.
+2. Feedforward at 100 % in GUI teleop on unit 1 (the drop-in is still at 50 %).
 3. Characterize the Star as an actuator: power-capped moves (does the protocol's
    power field work through `set_angle`?), damping levels, latency, feel.
 4. Input-gated leader drive built on `star_follow.py`.
@@ -382,10 +393,37 @@ should feel that."
   replaced. The legs out of and back into the fold are exempt from the cap
   (collision-checked only): leaving the fold carries ~4 N m on any route, as
   every Lab teleop unfold does.
-- Status: offline only. Unit tests and a synthetic run through `--analyze`
-  pass; the detached stop test on gavin-linux passed (SIGTERM, `kill -0`).
-  The read-only dry run on gavin-linux got no handshake reply from any of the
-  seven motors (arm power off?), so no plan from the real pose yet.
+- First powered run (`evidence/contact-check-20261020-180543.json`) aborted
+  1.3 s into the unfold on a 10 deg elbow lag with nothing wrong: at 0 %
+  feedforward the elbow carries ~4 N m leaving the fold (~8 deg sag at kp 30)
+  and the driver's startup sync stalled lifting the forearm off its stop. Fixed
+  by tripping on lag beyond the expected sag and ramping feedforward on at the
+  fold. Even that run showed the signal working: with the forearm resting on its
+  stop, elbow contact read about -3.6 N m, the stop carrying the load.
+
+**Results, unit 1 dry, `evidence/contact-check-20261020-181208.json`:**
+
+- *Feedforward:* sag at 0 % 3.5-5.5 deg (the model predicts it within ~10 %;
+  it under-predicts the shoulder at the two heavy poses), at 100 % at most
+  0.21 deg on every gravity joint. Gravity feedforward works at full scale.
+- *Telemetry includes the feedforward:* reported torque = kp x error + tau_ff
+  at slope 0.99-1.00, r = 1.00, at both scales. So contact = reported - gravity
+  is valid with feedforward on, which is how teleop will run.
+- *Static holds:* contact within +/-0.31 N m at all 12 holds (friction band
+  0.01-0.13 deg, wrist up to 0.5 deg).
+- *Free motion (15 deg/s legs, 2917 ticks):* p99 1.17 shoulder, 0.79 elbow,
+  0.61 wrist; rms 0.27-0.36 N m. Not the fold: excluding it changes nothing.
+  Coulomb friction ~0.2 N m shows as the v>0 / v<0 split (+0.16 / -0.24);
+  subtracting a fitted friction term brings elbow and wrist p99 to 0.54 / 0.39.
+  The shoulder's remainder (0.74) looks like model error at its larger loads.
+- *Push test (at `forward`, feedforward on):* two clean pushes, about 4 s each,
+  reading +2.1 / -2.2 N m shoulder and +1.5 / -1.3 N m elbow (3-4 deg of give),
+  against a still baseline of 0.06-0.12 N m rms (wrist 0.4). That is about 20x
+  the still noise but only ~2x the free-motion floor, so A3 needs the floor
+  brought down (friction compensation, a shoulder refit) before it can gate on
+  contact during motion. The wrist's still offset stepped -0.4 to +0.2 N m
+  across the first push: stiction, the floor for a held pose. No sideways push
+  showed on pan, yaw or roll (pan peaked at 0.27 N m).
 - Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
   (missing commissioned `cal-f` profile), present at `HEAD` too.
 
@@ -424,9 +462,10 @@ file instead.
 
 **Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
 Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial"
-in order. Haptics: next step 2 (automated feedforward A/B), then 1 (live
-contact-signal validation). Before energizing, show Gavin the dry-run plan and
-say exactly which joints will move.
+in order. Haptics: steps 1-2 done 2026-10-20; next is the friction term and
+shoulder refit (step 1 follow-up), then the Star as an actuator (step 3).
+Before energizing, show Gavin the dry-run plan and say exactly which joints
+will move.
 
 ## Working rules for this project
 
