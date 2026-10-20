@@ -1,0 +1,19 @@
+# New waterproof Viscous Arm: seven RS00 actuators.
+# CAPTURE ONLY: limits are unmeasured placeholders; zero gains are not operating gains.
+# Use only for private-protocol zeroing and torque-off range capture. Do not enable.
+# Mechanical reference saved to motor flash: folded resting pose, gripper CLOSED.
+control_rate_hz: 200
+max_velocity: 1.5
+limit_margin: 0.0
+feedback_timeout: 0.2
+motor_can_timeout_ms: 200
+joints:
+  - {motor_id: 1, model: RS00, direction: 1, offset: 0.0, lo: -2.214, hi: 3.273, kp: 0.0, kd: 0.0}
+  - {motor_id: 2, model: RS00, direction: 1, offset: 0.0, lo: -3.481, hi: -0.049, kp: 0.0, kd: 0.0}
+  - {motor_id: 3, model: RS00, direction: 1, offset: 0.0, lo: 0.05, hi: 4.364, kp: 0.0, kd: 0.0}
+# J4 hardware constraint (Gavin, 2026-10-09): logo blocks some rearward travel.
+# If logo placement/shape/clearance changes, remeasure J4 and update limits and leader mapping.
+  - {motor_id: 4, model: RS00, direction: 1, offset: 0.0, lo: -2.134, hi: 1.433, kp: 0.0, kd: 0.0}
+  - {motor_id: 5, model: RS00, direction: 1, offset: 0.0, lo: -1.502, hi: 1.524, kp: 0.0, kd: 0.0}
+  - {motor_id: 6, model: RS00, direction: 1, offset: 0.0, lo: -2.705, hi: 2.618, kp: 0.0, kd: 0.0}
+  - {motor_id: 7, model: RS00, direction: 1, offset: 0.0, lo: -12.5, hi: 12.5, kp: 0.0, kd: 0.0}

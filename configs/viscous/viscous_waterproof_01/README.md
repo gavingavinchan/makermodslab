@@ -64,6 +64,7 @@ flash; the restore script writes only disk files and never opens hardware.
 The SDK YAML has zero gains for manual capture; use the Lab hardware profile for
 teleop. Policy rollout needs explicit matching limits on its subprocess CLI path
 and remains unverified. Camera bindings are empty. This bundle does not contain
-datasets, policies or the entire Linux machine state. Original raw capture logs
-remain on the offline Linux computer; captured extrema are preserved in
-`evidence/commissioning-progress.json`.
+datasets, policies or the entire Linux machine state. The original per-joint raw
+capture logs (`*-capture.log.gz`; `gunzip -k` to read), per-joint ROM captures and
+the remaining commissioning settings files are in `evidence/raw-captures/`;
+captured extrema are summarized in `evidence/commissioning-progress.json`.

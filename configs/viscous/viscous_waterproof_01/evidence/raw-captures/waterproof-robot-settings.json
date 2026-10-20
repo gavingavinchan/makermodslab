@@ -1,0 +1,36 @@
+{
+  "type": "viscous_follower",
+  "id": "viscous_waterproof_01",
+  "port": "/dev/serial/by-id/usb-Openlight_Labs_CANable2_b158aa7_github.com_normaldotcom_canable2.git_205038953846-if00",
+  "can_interface": "slcan",
+  "joint_limits": {
+    "shoulder_pan": [
+      -126.85285584196426,
+      187.52908634631845
+    ],
+    "shoulder_lift": [
+      -199.44660848503955,
+      -2.807493196141034
+    ],
+    "elbow_flex": [
+      2.8647889756541165,
+      250.03878179509124
+    ],
+    "wrist_flex": [
+      -122.26919348091766,
+      82.10485204224697
+    ],
+    "wrist_yaw": [
+      -86.05826082864965,
+      87.31876797793745
+    ],
+    "wrist_roll": [
+      -154.98508358288768,
+      150.00035076524952
+    ],
+    "gripper": [
+      -115.10722104178238,
+      -2.9220847551671985
+    ]
+  }
+}

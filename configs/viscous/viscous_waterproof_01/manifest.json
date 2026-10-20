@@ -20,6 +20,24 @@
     "evidence/lab-robot-record.json": "633e6ca4522ef262fc76579dbb7c700afda2be12569ec7d0b1268b3d4081c8f2",
     "evidence/leader-start-pose-verification.json": "78ecf64c66c9afbfec033b76ed2523319766b5f9c6d45f3e102e479aca8dd266",
     "evidence/mit-power-cycle-verification.json": "38db199871000f6c36f929a382b02a9640bd4167daf67e88730ec298eb7ac9f1",
+    "evidence/raw-captures/j1-capture.log.gz": "537e0443ba99e0c0d38361374dfa13bf3979664761607082f9e137bfd12642c5",
+    "evidence/raw-captures/j1-rom-zeroed.json": "d055500b3183888e8de10179b9abb858801361843dbf563bebf15374fd318f58",
+    "evidence/raw-captures/j2-capture.log.gz": "e0c017652fc335e31517ec0d34bc56d167b7794753d60874ac60c9830c982112",
+    "evidence/raw-captures/j2-rom-zeroed.json": "4431906d32ee1c893d30c22b62dd3c5b36cd8dd336ff5e0a510af889a3dc8fe4",
+    "evidence/raw-captures/j3-capture.log.gz": "d0e7be7aa70ea3f089109dc96b6c7e7874ccdb46ad1827e4464862670d603fa9",
+    "evidence/raw-captures/j3-rom-zeroed.json": "35946321295799e484bd6dc8943a8c1e77ec2ae15f278d37779a346655f29a4a",
+    "evidence/raw-captures/j4-capture.log.gz": "b274e0c351dc11075d9c9ac58b211cf3a13a79ddcbd8a2314a7d1a6e066cf709",
+    "evidence/raw-captures/j4-rom-zeroed.json": "afaa4f4c15d6fd3a6db32b367bbd2aba570c8996cded3fea027cb395594efadd",
+    "evidence/raw-captures/j5-capture.log.gz": "abb7f6014144ebbd47af5e7c7d49b08cc1ae69b2e8bc05d201cd28250083e668",
+    "evidence/raw-captures/j5-rom-zeroed.json": "16185f4e9f7ef2bf10ce98ee0f5155651a4b92cdc675e8611693c9bce8b47703",
+    "evidence/raw-captures/j6-capture.log.gz": "4855b985acccc9931c3cd66c1b9fca309713c67e5ed40e1551545054914999cc",
+    "evidence/raw-captures/j6-rom-zeroed.json": "cf96a78d7e85ef06d28b495760a075b10f1e098df1916c3988bf26ead33329ae",
+    "evidence/raw-captures/j7-capture.log.gz": "84b00b16afaf12e191acce0456654349259324ef1c137965101e430e7971ab5d",
+    "evidence/raw-captures/j7-rom-zeroed.json": "811a43fe123e0a88090ab8db852649bb99a2d232394f935532d55dfefcb6d284",
+    "evidence/raw-captures/viscous_waterproof_01.yaml.bak": "08681d7d1abb063c5beb3adb6fe41490f3d1e46f428317f864c61ad44f09d1bd",
+    "evidence/raw-captures/waterproof-leader-settings.json": "5bffd11371d32d266660d46c7ee7ef7bba7f009c55af9d9dbd677d56a43ccfba",
+    "evidence/raw-captures/waterproof-robot-settings.json": "8a9a09f29077f5e8c3f91403c85203f0696bcac1b07e2ab7de076c672bd49caa",
+    "evidence/raw-captures/waterproof-teleop.json": "9f021ffc5beb6203d5cf197c3fe114265e5c86ae22e7f4cecd32cfa7139a0932",
     "evidence/star-ranges-2026-08-29.json": "c29025d0d9f43e12b91d567a55ff01c372f2610da1cc51252387fc4ec7754c40",
     "evidence/star_viscous_waterproof_01.json": "5ffb5127d517b05e603692b237bf35b36e44c0fcb3ad934ca0709e2113473449",
     "evidence/viscous_waterproof_01.json": "c95c6a9d184cdf16139f99cb96470d4f31cea31c04bb4330422c6ae1b4503f37",
@@ -28,5 +46,5 @@
     "viscous_profiles/star_viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
     "viscous_profiles/viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2"
   },
-  "recovery_scope": "All essential runtime calibrations, Lab hardware profiles, robot settings template and available commissioning evidence. Original per-joint raw capture logs remain on the offline Linux computer; their extrema are preserved in commissioning-progress.json."
+  "recovery_scope": "All essential runtime calibrations, Lab hardware profiles, robot settings template and available commissioning evidence. The original per-joint raw capture logs (gzip-compressed), per-joint ROM captures and remaining commissioning settings files are in evidence/raw-captures/; their extrema are also summarized in commissioning-progress.json."
 }
