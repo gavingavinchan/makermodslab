@@ -1,0 +1,33 @@
+{
+  "billed_returns": 20,
+  "non_billed_refusals": [],
+  "executed_rows": 960,
+  "left_tcp_z_range_m": [
+    0.7714,
+    1.0006
+  ],
+  "right_tcp_z_range_m": [
+    0.9365,
+    0.997
+  ],
+  "calls_with_limit_notices": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "joint_limit_notices": [],
+  "object_contact_rows": null
+}

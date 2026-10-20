@@ -1,0 +1,12 @@
+{
+ "mode": "vision",
+ "rig": "viscous",
+ "task": "put apple into the bowl",
+ "successful_billed_calls": 10,
+ "closest_apple_to_bowl_xy_m": 0.208659,
+ "ever_success": false,
+ "final_success": false,
+ "executed_rows": 432,
+ "completed_chunks": 9,
+ "termination_reason": "right step 1 gripper: requested -0.089043; expected normalized opening 0..1. No rows executed."
+}

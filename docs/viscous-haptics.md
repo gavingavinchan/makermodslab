@@ -303,9 +303,28 @@ session, in parallel with a haptics session.
   trial broke it: the arm's appearance, the task/scene (white cube into a black
   square), or our executor (30 of 48 rows, 2 rad/s per-row clip, gripper
   closed at start).
-- *Next: the 2x2.* Run A = YAM in Dream's scene doing our cube/square task;
-  Run B = the Viscous in Dream's scene doing the apple task, with the baseline's
-  executor (48 rows, no extra clip, gripper open). Which cell fails names the cause.
+- *The 2x2: both new cells fail, so there are two separate problems.*
+
+  | | apple -> bowl (Dream's scene) | white cube -> black square |
+  |---|---|---|
+  | YAM | works (`yam_vision_live1`) | fails (`yam_cube_vision_live1`, 20 calls) |
+  | Viscous | fails (`viscous_apple_vision_live1`, 10 calls) | fails (earlier runs) |
+
+  (1) *The task:* even YAM never goes for a 2 cm white cube; it wanders around
+  the bottle and orange. The cube is a few pixels in the 320x176 top image.
+  Dream-1 zero-shot needs objects and prompts it knows. (2) *The arm:* the
+  Viscous, in Dream's scene with Dream's prompt and the baseline's executor (48
+  rows, no extra speed clip, grippers open), rises near its base and never touches
+  the apple. A scripted Viscous pinch does lift the apple 7.8 cm, so the gripper
+  can do it. Call 10 answered a grip of -0.089, which the example's check rejects
+  (clip it instead next time). Scene builder: `cross_scenes.py`; report
+  `runs/2x2_report.md`.
+- *Next: why the arm fails.* Either the model is confused by how the Viscous looks
+  (it aims wrong), or it aims right and the Viscous cannot reach the hand poses
+  it asks for (the IK compromises, pulled toward `rest`). The runs logged where the
+  hand went, not the poses the model asked for, so log the reply's hand poses and the
+  IK's tracking error, then replay YAM's successful hand path through the Viscous IK
+  offline (free).
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 
