@@ -107,6 +107,15 @@ class ViscousFamily(CanArmFamily):
             follower.cameras = cameras
         leader = self.single_leader_config(request.leader_port, leader_id)
         expected = {name: [math.ceil(lo), math.floor(hi)] for name, (lo, hi) in follower.joint_limits.items()}
+        # Star ranges use integer degrees. Allow the gripper's targets
+        # to reach fractional endpoints; the follower still clamps the action
+        # to its exact measured limit before sending it to the motor.
+        gripper_min = leader.joint_ranges["gripper"][0]
+        gripper_max = leader.joint_ranges["gripper"][1]
+        if gripper_min == math.floor(follower.joint_limits["gripper"][0]):
+            expected["gripper"][0] = gripper_min
+        if gripper_max == math.ceil(follower.joint_limits["gripper"][1]):
+            expected["gripper"][1] = gripper_max
         if leader_id and follower_id and leader.joint_ranges != expected:
             raise ValueError(
                 "Viscous follower limits and leader mapping do not match; select the commissioned pair"

@@ -77,6 +77,35 @@ def test_missing_calibration_refuses_before_device_construction(commissioned):
         build_follower_config(commissioned)
 
 
+@pytest.mark.parametrize(
+    ("gripper_min", "gripper_max", "wrist_max", "accepted"),
+    [
+        (-115, -1, 82, True),
+        (-115, 0, 82, True),
+        (-116, 0, 82, True),
+        (-117, 0, 82, False),
+        (-116, 1, 82, False),
+        (-116, 0, 83, False),
+    ],
+)
+def test_gripper_can_reach_fractional_limits_without_relaxing_other_ranges(
+    monkeypatch, gripper_min, gripper_max, wrist_max, accepted
+):
+    follower = SimpleNamespace(joint_limits={"gripper": (-115.1, -0.034), "wrist_flex": (-122.2, 82.1)})
+    leader = SimpleNamespace(
+        joint_ranges={"gripper": [gripper_min, gripper_max], "wrist_flex": [-122, wrist_max]}
+    )
+    monkeypatch.setattr(VISCOUS, "single_follower_config", lambda *_: follower)
+    monkeypatch.setattr(VISCOUS, "single_leader_config", lambda *_: leader)
+    request = SimpleNamespace(follower_port="/dev/can", leader_port="/dev/star")
+    if accepted:
+        result, _ = VISCOUS.build_single_configs(request, None, "leader", "follower")
+        assert result.joint_limits["gripper"] == (-115.1, -0.034)
+    else:
+        with pytest.raises(ValueError, match="do not match"):
+            VISCOUS.build_single_configs(request, None, "leader", "follower")
+
+
 def test_follower_only_and_inference_use_same_driver(commissioned):
     from lerobot.robots import make_robot_from_config
     from makermodslab.rollout import InferenceRequest, _arm_count_mismatch, _single_robot_args
