@@ -1,0 +1,174 @@
+{
+ "seed": 20261024,
+ "jitter_xy_m": [
+  0.01033548291589851,
+  -0.00035498735475582993
+ ],
+ "task": "apple",
+ "configuration": {
+  "tcp": "fingertip",
+  "arms": "both",
+  "rows": 48,
+  "region": "off"
+ },
+ "config_name": "tip",
+ "episode": 4,
+ "calls_used": 7,
+ "success": true,
+ "first_success_call": 6,
+ "confirmed_success_call": 7,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.00726772721020344,
+  "right": 0.3261186864250364
+ },
+ "object_to_target_min_m": 0.007745833149347993,
+ "grasped": true,
+ "max_lift_m": 0.07631051183765136,
+ "finger_table_contact_rows": 0,
+ "executed_rows": 336,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.16034377409699493,
+    0.10471673031659644,
+    0.7913326622189921
+   ],
+   "notices": [
+    "left joint limits clipped",
+    "right joint limits clipped"
+   ]
+  },
+  {
+   "call": 2,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.16034214255917423,
+    0.10471351760874029,
+    0.7913326012887658
+   ],
+   "notices": [
+    "right joint limits clipped"
+   ]
+  },
+  {
+   "call": 3,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1603414808690607,
+    0.10471225960325214,
+    0.791332606414121
+   ],
+   "notices": []
+  },
+  {
+   "call": 4,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12429462189039071,
+    0.05443162821371364,
+    0.8424797283247685
+   ],
+   "notices": []
+  },
+  {
+   "call": 5,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.005155288349287785,
+    -0.02186780759470914,
+    0.8013367177789359
+   ],
+   "notices": []
+  },
+  {
+   "call": 6,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    0.006482144771705281,
+    -0.03566184174776451,
+    0.799747962896635
+   ],
+   "notices": []
+  },
+  {
+   "call": 7,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    0.006475995318574492,
+    -0.035650125778230575,
+    0.7997479519988663
+   ],
+   "notices": []
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  0.1603417244399704,
+  0.10471373650664201,
+  0.7913328189769491
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "termination": "success_two_calls"
+}

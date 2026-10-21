@@ -1,0 +1,375 @@
+{
+ "seed": 20271020,
+ "jitter_xy_m": [
+  -0.00048200066592984925,
+  0.012389507208718665
+ ],
+ "task": "box",
+ "configuration": {
+  "tcp": "pad",
+  "arms": "single",
+  "rows": 48,
+  "region": "off"
+ },
+ "config_name": "single",
+ "episode": 0,
+ "calls_used": 24,
+ "success": false,
+ "first_success_call": null,
+ "confirmed_success_call": null,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.04598664335423233
+ },
+ "object_to_target_min_m": 0.19996920544628144,
+ "grasped": false,
+ "max_lift_m": 0.016607521592044816,
+ "finger_table_contact_rows": 0,
+ "executed_rows": 1152,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932165485,
+    0.11738950565909033,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 2,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932147172,
+    0.1173895056594279,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 3,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932133872,
+    0.11738950565978076,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 4,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.149517999321227,
+    0.1173895056600391,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 5,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932114496,
+    0.11738950566030018,
+    0.7749387984319867
+   ],
+   "notices": []
+  },
+  {
+   "call": 6,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932109094,
+    0.11738950566056996,
+    0.7749387984319867
+   ],
+   "notices": []
+  },
+  {
+   "call": 7,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14951799932103907,
+    0.11738950566077601,
+    0.7749387984319867
+   ],
+   "notices": []
+  },
+  {
+   "call": 8,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14966645681489446,
+    0.11719893456023432,
+    0.774566176642493
+   ],
+   "notices": []
+  },
+  {
+   "call": 9,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1506615623556048,
+    0.11398750621565255,
+    0.776730346607667
+   ],
+   "notices": [
+    "left gripper: clipped 6 values from [-0.034929, 0.116882] to [0, 1]"
+   ]
+  },
+  {
+   "call": 10,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.15294331233789804,
+    0.11238276528794731,
+    0.7749387984319871
+   ],
+   "notices": [
+    "left gripper: clipped 21 values from [-0.028473, 0.032479] to [0, 1]"
+   ]
+  },
+  {
+   "call": 11,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.15294331233781414,
+    0.11238276528838409,
+    0.7749387984319868
+   ],
+   "notices": []
+  },
+  {
+   "call": 12,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.15053435483683097,
+    0.1108952691226081,
+    0.7814752545231103
+   ],
+   "notices": [
+    "left gripper: clipped 3 values from [-0.003852, 0.116832] to [0, 1]"
+   ]
+  },
+  {
+   "call": 13,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17557793119158563,
+    0.08225000548218588,
+    0.7749387984325792
+   ],
+   "notices": [
+    "left gripper: clipped 48 values from [-0.052402, -0.037451] to [0, 1]"
+   ]
+  },
+  {
+   "call": 14,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17557793119077006,
+    0.08225000548281024,
+    0.7749387984319868
+   ],
+   "notices": [
+    "left gripper: clipped 12 values from [-0.032843, 0.073249] to [0, 1]"
+   ]
+  },
+  {
+   "call": 15,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17557793119067147,
+    0.08225000548326125,
+    0.7749387984319868
+   ],
+   "notices": []
+  },
+  {
+   "call": 16,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17557793119073714,
+    0.08225000548370233,
+    0.7749387984319868
+   ],
+   "notices": []
+  },
+  {
+   "call": 17,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1755779311908505,
+    0.08225000548419363,
+    0.7749387984319868
+   ],
+   "notices": [
+    "left gripper: clipped 43 values from [-0.085892, 0.498088] to [0, 1]"
+   ]
+  },
+  {
+   "call": 18,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17174218953689893,
+    0.08259226265603323,
+    0.7764332790152743
+   ],
+   "notices": [
+    "left gripper: clipped 48 values from [-0.041211, -0.007239] to [0, 1]"
+   ]
+  },
+  {
+   "call": 19,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17395249405457136,
+    0.08149415027186735,
+    0.7749387984319868
+   ],
+   "notices": [
+    "left gripper: clipped 20 values from [-0.060096, 0.797940] to [0, 1]"
+   ]
+  },
+  {
+   "call": 20,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17395249405444943,
+    0.08149415027232623,
+    0.7749387984319868
+   ],
+   "notices": []
+  },
+  {
+   "call": 21,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17371734864262803,
+    0.081872095254537,
+    0.775230932030915
+   ],
+   "notices": []
+  },
+  {
+   "call": 22,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17447854522669104,
+    0.07868885560609411,
+    0.7749387984319872
+   ],
+   "notices": []
+  },
+  {
+   "call": 23,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.17538264507642756,
+    0.07684213453588222,
+    0.7751918336668179
+   ],
+   "notices": [
+    "left gripper: clipped 20 values from [-0.035830, 0.024380] to [0, 1]"
+   ]
+  },
+  {
+   "call": 24,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1751898148127977,
+    0.07670930407862962,
+    0.7748649299531546
+   ],
+   "notices": [
+    "left gripper: clipped 21 values from [-0.030494, 0.038070] to [0, 1]"
+   ]
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  0.14951799932189414,
+  0.1173895056588537,
+  0.7749387984321193
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "termination": "episode_cap"
+}

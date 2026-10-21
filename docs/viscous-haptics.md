@@ -452,6 +452,26 @@ session, in parallel with a haptics session.
   top camera placed like Dream's station's; (4) objects of about 5 cm or more; (5)
   a Lab runner for Dream-1 on the real follower with the safety limits. 260 billed
   calls today.
+- *Tuning sweep without fine-tuning, success rates (2026-10-20).* Gavin asked whether his
+  arm can do better in sim without fine-tuning, or else "play gacha". `sweep.py` runs
+  episodes (object start jittered +-2 cm, early stop on success, a crash-safe 900-call
+  ledger). 44 episodes, 872 billed calls (`runs/viscous_sweep_report.md`):
+
+  | Setup (Viscous, Maker-style wrist) | Apple into bowl | 5 cm box onto square |
+  |---|---|---|
+  | B0, as in `viscous_apple_makerwrist_live1` | **6/6** (median 13.5 calls) | 0/6 (2 grasps) |
+  | tool point at the fingertips (`viscous_arm_fingertip.json`, +3.4 cm) | 4/6 | 1/6 |
+  | B0, one arm (right arm removed, `wrist_r` black) | 2/6 | 0/6 |
+  | B0, 24 of 48 rows per chunk | not run | 0/4 |
+  | B0, `ik` region over the table | not run | 0/4 (table contact 34% -> 2%, no lifts) |
+
+  So: the apple is reliable on the two-arm sim; the box is not solved by any knob
+  tried; the fingertip tool point removes the apple's table contact but did not raise
+  the success rate here. **One arm hurts badly (apple 6/6 -> 2/6)**, and the real bench
+  has one arm, so that is the next thing to solve before the real world. Ideas: a
+  second (parked, maybe static) arm or a mirrored image in the right slot, the
+  object on the working arm's side, or the right wrist slot fed the left view.
+  1132 billed calls today (about $1.45).
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

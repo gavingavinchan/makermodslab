@@ -1,0 +1,364 @@
+{
+ "seed": 20271022,
+ "jitter_xy_m": [
+  -0.008233514225926957,
+  0.004246494843614251
+ ],
+ "task": "box",
+ "configuration": {
+  "tcp": "pad",
+  "arms": "both",
+  "rows": 24,
+  "region": "off"
+ },
+ "config_name": "r24",
+ "episode": 2,
+ "calls_used": 24,
+ "success": false,
+ "first_success_call": null,
+ "confirmed_success_call": null,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.014523726364746671,
+  "right": 0.42522102335819295
+ },
+ "object_to_target_min_m": 0.1481849412109305,
+ "grasped": false,
+ "max_lift_m": 0.016038041017573,
+ "finger_table_contact_rows": 174,
+ "executed_rows": 576,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14176648575667203,
+    0.10924649277663769,
+    0.774938798431987
+   ],
+   "notices": [
+    "left joint limits clipped",
+    "right joint limits clipped"
+   ]
+  },
+  {
+   "call": 2,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14176648575658635,
+    0.10924649277676975,
+    0.774938798431987
+   ],
+   "notices": [
+    "left joint limits clipped",
+    "right joint limits clipped"
+   ]
+  },
+  {
+   "call": 3,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14176648575651207,
+    0.10924649277691562,
+    0.774938798431987
+   ],
+   "notices": [
+    "left joint limits clipped"
+   ]
+  },
+  {
+   "call": 4,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.141766485756468,
+    0.10924649277716862,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 5,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1417664857563939,
+    0.10924649277721524,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 6,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14176648575635792,
+    0.10924649277740678,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 7,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14176648575631748,
+    0.10924649277754404,
+    0.774938798431987
+   ],
+   "notices": []
+  },
+  {
+   "call": 8,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14177780846905236,
+    0.1093100949795572,
+    0.7744627314075689
+   ],
+   "notices": []
+  },
+  {
+   "call": 9,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14310017107651354,
+    0.110344781571038,
+    0.7728761888953269
+   ],
+   "notices": []
+  },
+  {
+   "call": 10,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14108487354082222,
+    0.11026477818986916,
+    0.7733553822872855
+   ],
+   "notices": []
+  },
+  {
+   "call": 11,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.13787767423747144,
+    0.10443218186759401,
+    0.7831810095185792
+   ],
+   "notices": []
+  },
+  {
+   "call": 12,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12446502642679695,
+    0.07724268779645506,
+    0.7841901241565878
+   ],
+   "notices": []
+  },
+  {
+   "call": 13,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12388731048992598,
+    0.10272237060977506,
+    0.7841272003388216
+   ],
+   "notices": []
+  },
+  {
+   "call": 14,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.10270009054479709,
+    0.0709950689741647,
+    0.7749387984320302
+   ],
+   "notices": []
+  },
+  {
+   "call": 15,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.10270009054496412,
+    0.07099506897418348,
+    0.7749387984319869
+   ],
+   "notices": []
+  },
+  {
+   "call": 16,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12471935868853366,
+    0.10906593049845868,
+    0.7848503687005702
+   ],
+   "notices": []
+  },
+  {
+   "call": 17,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12476229022246292,
+    0.10916929334297097,
+    0.7849387984333689
+   ],
+   "notices": []
+  },
+  {
+   "call": 18,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12476229022246292,
+    0.10916929334297097,
+    0.7849387984333565
+   ],
+   "notices": []
+  },
+  {
+   "call": 19,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12476229022246292,
+    0.10916929334297097,
+    0.7849387984333575
+   ],
+   "notices": []
+  },
+  {
+   "call": 20,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.12369092656592474,
+    0.10996770643794254,
+    0.7856609523655123
+   ],
+   "notices": []
+  },
+  {
+   "call": 21,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.126405819936804,
+    0.10816678786126904,
+    0.7860798284873531
+   ],
+   "notices": []
+  },
+  {
+   "call": 22,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.10868367275341893,
+    0.11087491341078981,
+    0.7877501946699557
+   ],
+   "notices": []
+  },
+  {
+   "call": 23,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.11203814499236601,
+    0.11058408872766541,
+    0.7849387984333711
+   ],
+   "notices": []
+  },
+  {
+   "call": 24,
+   "rows": 24,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.11203814499236601,
+    0.11058408872766541,
+    0.7849387984333726
+   ],
+   "notices": []
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  0.1417664857567665,
+  0.10924649277648633,
+  0.7749387984320991
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "termination": "episode_cap"
+}
