@@ -606,6 +606,13 @@ watchdog, so the Star's power supply is the hard stop.
 Unit 1 (the follower) is torque-off and probably tipped forward again; it is
 not needed for the Star test.
 
+**Open item (Gavin, 2026-10-20):** unit 1's wrist camera image is flipped. The
+`viscous_01` record's `wrist` camera (opencv index 0, 640x480 MJPG) has no
+rotation field; lerobot's `OpenCVCameraConfig` takes `rotation` (0/90/180/-90),
+but check whether the Lab's camera config passes it through before relying on
+it. Ask which way it is flipped (180 deg vs mirrored) before fixing: a mirror
+is not a rotation. Fix it before recording any dataset or policy run on unit 1.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
