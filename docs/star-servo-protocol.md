@@ -215,3 +215,160 @@ are unresolved hardware questions. The [Kanai paper, III and IV-B](https://arxiv
 limits current/torque/PWM input, with current-limited Dynamixel experiments;
 using a FashionStar mW field is an adaptation requiring characterization, not
 an already validated equivalent.
+
+## Actuation checker implementation (A2)
+
+Built 2026-10-20 America/Chicago (bench evidence dated 2026-10-21 UTC).
+Gavin wants to establish how a positive per-command mW cap changes the force
+felt by a hand holding ONE Star actuator before attempting leader drive.
+No powered hardware mode was run. No stop, angle, configuration, EEPROM,
+origin or multi-turn-reset command was sent to hardware. No commits, pushes
+or stashes were made. `docs/viscous-haptics.md` was left for Claude to update.
+
+Implementation:
+
+- `scripts/star-actuation-check.py`: CLI, config-derived travel, live plan,
+  timed/tty phases, sampling, atomic evidence and summaries.
+- `makermodslab/fashionstar_raw.py`: framing/decoding, guarded capped commands,
+  read-only allowlist, retries and release/close lifecycle. No motorbridge
+  import or leader object is used; pyserial opens with `exclusive=True`,
+  1,000,000 baud, 8N1, finite read/write timeouts.
+- `tests/test_fashionstar_raw.py`: literal vendor-derived vectors, monitor/NTC
+  decoding, power/travel/deflection guards, fake-serial CLI, and cleanup paths.
+
+### Protocol and safety choices
+
+The wire formats follow the [pinned manufacturer SDK](https://github.com/servodevelop/servo-uart-rs485-sdk/blob/f72877669af0a4dc3501bb98df291cacc0a8592e/micro-python/src/uservo.py)
+identified in the protocol research above. Frames include
+both header bytes in their additive modulo-256 checksum. Replies require
+matching command, ID, length and checksum; reads never fall back to cached data.
+
+Only ping `0x01`, monitor `0x16`, basic single-turn angle `0x08`, and stop
+`0x18` are implemented. Monitor supplies angle, unsigned current/power, voltage,
+status, turn count when present, and ADC converted with the manufacturer's
+NTC formula. Both documented 16-byte and older 14-byte monitor payloads work.
+
+Position commands use `0x08 <BhHH>`: ID, signed tenths of a degree, positive
+milliseconds, positive mW. Wrist-flex's complete planned range fits inside
+single-turn ±180°, so this avoids the reset/frame correspondence required by
+multi-turn control. It also avoids acceleration variants and their fixed-ramp
+timing problem. Other selected joints are refused if any target falls outside
+this frame. Stop `0x18 <BBH>` supports release `0x10`, hold `0x11` and damping
+`0x12`; the experiment uses angle-at-current-position for hold, and `0x12` for
+damping. No `0x11` is needed by the experiment. Energizing power must be an
+integer in 1..1000 mW, unless an explicit `--allow-power MAX_MW` changes that
+ceiling (wire maximum 65535). Power zero is accepted only for release.
+
+Live plans are recomputed from fresh current readings while released before
+each phase. All targets are checked against config-derived Star travel with a
+5° margin and against the original run-start deflection envelope. The default
+move excursion is 10°; the hard maximum is 20°. Temperature ≥60°C on any servo,
+selected position outside `[start - move_deg - 10, start + move_deg + 10]`, or
+three consecutive failures of a read aborts the run. Each read retries at most
+three times. Every phase polls all seven temperatures and samples selected
+angle/current at nominal 50 Hz; actual timestamps and overruns are logged.
+
+Powered startup, each phase boundary and final cleanup release all seven IDs,
+two independent passes, continuing after individual write failures. Explicit
+SIGINT/SIGTERM handlers override inherited nohup signal dispositions. Context
+cleanup and an idempotent atexit callback release before closing the port,
+with repeat stop signals ignored during final cleanup. The context owns cleanup
+before serial opening. A release is unacknowledged: subsequent monitor current
+≤45 mA is reported only as “looks released” relative to the observed 30 mA rest
+value. An uncertain boundary readback prevents continuing. Read-only cleanup
+closes without sending any stop, even after an exception or signal.
+
+Evidence is atomically replaced every 0.5 s of activity and at boundaries/end,
+under `configs/viscous/viscous_01/evidence/star-actuation-<UTC stamp>.json`.
+The recorded evidence path is repo-relative. Samples distinguish requested
+`command_power_mw` from monitor `power_mw`; summaries contain per-cap hold
+deflection versus time, peak current, and move completion/incompletion.
+Damping feel remains a human observation. Evidence failures cause actuation
+to abort while emergency release attempts continue.
+
+### Read-only bench plan and results
+
+Final-version [full printed plan and telemetry](../configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z-dry-run.txt)
+and [JSON with exact TX/RX bytes](../configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z.json).
+The first read-only run is retained alongside it with stamp
+`20261021T010401.232967Z`. Each run sent exactly seven `0x01` ping requests and
+seven `0x16` monitor requests; no other commands were transmitted.
+
+`wrist_flex` is **ID 3**. From the venv's
+`RebotArm102LeaderViscousConfig`: direction −1.082952, follower range
+[−120, 92]°, no offset. Inverting the mapping gives Star travel
+**[−84.952980°, 110.808235°]**, narrowed to **[−79.952980°, 105.808235°]**
+for commands. The raw snapshot was −2.4°; its run-start abort envelope is
+[−22.4°, 17.6°]. Every planned angle fits inside both envelopes.
+
+| Phase | Requested cap | Snapshot-based targets | Duration |
+|---|---|---|---|
+| Hold | 100, 200, 400, 800 mW, separately | −2.4° | 8 s per cap; 1000 ms angle command |
+| Move | each of those caps | +7.6 → −2.4 → −12.4 → −2.4° | 1 s per leg, 4 s per cap |
+| Damping | each of those caps | no angle target; stop mode `0x12` | 8 s per cap |
+| Latency | 400 mW (upper middle cap) | +0.1 → −2.4° (+2.5° and return) | 1 s per leg |
+
+There are 13 phases, 82 s of timed windows, plus release/readback overhead and
+optional Enter prompts. Only ID 3 would be energized; all others would remain
+released. Full packet hex, including every hypothetical release, is in the
+printed plan. Those hypothetical packets were not transmitted.
+
+Final read-only telemetry (all status bytes zero):
+
+| ID | Angle ° | Current mA | Power mW | Voltage mV | NTC °C |
+|---|---:|---:|---:|---:|---:|
+| 0 | −11.8 | 30 | 369 | 12312 | 28.79 |
+| 1 | 0.0 | 30 | 366 | 12196 | 27.24 |
+| 2 | 1.5 | 30 | 362 | 12075 | 26.45 |
+| 3 | −2.4 | 30 | 365 | 12176 | 27.34 |
+| 4 | 6.9 | 30 | 361 | 12041 | 27.60 |
+| 5 | −1.4 | 30 | 361 | 12051 | 27.37 |
+| 6 | −0.3 | 30 | 365 | 12186 | 27.94 |
+
+Temperature is a manufacturer-formula estimate, not a calibrated measurement.
+No effort, motion, damping feel, powered sample rate, or force bound was tested.
+
+[Detached stop-test output](../configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z-stop-test.txt):
+
+```text
+Launch: nohup setsid .venv/bin/python scripts/star-actuation-check.py --stop-test &
+Detached pid: 1258782
+kill -0: alive before SIGTERM
+Exit status: 0; kill -0 confirms process exited
+Stop test: pid 1258782 waiting for SIGINT or SIGTERM; NO PORT
+Stop test passed: received SIGTERM; no hardware opened
+```
+
+Both dry runs rechecked Lab `session: null` and `fuser` exit 1 immediately
+before opening the port. Copied source/tests and generated evidence were
+removed from gavin-linux after retrieval. [Final cleanup check](../configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z-linux-cleanup.txt)
+shows only its original four frontend/dist status entries; Lab remained idle
+and fuser still found no owner. No tracked Linux file was overwritten.
+
+### Offline verification and remaining risks
+
+- `.venv/bin/pytest tests/test_fashionstar_raw.py -q`: **35 passed**; no hardware,
+  no real sleeps. Covers normal, exception, signal, atexit callback, open/read
+  failure, individual release-write failure, thermal/deflection trips, evidence
+  failure, and read-only cleanup. Fake-serial powered CLI tests exercise packet
+  generation and phase summaries without opening any real port.
+- `uvx ruff check` and `uvx ruff format --check` on the three Python files: pass.
+- `.venv/bin/pytest`: **4,349 passed, 19 skipped, 1 failed** (88.49 s). The sole
+  failure is the known pre-existing
+  `test_single_device_configs_carry_the_port_and_id[viscous]`, which raises
+  `FileNotFoundError` for the temporary commissioned profile
+  `viscous_profiles/cal-f.json`. No new suite failure appeared.
+
+The requested cap is not a calibrated torque/force limit. Values below idle
+supply consumption may have firmware-specific behavior; cap persistence after
+arrival, transient overshoot, thermal protection and power-to-force response
+remain unknown. Stop readback cannot prove release. There is no documented
+bus-loss watchdog: SIGKILL, host failure or broken serial can leave the last
+command active; a physical power switch remains necessary. Port exclusivity
+uses a POSIX advisory lock and depends on other owners respecting it; never
+run this beside Lab/motorbridge. Sequential polling and atomic JSON writes may
+miss 50 Hz; actual overruns must be evaluated in an authorized powered run.
+Latency is host-write-to-first ≥0.3° motion readback, including polling and
+serial delay, and a blocking hand may prevent a detection entirely. A move
+ending >1° from target is labeled “blocked_or_incomplete”; telemetry alone
+cannot distinguish a hand from slow/weak response.

@@ -576,10 +576,35 @@ file instead.
 
 **Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
 Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial"
-in order. Haptics: steps 1-2 done 2026-10-20; next is the friction term and
-shoulder refit (step 1 follow-up), then the Star as an actuator (step 3).
-Before energizing, show Gavin the dry-run plan and say exactly which joints
-will move.
+in order. Haptics: steps 1-2 done 2026-10-20, friction term and shoulder
+refit done and confirmed live (v2 fit). Before energizing, show Gavin the
+dry-run plan and say exactly which joints will move.
+
+**Resume haptics here (evening of 2026-10-20, Gavin stopped to eat; next
+session):** goal A2, the Star leader as an actuator (next step 3).
+`scripts/star-actuation-check.py` (raw FashionStar transport
+`makermodslab/fashionstar_raw.py`, tests `tests/test_fashionstar_raw.py`) is
+built and dry-run on gavin-linux (pings + reads only; evidence
+`configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z-*`).
+It energizes ONE servo, wrist_flex = id 3, with every other servo released,
+using single-turn angle command 0x08 with an explicit power cap (power 0 is
+refused: it means the protection ceiling). Phases: hold at 100/200/400/800 mW
+(Gavin pushes), move +/-10 deg over 1 s (Gavin may block it), damping 0x12 at
+each power (Gavin moves it), a 2.5 deg latency step. Every exit path releases
+all seven servos twice; stops are unacknowledged and there is no bus-loss
+watchdog, so the Star's power supply is the hard stop.
+1. Ask Gavin where the Star's power switch / plug is (unanswered), and confirm
+   wrist_flex as the first joint.
+2. Re-run `--dry-run --joint wrist_flex` (the arm may have moved), show him the
+   printed plan.
+3. Best run by Gavin himself in a terminal on gavin-linux (ssh from the Mac),
+   so the Enter-to-advance prompts and cue lines are in front of him at the
+   arm: `.venv/bin/python scripts/star-actuation-check.py --joint wrist_flex`.
+   A detached run works too, but cues then lag through chat.
+4. Record his feel per power level alongside the logged deflection/current;
+   that decides the power range the input-gated loop (A3) can use.
+Unit 1 (the follower) is torque-off and probably tipped forward again; it is
+not needed for the Star test.
 
 ## Working rules for this project
 

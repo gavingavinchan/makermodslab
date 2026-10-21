@@ -1,0 +1,70 @@
+Session preflight: {"session": null, "last_ended": null}
+fuser: 1  
+READ ONLY preflight: {"id": 0, "voltage_mv": 12312, "current_ma": 30, "power_mw": 369, "temperature_adc": 1900, "status": 0, "angle_deg": -11.8, "turns": -1, "temperature_c": 28.794501077607322}
+READ ONLY preflight: {"id": 1, "voltage_mv": 12196, "current_ma": 30, "power_mw": 366, "temperature_adc": 1960, "status": 0, "angle_deg": 0.0, "turns": -1, "temperature_c": 27.242057408053256}
+READ ONLY preflight: {"id": 2, "voltage_mv": 12075, "current_ma": 30, "power_mw": 362, "temperature_adc": 1991, "status": 0, "angle_deg": 1.5, "turns": 0, "temperature_c": 26.447884401255408}
+READ ONLY preflight: {"id": 3, "voltage_mv": 12176, "current_ma": 30, "power_mw": 365, "temperature_adc": 1956, "status": 0, "angle_deg": -2.4, "turns": -1, "temperature_c": 27.344906037489352}
+READ ONLY preflight: {"id": 4, "voltage_mv": 12041, "current_ma": 30, "power_mw": 361, "temperature_adc": 1946, "status": 0, "angle_deg": 6.9, "turns": 0, "temperature_c": 27.60241701876498}
+READ ONLY preflight: {"id": 5, "voltage_mv": 12051, "current_ma": 30, "power_mw": 361, "temperature_adc": 1955, "status": 0, "angle_deg": -1.4, "turns": -1, "temperature_c": 27.370631996337977}
+READ ONLY preflight: {"id": 6, "voltage_mv": 12186, "current_ma": 30, "power_mw": 365, "temperature_adc": 1933, "status": 0, "angle_deg": -0.3, "turns": -1, "temperature_c": 27.9380320555926}
+A2: ONLY wrist_flex, servo 3, 1000000 baud 8N1
+Star derived travel [-84.952980, 110.808235] deg; command travel [-79.952980, 105.808235] (5 deg margin)
+Snapshot current -2.4 deg; abort envelope [-22.4, 17.6]; any servo >=60 C trips
+0x08 <BhHH>: id, signed 0.1deg, time ms, power mW; no resets or acceleration variants
+Powers mW: 100,200,400,800 ceiling: 1000
+Powered startup, between phases, and exit: release ALL IDs 0-6, twice each:
+  x2 12 4c 18 04 00 10 00 00 8a
+  x2 12 4c 18 04 01 10 00 00 8b
+  x2 12 4c 18 04 02 10 00 00 8c
+  x2 12 4c 18 04 03 10 00 00 8d
+  x2 12 4c 18 04 04 10 00 00 8e
+  x2 12 4c 18 04 05 10 00 00 8f
+  x2 12 4c 18 04 06 10 00 00 90
+After every release: monitor all IDs; <=45 mA looks near 30 mA rest, cannot prove release.
+All targets below are inside Star command travel and single-turn frame. No clipping/wrapping.
+Live phases re-read CURRENT angle while released; recompute/refuse targets before energizing.
+HOLD 100 mW: 8.000 s; targets=[-2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 64 00 a6
+HOLD 200 mW: 8.000 s; targets=[-2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 c8 00 0a
+HOLD 400 mW: 8.000 s; targets=[-2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 90 01 d3
+HOLD 800 mW: 8.000 s; targets=[-2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 20 03 65
+MOVE 100 mW: 4.000 s; targets=[7.6, -2.4, -12.4, -2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 4c 00 e8 03 64 00 0b
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 64 00 a6
+  WOULD SEND 12 4c 08 07 03 84 ff e8 03 64 00 42
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 64 00 a6
+MOVE 200 mW: 4.000 s; targets=[7.6, -2.4, -12.4, -2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 4c 00 e8 03 c8 00 6f
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 c8 00 0a
+  WOULD SEND 12 4c 08 07 03 84 ff e8 03 c8 00 a6
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 c8 00 0a
+MOVE 400 mW: 4.000 s; targets=[7.6, -2.4, -12.4, -2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 4c 00 e8 03 90 01 38
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 90 01 d3
+  WOULD SEND 12 4c 08 07 03 84 ff e8 03 90 01 6f
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 90 01 d3
+MOVE 800 mW: 4.000 s; targets=[7.6, -2.4, -12.4, -2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 4c 00 e8 03 20 03 ca
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 20 03 65
+  WOULD SEND 12 4c 08 07 03 84 ff e8 03 20 03 01
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 20 03 65
+DAMPING 100 mW: 8.000 s; targets=[] deg; duration/command=n/a ms
+  WOULD SEND 12 4c 18 04 03 12 64 00 f3
+DAMPING 200 mW: 8.000 s; targets=[] deg; duration/command=n/a ms
+  WOULD SEND 12 4c 18 04 03 12 c8 00 57
+DAMPING 400 mW: 8.000 s; targets=[] deg; duration/command=n/a ms
+  WOULD SEND 12 4c 18 04 03 12 90 01 20
+DAMPING 800 mW: 8.000 s; targets=[] deg; duration/command=n/a ms
+  WOULD SEND 12 4c 18 04 03 12 20 03 b2
+LATENCY 400 mW: 2.000 s; targets=[0.1, -2.4] deg; duration/command=1000 ms
+  WOULD SEND 12 4c 08 07 03 01 00 e8 03 90 01 ed
+  WOULD SEND 12 4c 08 07 03 e8 ff e8 03 90 01 d3
+HOLD: push gently. MOVE: both +excursion and -excursion then back; human may block.
+DAMPING: move by hand; feel is recorded by human. LATENCY: +2.5 deg, then back; threshold 0.3 deg.
+Telemetry nominal 50 Hz, actual timestamps/overruns logged; Enter between phases if stdin is a tty.
+Ping 0x01 and monitor 0x16 are the ONLY requests sent in dry-run, including cleanup.
+Summary: {"100": {"peak_current_ma": null, "hold_peak_abs_deflection_deg": null, "moves": [], "damping_feel": "human observation required; not inferred from unsigned current/power"}, "200": {"peak_current_ma": null, "hold_peak_abs_deflection_deg": null, "moves": [], "damping_feel": "human observation required; not inferred from unsigned current/power"}, "400": {"peak_current_ma": null, "hold_peak_abs_deflection_deg": null, "moves": [], "damping_feel": "human observation required; not inferred from unsigned current/power"}, "800": {"peak_current_ma": null, "hold_peak_abs_deflection_deg": null, "moves": [], "damping_feel": "human observation required; not inferred from unsigned current/power"}}
+Evidence: configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z.json

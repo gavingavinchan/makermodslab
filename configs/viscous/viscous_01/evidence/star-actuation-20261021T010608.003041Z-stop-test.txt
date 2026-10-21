@@ -1,0 +1,6 @@
+Launch: nohup setsid .venv/bin/python scripts/star-actuation-check.py --stop-test &
+Detached pid: 1258782
+kill -0: alive before SIGTERM
+Exit status: 0; kill -0 confirms process exited
+Stop test: pid 1258782 waiting for SIGINT or SIGTERM; NO PORT
+Stop test passed: received SIGTERM; no hardware opened
