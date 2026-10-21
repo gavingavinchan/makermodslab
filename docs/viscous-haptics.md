@@ -54,6 +54,17 @@ gravity torque.
 the follower with capped effort (`star_follow.py` draft).
 - *Intent:* serves A3 and, later, DAgger (B1): one piece of hardware work for both.
 - *Status:* draft code; Star actuation not yet characterised on hardware.
+- *Protocol research (2026-10-20, [star-servo-protocol.md](star-servo-protocol.md)):*
+  FashionStar position commands carry a per-command power limit in mW, but
+  motorbridge 0.0.4's `set_angle` always sends power 0, which means the servo's
+  protection CEILING, not zero effort. So `star_follow.py` as drafted drives
+  the leader at full power: do not run it against a hand. A capped move needs
+  the raw command (0x0D multi-turn angle + power) or a motorbridge patch;
+  hold (0x11) cannot move its hold point. A zero effort gate must be an
+  explicit release (0x10), never power 0. No documented bus-loss watchdog: the
+  last target persists if the host dies, and stop writes are not acknowledged.
+  Monitor current/power are unsigned magnitudes (30 mA / ~365 mW at rest,
+  released), so they are not a signed torque reading.
 
 **A3. Input-gated bilateral loop** (approach section below).
 - *Intent:* the "spring between leader and follower" Gavin described, made to feel
