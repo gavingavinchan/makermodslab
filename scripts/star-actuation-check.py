@@ -73,6 +73,12 @@ def parser():
     )
     p.add_argument("--stop-test", action="store_true", help="wait for signal; no port is opened")
     p.add_argument("--yes", action="store_true", help="skip powered-run 'go' confirmation")
+    p.add_argument(
+        "--only",
+        choices=("hold", "move", "damping", "latency"),
+        action="append",
+        help="run only these phase kinds (repeatable); lets a chat-driven session go one step at a time",
+    )
     return p
 
 
@@ -154,6 +160,8 @@ def phase_plan(args, motor_id, current, travel, powers):
             "duration_ms": move_ms,
         }
     )
+    if getattr(args, "only", None):
+        phases = [phase for phase in phases if phase["kind"] in args.only]
     for phase in phases:
         phase["commands"] = (
             [stop_packet(motor_id, DAMPING, phase["power_mw"], max_power_mw=args.maximum).hex(" ")]
