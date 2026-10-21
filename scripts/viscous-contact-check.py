@@ -60,7 +60,12 @@ from makermodslab import gravity_feedforward  # noqa: E402
 from makermodslab.arm_gravity import CollisionChecker, path_clear, stored_path  # noqa: E402
 from makermodslab.contact_torque import ContactEstimator  # noqa: E402
 
-DEFAULT_FIT = "configs/viscous/{robot}/gravity-air-fit.json"
+# The friction-carrying v2 fit where one exists (confirmed live on unit 1,
+# 2026-10-20), else the original gravity-only fit.
+DEFAULT_FITS = (
+    "configs/viscous/{robot}/gravity-air-fit-v2.json",
+    "configs/viscous/{robot}/gravity-air-fit.json",
+)
 DEFAULT_MODEL_DIR = REPO / "configs/viscous/model"
 # (shoulder_lift, elbow_flex, wrist_flex). Picked with the unit 1 air fit for
 # 1-2 N m on the gravity joints, both signs, every joint under 3.5 N m also at
@@ -464,7 +469,7 @@ def analyze(data, estimator):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--robot", default="viscous_01", help="robot record name")
-    p.add_argument("--fit", help=f"gravity fit (default {DEFAULT_FIT})")
+    p.add_argument("--fit", help=f"gravity fit (default: first that exists of {DEFAULT_FITS})")
     p.add_argument("--urdf", type=Path, default=DEFAULT_MODEL_DIR / "viscous_arm.urdf")
     p.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL_DIR, help="collision mesh root")
     p.add_argument("--floor-z", type=float, default=0.03, help="clearance above the base plate underside, m")
@@ -500,7 +505,9 @@ def main():
     if args.analyze:
         data = json.loads(args.analyze.read_text())
         args.fit = args.fit or data["fit"]
-    args.fit = args.fit or DEFAULT_FIT.format(robot=args.robot)
+    if not args.fit:
+        candidates = [f.format(robot=args.robot) for f in DEFAULT_FITS]
+        args.fit = next((f for f in candidates if (REPO / f).exists()), candidates[-1])
     fit, model = gravity_feedforward.load_model(args.fit)
     estimator = ContactEstimator.from_fit(args.fit)
     if args.analyze:

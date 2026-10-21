@@ -181,8 +181,11 @@ buoyancy.
 - **The dry shoulder is overloaded**: 33 → 65 °C in under 2 min at 5–6 Nm; and
   moving between two heavy poses (~5.6 Nm predicted, after it had held 6.5 Nm)
   it lost its hold and the arm dropped until Gavin caught it. No fault logged;
-  probably thermal derating or a protective cutout. The RS00 is rated ~5 Nm;
-  the arm is all-RS00 because it is designed to be near-neutral in water.
+  probably thermal derating or a protective cutout. The RS00 is rated ~5 Nm
+  continuous and **14 Nm peak** (Gavin, 2026-10-20: "max torque is 14nm"), so
+  the drop was not the motor's torque limit; the dry-arm 3.5 Nm planning cap is
+  a continuous-load and heat caution, not a ceiling the motor imposes. The arm
+  is all-RS00 because it is designed to be near-neutral in water.
 
 ## Safety lessons (apply to every powered run)
 
@@ -219,9 +222,8 @@ buoyancy.
 
 1. ~~Contact-torque signal live~~ and ~~feedforward A/B~~: done 2026-10-20
    (see "Contact-signal bench check"). Friction term + refit done offline
-   (`gravity-air-fit-v2.json`); next, confirm it live with
-   `viscous-contact-check.py --fit configs/viscous/viscous_01/gravity-air-fit-v2.json`
-   and, if it holds, make v2 the default.
+   (`gravity-air-fit-v2.json`) and confirmed live the same day; v2 is the
+   contact check's default. Remaining floor: shoulder model error at load.
 2. Feedforward at 100 % in GUI teleop on unit 1 (the drop-in is still at 50 %).
 3. Characterize the Star as an actuator: power-capped moves (does the protocol's
    power field work through `set_angle`?), damping levels, latency, feel.
@@ -491,6 +493,17 @@ should feel that."
   under 2 deg/s, so they carry no friction term. v2 stays opt-in (`--fit`) until
   a live run confirms it; the shoulder's tail (model error at load) is still
   the limiting channel. Details: `configs/viscous/viscous_01/contact-floor-report-20261020.md`.
+- *Live confirmation (`evidence/contact-check-20261020-192434.json`, a run
+  neither fit saw):* moving-arm p99, old fit -> v2 + friction: shoulder
+  0.87 -> 0.77, elbow 0.63 -> 0.45, wrist_flex 0.56 -> 0.41, wrist_yaw
+  0.53 -> 0.45, roll 0.48 -> 0.43 N m; still rms falls on every joint. Pushes
+  read the same (shoulder +/-2.3, elbow +/-1.8, pan +/-2.2 N m; the right push
+  also +1.2 / -1.5 on wrist_yaw). Feedforward holds at <= 0.27 deg with v2. A
+  2 N m push now clears the moving floor ~4-5x on elbow and wrist, ~2.5x on the
+  shoulder. v2 is now the contact check's default fit. The teleop feedforward
+  drop-in on gavin-linux still names the original fit (gravity only; both
+  hold sag under 0.3 deg). Run with `--max-torque 3.55`: v2 puts the elbow at
+  3.50 N m on the back approach at 0 % (Gavin approved 3.55 for this run).
 - Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
   (missing commissioned `cal-f` profile), present at `HEAD` too.
 
