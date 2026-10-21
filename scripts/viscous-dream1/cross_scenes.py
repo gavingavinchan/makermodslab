@@ -64,10 +64,12 @@ class BoxYamEnv(yam_env.YamEnv):
         self.reset()
 
 
-def viscous_xml():
+def viscous_xml(task="apple", wrist="maker"):
     # Start with the actual Dream scene so all object builders, transforms, lighting,
     # contact defaults, and calibrated top-camera parameters are retained exactly.
-    root = ET.fromstring(yam_env.build_xml())
+    if task not in ("apple", "box", "cube") or wrist not in ("maker", "legacy"):
+        raise ValueError("Unknown Viscous task or wrist mount")
+    root = ET.fromstring(cube_xml(task) if task in ("box", "cube") else yam_env.build_xml())
     source = ET.parse(SCENE).getroot()
     root.find("option").set("timestep", ".001")
     world = root.find("worldbody")
@@ -106,14 +108,21 @@ def viscous_xml():
         arm.set("quat", bases[side].get("quat"))
         arm.set("childclass", "viscous")
         arm.find(f".//site[@name='{side}_tcp']").set("rgba", "0 0 0 0")
-        # Same camera mount as the existing Viscous yam rig; image pipeline is YamEnv's.
-        eye, target = np.array([0, .055, -.09]), np.array([0, .025, .08])
-        z = eye - target
-        z /= np.linalg.norm(z)
-        x = np.cross([0, -1, 0], z)
-        x /= np.linalg.norm(x)
+        if wrist == "maker":
+            from supported_arms import wrist_mount
+            eye, rotation = wrist_mount()
+            x, y = rotation[:, 0], rotation[:, 1]
+        else:
+            # Original Viscous mount, including its original cropped render path.
+            eye, target = np.array([0, .055, -.09]), np.array([0, .025, .08])
+            z = eye - target
+            z /= np.linalg.norm(z)
+            x = np.cross([0, -1, 0], z)
+            x /= np.linalg.norm(x)
+            y = np.cross(z, x)
         ET.SubElement(arm.find(f".//body[@name='{side}_tool0']"), "camera", name=side,
-                      pos=yam_env.numbers(eye), xyaxes=yam_env.numbers(np.r_[x, np.cross(z, x)]), fovy="90")
+                      pos=yam_env.numbers(eye), xyaxes=yam_env.numbers(np.r_[x, y]),
+                      fovy="77.2" if wrist == "maker" else "90")
         world.append(arm)
         for section in ("contact", "equality", "actuator"):
             for element in source.find(section):
@@ -124,10 +133,12 @@ def viscous_xml():
 class ViscousAppleEnv(yam_env.YamEnv):
     """Both Viscous arms servo their own 20 Hz rows, without per-row speed clipping."""
 
-    def __init__(self):
-        self.model = mujoco.MjModel.from_xml_string(viscous_xml())
+    def __init__(self, task="apple", wrist="maker"):
+        self.wrist = wrist
+        self.model = mujoco.MjModel.from_xml_string(viscous_xml(task, wrist))
         self.data = mujoco.MjData(self.model)
         self.renderer = None
+        self.wrist_renderer = None
         self.qadr, self.vadr, self.aids = {}, {}, {}
         for side in ("left", "right"):
             joints = [self.model.joint(f"{side}_joint{i}") for i in range(1, 7)]
@@ -135,6 +146,26 @@ class ViscousAppleEnv(yam_env.YamEnv):
             self.vadr[side] = np.array([j.dofadr[0] for j in joints])
             self.aids[side] = np.array([self.model.actuator(f"{side}_{n}_drive").id for n in JOINTS])
         self.reset()
+
+    def images(self):
+        if self.wrist == "legacy":
+            return super().images()
+        if self.renderer is None:
+            self.renderer = mujoco.Renderer(self.model, height=480, width=640)
+        if self.wrist_renderer is None:
+            self.wrist_renderer = mujoco.Renderer(self.model, height=360, width=640)
+        self.renderer.update_scene(self.data, camera="top")
+        result = {"top": self.renderer.render()[60:420].copy()}
+        for side in ("left", "right"):
+            self.wrist_renderer.update_scene(self.data, camera=side)
+            result[side] = self.wrist_renderer.render().copy()
+        return result
+
+    def close(self):
+        super().close()
+        if self.wrist_renderer is not None:
+            self.wrist_renderer.close()
+            self.wrist_renderer = None
 
     def reset(self):
         mujoco.mj_resetData(self.model, self.data)

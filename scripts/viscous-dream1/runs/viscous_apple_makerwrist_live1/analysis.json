@@ -1,0 +1,301 @@
+{
+  "mode": "vision",
+  "rig": "viscous",
+  "task": "put apple into the bowl",
+  "successful_billed_calls": 20,
+  "closest_apple_to_bowl_xy_m": 0.000967,
+  "executed_rows": 960,
+  "completed_chunks": 20,
+  "termination_reason": null,
+  "ever_success": true,
+  "final_success": true,
+  "billed_calls": 20,
+  "warming_refusals": 0,
+  "minimum_requested_hand_to_object_m": {
+    "left": 0.003961826798935924,
+    "right": 0.2967131565558533
+  },
+  "maximum_object_rise_m": 0.123,
+  "object_contact_rows": 275,
+  "bilateral_jaw_contact_rows": 129,
+  "lifted_with_bilateral_contact": true,
+  "tracking": {
+    "left": {
+      "raw_position_error_m": [
+        0.005212840335043722,
+        0.02898553341785385
+      ],
+      "raw_rotation_error_deg": [
+        0.8924474499908018,
+        6.245568275226145
+      ]
+    },
+    "right": {
+      "raw_position_error_m": [
+        0.004529689450212856,
+        0.009455271327768012
+      ],
+      "raw_rotation_error_deg": [
+        0.645109884605674,
+        1.159856663083471
+      ]
+    }
+  },
+  "finger_table_contact_rows": 418,
+  "finger_table_contact_calls": [
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "first_finger_table_contact": {
+    "call": 3,
+    "row": 45,
+    "contacts": [
+      {
+        "bodies": [
+          "world",
+          "left_gripper_right"
+        ],
+        "geoms": [
+          "table",
+          "left_collision_042_22"
+        ],
+        "distance_m": -0.0007695664459477224
+      }
+    ]
+  },
+  "per_call": [
+    {
+      "call": 1,
+      "min_requested_distance_m": {
+        "left": 0.11279731412940029,
+        "right": 0.47030126081661533
+      },
+      "contacts": [],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 2,
+      "min_requested_distance_m": {
+        "left": 0.1370777544667171,
+        "right": 0.47398738539093666
+      },
+      "contacts": [],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 3,
+      "min_requested_distance_m": {
+        "left": 0.08223863743655262,
+        "right": 0.4726094563031407
+      },
+      "contacts": [],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 4,
+      "min_requested_distance_m": {
+        "left": 0.03471656675730091,
+        "right": 0.4723183895349119
+      },
+      "contacts": [],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 5,
+      "min_requested_distance_m": {
+        "left": 0.03797589889601267,
+        "right": 0.4737702691653439
+      },
+      "contacts": [],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 6,
+      "min_requested_distance_m": {
+        "left": 0.02401437060113384,
+        "right": 0.4739312142395234
+      },
+      "contacts": [
+        "left_gripper_left"
+      ],
+      "max_object_z": 0.791
+    },
+    {
+      "call": 7,
+      "min_requested_distance_m": {
+        "left": 0.03745616074872511,
+        "right": 0.45482897372640096
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.797
+    },
+    {
+      "call": 8,
+      "min_requested_distance_m": {
+        "left": 0.023338299007537776,
+        "right": 0.45628467504136533
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.797
+    },
+    {
+      "call": 9,
+      "min_requested_distance_m": {
+        "left": 0.003961826798935924,
+        "right": 0.42553294327571595
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.876
+    },
+    {
+      "call": 10,
+      "min_requested_distance_m": {
+        "left": 0.005167287249084513,
+        "right": 0.3092144143403293
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.914
+    },
+    {
+      "call": 11,
+      "min_requested_distance_m": {
+        "left": 0.011509126396224712,
+        "right": 0.3121240501026323
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.816
+    },
+    {
+      "call": 12,
+      "min_requested_distance_m": {
+        "left": 0.05200668378947462,
+        "right": 0.30276831164071993
+      },
+      "contacts": [
+        "left_gripper_left"
+      ],
+      "max_object_z": 0.811
+    },
+    {
+      "call": 13,
+      "min_requested_distance_m": {
+        "left": 0.08142157897428871,
+        "right": 0.30002248478232885
+      },
+      "contacts": [
+        "left_gripper_left"
+      ],
+      "max_object_z": 0.817
+    },
+    {
+      "call": 14,
+      "min_requested_distance_m": {
+        "left": 0.18485581785649938,
+        "right": 0.3287718531018426
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 15,
+      "min_requested_distance_m": {
+        "left": 0.19822037588156527,
+        "right": 0.32841914769456876
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 16,
+      "min_requested_distance_m": {
+        "left": 0.15827912524924143,
+        "right": 0.31395764728224734
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 17,
+      "min_requested_distance_m": {
+        "left": 0.17563853757942127,
+        "right": 0.29831215188793936
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 18,
+      "min_requested_distance_m": {
+        "left": 0.1883322352680626,
+        "right": 0.2967131565558533
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 19,
+      "min_requested_distance_m": {
+        "left": 0.1876662514004229,
+        "right": 0.3006762807721728
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    },
+    {
+      "call": 20,
+      "min_requested_distance_m": {
+        "left": 0.19761826633441015,
+        "right": 0.3018623791209744
+      },
+      "contacts": [],
+      "max_object_z": 0.801
+    }
+  ],
+  "measured_tracking": {
+    "left": {
+      "position_m_median_p95": [
+        0.011431321490854388,
+        0.046965104547371385
+      ],
+      "rotation_deg_median_p95": [
+        2.626425511462393,
+        10.285358423378238
+      ]
+    },
+    "right": {
+      "position_m_median_p95": [
+        0.004567773880353884,
+        0.009470169131092285
+      ],
+      "rotation_deg_median_p95": [
+        0.6360992697070944,
+        1.1573913659030906
+      ]
+    }
+  },
+  "limit_notices": []
+}

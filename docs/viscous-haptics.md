@@ -418,6 +418,23 @@ session, in parallel with a haptics session.
   mounted the other way round (jaws enter from the TOP of the image), which may
   explain much of the Viscous failure. Next: the Viscous with a Maker-style wrist
   camera in sim (`BRIEF_VISCOUS_MAKERWRIST.md`). 220 billed calls today.
+- *The Viscous works too, with a Maker-style wrist camera (2026-10-20).* Same rig as
+  `viscous_apple_vision_live*`, only the wrist cameras moved to the Maker-relative
+  pose (above the gripper behind the jaws, ~20° down, VFOV 77.2°, 16:9;
+  `runs/viscous_wrist_match/compare.png`; the old mount is `--viscous-wrist legacy`).
+  Zero-shot, beta, `viscous_arm.json` unchanged: **apple success**. The left arm
+  reaches it by calls 5-7, lifts it 11.6 cm at call 9 and drops it in the bowl at
+  call 10, where it rests (9 mm from centre) to call 20. The box was targeted (requested hand
+  within 2 cm) but dragged and tipped, not placed. The Viscous fingers touched the table on
+  418 (apple) and 292 (box) rows: the tool-point problem above. 40 billed calls,
+  `runs/viscous_{apple,box}_makerwrist_live1`, `runs/viscous_makerwrist_report.md`.
+  **So the main cause of the Viscous failure was its wrist camera view.** For the
+  real arm: (1) mount the Viscous wrist camera like the Maker's, ideally the same
+  KD-USB camera, looking forward along the fingers from above, fingers rising from the
+  bottom of the image; (2) Gavin sets the tool point with `dreamcli tcp`; (3) a centre
+  top camera placed like Dream's station's; (4) objects of about 5 cm or more; (5)
+  a Lab runner for Dream-1 on the real follower with the safety limits. 260 billed
+  calls today.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

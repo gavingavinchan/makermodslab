@@ -1,0 +1,318 @@
+{
+  "mode": "vision",
+  "rig": "viscous",
+  "task": "pick up the black and white box and put it on the black square",
+  "successful_billed_calls": 20,
+  "closest_box_to_square_xy_m": 0.097266,
+  "executed_rows": 960,
+  "completed_chunks": 20,
+  "termination_reason": null,
+  "ever_success": false,
+  "final_success": false,
+  "billed_calls": 20,
+  "warming_refusals": 0,
+  "minimum_requested_hand_to_object_m": {
+    "left": 0.01997940068393426,
+    "right": 0.3906362226873825
+  },
+  "maximum_object_rise_m": 0.02300000000000002,
+  "object_contact_rows": 437,
+  "bilateral_jaw_contact_rows": 50,
+  "lifted_with_bilateral_contact": false,
+  "tracking": {
+    "left": {
+      "raw_position_error_m": [
+        0.0057239770910887805,
+        0.026626499473877557
+      ],
+      "raw_rotation_error_deg": [
+        0.8361550430364686,
+        7.1975316812538725
+      ]
+    },
+    "right": {
+      "raw_position_error_m": [
+        0.004519764468291722,
+        0.008549337563457955
+      ],
+      "raw_rotation_error_deg": [
+        0.6268425255140557,
+        1.1138803907481292
+      ]
+    }
+  },
+  "finger_table_contact_rows": 292,
+  "finger_table_contact_calls": [
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "first_finger_table_contact": {
+    "call": 10,
+    "row": 44,
+    "contacts": [
+      {
+        "bodies": [
+          "world",
+          "left_gripper_left"
+        ],
+        "geoms": [
+          "table",
+          "left_collision_043_22"
+        ],
+        "distance_m": -0.0004562148416880074
+      },
+      {
+        "bodies": [
+          "world",
+          "left_gripper_left"
+        ],
+        "geoms": [
+          "table",
+          "left_collision_043_22"
+        ],
+        "distance_m": -0.00040339995840488196
+      }
+    ]
+  },
+  "per_call": [
+    {
+      "call": 1,
+      "min_requested_distance_m": {
+        "left": 0.2118022650747763,
+        "right": 0.4726047744647253
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 2,
+      "min_requested_distance_m": {
+        "left": 0.2208670389941118,
+        "right": 0.474188786022145
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 3,
+      "min_requested_distance_m": {
+        "left": 0.2200934933152549,
+        "right": 0.47607915568261233
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 4,
+      "min_requested_distance_m": {
+        "left": 0.11036749504704374,
+        "right": 0.47708014007834776
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 5,
+      "min_requested_distance_m": {
+        "left": 0.07812738380187632,
+        "right": 0.4681369489939117
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.78
+    },
+    {
+      "call": 6,
+      "min_requested_distance_m": {
+        "left": 0.04625747169564996,
+        "right": 0.4364022948122561
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.789
+    },
+    {
+      "call": 7,
+      "min_requested_distance_m": {
+        "left": 0.035491846192240925,
+        "right": 0.4338947250523149
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.787
+    },
+    {
+      "call": 8,
+      "min_requested_distance_m": {
+        "left": 0.04999000966600616,
+        "right": 0.41323245514459306
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.789
+    },
+    {
+      "call": 9,
+      "min_requested_distance_m": {
+        "left": 0.02661926478640034,
+        "right": 0.40564374717915597
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.789
+    },
+    {
+      "call": 10,
+      "min_requested_distance_m": {
+        "left": 0.03830788175590489,
+        "right": 0.3948382055380467
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.798
+    },
+    {
+      "call": 11,
+      "min_requested_distance_m": {
+        "left": 0.04028435803376231,
+        "right": 0.3906362226873825
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.789
+    },
+    {
+      "call": 12,
+      "min_requested_distance_m": {
+        "left": 0.05341292075263084,
+        "right": 0.41755405550323216
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.792
+    },
+    {
+      "call": 13,
+      "min_requested_distance_m": {
+        "left": 0.05507292057180583,
+        "right": 0.4287354633875731
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.79
+    },
+    {
+      "call": 14,
+      "min_requested_distance_m": {
+        "left": 0.01997940068393426,
+        "right": 0.43030114330926705
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.785
+    },
+    {
+      "call": 15,
+      "min_requested_distance_m": {
+        "left": 0.02843988999705469,
+        "right": 0.4284880237581767
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.788
+    },
+    {
+      "call": 16,
+      "min_requested_distance_m": {
+        "left": 0.03247619476626865,
+        "right": 0.43732548462054355
+      },
+      "contacts": [],
+      "max_object_z": 0.785
+    },
+    {
+      "call": 17,
+      "min_requested_distance_m": {
+        "left": 0.05097246220910069,
+        "right": 0.4369057350456795
+      },
+      "contacts": [],
+      "max_object_z": 0.785
+    },
+    {
+      "call": 18,
+      "min_requested_distance_m": {
+        "left": 0.05433233819604716,
+        "right": 0.44035383212019613
+      },
+      "contacts": [],
+      "max_object_z": 0.785
+    },
+    {
+      "call": 19,
+      "min_requested_distance_m": {
+        "left": 0.061750705397716765,
+        "right": 0.4429624690205969
+      },
+      "contacts": [],
+      "max_object_z": 0.785
+    },
+    {
+      "call": 20,
+      "min_requested_distance_m": {
+        "left": 0.04011825601722233,
+        "right": 0.44533498016507334
+      },
+      "contacts": [
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.786
+    }
+  ],
+  "measured_tracking": {
+    "left": {
+      "position_m_median_p95": [
+        0.010290381853815214,
+        0.04128609679732756
+      ],
+      "rotation_deg_median_p95": [
+        2.0121931296407976,
+        7.214032611536474
+      ]
+    },
+    "right": {
+      "position_m_median_p95": [
+        0.0045235342979408465,
+        0.008692505522086532
+      ],
+      "rotation_deg_median_p95": [
+        0.6184785953839456,
+        1.1085593255494008
+      ]
+    }
+  },
+  "limit_notices": []
+}

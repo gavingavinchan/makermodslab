@@ -10,7 +10,8 @@ Two modes, both in Dream's shipped `dream_examples/yam_mujoco` scene and through
                   sees only the cameras and the prompt and its hand poses are composed on the pose sent.
 
 --task cube or box swaps the apple/bowl for a local object/square task. --rig viscous swaps
-both arms for Viscous in the unchanged apple scene (vision only). --rig makers|metal
+both arms for Viscous (vision only), with Maker-style wrist views by default;
+--viscous-wrist legacy restores the original mount and image crop. --rig makers|metal
 uses Dream's built-in arm IK with local vendor CAD, at the arm's rest pose (vision only).
 
 If station works and vision fails the same way the Viscous did, the Viscous failure is the vision-only mode, not
@@ -144,6 +145,8 @@ def main():
     p.add_argument("--task", choices=("apple", "orange", "cube", "box"), help="Defaults to --fruit; cube/box replaces apple/bowl")
     p.add_argument("--prompt", help="Override the task's default instruction")
     p.add_argument("--rig", choices=("yam", "viscous", "makers", "metal"), default="yam")
+    p.add_argument("--viscous-wrist", choices=("maker", "legacy"), default="maker",
+                   help="Viscous wrist view; legacy reproduces the original mount and crop")
     p.add_argument("--live", action="store_true")
     p.add_argument("--max-calls", type=int, default=20)
     p.add_argument("--actions", type=int, default=48, help="rows run per chunk (Dream's example default 48)")
@@ -151,8 +154,8 @@ def main():
     args = p.parse_args()
     if not 1 <= args.max_calls <= 20 or not 1 <= args.actions <= 48:
         p.error("Use 1–20 calls and 1–48 actions.")
-    if args.rig == "viscous" and (args.mode != "vision" or args.task not in (None, "apple") or args.fruit != "apple"):
-        p.error("The Viscous comparison uses --mode vision and the apple task.")
+    if args.rig == "viscous" and (args.mode != "vision" or (args.task or args.fruit) not in ("apple", "box", "cube")):
+        p.error("Viscous uses --mode vision and apple, box or cube.")
     if args.rig in ("makers", "metal") and args.mode != "vision":
         p.error("Maker and Metal use --mode vision with Dream's built-in client IK.")
     args.fruit = args.task or args.fruit
@@ -171,6 +174,8 @@ def main():
     if args.rig in ("makers", "metal"):
         from supported_arms import SupportedArmEnv
         env = SupportedArmEnv(args.rig, args.fruit)
+    elif args.rig == "viscous":
+        env = ViscousAppleEnv(args.fruit, args.viscous_wrist)
     else:
         env = env_class()
     rec = Recorder(env)
@@ -182,7 +187,7 @@ def main():
         images = capture(env, windows, keep=steps % FRAME_EVERY_STEPS == 0)
         steps += 1
     rec.grab(env, images["top"])
-    if args.rig == "makers":
+    if args.rig in ("makers", "viscous"):
         from PIL import Image
         Image.fromarray(np.concatenate([images["left"], images["right"]], axis=1)).save(args.out / "wrist_00.png")
     if args.rig == "viscous":
@@ -213,11 +218,14 @@ def main():
             "initial_grippers": "open", "sim_held_during_request": True,
             "task": args.fruit, "prompt": task,
             **({"wrist_cameras": {
-                side: {"link": f"{side}_link_007", "position_m": env.model.camera(side).pos.tolist(),
+                side: {"link": f"{side}_tool0" if args.rig == "viscous" else f"{side}_link_007", "position_m": env.model.camera(side).pos.tolist(),
                        "quaternion_wxyz": env.model.camera(side).quat.tolist(),
                        "vfov_deg": float(env.model.camera(side).fovy[0]),
-                       "render_size": [640, 360], "model_size": [320, 176]}
-                for side in ("left", "right")}} if args.rig == "makers" else {}),
+                       "render_size": [640, 480] if args.rig == "viscous" and args.viscous_wrist == "legacy" else [640, 360],
+                       "model_size": [320, 176]}
+                for side in ("left", "right")},
+                "viscous_wrist": args.viscous_wrist if args.rig == "viscous" else None}
+               if args.rig in ("makers", "viscous") else {}),
         }, indent=2))
         client.policy(config)
         feed_client = CustomGripFeed(client) if args.rig != "yam" else client
@@ -297,6 +305,14 @@ def main():
                 sample = {"call": calls, "step": steps, "success": row_success,
                           "commanded_left": l_row.tolist(), "commanded_right": r_row.tolist(),
                           **objects(env, args.fruit)}
+                if args.rig == "viscous":
+                    sample["robot_contacts"] = []
+                    for contact in env.data.contact:
+                        bodies = [env.model.body(env.model.geom_bodyid[g]).name for g in (contact.geom1, contact.geom2)]
+                        if any(n.startswith(("left_", "right_")) for n in bodies):
+                            sample["robot_contacts"].append({"bodies": bodies,
+                                "geoms": [env.model.geom(g).name for g in (contact.geom1, contact.geom2)],
+                                "distance_m": float(contact.dist)})
                 if trace is not None:
                     sample.update({"row": row_index, "tracking": errors[row_index],
                                    f"{args.fruit}_base_before_step": apple_before,
@@ -324,7 +340,7 @@ def main():
             print(json.dumps(entry), flush=True)
             from PIL import Image
             Image.fromarray(rec.frames[rec.milestones[-1]]).save(args.out / f"frame_{calls:02d}.png")
-            if args.rig == "makers":
+            if args.rig in ("makers", "viscous"):
                 Image.fromarray(np.concatenate([images["left"], images["right"]], axis=1)).save(
                     args.out / f"wrist_{calls:02d}.png")
     finally:

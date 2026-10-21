@@ -22,7 +22,7 @@ def analyse(path):
     result["object_contact_rows"] = sum(bool(r["object_robot_contacts"]) for r in rows)
     def bilateral(r, side):
         contacts = r["object_robot_contacts"]
-        jaws = ("gripper_left", "gripper_right") if result["rig"] == "makers" else ("link7", "link8")
+        jaws = ("gripper_left", "gripper_right") if result["rig"] in ("makers", "viscous") else ("link7", "link8")
         return all(f"{side}_{j}" in contacts for j in jaws)
     result["bilateral_jaw_contact_rows"] = sum(bilateral(r, s) for r in rows for s in ("left", "right"))
     result["lifted_with_bilateral_contact"] = any(r[f"{task}_xyz"][2] > initial + .025 and
@@ -30,6 +30,15 @@ def analyse(path):
     result["tracking"] = {s: {metric: np.percentile([r["tracking"][s][metric] for r in rows], [50, 95]).tolist()
                                for metric in ("raw_position_error_m", "raw_rotation_error_deg")}
                           for s in ("left", "right")}
+    if result["rig"] == "viscous":
+        def table_contacts(row):
+            return [c for c in row.get("robot_contacts", []) if "table" in c["geoms"] and
+                    any(n.endswith(("_gripper_left", "_gripper_right")) for n in c["bodies"])]
+        contact_rows = [r for r in rows if table_contacts(r)]
+        result["finger_table_contact_rows"] = len(contact_rows)
+        result["finger_table_contact_calls"] = sorted({r["call"] for r in contact_rows})
+        result["first_finger_table_contact"] = ({"call": contact_rows[0]["call"], "row": contact_rows[0]["row"],
+            "contacts": table_contacts(contact_rows[0])} if contact_rows else None)
     result["per_call"] = [{"call": c, "min_requested_distance_m": {
         s: min(float(np.linalg.norm(np.asarray(r["tracking"][s]["requested_xyz"]) - r[f"{task}_base_before_step"][s]))
                for r in rows if r["call"] == c) for s in ("left", "right")},
