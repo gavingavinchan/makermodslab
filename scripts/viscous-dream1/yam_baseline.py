@@ -10,7 +10,8 @@ Two modes, both in Dream's shipped `dream_examples/yam_mujoco` scene and through
                   sees only the cameras and the prompt and its hand poses are composed on the pose sent.
 
 --task cube or box swaps the apple/bowl for a local object/square task. --rig viscous swaps
-both arms for Viscous in the unchanged apple scene (vision only).
+both arms for Viscous in the unchanged apple scene (vision only). --rig makers|metal
+uses Dream's built-in arm IK with local vendor CAD, at the arm's rest pose (vision only).
 
 If station works and vision fails the same way the Viscous did, the Viscous failure is the vision-only mode, not
 our arm, cameras or frames. Sim time stops while a request is in flight (as in Dream's example).
@@ -99,7 +100,7 @@ class Recorder:
 
 
 class CustomGripFeed:
-    """Adapt only the custom-arm client's normalized grip spelling; reuse Dream's feed."""
+    """Adapt the non-YAM client's normalized grip spelling; reuse Dream's feed."""
 
     def __init__(self, client):
         self.client = client
@@ -142,7 +143,7 @@ def main():
     p.add_argument("--fruit", choices=sorted(TASKS), default="apple")
     p.add_argument("--task", choices=("apple", "orange", "cube", "box"), help="Defaults to --fruit; cube/box replaces apple/bowl")
     p.add_argument("--prompt", help="Override the task's default instruction")
-    p.add_argument("--rig", choices=("yam", "viscous"), default="yam")
+    p.add_argument("--rig", choices=("yam", "viscous", "makers", "metal"), default="yam")
     p.add_argument("--live", action="store_true")
     p.add_argument("--max-calls", type=int, default=20)
     p.add_argument("--actions", type=int, default=48, help="rows run per chunk (Dream's example default 48)")
@@ -152,6 +153,8 @@ def main():
         p.error("Use 1–20 calls and 1–48 actions.")
     if args.rig == "viscous" and (args.mode != "vision" or args.task not in (None, "apple") or args.fruit != "apple"):
         p.error("The Viscous comparison uses --mode vision and the apple task.")
+    if args.rig in ("makers", "metal") and args.mode != "vision":
+        p.error("Maker and Metal use --mode vision with Dream's built-in client IK.")
     args.fruit = args.task or args.fruit
     distance_key = f"{args.fruit}_to_{'square' if args.fruit in ('cube', 'box') else 'bowl'}_xy_m"
     args.out.mkdir(parents=True, exist_ok=True)
@@ -165,7 +168,11 @@ def main():
     from cross_scenes import BoxYamEnv, CubeYamEnv, ViscousAppleEnv, preview_comparison, success
 
     env_class = ViscousAppleEnv if args.rig == "viscous" else {"cube": CubeYamEnv, "box": BoxYamEnv}.get(args.fruit, YamEnv)
-    env = env_class()
+    if args.rig in ("makers", "metal"):
+        from supported_arms import SupportedArmEnv
+        env = SupportedArmEnv(args.rig, args.fruit)
+    else:
+        env = env_class()
     rec = Recorder(env)
     windows = {name: deque(maxlen=FRAMES) for name in VIDEO_ROLES}
     steps = 0
@@ -193,14 +200,18 @@ def main():
         if args.rig == "viscous":
             config["ik"]["arm"] = str(Path(__file__).resolve().parent / "viscous_arm.json")
             config.pop("robot")  # Dream defaults a custom arm to other_embodiment.
+        elif args.rig in ("makers", "metal"):
+            config["ik"]["arm"] = args.rig
+            config.pop("robot")  # The official built-in arm path selects other_embodiment.
         (args.out / "configuration.json").write_text(json.dumps({
             "policy": config, "frames_per_camera": FRAMES, "camera_hz": 5,
             "row_hz": 20, "rows_per_chunk": args.actions, "own_speed_clipping": False,
-            "initial_joints": "zeros", "initial_grippers": "open", "sim_held_during_request": True,
+            "initial_joints": list(env.spec.rest_pose) if args.rig in ("makers", "metal") else "zeros",
+            "initial_grippers": "open", "sim_held_during_request": True,
             "task": args.fruit, "prompt": task,
         }, indent=2))
         client.policy(config)
-        feed_client = CustomGripFeed(client) if args.rig == "viscous" else client
+        feed_client = CustomGripFeed(client) if args.rig != "yam" else client
         feed(feed_client, env, windows, task, BETA_MODEL, steps, every=0, station=station)
         # set_observation only queues frames. Exercise its deferred FK/grip conversion
         # without get_action or any inference request, in dry AND live preflight.
@@ -211,10 +222,17 @@ def main():
             from hand_path_tools import IKTrace, tracking, clip_viscous_grips, apple_in_base
             trace = IKTrace(ik, args.fruit)
         prepared = queued if ik is None else ik.observe(queued)
+        if args.rig in ("makers", "metal"):
+            assert client._policy._robot == "other_embodiment"
+            for side in ("left", "right"):
+                np.testing.assert_array_equal(prepared[f"state.{side}_arm"], np.zeros(6))
+                np.testing.assert_allclose(prepared[f"state.{side}_gripper"], queued[f"state.{side}_grip"])
         (args.out / "preflight.json").write_text(json.dumps({
             "queued_keys": sorted(queued), "prepared_keys": sorted(prepared),
             "resolved_robot": client._policy._robot,
             "queued_camera_lengths": {k: len(v) for k, v in queued.items() if k.startswith("video.")},
+            "prepared_arm_state": {k: np.asarray(v).tolist() for k, v in prepared.items()
+                                   if k.startswith("state.")},
             "input_conversion_passed": True, "inference_calls": 0,
         }, indent=2))
         print("policy opened; config accepted (no action requested yet)", flush=True)
@@ -244,7 +262,7 @@ def main():
                 chunk_record = trace.chunk(calls, reply, env, args.actions)
                 with (args.out / "chunks.jsonl").open("a") as chunks:
                     chunks.write(json.dumps(chunk_record) + "\n")
-            executable_reply = clip_viscous_grips(reply, adjustments) if args.rig == "viscous" else reply
+            executable_reply = clip_viscous_grips(reply, adjustments) if args.rig != "yam" else reply
             try:
                 left, right = validate_chunk(env, executable_reply, args.actions, verbose=False, adjustments=adjustments)
             except ValueError as error:

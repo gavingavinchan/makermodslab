@@ -379,6 +379,25 @@ session, in parallel with a haptics session.
   4.5 cm square). Later calls nudge it a little. 20 billed calls,
   `runs/yam_box_vision_live1`, `runs/box_report.md`. So on a real bench, use
   objects of about this size or larger for any Dream-1 trial; 120 billed calls today.
+- *Maker and Metal in sim also fail (2026-10-20).* Gavin: Dream supports the Maker
+  arm ("works 60% of the time") and the Metal, so follow their documented setup in
+  sim, Maker first, then Metal. Dream's docs are behind the platform login; the
+  client is the documentation we have. This key runs only the two public YAM base
+  models, so "Maker support" for us is `dream-1-beta` + `ik: {"arm": "makers"}`
+  (`other_embodiment`). Two Maker arms at YAM's bases in Dream's scene, built from
+  our `frontend/public/maker-urdf` and checked against `dream_ik`'s own Maker FK to
+  0.0003 mm / 0.00003 deg; scripted pinches lift the apple and the box. Live, beta:
+  Maker apple 20 calls, Maker box 20, Metal apple 20. No object contact in any run;
+  the requested hands never came within ~23 cm of an object (Metal 30 cm). Report
+  `runs/maker_metal_report.md`, scripts `supported_arms.py`,
+  `supported_arm_check.py`, `analyse_supported_runs.py`. 180 billed calls today.
+  Two open questions decide what this means: (1) the wrist cameras. Dream calls the
+  Maker mount "not measured", and our improvised one is clearly wrong: it looks at the
+  back of the gripper with the table upside-down (`runs/maker_metal_cameras/`), where
+  YAM's shows the scene with fingertips in the corners. (2) Whether Dream's "60%"
+  is this base model zero-shot or a Maker fine-tune. The Maker spec's rest pose comes
+  from 94 recorded Maker-station episodes, and the client speaks of "Metal and Makers
+  checkpoints", which suggests fine-tunes this key cannot run.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 
