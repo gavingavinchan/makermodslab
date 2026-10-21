@@ -298,8 +298,9 @@ def test_friction_is_held_at_the_fastest_identified_speed(urdf):  # noqa: F811
 
 def test_the_committed_v2_fit_compensates_no_weakly_excited_joint():
     import json
+    from pathlib import Path
 
-    fit = json.loads(open("configs/viscous/viscous_01/gravity-air-fit-v2.json").read())
+    fit = json.loads(Path("configs/viscous/viscous_01/gravity-air-fit-v2.json").read_text())
     for name in ("shoulder_pan", "wrist_yaw", "wrist_roll"):
         assert fit["friction"][name]["coulomb_nm"] == 0.0
         assert fit["friction"][name]["viscous_nm_per_deg_s"] == 0.0
