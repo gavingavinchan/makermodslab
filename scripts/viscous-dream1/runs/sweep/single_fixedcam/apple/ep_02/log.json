@@ -1,0 +1,228 @@
+{
+ "seed": 20261022,
+ "jitter_xy_m": [
+  -0.01429173153697934,
+  -0.019912660155204796
+ ],
+ "task": "apple",
+ "configuration": {
+  "tcp": "pad",
+  "arms": "single",
+  "rows": 48,
+  "region": "off",
+  "wrist_r": "fixedcam"
+ },
+ "config_name": "single_fixedcam",
+ "episode": 2,
+ "calls_used": 12,
+ "success": true,
+ "first_success_call": 11,
+ "confirmed_success_call": 12,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.0034251106935206583
+ },
+ "object_to_target_min_m": 0.0032813720554614604,
+ "grasped": true,
+ "max_lift_m": 0.12340636303360641,
+ "finger_table_contact_rows": 13,
+ "executed_rows": 576,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1357165596427682,
+    0.0851590575136047,
+    0.7913326622189938
+   ],
+   "notices": [
+    "left joint limits clipped"
+   ]
+  },
+  {
+   "call": 2,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1357149274454447,
+    0.08515584356213983,
+    0.7913326012904847
+   ],
+   "notices": []
+  },
+  {
+   "call": 3,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.13571213046400127,
+    0.08515148385256024,
+    0.7913328260753694
+   ],
+   "notices": []
+  },
+  {
+   "call": 4,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1357125541223266,
+    0.08515159139715768,
+    0.7913326678122833
+   ],
+   "notices": []
+  },
+  {
+   "call": 5,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.13571102137448388,
+    0.08514871309739591,
+    0.7913326645168793
+   ],
+   "notices": []
+  },
+  {
+   "call": 6,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.13571143986348813,
+    0.08514910810745949,
+    0.7913325933057256
+   ],
+   "notices": []
+  },
+  {
+   "call": 7,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.13637944039537167,
+    0.09310668432606364,
+    0.7913370958633179
+   ],
+   "notices": []
+  },
+  {
+   "call": 8,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.136361049383551,
+    0.0924949605482585,
+    0.7913326774669459
+   ],
+   "notices": []
+  },
+  {
+   "call": 9,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.14293490425812733,
+    0.07840267215991611,
+    0.8539931671546992
+   ],
+   "notices": []
+  },
+  {
+   "call": 10,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.04867360207054654,
+    -0.0075121951901643644,
+    0.8432132854100145
+   ],
+   "notices": []
+  },
+  {
+   "call": 11,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    -0.004079948916912448,
+    -0.05490636788594349,
+    0.8003072326507009
+   ],
+   "notices": [
+    "left gripper: clipped 9 values from [0.395849, 1.007913] to [0, 1]"
+   ]
+  },
+  {
+   "call": 12,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    -0.004083317244910093,
+    -0.054903908627951234,
+    0.8003069495955131
+   ],
+   "notices": []
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  0.13571450998708945,
+  0.08515606370618768,
+  0.791332818976949
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "termination": "success_two_calls"
+}

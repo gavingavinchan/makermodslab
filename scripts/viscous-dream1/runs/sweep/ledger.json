@@ -7203,11 +7203,1250 @@
    "call": 8,
    "status": "billed",
    "utc": "2026-10-21T03:50:09Z"
+  },
+  {
+   "id": 1030,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:51Z"
+  },
+  {
+   "id": 1031,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:53Z"
+  },
+  {
+   "id": 1032,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:54Z"
+  },
+  {
+   "id": 1033,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:56Z"
+  },
+  {
+   "id": 1034,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:58Z"
+  },
+  {
+   "id": 1035,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T03:58:59Z"
+  },
+  {
+   "id": 1036,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:01Z"
+  },
+  {
+   "id": 1037,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:03Z"
+  },
+  {
+   "id": 1038,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:04Z"
+  },
+  {
+   "id": 1039,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:06Z"
+  },
+  {
+   "id": 1040,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:08Z"
+  },
+  {
+   "id": 1041,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:10Z"
+  },
+  {
+   "id": 1042,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:12Z"
+  },
+  {
+   "id": 1043,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:14Z"
+  },
+  {
+   "id": 1044,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:16Z"
+  },
+  {
+   "id": 1045,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:17Z"
+  },
+  {
+   "id": 1046,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:19Z"
+  },
+  {
+   "id": 1047,
+   "episode": "single_fixedcam/apple/ep_00",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:21Z"
+  },
+  {
+   "id": 1048,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:24Z"
+  },
+  {
+   "id": 1049,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:25Z"
+  },
+  {
+   "id": 1050,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:26Z"
+  },
+  {
+   "id": 1051,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:27Z"
+  },
+  {
+   "id": 1052,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:28Z"
+  },
+  {
+   "id": 1053,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:30Z"
+  },
+  {
+   "id": 1054,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:31Z"
+  },
+  {
+   "id": 1055,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:33Z"
+  },
+  {
+   "id": 1056,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:34Z"
+  },
+  {
+   "id": 1057,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:36Z"
+  },
+  {
+   "id": 1058,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:38Z"
+  },
+  {
+   "id": 1059,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:39Z"
+  },
+  {
+   "id": 1060,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:42Z"
+  },
+  {
+   "id": 1061,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:43Z"
+  },
+  {
+   "id": 1062,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:45Z"
+  },
+  {
+   "id": 1063,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:47Z"
+  },
+  {
+   "id": 1064,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:49Z"
+  },
+  {
+   "id": 1065,
+   "episode": "single_fixedcam/apple/ep_01",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:51Z"
+  },
+  {
+   "id": 1066,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:54Z"
+  },
+  {
+   "id": 1067,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:55Z"
+  },
+  {
+   "id": 1068,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:56Z"
+  },
+  {
+   "id": 1069,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:57Z"
+  },
+  {
+   "id": 1070,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T03:59:58Z"
+  },
+  {
+   "id": 1071,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:00Z"
+  },
+  {
+   "id": 1072,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:01Z"
+  },
+  {
+   "id": 1073,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:03Z"
+  },
+  {
+   "id": 1074,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:05Z"
+  },
+  {
+   "id": 1075,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:07Z"
+  },
+  {
+   "id": 1076,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:08Z"
+  },
+  {
+   "id": 1077,
+   "episode": "single_fixedcam/apple/ep_02",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:10Z"
+  },
+  {
+   "id": 1078,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:15Z"
+  },
+  {
+   "id": 1079,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:16Z"
+  },
+  {
+   "id": 1080,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:18Z"
+  },
+  {
+   "id": 1081,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:19Z"
+  },
+  {
+   "id": 1082,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:21Z"
+  },
+  {
+   "id": 1083,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:23Z"
+  },
+  {
+   "id": 1084,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:24Z"
+  },
+  {
+   "id": 1085,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:26Z"
+  },
+  {
+   "id": 1086,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:28Z"
+  },
+  {
+   "id": 1087,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:30Z"
+  },
+  {
+   "id": 1088,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:32Z"
+  },
+  {
+   "id": 1089,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:33Z"
+  },
+  {
+   "id": 1090,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:35Z"
+  },
+  {
+   "id": 1091,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:37Z"
+  },
+  {
+   "id": 1092,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:40Z"
+  },
+  {
+   "id": 1093,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:41Z"
+  },
+  {
+   "id": 1094,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:43Z"
+  },
+  {
+   "id": 1095,
+   "episode": "single_fixedcam/apple/ep_03",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:46Z"
+  },
+  {
+   "id": 1096,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:49Z"
+  },
+  {
+   "id": 1097,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:50Z"
+  },
+  {
+   "id": 1098,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:52Z"
+  },
+  {
+   "id": 1099,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:53Z"
+  },
+  {
+   "id": 1100,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:54Z"
+  },
+  {
+   "id": 1101,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:56Z"
+  },
+  {
+   "id": 1102,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:00:58Z"
+  },
+  {
+   "id": 1103,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:00Z"
+  },
+  {
+   "id": 1104,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:02Z"
+  },
+  {
+   "id": 1105,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:04Z"
+  },
+  {
+   "id": 1106,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:06Z"
+  },
+  {
+   "id": 1107,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:08Z"
+  },
+  {
+   "id": 1108,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:10Z"
+  },
+  {
+   "id": 1109,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:12Z"
+  },
+  {
+   "id": 1110,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:14Z"
+  },
+  {
+   "id": 1111,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:15Z"
+  },
+  {
+   "id": 1112,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:18Z"
+  },
+  {
+   "id": 1113,
+   "episode": "single_fixedcam/apple/ep_04",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:19Z"
+  },
+  {
+   "id": 1114,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:23Z"
+  },
+  {
+   "id": 1115,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:24Z"
+  },
+  {
+   "id": 1116,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:25Z"
+  },
+  {
+   "id": 1117,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:27Z"
+  },
+  {
+   "id": 1118,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:29Z"
+  },
+  {
+   "id": 1119,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:31Z"
+  },
+  {
+   "id": 1120,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:34Z"
+  },
+  {
+   "id": 1121,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:35Z"
+  },
+  {
+   "id": 1122,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:37Z"
+  },
+  {
+   "id": 1123,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:39Z"
+  },
+  {
+   "id": 1124,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:41Z"
+  },
+  {
+   "id": 1125,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:42Z"
+  },
+  {
+   "id": 1126,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:44Z"
+  },
+  {
+   "id": 1127,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:45Z"
+  },
+  {
+   "id": 1128,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:47Z"
+  },
+  {
+   "id": 1129,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:49Z"
+  },
+  {
+   "id": 1130,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:51Z"
+  },
+  {
+   "id": 1131,
+   "episode": "single_fixedcam/apple/ep_05",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:53Z"
+  },
+  {
+   "id": 1132,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:56Z"
+  },
+  {
+   "id": 1133,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:57Z"
+  },
+  {
+   "id": 1134,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:01:59Z"
+  },
+  {
+   "id": 1135,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:01Z"
+  },
+  {
+   "id": 1136,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:03Z"
+  },
+  {
+   "id": 1137,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:05Z"
+  },
+  {
+   "id": 1138,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:07Z"
+  },
+  {
+   "id": 1139,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:08Z"
+  },
+  {
+   "id": 1140,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:11Z"
+  },
+  {
+   "id": 1141,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:13Z"
+  },
+  {
+   "id": 1142,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:16Z"
+  },
+  {
+   "id": 1143,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:18Z"
+  },
+  {
+   "id": 1144,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:20Z"
+  },
+  {
+   "id": 1145,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:22Z"
+  },
+  {
+   "id": 1146,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:24Z"
+  },
+  {
+   "id": 1147,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:26Z"
+  },
+  {
+   "id": 1148,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:28Z"
+  },
+  {
+   "id": 1149,
+   "episode": "parked_blind/apple/ep_00",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:30Z"
+  },
+  {
+   "id": 1150,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:33Z"
+  },
+  {
+   "id": 1151,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:35Z"
+  },
+  {
+   "id": 1152,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:37Z"
+  },
+  {
+   "id": 1153,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:39Z"
+  },
+  {
+   "id": 1154,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:41Z"
+  },
+  {
+   "id": 1155,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:43Z"
+  },
+  {
+   "id": 1156,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:45Z"
+  },
+  {
+   "id": 1157,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:47Z"
+  },
+  {
+   "id": 1158,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:49Z"
+  },
+  {
+   "id": 1159,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:51Z"
+  },
+  {
+   "id": 1160,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:53Z"
+  },
+  {
+   "id": 1161,
+   "episode": "parked_blind/apple/ep_01",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:02:55Z"
+  },
+  {
+   "id": 1162,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:00Z"
+  },
+  {
+   "id": 1163,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:01Z"
+  },
+  {
+   "id": 1164,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:02Z"
+  },
+  {
+   "id": 1165,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:04Z"
+  },
+  {
+   "id": 1166,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:06Z"
+  },
+  {
+   "id": 1167,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:09Z"
+  },
+  {
+   "id": 1168,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:13Z"
+  },
+  {
+   "id": 1169,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:17Z"
+  },
+  {
+   "id": 1170,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:20Z"
+  },
+  {
+   "id": 1171,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:22Z"
+  },
+  {
+   "id": 1172,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 11,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:25Z"
+  },
+  {
+   "id": 1173,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 12,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:28Z"
+  },
+  {
+   "id": 1174,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 13,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:31Z"
+  },
+  {
+   "id": 1175,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 14,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:34Z"
+  },
+  {
+   "id": 1176,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 15,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:37Z"
+  },
+  {
+   "id": 1177,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 16,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:39Z"
+  },
+  {
+   "id": 1178,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 17,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:40Z"
+  },
+  {
+   "id": 1179,
+   "episode": "parked_blind/apple/ep_02",
+   "call": 18,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:42Z"
+  },
+  {
+   "id": 1180,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:46Z"
+  },
+  {
+   "id": 1181,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:48Z"
+  },
+  {
+   "id": 1182,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:50Z"
+  },
+  {
+   "id": 1183,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:52Z"
+  },
+  {
+   "id": 1184,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:54Z"
+  },
+  {
+   "id": 1185,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:57Z"
+  },
+  {
+   "id": 1186,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:03:59Z"
+  },
+  {
+   "id": 1187,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:02Z"
+  },
+  {
+   "id": 1188,
+   "episode": "parked_blind/apple/ep_03",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:05Z"
+  },
+  {
+   "id": 1189,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:10Z"
+  },
+  {
+   "id": 1190,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:11Z"
+  },
+  {
+   "id": 1191,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:12Z"
+  },
+  {
+   "id": 1192,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:14Z"
+  },
+  {
+   "id": 1193,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:16Z"
+  },
+  {
+   "id": 1194,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:18Z"
+  },
+  {
+   "id": 1195,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:20Z"
+  },
+  {
+   "id": 1196,
+   "episode": "parked_blind/apple/ep_04",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:22Z"
+  },
+  {
+   "id": 1197,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:28Z"
+  },
+  {
+   "id": 1198,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:29Z"
+  },
+  {
+   "id": 1199,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 3,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:30Z"
+  },
+  {
+   "id": 1200,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 4,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:32Z"
+  },
+  {
+   "id": 1201,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 5,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:34Z"
+  },
+  {
+   "id": 1202,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 6,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:36Z"
+  },
+  {
+   "id": 1203,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 7,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:38Z"
+  },
+  {
+   "id": 1204,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 8,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:40Z"
+  },
+  {
+   "id": 1205,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 9,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:42Z"
+  },
+  {
+   "id": 1206,
+   "episode": "parked_blind/apple/ep_05",
+   "call": 10,
+   "status": "billed",
+   "utc": "2026-10-21T04:04:45Z"
   }
  ],
- "confirmed_billed": 1029,
+ "confirmed_billed": 1206,
  "uncertain": 0,
- "budget_used": 1029,
+ "budget_used": 1206,
  "onearm_allowance": {
   "start_used": 872,
   "additional_calls": 440,

@@ -1,0 +1,82 @@
+{
+ "inference_calls": 0,
+ "note": "Contacts with dist<=0 inspected after every 1ms mj_step, before projection; initialization and replayed execution included.",
+ "episodes": {
+  "parked": [
+   {
+    "seed": 20261020,
+    "physics_steps": 28050,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261021,
+    "physics_steps": 25650,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261022,
+    "physics_steps": 20850,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261023,
+    "physics_steps": 23250,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261024,
+    "physics_steps": 23250,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261025,
+    "physics_steps": 20850,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   }
+  ],
+  "parked_blind": [
+   {
+    "seed": 20261020,
+    "physics_steps": 44850,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261021,
+    "physics_steps": 30450,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261022,
+    "physics_steps": 44850,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261023,
+    "physics_steps": 23250,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261024,
+    "physics_steps": 20850,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   },
+   {
+    "seed": 20261025,
+    "physics_steps": 25650,
+    "right_contact_steps_by_other_body": {},
+    "examples": {}
+   }
+  ]
+ }
+}

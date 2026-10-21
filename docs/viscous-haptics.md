@@ -472,6 +472,28 @@ session, in parallel with a haptics session.
   second (parked, maybe static) arm or a mirrored image in the right slot, the
   object on the working arm's side, or the right wrist slot fed the left view.
   1132 billed calls today (about $1.45).
+- *One arm, what restores it (2026-10-20/21).* Apple task, same seeds as the sweep, 6
+  episodes each (`BRIEF_ONEARM.md`, `BRIEF_ONEARM_ISOLATE.md`,
+  `runs/viscous_onearm_report.md`, `runs/viscous_onearm_isolate_report.md`):
+
+  | One working arm, plus... | Apple into bowl |
+  |---|---|
+  | nothing (`single`, right wrist image black) | 2/6 |
+  | left wrist image copied into the right slot (`single_copy`) | 2/6 |
+  | a fixed camera where the parked right wrist camera sits (`single_fixedcam`) | 1/6 |
+  | a second arm held still at rest, its wrist image black (`parked_blind`) | 4/6 |
+  | a second arm held still at rest, with its wrist camera (`parked`) | **6/6**, median 9 calls |
+
+  The parked arm never touched anything (contact replay), so it helps only through what
+  the cameras see. Both parts count: a second arm in the top view (2 -> 4) and its wrist
+  view (4 -> 6). The fixed camera matches the wrist camera's pose but not its picture:
+  it lacks the parked gripper's fingers and the arm's shadow
+  (`runs/sweep/isolate_validation/parked_fixedcam_wrist_r.png`). *Guess, not measured:*
+  Dream-1 expects every wrist image to show its own fingers, which is why the bare
+  fixed view did not help. Six episodes each, so 4/6 against 2/6 is suggestive only.
+  For the real bench: a second, unpowered arm parked at rest with its own wrist camera
+  is the measured fix; a dummy (camera plus a gripper in its view) is untested. 1206
+  billed calls so far, 106 left under the ledger cap.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

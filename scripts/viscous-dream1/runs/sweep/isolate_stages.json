@@ -1,0 +1,20 @@
+{
+ "start_used": 1029,
+ "allowance": 220,
+ "cap": 1312,
+ "episodes_per_config": 6,
+ "complete": true,
+ "billed_calls_added": 177,
+ "budget_used_added": 177,
+ "ledger": {
+  "cap": 1312,
+  "confirmed_billed": 1206,
+  "uncertain": 0,
+  "budget_used": 1206,
+  "onearm_allowance": {
+   "start_used": 872,
+   "additional_calls": 440,
+   "previous_cap": 900
+  }
+ }
+}

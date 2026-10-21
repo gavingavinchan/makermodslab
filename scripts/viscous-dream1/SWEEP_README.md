@@ -71,3 +71,19 @@ logs include maximum measured and pre-projection solver deviations. Its wrist
 camera and measured joint state remain real, and right actions are discarded.
 Neither arm JSON file is edited. First-episode contact sheets for new modes show
 all three actual encoded call-1 policy frames, with labels outside the images.
+
+Isolation follow-up: `onearm_isolate_check.py` runs zero-inference checks and
+full dry episodes; `onearm_isolate_sweep.py --live` runs six paired apple episodes
+per control under an additional hard 220-call ceiling from ledger usage 1029.
+The existing global cap stays 1312. `single_fixedcam` selects `arms='single',
+wrist_r='fixedcam'`: no right body tree, a world-fixed camera with the parked
+rest/open wrist's exact position, orientation, 77.2-degree vertical FOV and
+640x360 rendering, right rest/open state and ignored right actions. Removing the
+arm also removes its wrist-view fingers and its shadows/reflections.
+`parked_blind` selects `arms='parked', wrist_r='blind'`: all parked physics/state
+and visible geometry stay intact, but every right policy image is black.
+Default `wrist_r='normal'` and all previous configuration names are unchanged.
+`onearm_isolate_contacts.py` replays saved parked/blind chunks without inference
+and audits right-body contacts after every 1 ms physics step.
+`onearm_isolate_report.py` regenerates the final isolation report and checks
+paired spawns, accounting, protected hashes, permitted files, and video metadata.

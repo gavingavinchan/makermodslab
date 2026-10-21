@@ -90,7 +90,7 @@ class Ledger:
 
 def config_name(c):
     parts = []
-    for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', 'copy'), ('rows', 'r24'), ('region', 'table')]:
+    for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', c.get('wrist_r', 'normal')), ('rows', 'r24'), ('region', 'table')]:
         if c.get(key, DEFAULT[key]) != DEFAULT[key]:
             parts.append(label)
     return '_'.join(parts) or 'B0'
@@ -100,7 +100,7 @@ def parse_config(name):
     c = dict(DEFAULT)
     for part in name.split('_'):
         if part == 'B0': continue
-        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'parked': ('arms', 'parked'), 'copy': ('wrist_r', 'copy'), 'r24': ('rows', 24), 'table': ('region', 'table')}[part]
+        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'parked': ('arms', 'parked'), 'copy': ('wrist_r', 'copy'), 'fixedcam': ('wrist_r', 'fixedcam'), 'blind': ('wrist_r', 'blind'), 'r24': ('rows', 24), 'table': ('region', 'table')}[part]
         c[key] = val
     return c
 
@@ -214,7 +214,7 @@ def episode(task, c, index, live, ledger, dry_root=None):
     seed = 20261020 + (10000 if task == 'box' else 0) + index
     episode_id = f'{name}/{task}/ep_{index:02d}'
     env, windows, steps, images, jitter = initialize(task, c, seed)
-    new_mode = env.parked or env.copy_right
+    new_mode = env.parked or env.copy_right or env.fixed_right
     if index == 0 and new_mode:
         input_sheet(windows, out / 'contact_sheet.jpg')
     rec = y.Recorder(env); rec.grab(env, images['top'])
@@ -430,7 +430,7 @@ def stages(live, ledger):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,r24,table')
+    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
     p.add_argument('--task', choices=['apple', 'box', 'both'], default='both')
     p.add_argument('--episodes', type=int, default=6)
     p.add_argument('--live', action='store_true')

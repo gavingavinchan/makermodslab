@@ -1,0 +1,2338 @@
+[
+ {
+  "config": "B0",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "f1387134b619c090a9b5902b0648458a1cfcdd23932951295168bd1c8f606db7",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "9391412f87cbf7f2142de168730c2748401b3b54262970c77f9be2ef4c6953cc"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "B0",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "e93e99de08594234de77dbdc40c1eb809f17703ce514a5a2cf9093c1367ecfe3",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "table",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "338b33f2376256b63932670e631ae86a7217d703dd7da555e6c8c2a08dbe9941",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "9391412f87cbf7f2142de168730c2748401b3b54262970c77f9be2ef4c6953cc"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "table",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "527c337253bb607d488a7d71664d7582c7c7a410f9115bdb70371b80d8ff749f",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "r24",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "6957e0a6eed7eaf78c6a49c1f06c14792f7711e5b4cd3c8cd5d4c0f84bbeac44",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "38bcb142fa2f0713fa4b6e7f37365c837c59e9810495b2a675b24d15710faa29"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "r24",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "5fd26eae5c754bc4ff5f9f611542b1a501cee57547d614add629d29ab2ee6ce3",
+   "right": "3c4b01ed62094940e6ef74b4667fd53763c76a02abc99e96355787315dbd3baa"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "r24_table",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "338b33f2376256b63932670e631ae86a7217d703dd7da555e6c8c2a08dbe9941",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "38bcb142fa2f0713fa4b6e7f37365c837c59e9810495b2a675b24d15710faa29"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "r24_table",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "e93e99de08594234de77dbdc40c1eb809f17703ce514a5a2cf9093c1367ecfe3",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "79701f6f9f9dd8bdee95bd1a81113b5aad724b7b2891a6cd3cc21604ca53d980",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "98b05fbb57283c7fafacc8d6656337a57c2547b481667fd630b5093394e3570c",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_table",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "182147d3a427a3c22ffca63c118797d44d7aafb787d7675ca2fb8d93a4df8001",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_table",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "e0b5246df3cb003b261ffdf1decc1b5a9636e2d3e67e2dd01e14c943b25b52b9",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_r24",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "79701f6f9f9dd8bdee95bd1a81113b5aad724b7b2891a6cd3cc21604ca53d980",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_r24",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "98b05fbb57283c7fafacc8d6656337a57c2547b481667fd630b5093394e3570c",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_r24_table",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "0e7b98a205999ad130a450489463a841f083ffb7adb53e85a76722fb80492fb3",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "single_r24_table",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "e0b5246df3cb003b261ffdf1decc1b5a9636e2d3e67e2dd01e14c943b25b52b9",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "338b33f2376256b63932670e631ae86a7217d703dd7da555e6c8c2a08dbe9941",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "ff11ae44c1806e0daaff443f8acceed9670f1cfda131f67754c6e4c575632d7a"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "527c337253bb607d488a7d71664d7582c7c7a410f9115bdb70371b80d8ff749f",
+   "right": "3c4b01ed62094940e6ef74b4667fd53763c76a02abc99e96355787315dbd3baa"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_table",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "08db2656b2233f4f6c3f14521237d56abe0097eb4306a91ef2e1f1f34211c047",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "ff11ae44c1806e0daaff443f8acceed9670f1cfda131f67754c6e4c575632d7a"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_table",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "e93e99de08594234de77dbdc40c1eb809f17703ce514a5a2cf9093c1367ecfe3",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_r24",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "338b33f2376256b63932670e631ae86a7217d703dd7da555e6c8c2a08dbe9941",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "ff11ae44c1806e0daaff443f8acceed9670f1cfda131f67754c6e4c575632d7a"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_r24",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "527c337253bb607d488a7d71664d7582c7c7a410f9115bdb70371b80d8ff749f",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_r24_table",
+  "task": "apple",
+  "qpos": "daf1cff73191787edcb8b87dc4e3b606d727a91f987581ffb4b0f1c2f891c200",
+  "qvel": "399a6ab61f3d8d8fdc5d71e8f4a3766c104664ab3f8ee1e628d9432881c8676f",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "338b33f2376256b63932670e631ae86a7217d703dd7da555e6c8c2a08dbe9941",
+   "left": "c3f3247f39fce270da8baf19b29f2fc0051dc5bba88b50ddc0cfe58c22a734dd",
+   "right": "38bcb142fa2f0713fa4b6e7f37365c837c59e9810495b2a675b24d15710faa29"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_r24_table",
+  "task": "box",
+  "qpos": "ed5975bfc9eab15aae160f39b58434fe2e3565f24568a0c8f622af73f2aa32e1",
+  "qvel": "5b3882058656cb1aa9c5a00f2bbcb71d7174014c81c803c9f57bb54df70c092b",
+  "ctrl": "14276803a8cd9f68abc9622768750be4981085c99c72c351a7e32180180bc0fe",
+  "images": {
+   "top": "d59ac276f8177377195969677c957570e3ee634f3c105c9579ea28082d552ae5",
+   "left": "527c337253bb607d488a7d71664d7582c7c7a410f9115bdb70371b80d8ff749f",
+   "right": "9a6a7687fb385d5eea4f5259d50405ea64ebebd0424110d1a0c6d47332e15299"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "79701f6f9f9dd8bdee95bd1a81113b5aad724b7b2891a6cd3cc21604ca53d980",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "39011ebf1544c90c57a9ada9a1e918eadb76f2c6a199ff386bbb0eeb3e77ee6b",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_table",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "79701f6f9f9dd8bdee95bd1a81113b5aad724b7b2891a6cd3cc21604ca53d980",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_table",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "39011ebf1544c90c57a9ada9a1e918eadb76f2c6a199ff386bbb0eeb3e77ee6b",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_r24",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "680bbcab1bfd2fc82a6a982a8847e1fb90d0fd74895f0426b38023b4ffd95961",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_r24",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "39011ebf1544c90c57a9ada9a1e918eadb76f2c6a199ff386bbb0eeb3e77ee6b",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef"
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_r24_table",
+  "task": "apple",
+  "qpos": "c917f1651ca6099678839a2a1d1382127b3bf4eb0633fd639e670701abb25bcb",
+  "qvel": "aa0fa698da013281194f9a403bdfc2c4f75809f01d94dbc70c910c214dc1d148",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "0625ebfae3a6d6c2de77d09664271aef73bc16ee76049f88e9825614026cac45",
+   "left": "4491957c557cd081c215d78abfa5373d13b4fa0a58baad3f44b332dab6d8f444",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ },
+ {
+  "config": "tip_single_r24_table",
+  "task": "box",
+  "qpos": "4186293cc1fa30d7346f63972d83f1a8a7d518fc704f1a3122f5f11c86b84769",
+  "qvel": "5b426c291b394e020b472dc2087e4f9194861ea739f4abfdf0ca59c1e67cbe9f",
+  "ctrl": "398821ad74dd6873710de07a5bdda071bf9357d86abf756ca364cd6f853fbc99",
+  "images": {
+   "top": "564ba1f6732013ea0ffe15e09170d5c632267da3ef32f6571e9aea51c025d474",
+   "left": "98b05fbb57283c7fafacc8d6656337a57c2547b481667fd630b5093394e3570c",
+   "right": "65b095f8650bf6f8d9be6e7529fe0808bfd6068dad62aa31b2e02031e5e587d6"
+  },
+  "policy": {
+   "checkpoint": "dreamlabs/dream-1-beta",
+   "embodiment": {
+    "state": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "action": {
+     "right_arm": [
+      0,
+      6
+     ],
+     "right_gripper": [
+      6,
+      7
+     ],
+     "left_arm": [
+      7,
+      13
+     ],
+     "left_gripper": [
+      13,
+      14
+     ]
+    },
+    "video": {
+     "overhead": "observation.images.overhead",
+     "wrist_l": "observation.images.wrist_l",
+     "wrist_r": "observation.images.wrist_r"
+    }
+   },
+   "ik": {
+    "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+    "head": "eef",
+    "region": {
+     "left": {
+      "lo": [
+       0.08,
+       -0.3850000000000001,
+       0.013000000000000015
+      ],
+      "hi": [
+       0.5600000000000002,
+       0.09500000000000006,
+       0.2880000000000001
+      ]
+     }
+    }
+   },
+   "timeout_ms": 45000,
+   "strict": false,
+   "action_hz": 20,
+   "_record": false
+  }
+ }
+]

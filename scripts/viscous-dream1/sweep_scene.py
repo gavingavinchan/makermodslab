@@ -40,12 +40,35 @@ class SweepEnv(ViscousAppleEnv):
         self.parked = config['arms'] == 'parked'
         self.ignore_right = self.single or self.parked
         self.copy_right = config.get('wrist_r', 'normal') == 'copy'
+        self.fixed_right = config.get('wrist_r', 'normal') == 'fixedcam'
+        self.blind_right = config.get('wrist_r', 'normal') == 'blind'
         if self.copy_right and not self.single:
             raise ValueError('wrist_r=copy requires arms=single')
+        if self.fixed_right and not self.single:
+            raise ValueError('wrist_r=fixedcam requires arms=single')
+        if self.blind_right and not self.parked:
+            raise ValueError('wrist_r=blind requires arms=parked')
         self.parked_max_joint_deviation = 0.
         self.parked_max_solver_deviation = 0.
         self.sides = ('left',) if self.single else ('left', 'right')
         root = ET.fromstring(viscous_xml(task))
+        if self.fixed_right:
+            # Compile the unmodified scene to evaluate the parked wrist camera's
+            # world transform at the exact rest/open coordinates used by parked.
+            rest_model = mujoco.MjModel.from_xml_string(ET.tostring(root, encoding='unicode'))
+            rest_data = mujoco.MjData(rest_model)
+            for i, value in enumerate(PARK[:6], 1):
+                rest_data.joint(f'right_joint{i}').qpos[0] = value
+            for sign in (-1, 1):
+                rest_data.joint(f'right_finger_{sign}').qpos[0] = OPEN
+            mujoco.mj_forward(rest_model, rest_data)
+            camera = rest_model.camera('right').id
+            quat = np.empty(4)
+            mujoco.mju_mat2Quat(quat, rest_data.cam_xmat[camera])
+            ET.SubElement(root.find('worldbody'), 'camera', name='right',
+                          pos=' '.join(map(str, rest_data.cam_xpos[camera])),
+                          quat=' '.join(map(str, quat)),
+                          fovy=str(rest_model.cam_fovy[camera]))
         if self.single:
             root.find('worldbody').remove(root.find("worldbody/body[@name='right_base_link']"))
             for section in ('contact', 'equality', 'actuator'):
@@ -115,7 +138,13 @@ class SweepEnv(ViscousAppleEnv):
             self.wrist_renderer.update_scene(self.data, camera=side)
             result[side] = self.wrist_renderer.render().copy()
         if self.single:
-            result['right'] = result['left'].copy() if self.copy_right else np.zeros_like(result['left'])
+            if self.fixed_right:
+                self.wrist_renderer.update_scene(self.data, camera='right')
+                result['right'] = self.wrist_renderer.render().copy()
+            else:
+                result['right'] = result['left'].copy() if self.copy_right else np.zeros_like(result['left'])
+        if self.blind_right:
+            result['right'] = np.zeros_like(result['left'])
         return result
 
     def step(self, left, right):

@@ -1,0 +1,35 @@
+{
+ "configuration": {
+  "tcp": "pad",
+  "arms": "parked",
+  "rows": 48,
+  "region": "off",
+  "wrist_r": "blind"
+ },
+ "tasks": {
+  "apple": {
+   "episodes": 6,
+   "successes": 4,
+   "grasps": 4,
+   "median_calls_to_success": 9.5,
+   "calls_to_success_total": 39,
+   "billed_calls": 75,
+   "finger_table_contact_rows": 102,
+   "executed_rows": 3600,
+   "good_video": "/home/gavin/dreamtrial/viscous_sim/runs/sweep/parked_blind/apple/ep_01/run.mp4",
+   "bad_video": "/home/gavin/dreamtrial/viscous_sim/runs/sweep/parked_blind/apple/ep_00/run.mp4"
+  },
+  "box": {
+   "episodes": 0,
+   "successes": 0,
+   "grasps": 0,
+   "median_calls_to_success": null,
+   "calls_to_success_total": 0,
+   "billed_calls": 0,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 0,
+   "good_video": null,
+   "bad_video": null
+  }
+ }
+}
