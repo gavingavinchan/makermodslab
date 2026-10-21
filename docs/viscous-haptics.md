@@ -54,6 +54,11 @@ gravity torque.
 the follower with capped effort (`star_follow.py` draft).
 - *Intent:* serves A3 and, later, DAgger (B1): one piece of hardware work for both.
 - *Status:* draft code; Star actuation not yet characterised on hardware.
+- *Status (2026-10-21):* first powered runs, gripper only (see "Star actuation
+  check"): the power cap on command 0x08 limits stall effort, unloaded moves
+  track at 100 mW, and first motion comes 20-40 ms after the write. Hold
+  stiffness and damping feel still need a hand on the leader. `star_follow.py`
+  still uses `set_angle` (full power) and must move onto `fashionstar_raw.py`.
 - *Protocol research (2026-10-20, [star-servo-protocol.md](star-servo-protocol.md)):*
   FashionStar position commands carry a per-command power limit in mW, but
   motorbridge 0.0.4's `set_angle` always sends power 0, which means the servo's
@@ -244,6 +249,8 @@ buoyancy.
 2. Feedforward at 100 % in GUI teleop on unit 1 (the drop-in is still at 50 %).
 3. Characterize the Star as an actuator: power-capped moves (does the protocol's
    power field work through `set_angle`?), damping levels, latency, feel.
+   2026-10-21: power cap and latency measured on the gripper (raw 0x08, not
+   `set_angle`); hold stiffness and damping feel still need Gavin's hand.
 4. Input-gated leader drive built on `star_follow.py`.
 5. 1:1 posture mapping for unit 1 (draft profile in viscous-arm-simulation
    `leader/mapping/profiles/viscous_01.json`).
@@ -583,6 +590,57 @@ should feel that."
 - Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
   (missing commissioned `cal-f` profile), present at `HEAD` too.
 
+## Star actuation check (2026-10-21, goal A2, next step 3)
+
+*Intent:* find out whether the Star leader can be driven gently enough to push
+back on a pilot's hand, which the input-gated loop (A3) depends on. Gavin moved
+the first test from wrist_flex to the gripper: "safest to move is the gripper if
+you only want to test something". He then asked for safe tests like this one to
+be run without waiting for him: "I told you it's safe already, right, so why are
+you still waiting for me?" So both runs below were detached on gavin-linux
+(`--yes`, stdin closed) with nobody at the arm, so nothing pushed on it.
+
+Only the gripper (id 6) was energized. Every other servo was released before
+and after each phase, and every release readback showed all seven back at the
+30 mA rest current. Servo temperature stayed at 29-31 °C.
+
+**Run 1, 1 s ramps** (`evidence/star-actuation-20261021T051835.266732Z.json.gz`,
+powers 100/200/400/800 mW):
+- *Free motion:* each ±10 deg step tracks its 1 s ramp at every power, ending
+  within 0.2-0.4 deg, at the 30 mA rest current. Moving the bare gripper costs
+  no measurable effort, so 100 mW is enough for unloaded tracking.
+- *The power field works:* driven into the closed stop, the current rose to
+  77 / 79 / 92 / 136 mA at 100 / 200 / 400 / 800 mW (30 mA at rest). The cap
+  sets the stall effort. 100 and 200 barely differ, so there may be a floor
+  near 200 mW; finding where pushback starts needs a hand on the gripper.
+- *Closed stop at about -2.2 deg:* every step toward -11.5 deg stopped at
+  -2.0 to -2.5 deg, and the gripper rests released at -1.5 deg, i.e. against
+  that stop. The derived travel's lower bound (-16.9 deg) cannot be reached on
+  unit 1. The calibration (or the frame the script derives travel in) is off on
+  the closing side, so check it before driving the gripper from the follower.
+- *Hold with nobody pushing:* 0.0 deg deflection at 30 mA. Holding costs
+  nothing when unloaded. No stiffness data without a push.
+
+**Run 2, 50 ms steps** (`evidence/star-actuation-20261021T052114.957006Z.json`,
+`--move-s 0.05 --phase-s 1 --powers 100,800`):
+- *Latency:* motion of at least 0.3 deg shows in the first 50 Hz sample after
+  the write (about 20 ms). The script's figure is 42 ms. Both are upper bounds
+  that include the serial poll, so a 25-50 Hz leader loop is not limited by the
+  servo.
+- *Speed:* in a 50 ms leg it covers about 4-5 deg (80-100 deg/s) at both 100
+  and 800 mW. The cap limits effort, not unloaded speed.
+- Shutting fast into the closed stop overshoots to -3.1 deg at 181 mA, so the
+  stop gives a little.
+
+**Still unknown, and why it matters for A3:** how stiff a 100-800 mW hold
+feels, and what damping mode 0x12 feels like at each power. Those set the
+range the loop can map contact torque onto, and only a hand on the leader can
+measure them. A one-minute run with Gavin at the arm covers it:
+`.venv/bin/python scripts/star-actuation-check.py --joint gripper --powers 100,200,400,800`
+(it waits for Enter between phases). Until then, the next build step (next
+step 4) can go ahead: put `star_follow.py` on `fashionstar_raw.py` with an
+explicit power on every command and an explicit release for zero effort.
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -622,31 +680,20 @@ in order. Haptics: steps 1-2 done 2026-10-20, friction term and shoulder
 refit done and confirmed live (v2 fit). Before energizing, show Gavin the
 dry-run plan and say exactly which joints will move.
 
-**Resume haptics here (evening of 2026-10-20, Gavin stopped to eat; next
-session):** goal A2, the Star leader as an actuator (next step 3).
-`scripts/star-actuation-check.py` (raw FashionStar transport
-`makermodslab/fashionstar_raw.py`, tests `tests/test_fashionstar_raw.py`) is
-built and dry-run on gavin-linux (pings + reads only; evidence
-`configs/viscous/viscous_01/evidence/star-actuation-20261021T010608.003041Z-*`).
-It energizes ONE servo, wrist_flex = id 3, with every other servo released,
-using single-turn angle command 0x08 with an explicit power cap (power 0 is
-refused: it means the protection ceiling). Phases: hold at 100/200/400/800 mW
-(Gavin pushes), move +/-10 deg over 1 s (Gavin may block it), damping 0x12 at
-each power (Gavin moves it), a 2.5 deg latency step. Every exit path releases
-all seven servos twice; stops are unacknowledged and there is no bus-loss
-watchdog, so the Star's power supply is the hard stop.
-1. Ask Gavin where the Star's power switch / plug is (unanswered), and confirm
-   wrist_flex as the first joint.
-2. Re-run `--dry-run --joint wrist_flex` (the arm may have moved), show him the
-   printed plan.
-3. Best run by Gavin himself in a terminal on gavin-linux (ssh from the Mac),
-   so the Enter-to-advance prompts and cue lines are in front of him at the
-   arm: `.venv/bin/python scripts/star-actuation-check.py --joint wrist_flex`.
-   A detached run works too, but cues then lag through chat.
-4. Record his feel per power level alongside the logged deflection/current;
-   that decides the power range the input-gated loop (A3) can use.
-Unit 1 (the follower) is torque-off and probably tipped forward again; it is
-not needed for the Star test.
+**Resume haptics here (2026-10-21):** goal A2. The Star gripper has been
+characterised as an actuator without a hand on it (see "Star actuation check").
+`scripts/star-actuation-check.py` (raw transport `makermodslab/fashionstar_raw.py`)
+energizes one servo with an explicit power cap and releases all seven on every
+exit. The Star's power supply is the hard stop (stops are unacknowledged and
+there is no bus-loss watchdog). Gavin has judged the gripper safe to test and
+wants such runs done without waiting for him. Next:
+1. Put `star_follow.py` on `fashionstar_raw.py` (power on every command, an
+   explicit 0x10 release for zero effort, never power 0) and dry-run it.
+2. When Gavin is at the arm: the hold and damping phases with his hand on the
+   gripper, recording his feel per power. That sets A3's power range.
+3. Check the gripper's closed-side travel (-2.2 deg measured vs -16.9 derived).
+Unit 1 (the follower) is torque-off and probably tipped forward; it is not
+needed for Star tests.
 
 **Open item (Gavin, 2026-10-20):** unit 1's wrist camera image is flipped. The
 `viscous_01` record's `wrist` camera (opencv index 0, 640x480 MJPG) has no
@@ -671,6 +718,9 @@ How Gavin wants the work done. These apply to every agent and tool.
   repo-relative paths, never `~/Documents/...`. Never commit `frontend/dist`
   (rebuild locally) or multi-GB render output.
 - **No AI attribution trailers** (no `Co-Authored-By`) in commits or PRs.
+- **Safe tests: run them, don't wait.** Once Gavin has judged a test safe (for
+  example the Star gripper actuation check), run it yourself and report the
+  results, rather than handing him commands to run (2026-10-21).
 - **Powered hardware runs:** say exactly which joints move before energizing.
   Prove the stop path on the actual launch method first; a process started in the
   background ignores SIGINT unless it installs its own handler. Check liveness
