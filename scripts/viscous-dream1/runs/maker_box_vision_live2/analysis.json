@@ -1,0 +1,259 @@
+{
+  "mode": "vision",
+  "rig": "makers",
+  "task": "pick up the black and white box and put it on the black square",
+  "successful_billed_calls": 20,
+  "closest_box_to_square_xy_m": 0.018055,
+  "executed_rows": 960,
+  "completed_chunks": 20,
+  "termination_reason": null,
+  "ever_success": false,
+  "final_success": false,
+  "billed_calls": 20,
+  "warming_refusals": 0,
+  "minimum_requested_hand_to_object_m": {
+    "left": 0.024023803303177188,
+    "right": 0.31939864783587424
+  },
+  "maximum_object_rise_m": 0.129,
+  "object_contact_rows": 482,
+  "bilateral_jaw_contact_rows": 447,
+  "lifted_with_bilateral_contact": true,
+  "tracking": {
+    "left": {
+      "raw_position_error_m": [
+        0.004357325392226095,
+        0.010047941648667727
+      ],
+      "raw_rotation_error_deg": [
+        0.5842320330969271,
+        1.3559236263900647
+      ]
+    },
+    "right": {
+      "raw_position_error_m": [
+        0.0043107333289636365,
+        0.009711315653683151
+      ],
+      "raw_rotation_error_deg": [
+        0.5102417257667825,
+        1.1738965207756382
+      ]
+    }
+  },
+  "per_call": [
+    {
+      "call": 1,
+      "min_requested_distance_m": {
+        "left": 0.2591412094988785,
+        "right": 0.49624175744616233
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 2,
+      "min_requested_distance_m": {
+        "left": 0.2595249704575211,
+        "right": 0.49601363517380587
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 3,
+      "min_requested_distance_m": {
+        "left": 0.2603693403631241,
+        "right": 0.4967813866957025
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 4,
+      "min_requested_distance_m": {
+        "left": 0.2607028528701285,
+        "right": 0.494027893692018
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 5,
+      "min_requested_distance_m": {
+        "left": 0.25738563699892303,
+        "right": 0.4938584234071333
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 6,
+      "min_requested_distance_m": {
+        "left": 0.2530046671848683,
+        "right": 0.49289048606704844
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 7,
+      "min_requested_distance_m": {
+        "left": 0.2524518104079949,
+        "right": 0.49340917821355107
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 8,
+      "min_requested_distance_m": {
+        "left": 0.13086479036650542,
+        "right": 0.4898082872252421
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 9,
+      "min_requested_distance_m": {
+        "left": 0.06061457418220151,
+        "right": 0.492833451369314
+      },
+      "contacts": [],
+      "max_object_z": 0.775
+    },
+    {
+      "call": 10,
+      "min_requested_distance_m": {
+        "left": 0.028479410344813005,
+        "right": 0.4950533933488424
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.778
+    },
+    {
+      "call": 11,
+      "min_requested_distance_m": {
+        "left": 0.026913851776955613,
+        "right": 0.49774264296250653
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.779
+    },
+    {
+      "call": 12,
+      "min_requested_distance_m": {
+        "left": 0.02821104098811349,
+        "right": 0.47282889544924667
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.828
+    },
+    {
+      "call": 13,
+      "min_requested_distance_m": {
+        "left": 0.024023803303177188,
+        "right": 0.3459885118782306
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.904
+    },
+    {
+      "call": 14,
+      "min_requested_distance_m": {
+        "left": 0.02514011362398906,
+        "right": 0.31951215607083505
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.875
+    },
+    {
+      "call": 15,
+      "min_requested_distance_m": {
+        "left": 0.025521463249226814,
+        "right": 0.3204004398157983
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.836
+    },
+    {
+      "call": 16,
+      "min_requested_distance_m": {
+        "left": 0.02621835704177108,
+        "right": 0.31939864783587424
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.83
+    },
+    {
+      "call": 17,
+      "min_requested_distance_m": {
+        "left": 0.026321780238661177,
+        "right": 0.32452477726129564
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.826
+    },
+    {
+      "call": 18,
+      "min_requested_distance_m": {
+        "left": 0.025932221121561513,
+        "right": 0.3296078780864712
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.822
+    },
+    {
+      "call": 19,
+      "min_requested_distance_m": {
+        "left": 0.025114665464288723,
+        "right": 0.32286602867637243
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.844
+    },
+    {
+      "call": 20,
+      "min_requested_distance_m": {
+        "left": 0.025842401968902258,
+        "right": 0.3204450081256556
+      },
+      "contacts": [
+        "left_gripper_left",
+        "left_gripper_right"
+      ],
+      "max_object_z": 0.846
+    }
+  ]
+}

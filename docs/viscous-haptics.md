@@ -399,6 +399,23 @@ session, in parallel with a haptics session.
   is this base model zero-shot or a Maker fine-tune. The Maker spec's rest pose comes
   from 94 recorded Maker-station episodes, and the client speaks of "Metal and Makers
   checkpoints", which suggests fine-tunes this key cannot run.
+- *It was the wrist camera: the Maker works once its camera matches the real one
+  (2026-10-20).* Gavin pointed at the MakerMods brain: every Maker and Metal box ships
+  the KD-USB Sonix UVC camera (`2C7F:4A60`, 1080p, fisheye; undistorted HFOV 109.6°
+  / VFOV 77.2°, best focus ~0.2 m; mount never measured). Real Maker wrist frames
+  from two Maker datasets in gavin-linux's Hub cache (`real/makerwrist_*.jpg`) show
+  the camera above the gripper, behind the jaws, looking forward along the fingers,
+  which rise from the bottom centre. Ryan also confirmed (2026-10-19) that Maker data
+  trained Dream-1. With the sim camera on the CAD camera assembly on `link_007`, 20°
+  down, VFOV 77.2°, 16:9 (`runs/maker_wrist_match/compare.png`), beta + `ik makers`
+  zero-shot: Maker apple succeeds (apple in the bowl at call 12 and stays there);
+  Maker box grasped, lifted 12.9 cm and carried to 1.8 cm of the square but never
+  released. 40 billed calls, `runs/maker_{apple,box}_vision_live2`,
+  `runs/maker_wrist_report.md`. So the earlier Maker failure was our improvised
+  camera, and wrist-camera placement is decisive. The real Viscous wrist camera is
+  mounted the other way round (jaws enter from the TOP of the image), which may
+  explain much of the Viscous failure. Next: the Viscous with a Maker-style wrist
+  camera in sim (`BRIEF_VISCOUS_MAKERWRIST.md`). 220 billed calls today.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

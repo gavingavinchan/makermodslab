@@ -15,8 +15,8 @@ from cross_scenes import BoxYamEnv
 from dream_examples.yam_mujoco import yam_env
 
 
-def check(arm, task):
-    out = Path(f"runs/{arm}_{task}_dry")
+def check(arm, task, out=None):
+    out = Path(out) if out else Path(f"runs/{arm}_{task}_dry")
     out.mkdir(parents=True, exist_ok=True)
     env = SupportedArmEnv(arm, task)
     ref = BoxYamEnv() if task == "box" else yam_env.YamEnv()
@@ -27,8 +27,8 @@ def check(arm, task):
               "metal_yam_sign_map": [1, -1, 1, 1, 1, 1] if arm == "metal" else None,
               "finger_open_joint_m": env.open.tolist(),
               "yam_wrist_camera_tcp_pos_m": camera_mount()[0].tolist(),
-              "wrist_camera_tcp_pos_m": wrist_mount()[0].tolist(),
-              "wrist_camera_tcp_rotation": wrist_mount()[1].tolist()}
+              "wrist_camera_tcp_pos_m": wrist_mount(arm)[0].tolist(),
+              "wrist_camera_tcp_rotation": wrist_mount(arm)[1].tolist()}
     # The Metal joint_sign maps YAM joint policies, not Metal EEF IK commands.
     # EEF commands remain vendor joint radians on Metal; never negate twice.
     for name in ((task, "place_square") if task == "box" else ("apple", "orange", "banana", "water_bottle", "bowl", "plate")):
@@ -151,5 +151,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--arm", choices=("makers", "metal"), default="makers")
     p.add_argument("--task", choices=("apple", "box"), default="apple")
+    p.add_argument("--out", type=Path, help="Preserve earlier dry artifacts by selecting a new directory")
     args = p.parse_args()
-    check(args.arm, args.task)
+    check(args.arm, args.task, args.out)

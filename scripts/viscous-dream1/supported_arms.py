@@ -71,9 +71,7 @@ def build_xml(arm, task="apple"):
     for j in vendor.findall("joint"):
         children.setdefault(j.find("parent").get("link"), []).append(j)
     root_link = next(n for n in links if not any(j.find("child").get("link") == n for j in vendor.findall("joint")))
-    # Start from YAM's TCP-relative calibration, then move to the palm side
-    # perpendicular to jaw travel: Maker's longer CAD jaws obscure YAM's mount.
-    mount_p, mount_r = wrist_mount()
+    mount_p, mount_r = wrist_mount(arm)
     tool = spec.tools["tcp"]
     tool_r = np.asarray(tool.rotation)
     cp = np.asarray(tool.offset) + tool_r @ mount_p
@@ -118,6 +116,9 @@ def build_xml(arm, task="apple"):
                         ET.SubElement(asset, "mesh", name=meshes[key], file=str(path), scale=key[1])
                     color = geom.find("material/color")
                     rgba = color.get("rgba") if color is not None else ".75 .77 .79 1"
+                    if arm == "makers" and name in ("gripper_left", "gripper_right"):
+                        # The uncoloured STL export loses the real black jaw finish.
+                        rgba = ".025 .03 .035 1"
                     ET.SubElement(body, "geom", name=f"{side}_{name}_{kind}{i}", type="mesh", mesh=meshes[key],
                                   **pose(geom), rgba=rgba if kind == "visual" else "0 0 0 0",
                                   contype="0" if kind == "visual" else "1",
@@ -126,7 +127,8 @@ def build_xml(arm, task="apple"):
             if name == spec.flange:
                 tq = Rotation.from_matrix(tool_r).as_quat()[[3, 0, 1, 2]]
                 ET.SubElement(body, "site", name=f"{side}_tcp", pos=numbers(tool.offset), quat=numbers(tq), size=".003", rgba="0 0 0 0")
-                ET.SubElement(body, "camera", name=side, pos=numbers(cp), quat=numbers(cq), fovy="90")
+                ET.SubElement(body, "camera", name=side, pos=numbers(cp), quat=numbers(cq),
+                              fovy="77.2" if arm == "makers" else "90")
             for child in children.get(name, []):
                 add_link(body, child.find("child").get("link"), child)
 
@@ -142,7 +144,21 @@ def build_xml(arm, task="apple"):
     return ET.tostring(root, encoding="unicode")
 
 
-def wrist_mount():
+def wrist_mount(arm="makers"):
+    """Camera optical frame (MuJoCo: -z forward, +y image up) in TCP.
+
+    Maker KD-USB: above the fingers (+TCP y), behind their tips (-TCP z),
+    looking forward with 20 degrees of downward pitch. The optical centre is
+    0.5 mm ahead of part_056's lens face on the part_054 bracket, derived from
+    CAD and checked against real wrist frames, not a measured calibration.
+    """
+    if arm == "makers":
+        pitch = np.radians(20.)
+        return np.array([0., .07934769, -.08749375]), np.array([
+            [-1., 0., 0.],
+            [0., np.cos(pitch), np.sin(pitch)],
+            [0., np.sin(pitch), -np.cos(pitch)],
+        ])
     eye, target = np.array([0., -.07, -.12]), np.array([0., 0., .04])
     z = eye - target
     z /= np.linalg.norm(z)
@@ -157,6 +173,7 @@ class SupportedArmEnv(yam_env.YamEnv):
         self.model = mujoco.MjModel.from_xml_string(build_xml(arm, task))
         self.data = mujoco.MjData(self.model)
         self.renderer = None
+        self.wrist_renderer = None
         self.qadr, self.vadr, self.aids = {}, {}, {}
         self.fingers = ("gripper_left_joint", "gripper_right_joint") if arm == "makers" else ("joint7", "joint8")
         self.open = np.array([.0524125, .0524125]) if arm == "makers" else np.array([-.05, .05])
@@ -166,6 +183,28 @@ class SupportedArmEnv(yam_env.YamEnv):
             self.vadr[side] = np.array([self.model.joint(n).dofadr[0] for n in names])
             self.aids[side] = np.array([self.model.actuator(n).id for n in names])
         self.reset()
+
+    def images(self):
+        if self.arm != "makers":
+            return super().images()
+        # Preserve the calibrated top recording crop. The KD wrist stream is
+        # natively 16:9: do not apply YAM's 4:3 -> 16:9 vertical crop to it.
+        if self.renderer is None:
+            self.renderer = mujoco.Renderer(self.model, height=480, width=640)
+        if self.wrist_renderer is None:
+            self.wrist_renderer = mujoco.Renderer(self.model, height=360, width=640)
+        self.renderer.update_scene(self.data, camera="top")
+        result = {"top": self.renderer.render()[60:420].copy()}
+        for side in ("left", "right"):
+            self.wrist_renderer.update_scene(self.data, camera=side)
+            result[side] = self.wrist_renderer.render().copy()
+        return result
+
+    def close(self):
+        super().close()
+        if self.wrist_renderer is not None:
+            self.wrist_renderer.close()
+            self.wrist_renderer = None
 
     def reset(self):
         mujoco.mj_resetData(self.model, self.data)

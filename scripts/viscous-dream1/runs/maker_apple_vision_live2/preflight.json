@@ -1,0 +1,92 @@
+{
+  "queued_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_grip",
+    "state.right_arm",
+    "state.right_grip",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "prepared_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_eef_rot6",
+    "state.left_eef_xyz",
+    "state.left_grip",
+    "state.left_gripper",
+    "state.right_arm",
+    "state.right_eef_rot6",
+    "state.right_eef_xyz",
+    "state.right_grip",
+    "state.right_gripper",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "resolved_robot": "other_embodiment",
+  "queued_camera_lengths": {
+    "video.overhead": 9,
+    "video.wrist_l": 9,
+    "video.wrist_r": 9
+  },
+  "prepared_arm_state": {
+    "state.left_arm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "state.right_arm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "state.left_grip": [
+      0.9489623780112609
+    ],
+    "state.right_grip": [
+      1.0
+    ],
+    "state.right_eef_xyz": [
+      0.31623947620391846,
+      -9.313225746154785e-10,
+      0.11774833500385284
+    ],
+    "state.right_eef_rot6": [
+      -6.168360044966903e-08,
+      1.0000001192092896,
+      -4.2731684857244545e-09,
+      0.6166914701461792,
+      -6.168360044966903e-08,
+      0.7872050404548645
+    ],
+    "state.right_gripper": [
+      1.0
+    ],
+    "state.left_eef_xyz": [
+      0.3160415589809418,
+      -3.5438504710327834e-05,
+      0.11784297227859497
+    ],
+    "state.left_eef_rot6": [
+      0.000283886183751747,
+      0.9999998807907104,
+      2.289264193677809e-05,
+      0.6166576743125916,
+      -0.00019295095989946276,
+      0.7872313261032104
+    ],
+    "state.left_gripper": [
+      0.9489623780112609
+    ]
+  },
+  "input_conversion_passed": true,
+  "inference_calls": 0
+}

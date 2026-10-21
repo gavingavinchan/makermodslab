@@ -182,6 +182,9 @@ def main():
         images = capture(env, windows, keep=steps % FRAME_EVERY_STEPS == 0)
         steps += 1
     rec.grab(env, images["top"])
+    if args.rig == "makers":
+        from PIL import Image
+        Image.fromarray(np.concatenate([images["left"], images["right"]], axis=1)).save(args.out / "wrist_00.png")
     if args.rig == "viscous":
         preview_comparison(env, args.out)
     obs = observation(env, windows, task, BETA_MODEL, station)
@@ -209,6 +212,12 @@ def main():
             "initial_joints": list(env.spec.rest_pose) if args.rig in ("makers", "metal") else "zeros",
             "initial_grippers": "open", "sim_held_during_request": True,
             "task": args.fruit, "prompt": task,
+            **({"wrist_cameras": {
+                side: {"link": f"{side}_link_007", "position_m": env.model.camera(side).pos.tolist(),
+                       "quaternion_wxyz": env.model.camera(side).quat.tolist(),
+                       "vfov_deg": float(env.model.camera(side).fovy[0]),
+                       "render_size": [640, 360], "model_size": [320, 176]}
+                for side in ("left", "right")}} if args.rig == "makers" else {}),
         }, indent=2))
         client.policy(config)
         feed_client = CustomGripFeed(client) if args.rig != "yam" else client
@@ -315,6 +324,9 @@ def main():
             print(json.dumps(entry), flush=True)
             from PIL import Image
             Image.fromarray(rec.frames[rec.milestones[-1]]).save(args.out / f"frame_{calls:02d}.png")
+            if args.rig == "makers":
+                Image.fromarray(np.concatenate([images["left"], images["right"]], axis=1)).save(
+                    args.out / f"wrist_{calls:02d}.png")
     finally:
         (args.out / "log.json").write_text(json.dumps(log, indent=1))
         (args.out / "trajectory.json").write_text(json.dumps(trajectory, indent=1))
