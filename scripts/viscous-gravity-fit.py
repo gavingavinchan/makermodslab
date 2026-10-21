@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fit the Viscous gravity model to holds recorded by viscous-gravity-collect.py.
+"""Fit Viscous gravity to gravity-collect samples and contact-check holds.
 
     viscous-gravity-fit.py configs/viscous/viscous_01/evidence/gravity-air-*.json
 
@@ -30,6 +30,7 @@ from makermodslab.arm_gravity import (  # noqa: E402
     Sample,
     cross_validate,
     fit_gravity,
+    repo_path,
     stored_path,
 )
 
@@ -44,9 +45,47 @@ def stiffness_torque(sample, gains):
 
 def line(x, y):
     x, y = np.asarray(x), np.asarray(y)
+    if not len(x):
+        return math.nan, math.nan
     slope = float(np.dot(x, y) / np.dot(x, x)) if np.dot(x, x) > 0 else float("nan")
     r = float(np.corrcoef(x, y)[0, 1]) if np.std(x) > 0 and np.std(y) > 0 else float("nan")
     return slope, r
+
+
+def load_runs(paths, urdf, source="telemetry"):
+    """Normalize both evidence formats; group all approaches/scales of a file's pose.
+
+    Contact-check records point to the gravity fit used for that run instead of
+    duplicating its URDF/condition. Its telemetry already includes feedforward.
+    """
+    runs, rows, groups = [], [], {}
+    model = GravityModel(urdf, ARM)
+    for path in paths:
+        run = json.loads(path.read_text())
+        contact = "holds" in run
+        metadata = json.loads(repo_path(run["fit"]).read_text()) if contact else run
+        if metadata["urdf_sha256"] != model.urdf_sha256:
+            raise ValueError(f"{path}: URDF hash differs from {urdf}")
+        runs.append({**run, "condition": metadata["condition"]})
+        ff_model = (
+            GravityModel(urdf, ARM, params=metadata["params"]) if contact and source == "stiffness" else None
+        )
+        for sample in run["holds" if contact else "samples"]:
+            key = (path.resolve(), sample["pose"])
+            group = groups.setdefault(key, len(groups))
+            stiff = stiffness_torque(sample, run["gains"])
+            if contact:
+                # Static kp*error is only part of total torque with FF enabled.
+                # Use the recorded fit without telemetry offsets, as commanded.
+                if source == "stiffness":
+                    ff = ff_model.torque(sample["position_deg"])
+                    stiff = {k: stiff[k] + sample["scale"] * ff[k] for k in ARM}
+                else:
+                    stiff = None  # do not label kp*error alone as total torque
+            rows.append((group, sample, stiff))
+    if len({r["condition"] for r in runs}) != 1 or len({r["robot"] for r in runs}) != 1:
+        raise ValueError("All runs must share one robot and one condition")
+    return model, runs, rows
 
 
 def main():
@@ -61,30 +100,22 @@ def main():
     p.add_argument("--source", choices=("telemetry", "stiffness"), default="telemetry")
     p.add_argument("--regularization", type=float, default=1e-2)
     p.add_argument("--out", type=Path)
+    p.add_argument("--compare", type=Path, help="existing fit to score on these same holds")
     args = p.parse_args()
 
-    runs = [json.loads(path.read_text()) for path in args.data]
-    urdfs = {run["urdf_sha256"] for run in runs}
-    if len(urdfs) != 1 or len({run["condition"] for run in runs}) != 1:
-        raise SystemExit("All runs must share one URDF and one condition")
-    model = GravityModel(args.urdf, ARM)
-    if model.urdf_sha256 not in urdfs:
-        raise SystemExit(f"{args.urdf} is not the URDF these runs were recorded against")
-
-    rows = []
-    for index, run in enumerate(runs):
-        for s in run["samples"]:
-            rows.append((index * 1000 + s["pose"], s, stiffness_torque(s, run["gains"])))
+    model, runs, rows = load_runs(args.data, args.urdf, args.source)
     if len({group for group, _, _ in rows}) < 4:
         raise SystemExit("Too few poses to fit")
     print(f"{len(rows)} holds from {len(runs)} run(s), condition {runs[0]['condition']}\n")
 
+    print("Torque sensing check uses collector samples (or reconstructed total with --source stiffness).")
     print("Torque sensing check (slope ~1 and r ~1 mean they agree):")
     print(f"{'joint':14s} {'telemetry vs kp*err':>22s} {'telemetry vs CAD':>20s} {'kp*err vs CAD':>18s}")
     for k in LOADED:
-        tel = [s["torque_nm"][k] for _, s, _ in rows]
-        stiff = [st[k] for _, _, st in rows]
-        cad = [model.torque(s["position_deg"])[k] for _, s, _ in rows]
+        sensing = [(s, st) for _, s, st in rows if st is not None]
+        tel = [s["torque_nm"][k] for s, _ in sensing]
+        stiff = [st[k] for _, st in sensing]
+        cad = [model.torque(s["position_deg"])[k] for s, _ in sensing]
         a, b, c = line(stiff, tel), line(cad, tel), line(cad, stiff)
         print(
             f"{k:14s} slope {a[0]:5.2f} r {a[1]:5.2f}     slope {b[0]:5.2f} r {b[1]:5.2f}"
@@ -107,10 +138,26 @@ def main():
     for i, k in enumerate(ARM):
         print(f"{k:14s} {cad_out[k]:7.3f} {fit.rms_nm[k]:7.3f} {held_out[k]:13.3f} {fit.offsets[i]:+8.3f}")
 
+    if args.compare:
+        from makermodslab.gravity_feedforward import load_model
+
+        previous, old = load_model(args.compare, telemetry_offsets=True)
+        print("\nExisting fit comparison (current scored on ALL input holds; original CV from its file):")
+        print(
+            f"{'joint':14s} {'CAD':>7s} {'current':>8s} {'v2':>7s} {'v2 held-out':>12s} {'current orig CV':>16s}"
+        )
+        for k in ARM:
+            err = [s.torques_nm[k] - old.torque(s.positions_deg)[k] for s in samples]
+            rms = np.sqrt(np.mean(np.square(err)))
+            print(
+                f"{k:14s} {cad_out[k]:7.3f} {rms:8.3f} {fit.rms_nm[k]:7.3f} "
+                f"{held_out[k]:12.3f} {previous['held_out_rms_nm'][k]:16.3f}"
+            )
+
     pairs = {}
     for group, s, st in rows:
         source = s["torque_nm"] if args.source == "telemetry" else st
-        pairs.setdefault(group, {})[s["approach"]] = source
+        pairs.setdefault((group, s.get("scale")), {})[s["approach"]] = source
     friction = {
         k: [abs(v["above"][k] - v["below"][k]) / 2 for v in pairs.values() if len(v) == 2] for k in LOADED
     }

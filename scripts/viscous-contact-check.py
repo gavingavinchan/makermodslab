@@ -54,6 +54,7 @@ from viscous_bench import (  # noqa: E402
     read_pose_readonly,
     write_json,
 )
+from viscous_contact_analysis import compensate, motion_arrays  # noqa: E402
 
 from makermodslab import gravity_feedforward  # noqa: E402
 from makermodslab.arm_gravity import CollisionChecker, path_clear, stored_path  # noqa: E402
@@ -351,20 +352,16 @@ def hold_summary(name, side, scale, command, frames, estimator):
     }
 
 
-def tick_arrays(data):
-    cols = data["ticks"]["columns"]
-    rows = data["ticks"]["rows"]
-    idx = {c: i for i, c in enumerate(cols)}
-    phases = [r[idx["phase"]] for r in rows]
-
-    def col(name):
-        return np.array([r[idx[name]] for r in rows], dtype=float)
-
-    return phases, col
-
-
 def analyze(data, estimator):
     gains = {k: v[0] for k, v in data["gains"].items()}
+    # The saved contact_nm was computed with the collection-time fit. Recompute
+    # it so --fit actually changes the entire analysis, including static holds.
+    data = {
+        **data,
+        "holds": [
+            {**h, "contact_nm": estimator.estimate(h["position_deg"], h["torque_nm"])} for h in data["holds"]
+        ],
+    }
     print(f"\n=== {data['robot']} contact check {data['started']}: {data['outcome']} ===")
     if data["holds"]:
         print("\nFeedforward A/B (mean of above/below; friction band = half their difference):")
@@ -397,7 +394,7 @@ def analyze(data, estimator):
                 )
     if not data["ticks"]["rows"]:
         return
-    phases, col = tick_arrays(data)
+    phases, col, vel, moving = motion_arrays(data)
     t = col("t")
     pos = {k: col(f"{k}.pos") for k in ARM}
     torque = {k: col(f"{k}.torque") for k in ARM}
@@ -417,14 +414,12 @@ def analyze(data, estimator):
                 slope = float(np.polyfit(x, y, 1)[0]) if np.ptp(x) > 0.2 else math.nan
                 r = float(np.corrcoef(x, y)[0, 1]) if np.ptp(x) > 0.2 else math.nan
                 print(f"  {k:>13} slope {slope:5.2f} r {r:5.2f}")
-    moving = np.array([p.startswith(("move:", "approach:")) for p in phases])
-    vel = {k: (np.gradient(col(f"{k}.cmd"), t) if len(t) > 1 else np.zeros(len(t))) for k in GRAVITY_JOINTS}
     print("\nFree-motion contact torque (N m): the floor a real contact must clear")
     print(
         f"{'joint':>13} {'n':>5} {'rms':>6} {'p95':>6} {'p99':>6} {'max':>6} {'v>0':>6} {'v<0':>6}  still rms"
     )
     floor = {}
-    for k in GRAVITY_JOINTS:
+    for k in ARM:
         c = contact[k][moving]
         if len(c) < 10:
             continue
@@ -436,13 +431,29 @@ def analyze(data, estimator):
             f"{floor[k]:6.2f} {a.max():6.2f} {np.mean(up) if len(up) else math.nan:+6.2f} "
             f"{np.mean(down) if len(down) else math.nan:+6.2f}  {np.sqrt(np.mean(contact[k][still] ** 2)):9.2f}"
         )
+    print("  Selection: move/approach, lift < -15 deg, elbow > 15 deg; acceleration <= 50 deg/s^2,")
+    print("             excluding 0.15 s around high acceleration and phase boundaries.")
+    if estimator.friction:
+        corrected = compensate(contact, vel, estimator.friction)
+        print("\nFree-motion contact torque WITH friction compensation (N m):")
+        print(f"{'joint':>13} {'n':>5} {'rms':>6} {'p95':>6} {'p99':>6} {'max':>6}  still rms")
+        for k in ARM:
+            c = corrected[k][moving]
+            if len(c) < 10:
+                continue
+            a = np.abs(c)
+            floor[k] = float(np.percentile(a, 99))
+            print(
+                f"{k:>13} {len(c):5d} {np.sqrt(np.mean(c**2)):6.2f} {np.percentile(a, 95):6.2f} "
+                f"{floor[k]:6.2f} {a.max():6.2f}  {np.sqrt(np.mean(corrected[k][still] ** 2)):9.2f}"
+            )
     push = np.array([p == "push" for p in phases])
     if push.sum() > 10:
         print("\nPush test (contact torque, N m): baseline = first 2 s of the window")
         tp = t[push] - t[push][0]
         base = tp < 2.0
-        for k in GRAVITY_JOINTS:
-            c = contact[k][push]
+        for k in ARM:
+            c = (corrected if estimator.friction else contact)[k][push]
             above = np.abs(c) > floor.get(k, math.inf)
             print(
                 f"  {k:>13} baseline rms {np.sqrt(np.mean(c[base] ** 2)):5.2f}  range {c.min():+5.2f}..{c.max():+5.2f}"

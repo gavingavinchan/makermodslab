@@ -218,9 +218,10 @@ buoyancy.
 ## Next steps
 
 1. ~~Contact-torque signal live~~ and ~~feedforward A/B~~: done 2026-10-20
-   (see "Contact-signal bench check"). Follow-up: lower the free-motion floor
-   with a Coulomb friction term per joint and a shoulder refit that adds these
-   holds, then re-run `viscous-contact-check.py` to compare.
+   (see "Contact-signal bench check"). Friction term + refit done offline
+   (`gravity-air-fit-v2.json`); next, confirm it live with
+   `viscous-contact-check.py --fit configs/viscous/viscous_01/gravity-air-fit-v2.json`
+   and, if it holds, make v2 the default.
 2. Feedforward at 100 % in GUI teleop on unit 1 (the drop-in is still at 50 %).
 3. Characterize the Star as an actuator: power-capped moves (does the protocol's
    power field work through `set_angle`?), damping levels, latency, feel.
@@ -460,6 +461,19 @@ should feel that."
   contact is raw torque and it is the cleanest channel (50-70x its noise). The
   right push also showed +1.0 N m on `wrist_yaw`. Yaw and roll sit at a steady
   -0.15 to -0.2 N m at rest, a bias the fit's offsets do not remove.
+- *Lowering the free-motion floor (offline, 2026-10-20):* `gravity-air-fit-v2.json`
+  refits gravity on all 51 holds (the two collection runs plus both complete
+  contact checks) and adds a per-joint friction term (`scripts/viscous-contact-fit.py`,
+  Coulomb x tanh(v / v_s) + viscous x v on COMMANDED velocity, zero at rest).
+  Trained on one complete run and scored on the other, both ways, moving-arm p99
+  falls shoulder 0.86-0.97 -> 0.74-0.79, elbow 0.60-0.64 -> 0.42-0.46, wrist_flex
+  0.55 -> 0.38-0.41 N m; pushes unchanged; yaw/roll rest bias halves. The
+  estimator subtracts friction only when given velocities, and holds each term
+  at the fastest speed it was identified at (16 deg/s): never extrapolate, since
+  a wrong friction torque reads as contact. Pan never moved and yaw/roll only
+  under 2 deg/s, so they carry no friction term. v2 stays opt-in (`--fit`) until
+  a live run confirms it; the shoulder's tail (model error at load) is still
+  the limiting channel. Details: `configs/viscous/viscous_01/contact-floor-report-20261020.md`.
 - Known unrelated test failure: `test_single_device_configs_carry_the_port_and_id[viscous]`
   (missing commissioned `cal-f` profile), present at `HEAD` too.
 

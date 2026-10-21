@@ -1,0 +1,208 @@
+{
+ "robot": "viscous_01",
+ "condition": "air",
+ "fitted": "20261020-190850",
+ "source": "telemetry",
+ "regularization": 1.0,
+ "runs": [
+  "configs/viscous/viscous_01/evidence/gravity-air-20261020-022551.json",
+  "configs/viscous/viscous_01/evidence/gravity-air-20261020-023356.json",
+  "configs/viscous/viscous_01/evidence/contact-check-20261020-181208.json",
+  "configs/viscous/viscous_01/evidence/contact-check-20261020-182410.json"
+ ],
+ "urdf": "configs/viscous/model/viscous_arm.urdf",
+ "urdf_sha256": "c1e6c3876a67ce2a2e229bdd8a80960e68f085e08833d699536b1feddefb6ff7",
+ "joints": [
+  "shoulder_pan",
+  "shoulder_lift",
+  "elbow_flex",
+  "wrist_flex",
+  "wrist_yaw",
+  "wrist_roll"
+ ],
+ "params": [
+  0.44987058779999994,
+  -5.7734682044927765e-05,
+  -0.000533123206452628,
+  0.020614888898857535,
+  0.4865935928999999,
+  -0.06605420963989868,
+  -0.0002757884769307717,
+  3.284011455158359e-05,
+  0.5700597809643994,
+  0.052101799414100994,
+  4.027659451280585e-05,
+  0.026618369145603827,
+  0.41891058602128506,
+  0.0324391757420819,
+  3.82184479534799e-08,
+  0.014397884931098864,
+  0.41204299385293414,
+  -0.0015052731728968324,
+  -0.00026216465278318873,
+  -0.022146482991683387,
+  0.6830457951775717,
+  0.027097132384031834,
+  -0.005293235697564807,
+  -0.009722403216015673
+ ],
+ "offsets_nm": [
+  -0.039638228438228264,
+  0.014206551285594076,
+  -0.013705382867888808,
+  -0.05280453509275711,
+  0.042558060966945574,
+  0.009037231305678576
+ ],
+ "rms_nm": {
+  "shoulder_pan": 0.02531160143423865,
+  "shoulder_lift": 0.16465703368093906,
+  "elbow_flex": 0.10590565984472455,
+  "wrist_flex": 0.18139212440711572,
+  "wrist_yaw": 0.14586310600826424,
+  "wrist_roll": 0.15214783976554802
+ },
+ "held_out_rms_nm": {
+  "shoulder_pan": 0.026367801770302242,
+  "shoulder_lift": 0.18006417575272457,
+  "elbow_flex": 0.11705564778474706,
+  "wrist_flex": 0.18849638063981136,
+  "wrist_yaw": 0.15378766219405926,
+  "wrist_roll": 0.16326159544149485
+ },
+ "cad_rms_nm": {
+  "shoulder_pan": 0.049581522411155265,
+  "shoulder_lift": 0.2874365836174886,
+  "elbow_flex": 0.14658315097820254,
+  "wrist_flex": 0.20681829279852262,
+  "wrist_yaw": 0.15006739341604894,
+  "wrist_roll": 0.1694392560906465
+ },
+ "friction": {
+  "shoulder_pan": {
+   "coulomb_nm": 0.0,
+   "viscous_nm_per_deg_s": 0.0,
+   "v_smooth_deg_s": 3.0
+  },
+  "shoulder_lift": {
+   "coulomb_nm": 0.0,
+   "viscous_nm_per_deg_s": 0.020706758044034025,
+   "v_smooth_deg_s": 3.0,
+   "max_speed_deg_s": 16.043698317912458
+  },
+  "elbow_flex": {
+   "coulomb_nm": 0.17769080901589504,
+   "viscous_nm_per_deg_s": 0.0,
+   "v_smooth_deg_s": 1.0,
+   "max_speed_deg_s": 16.043698317913368
+  },
+  "wrist_flex": {
+   "coulomb_nm": 0.23017994017114649,
+   "viscous_nm_per_deg_s": 0.0,
+   "v_smooth_deg_s": 2.0,
+   "max_speed_deg_s": 16.143667867561817
+  },
+  "wrist_yaw": {
+   "coulomb_nm": 0.0,
+   "viscous_nm_per_deg_s": 0.0,
+   "v_smooth_deg_s": 3.0
+  },
+  "wrist_roll": {
+   "coulomb_nm": 0.0,
+   "viscous_nm_per_deg_s": 0.0,
+   "v_smooth_deg_s": 3.0
+  }
+ },
+ "friction_identification": {
+  "runs": [
+   "configs/viscous/viscous_01/evidence/contact-check-20261020-181208.json",
+   "configs/viscous/viscous_01/evidence/contact-check-20261020-182410.json",
+   "configs/viscous/viscous_01/evidence/contact-check-20261020-180543.json"
+  ],
+  "velocity": "np.gradient(command_deg, t)",
+  "phases": [
+   "move:*",
+   "approach:*"
+  ],
+  "position_cut_deg": {
+   "shoulder_lift_lt": -15,
+   "elbow_flex_gt": 15
+  },
+  "max_acceleration_deg_s2": 50.0,
+  "transient_exclusion_s": 0.15,
+  "smooth_speed_candidates_deg_s": [
+   1.0,
+   2.0,
+   3.0,
+   4.0,
+   6.0
+  ],
+  "selection": "leave-one-contiguous-leg-out MSE on active ticks; nonnegative least squares",
+  "diagnostics": {
+   "shoulder_pan": {
+    "n": 0,
+    "positive": 0,
+    "negative": 0,
+    "status": "unidentifiable: no commanded motion"
+   },
+   "shoulder_lift": {
+    "n": 5381,
+    "positive": 2674,
+    "negative": 2707,
+    "max_speed_deg_s": 16.043698317912458,
+    "leg_cv_mse": {
+     "1.0": 0.04763100973122398,
+     "2.0": 0.04753544495835745,
+     "3.0": 0.04724583545585196,
+     "4.0": 0.04698776977930349,
+     "6.0": 0.046490303579241964
+    },
+    "status": "fitted"
+   },
+   "elbow_flex": {
+    "n": 5381,
+    "positive": 2697,
+    "negative": 2684,
+    "max_speed_deg_s": 16.043698317913368,
+    "leg_cv_mse": {
+     "1.0": 0.02200800947657859,
+     "2.0": 0.022014856665194253,
+     "3.0": 0.022064139655932742,
+     "4.0": 0.022187014206383884,
+     "6.0": 0.02262660863545923
+    },
+    "status": "fitted"
+   },
+   "wrist_flex": {
+    "n": 5381,
+    "positive": 2357,
+    "negative": 3024,
+    "max_speed_deg_s": 16.143667867561817,
+    "leg_cv_mse": {
+     "1.0": 0.026723222651660168,
+     "2.0": 0.026195772505086996,
+     "3.0": 0.027389554674840572,
+     "4.0": 0.029173271874064294,
+     "6.0": 0.032616444300944174
+    },
+    "status": "fitted"
+   },
+   "wrist_yaw": {
+    "n": 2682,
+    "positive": 1323,
+    "negative": 1359,
+    "max_speed_deg_s": 1.3495178317356533,
+    "local_slope_nm_per_deg_s": 0.1348744964496914,
+    "status": "weak excitation: not compensated; local slope recorded only"
+   },
+   "wrist_roll": {
+    "n": 2682,
+    "positive": 1323,
+    "negative": 1359,
+    "max_speed_deg_s": 0.5051535765821455,
+    "local_slope_nm_per_deg_s": 0.31079005191465975,
+    "status": "weak excitation: not compensated; local slope recorded only"
+   }
+  }
+ }
+}
