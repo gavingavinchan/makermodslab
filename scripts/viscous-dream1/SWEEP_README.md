@@ -50,3 +50,24 @@ ten FK samples each), runner_check.console.log (fake-client two-call stop and in
 baseline_check.console.log (all 18 previous modes dry), final_audit.json (counts, caps, files, video checks, hashes).
 Validation used zero inference calls. Original viscous_arm.json SHA256:
 cbbd055358a98b8ef39eecde33df87db265ed2ebd7b06f8fd46f32674fe0d2b0.
+
+One-arm follow-up (`onearm_sweep.py --live`): apple only, six paired episodes of
+`single_copy` and `parked`; conditionally test the winner and `single` in a left-side
+layout when neither reaches 5/6. `onearm_check.py` runs the compatibility and full
+18-call-length no-inference checks. `onearm_report.py` regenerates the report.
+The follow-up authorizes exactly 440 additional calls over 872 already used, so
+its one-time locked ledger migration sets cap=1312 (not 1340). Re-runs do not add
+budget. Both stage plans reserve episode counts conservatively at full caps.
+
+New configuration fields default to the previous behavior: `wrist_r='normal'`,
+`arms='both'`. `single_copy` is `arms='single', wrist_r='copy'`: remove the right
+arm, duplicate the left RGB frame unchanged at every capture (and therefore its
+encoded JPEG), keep right rest/open state, and discard right actions.
+`parked` is `arms='parked'`: retain the right arm at B0's base; constrain its six
+joints and two fingers at arm-file rest/open, servo there, and remove finite
+constraint residuals after each 1 ms physics step. This ideal position hold is
+immune to settling/contact displacement at observation and control endpoints;
+logs include maximum measured and pre-projection solver deviations. Its wrist
+camera and measured joint state remain real, and right actions are discarded.
+Neither arm JSON file is edited. First-episode contact sheets for new modes show
+all three actual encoded call-1 policy frames, with labels outside the images.

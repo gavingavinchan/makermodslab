@@ -1,0 +1,42 @@
+[
+ {
+  "arms": "both",
+  "differences": {
+   "top": {
+    "max_abs": 0,
+    "mean_abs": 0.0,
+    "changed_pixels": 0
+   },
+   "left": {
+    "max_abs": 1,
+    "mean_abs": 2.170138888888889e-05,
+    "changed_pixels": 14
+   },
+   "right": {
+    "max_abs": 1,
+    "mean_abs": 1.8807870370370372e-05,
+    "changed_pixels": 9
+   }
+  }
+ },
+ {
+  "arms": "single",
+  "differences": {
+   "top": {
+    "max_abs": 0,
+    "mean_abs": 0.0,
+    "changed_pixels": 0
+   },
+   "left": {
+    "max_abs": 0,
+    "mean_abs": 0.0,
+    "changed_pixels": 0
+   },
+   "right": {
+    "max_abs": 0,
+    "mean_abs": 0.0,
+    "changed_pixels": 0
+   }
+  }
+ }
+]

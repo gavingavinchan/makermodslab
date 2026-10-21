@@ -1,0 +1,31 @@
+{
+ "start_used": 872,
+ "cap": 1312,
+ "stage1_episodes": 6,
+ "stage1_scores": {
+  "single_copy": [
+   2,
+   -30
+  ],
+  "parked": [
+   6,
+   -55
+  ]
+ },
+ "stage1_winner": "parked",
+ "stage2_required": false,
+ "complete": true,
+ "billed_calls_added": 157,
+ "budget_used_added": 157,
+ "ledger": {
+  "cap": 1312,
+  "confirmed_billed": 1029,
+  "uncertain": 0,
+  "budget_used": 1029,
+  "onearm_allowance": {
+   "start_used": 872,
+   "additional_calls": 440,
+   "previous_cap": 900
+  }
+ }
+}

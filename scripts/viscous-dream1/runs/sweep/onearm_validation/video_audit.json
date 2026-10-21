@@ -1,0 +1,100 @@
+[
+  {
+    "path": "runs/sweep/single_copy/apple/ep_00/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/single_copy/apple/ep_01/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/single_copy/apple/ep_02/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/single_copy/apple/ep_03/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/single_copy/apple/ep_04/run.mp4",
+    "frames": 145,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/single_copy/apple/ep_05/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/dry/single_copy/apple/ep_00/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_00/run.mp4",
+    "frames": 133,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_01/run.mp4",
+    "frames": 121,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_02/run.mp4",
+    "frames": 97,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_03/run.mp4",
+    "frames": 109,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_04/run.mp4",
+    "frames": 109,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/parked/apple/ep_05/run.mp4",
+    "frames": 97,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  },
+  {
+    "path": "runs/sweep/dry/parked/apple/ep_00/run.mp4",
+    "frames": 217,
+    "width": 1280,
+    "height": 480,
+    "last_frame_decodes": true
+  }
+]

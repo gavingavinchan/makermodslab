@@ -23,7 +23,7 @@ from cross_scenes import success
 from hand_path_tools import IKTrace, plain, clip_viscous_grips
 
 ROOT = HERE / 'runs/sweep'
-DEFAULT = dict(tcp='pad', arms='both', rows=48, region='off')
+DEFAULT = dict(tcp='pad', arms='both', rows=48, region='off', wrist_r='normal')
 PROMPTS = {'apple': 'put apple into the bowl', 'box': 'pick up the black and white box and put it on the black square'}
 CAPS = {'apple': 18, 'box': 24}
 
@@ -47,10 +47,10 @@ class BudgetEnd(Exception):
 
 
 class Ledger:
-    def __init__(self, root=ROOT, cap=900):
+    def __init__(self, root=ROOT, cap=None):
         self.path = root / 'ledger.json'
         self.lock_path = root / 'ledger.lock'
-        self.cap = cap
+        self.cap = cap if cap is not None else (json.loads(self.path.read_text())['cap'] if self.path.exists() else 900)
 
     def update(self, fn):
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -90,8 +90,8 @@ class Ledger:
 
 def config_name(c):
     parts = []
-    for key, label in [('tcp', 'tip'), ('arms', 'single'), ('rows', 'r24'), ('region', 'table')]:
-        if c[key] != DEFAULT[key]:
+    for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', 'copy'), ('rows', 'r24'), ('region', 'table')]:
+        if c.get(key, DEFAULT[key]) != DEFAULT[key]:
             parts.append(label)
     return '_'.join(parts) or 'B0'
 
@@ -100,7 +100,7 @@ def parse_config(name):
     c = dict(DEFAULT)
     for part in name.split('_'):
         if part == 'B0': continue
-        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'r24': ('rows', 24), 'table': ('region', 'table')}[part]
+        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'parked': ('arms', 'parked'), 'copy': ('wrist_r', 'copy'), 'r24': ('rows', 24), 'table': ('region', 'table')}[part]
         c[key] = val
     return c
 
@@ -153,10 +153,10 @@ def prepared_rows(env, reply, count):
     notices = []
     result = clip_viscous_grips(reply, notices)
     left = np.array(result['q_l_chunk'], float)[:count]
-    right = np.repeat(PARK[None], len(left), axis=0) if env.single else np.array(result['q_r_chunk'], float)[:count]
+    right = np.repeat(PARK[None], len(left), axis=0) if env.ignore_right else np.array(result['q_r_chunk'], float)[:count]
     for side, rows in [('left', left), ('right', right)]:
         assert rows.shape == (count, 7) and np.isfinite(rows).all()
-        if side == 'right' and env.single: continue
+        if side == 'right' and env.ignore_right: continue
         limits = np.array([env.model.joint(f'{side}_joint{i}').range for i in range(1, 7)] + [[0, 1]])
         clipped = np.clip(rows, limits[:, 0], limits[:, 1])
         if np.any(rows != clipped): notices.append(side + ' joint limits clipped')
@@ -188,6 +188,21 @@ def sheet(rec, path, labels):
     canvas.save(path)
 
 
+def input_sheet(windows, path):
+    """Latest JPEGs in the call-1 observation, with labels outside the images."""
+    import base64
+    import io
+    from PIL import Image, ImageDraw
+    images = {key: Image.open(io.BytesIO(base64.b64decode(frames[-1]))).convert('RGB') for key, frames in windows.items()}
+    width, height = images['top'].size
+    canvas = Image.new('RGB', (width * 3, height + 28), 'white')
+    draw = ImageDraw.Draw(canvas)
+    for i, (key, label) in enumerate([('top', 'top'), ('left', 'wrist_l'), ('right', 'wrist_r')]):
+        canvas.paste(images[key], (width * i, 28))
+        draw.text((width * i + 8, 8), 'Call 1: ' + label, fill='black')
+    canvas.save(path, quality=95)
+
+
 def episode(task, c, index, live, ledger, dry_root=None):
     name = config_name(c)
     out = (dry_root or ROOT) / name / task / f'ep_{index:02d}'
@@ -199,6 +214,9 @@ def episode(task, c, index, live, ledger, dry_root=None):
     seed = 20261020 + (10000 if task == 'box' else 0) + index
     episode_id = f'{name}/{task}/ep_{index:02d}'
     env, windows, steps, images, jitter = initialize(task, c, seed)
+    new_mode = env.parked or env.copy_right
+    if index == 0 and new_mode:
+        input_sheet(windows, out / 'contact_sheet.jpg')
     rec = y.Recorder(env); rec.grab(env, images['top'])
     start_z = float(env.data.body(task).xpos[2])
     metrics = dict(seed=seed, jitter_xy_m=jitter.tolist(), task=task, configuration=c, config_name=name,
@@ -257,11 +275,27 @@ def episode(task, c, index, live, ledger, dry_root=None):
                                      object_xyz=env.data.body(task).xpos.tolist(), notices=chunk['notices']))
         rec.milestones.append(len(rec.frames) - 1)
         metrics['calls_used'] = ledger.episode_calls(episode_id) if live else 0
+        if env.parked:
+            metrics['parked_max_joint_deviation_rad'] = env.parked_max_joint_deviation
+            metrics['parked_max_solver_deviation_rad'] = env.parked_max_solver_deviation
         atomic(log_path, metrics)
 
     try:
         for chunk in saved: execute(chunk)
         if not live:
+            if new_mode:
+                # Full maximum-length episode, holding the working arm's initial pose.
+                left = env.state()['left'].copy()
+                for row in range(CAPS[task] * c['rows']):
+                    env.step(left, PARK)
+                    if row % y.FRAME_EVERY_STEPS == 0:
+                        images = y.capture(env, windows)
+                        rec.grab(env, images['top'])
+                metrics['dry_executed_rows'] = CAPS[task] * c['rows']
+                metrics['dry_sim_seconds'] = float(env.data.time)
+                if env.parked:
+                    metrics['parked_max_joint_deviation_rad'] = env.parked_max_joint_deviation
+                    metrics['parked_max_solver_deviation_rad'] = env.parked_max_solver_deviation
             atomic(log_path, {**metrics, 'dry_run': True, 'policy': policy(c, env)})
             return metrics
         import dream
@@ -291,7 +325,7 @@ def episode(task, c, index, live, ledger, dry_root=None):
             with chunks_path.open('a') as f:
                 f.write(json.dumps(chunk) + '\n'); f.flush(); os.fsync(f.fileno())
             execute(chunk)
-            print(f"{episode_id}: call {request['call']}/{CAPS[task]}, success={metrics['success']}, lift={metrics['max_lift_m']:.3f}, budget={ledger.read()['budget_used']}/900", flush=True)
+            print(f"{episode_id}: call {request['call']}/{CAPS[task]}, success={metrics['success']}, lift={metrics['max_lift_m']:.3f}, budget={ledger.read()['budget_used']}/{ledger.cap}", flush=True)
         metrics['calls_used'] = ledger.episode_calls(episode_id)
         metrics['finished'] = True
         metrics['termination'] = 'success_two_calls' if metrics['success'] else 'episode_cap'
@@ -303,7 +337,7 @@ def episode(task, c, index, live, ledger, dry_root=None):
         if rec.frames:
             import imageio.v2 as imageio
             imageio.mimsave(out / 'run.mp4', rec.frames, fps=5)
-            if index == 0: sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
+            if index == 0 and not new_mode: sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
         env.close(); rec.renderer.close()
 
 
@@ -396,7 +430,7 @@ def stages(live, ledger):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,r24,table')
+    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,r24,table')
     p.add_argument('--task', choices=['apple', 'box', 'both'], default='both')
     p.add_argument('--episodes', type=int, default=6)
     p.add_argument('--live', action='store_true')

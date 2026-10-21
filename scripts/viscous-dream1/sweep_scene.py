@@ -37,6 +37,13 @@ class SweepEnv(ViscousAppleEnv):
     def __init__(self, task, config):
         self.wrist = 'maker'
         self.single = config['arms'] == 'single'
+        self.parked = config['arms'] == 'parked'
+        self.ignore_right = self.single or self.parked
+        self.copy_right = config.get('wrist_r', 'normal') == 'copy'
+        if self.copy_right and not self.single:
+            raise ValueError('wrist_r=copy requires arms=single')
+        self.parked_max_joint_deviation = 0.
+        self.parked_max_solver_deviation = 0.
         self.sides = ('left',) if self.single else ('left', 'right')
         root = ET.fromstring(viscous_xml(task))
         if self.single:
@@ -45,6 +52,16 @@ class SweepEnv(ViscousAppleEnv):
                 for node in list(root.find(section)):
                     if any(v.startswith('right_') for v in node.attrib.values()):
                         root.find(section).remove(node)
+        if self.parked:
+            # Ideal position hold: solver constraints react to contacts, with projection
+            # after each 1 ms step to remove finite constraint-solver residuals.
+            equality = root.find('equality')
+            for node in list(equality):
+                if any(v.startswith('right_') for v in node.attrib.values()):
+                    equality.remove(node)
+            for name, value in [(f'right_joint{i}', q) for i, q in enumerate(PARK[:6], 1)] + [(f'right_finger_{s}', OPEN) for s in (-1, 1)]:
+                ET.SubElement(equality, 'joint', name='park_' + name, joint1=name,
+                              polycoef=f'{value} 0 0 0 0', solref='.002 1')
         self.model = mujoco.MjModel.from_xml_string(ET.tostring(root, encoding='unicode'))
         self.data = mujoco.MjData(self.model)
         self.renderer = self.wrist_renderer = None
@@ -54,6 +71,11 @@ class SweepEnv(ViscousAppleEnv):
             self.qadr[side] = np.array([j.qposadr[0] for j in joints])
             self.vadr[side] = np.array([j.dofadr[0] for j in joints])
             self.aids[side] = np.array([self.model.actuator(f'{side}_{n}_drive').id for n in JOINTS])
+        if self.parked:
+            joints = [self.model.joint(f'right_joint{i}') for i in range(1, 7)] + [self.model.joint(f'right_finger_{s}') for s in (-1, 1)]
+            self.park_qadr = np.array([j.qposadr[0] for j in joints])
+            self.park_vadr = np.array([j.dofadr[0] for j in joints])
+            self.park_values = np.r_[PARK[:6], OPEN, OPEN]
         if config['tcp'] == 'fingertip':
             spec = json.loads((HERE / 'viscous_arm_fingertip.json').read_text())
             # Site is a child of tool0; preserve its axes and the camera mounting.
@@ -71,6 +93,9 @@ class SweepEnv(ViscousAppleEnv):
             for sign in (-1, 1):
                 self.data.joint(f'{side}_finger_{sign}').qpos[0] = OPEN
             self.data.actuator(f'{side}_gripper_left_joint_drive').ctrl[0] = OPEN
+        if self.parked:
+            self.data.qpos[self.park_qadr] = self.park_values
+            self.data.ctrl[self.aids['right']] = PARK[:6]
         mujoco.mj_forward(self.model, self.data)
         return self.state()
 
@@ -90,11 +115,11 @@ class SweepEnv(ViscousAppleEnv):
             self.wrist_renderer.update_scene(self.data, camera=side)
             result[side] = self.wrist_renderer.render().copy()
         if self.single:
-            result['right'] = np.zeros_like(result['left'])
+            result['right'] = result['left'].copy() if self.copy_right else np.zeros_like(result['left'])
         return result
 
     def step(self, left, right):
-        if not self.single:
+        if not self.ignore_right:
             return super().step(left, right)
         action = np.asarray(left, float)
         if action.shape != (7,) or not np.isfinite(action).all() or not 0 <= action[6] <= 1:
@@ -107,7 +132,18 @@ class SweepEnv(ViscousAppleEnv):
         for _ in range(50):
             self.data.ctrl[aids] = target[:6] + self.data.qfrc_bias[self.vadr['left']] / self.model.actuator_gainprm[aids, 0]
             self.data.ctrl[finger] = target[6] + sum(self.data.qfrc_bias[dofs]) / self.model.actuator_gainprm[finger, 0]
+            if self.parked:
+                right_aids = self.aids['right']
+                self.data.ctrl[right_aids] = PARK[:6] + self.data.qfrc_bias[self.vadr['right']] / self.model.actuator_gainprm[right_aids, 0]
+                self.data.actuator('right_gripper_left_joint_drive').ctrl[0] = OPEN
             mujoco.mj_step(self.model, self.data)
+            if self.parked:
+                deviation = np.max(np.abs(self.data.qpos[self.park_qadr] - self.park_values))
+                self.parked_max_solver_deviation = max(self.parked_max_solver_deviation, float(deviation))
+                self.data.qpos[self.park_qadr] = self.park_values
+                self.data.qvel[self.park_vadr] = 0
+                self.parked_max_joint_deviation = max(self.parked_max_joint_deviation, float(np.max(np.abs(self.data.qpos[self.park_qadr] - self.park_values))))
+                mujoco.mj_forward(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
         return self.state()
 
