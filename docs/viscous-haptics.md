@@ -141,6 +141,12 @@ Correction recorded: `arms/can_common.py` says the Star leader has "encoders and
 no motors". That is wrong for the 102-HD: its lock button holds the pose with
 the servos, and `set_angle` positions them.
 
+On unit 1's Star (gavin-linux) the lock button is dead (Gavin, 2026-10-20: "the
+button is long dead"): id 7 does not answer a ping, so leave
+`button.enabled` at its default `false`. Servos 0-6 answer at 1 Mbaud. Holding
+or driving the leader has to be commanded over the bus (stop modes,
+`set_angle`), never through the button.
+
 **Why a gravity model first.** The follower's effort signal is RS00 motor
 torque, which contains gravity, friction, drag and contact. The pilot should feel
 only contact:
