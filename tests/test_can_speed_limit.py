@@ -119,12 +119,15 @@ def test_missing_start_reply_prevents_all_preloads_and_enables():
     assert base.events == [("read", "a"), ("read", "b")]
 
 
-def test_outside_limit_start_is_refused_without_clamped_jump():
-    bus, base, _, _ = setup()
-    base.positions["a"] = 91
-    with pytest.raises(ValueError, match="commissioned"):
-        bus.enable_torque()
-    assert base.events == [("read", "a")]
+@pytest.mark.parametrize("start", [92.9, 120.0])
+def test_start_outside_a_limit_eases_inside_without_a_jump(start):
+    bus, base, _, now = setup()
+    base.positions["a"] = start
+    bus.enable_torque()
+    assert ("Goal_Position", "a", start) in base.events
+    now[0] = 0.02
+    bus.write("Goal_Position", "a", 90)
+    assert base.events[-1][2] == pytest.approx(start - 0.15)
 
 
 def test_full_turn_offset_is_accounted_for_without_changing_motor_coordinates():

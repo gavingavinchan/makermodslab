@@ -92,8 +92,18 @@ class RateLimitedRobstrideBus:
             raise ValueError(f"Invalid starting position for {name}")
         offset = getattr(self._robot, "_turn_offset", {}).get(name, 0.0)
         lo, hi = self._robot.config.joint_limits[name]
-        if not lo <= value + offset <= hi:
-            raise ValueError(f"{name} starts outside its commissioned limits; refusing a clamped jump")
+        position = value + offset
+        # Starting outside the limits is allowed (e.g. resting on the table):
+        # torque is seeded at the measured pose and the clamped targets ease
+        # the joint inside at the slew limit, so there is no jump.
+        if not lo <= position <= hi:
+            logger.warning(
+                "%s starts at %.2f deg, outside its limits (%.1f, %.1f); easing it inside at the slew limit",
+                name,
+                position,
+                lo,
+                hi,
+            )
         return value
 
     def enable_torque(self, motors=None, num_retry=0):
