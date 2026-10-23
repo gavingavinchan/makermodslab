@@ -1,0 +1,11 @@
+{
+ "inference_calls": 0,
+ "fixed_fixture": true,
+ "clearance_holes_passed": true,
+ "offset_contacts_both_flanges": true,
+ "engagement_radial_gate_passed": true,
+ "two_turns_advance_m": 0.007,
+ "pull_release_passed": true,
+ "no_bolt_projection": true,
+ "live_guard_passed": true
+}

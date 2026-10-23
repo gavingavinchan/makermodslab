@@ -1,0 +1,14 @@
+{
+ "inference_calls": 0,
+ "ledger_access_forbidden": true,
+ "chunks": 4,
+ "rows": 192,
+ "deterministic_replay_passed": true,
+ "finished_skip_passed": true,
+ "files": [
+  "chunks.jsonl",
+  "contact_sheet.jpg",
+  "log.json",
+  "run.mp4"
+ ]
+}

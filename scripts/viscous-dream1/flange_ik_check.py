@@ -60,16 +60,20 @@ def check():
     e,*_=sweep.initialize('flange',sweep.DEFAULT,20261023);ik=LocalIK(e)
     records=[]
     # TCP is the original pad point; the distal fingertip is 34.3 mm beyond it.
-    down=orientation([0,0,-1],[0,1,0])
+    pickup_approach=np.array([0.,-np.sin(np.pi/4),-np.cos(np.pi/4)])
+    down=orientation(pickup_approach,[0,np.cos(np.pi/4),-np.sin(np.pi/4)])
     a=np.deg2rad(15);approach=np.array([0,-np.cos(a),-np.sin(a)])
     oblique=orientation(approach,[0,np.sin(a),-np.cos(a)])
-    poses=[('bolt_pick','left',e.data.body('bolt').xpos+[.010,0,.030],down),
+    poses=[('bolt_pick','left',e.data.body('bolt').xpos+[-.040,0,0]-.044*pickup_approach,down),
            ('hole_entrance_bolt_axis_minus_x','left',HOLE+[.170,0,0]-.028*approach,oblique),
            ('bolt_through_both_grip_axis_minus_x','left',HOLE+[.060,0,0]-.028*approach,oblique),
-           ('nut_pick','right',e.data.body('nut').xpos+[0,0,.034],down),
-           ('far_side_nut','right',HOLE+[-.132,0,0],orientation([1,0,0],[0,-2**-.5,2**-.5]))]
+           ('nut_pick','right',e.data.body('nut').xpos-.044*pickup_approach,down),
+           ('far_side_nut','right',HOLE+[-.096,0,0]-.028*approach,oblique)]
     for label,side,p,R in poses:
-        q,res=ik.fit(side,p,R,starts=15);q,pe,ae=ik.native(side,p,R,q)
+        # Follow the entrance branch for insertion; a different elbow branch
+        # can fit the endpoint while requiring an impossible sweep through pipework.
+        seed=np.array(records[-1]['joints']) if label=='bolt_through_both_grip_axis_minus_x' else None
+        q,res=ik.fit(side,p,R,seed,starts=0 if seed is not None else 15);q,pe,ae=ik.native(side,p,R,q)
         rec=dict(name=label,side=side,tool_target_world_m=p.tolist(),approach_world=R[:,2].tolist(),position_error_m=pe,orientation_error_deg=ae,joints=q.tolist(),contacts=ik.contacts(side,q,grip=.45))
         if 'axis_minus_x' in label:
             saved=e.data.qpos.copy();e.data.qpos[e.qadr[side]]=q;mujoco.mj_forward(e.model,e.data)
@@ -86,7 +90,8 @@ def check():
             e.data.qpos[:]=saved;mujoco.mj_forward(e.model,e.data)
         records.append(rec);print(label,pe,ae,len(rec['contacts']),flush=True)
     result=dict(inference_calls=0,pad_tcp=True,maximum_jaw_opening_m=2*.0524125,hex_across_flats_m=.046,targets=records,pose_reach_passed=all(r['position_error_m']<.003 and r['orientation_error_deg']<3 and not r.get('held_bolt_fixture_contacts',[]) and not [c for c in r['contacts'] if not any(n in ('bolt','nut') for n in c['bodies'])] for r in records))
-    sweep.atomic(HERE/'runs/flange/validation/ik_reach.json',result);e.close()
+    sweep.atomic(HERE/'runs/flange_v2/validation/ik_reach.json',result);e.close()
     print(json.dumps(result,indent=1),flush=True)
+    assert result['pose_reach_passed'], 'Native IK or clearance failed; inspect ik_reach.json'
 
 if __name__=='__main__':check()

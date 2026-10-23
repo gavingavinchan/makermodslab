@@ -1,0 +1,28 @@
+{
+  "inference_calls": 0,
+  "all_required_artifacts_present": true,
+  "legacy_checks_passed": 7,
+  "flange_physics_passed": true,
+  "native_ik_passed": true,
+  "sampled_arm_clearance_passed": true,
+  "path_samples": 1368,
+  "local_stub_rows": 192,
+  "demo_replay_error_m": 0.0,
+  "protected_arm_files_unchanged": true,
+  "thread_model_unchanged": true,
+  "real_ledger_never_opened": true,
+  "known_limitations": [
+    "Top camera remains edge-on; target hole occluded. Run rotation proposed only.",
+    "Scripted contact pickup and loaded assembly remain unproven."
+  ],
+  "deliverables": [
+    "contact_sheet.jpg",
+    "before_after.png",
+    "overview_front.png",
+    "flange_v2_report.md",
+    "scripted_demo_log.json",
+    "overview_top.png",
+    "scripted_demo.mp4",
+    "overview_closeup.png"
+  ]
+}

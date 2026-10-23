@@ -9,6 +9,8 @@ from flange_scene import HERE, HOLE, LENGTH, PITCH, NUT_HALF
 def check():
     e,*_=sweep.initialize('flange',sweep.DEFAULT,20261023);m,d=e.model,e.data
     assert all(m.body(n).jntnum[0]==0 for n in ('flange_-1','flange_1','pipe_-1','pipe_1'))
+    assert abs(float(m.body('bolt').mass[0])-.65)<1e-10
+    assert abs(float(m.body('nut').mass[0])-.18)<1e-10
     original=d.qpos.copy()
     bj=m.joint('bolt_free');qa=bj.qposadr[0]
     d.qpos[qa:qa+3]=HOLE+[.038,0,0]
@@ -48,6 +50,6 @@ def check():
     except ValueError:pass
     else:raise AssertionError('local-only guard absent')
     result=dict(inference_calls=0,fixed_fixture=True,clearance_holes_passed=True,offset_contacts_both_flanges=True,engagement_radial_gate_passed=True,two_turns_advance_m=2*PITCH,pull_release_passed=True,no_bolt_projection=True,live_guard_passed=True)
-    sweep.atomic(HERE/'runs/flange/validation/physics_checks.json',result);e.close();print(json.dumps(result,indent=2))
+    sweep.atomic(HERE/'runs/flange_v2/validation/physics_checks.json',result);e.close();print(json.dumps(result,indent=2))
 
 if __name__=='__main__':check()

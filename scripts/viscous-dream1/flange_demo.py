@@ -12,7 +12,7 @@ import sweep
 from flange_scene import HERE,HOLE,Measurements
 from flange_ik_check import LocalIK,orientation
 
-OUT=HERE/'runs/flange'
+OUT=HERE/'runs/flange_v2'
 
 
 def run():
@@ -31,6 +31,16 @@ def run():
     def step(left,right):
         nonlocal rowindex
         e.step(left,right);r=measure.row(0,rowindex,{})
+        r['joint_actuator_force']={s:e.data.actuator_force[e.aids[s]].tolist() for s in e.sides}
+        r['gripper_actuator_force']={s:float(e.data.actuator_force[e.model.actuator(s+'_gripper_left_joint_drive').id]) for s in e.sides}
+        r['joint_tracking_error_rad']={s:(e.state()[s][:6]-qcmd[s][:6]).tolist() for s in e.sides}
+        normal=capacity=0.;effective=[]
+        for ci,c in enumerate(e.data.contact):
+            ids=(int(c.geom1),int(c.geom2))
+            if any(g in measure.objects['bolt'] for g in ids) and any(g in measure.fingers['left'] for g in ids):
+                force=np.zeros(6);mujoco.mj_contactForce(e.model,e.data,ci,force)
+                normal+=max(0.,float(force[0]));capacity+=max(0.,float(force[0]))*float(c.friction[0]);effective.append(float(c.friction[0]))
+        r['bolt_left_normal_force_N']=normal;r['bolt_left_friction_capacity_N']=capacity;r['bolt_left_effective_friction']=effective
         r.update(stage=stage,sim_time_s=float(e.data.time),command={s:qcmd[s].tolist() for s in e.sides},tcp={s:e.data.site(s+'_tcp').xpos.tolist() for s in e.sides},arm_joints={s:e.state()[s].tolist() for s in e.sides});rows.append(r)
         if rowindex%2==0:grab()
         rowindex+=1
@@ -59,14 +69,15 @@ def run():
             pose(side,startp+(np.asarray(p)-startp)*t,rotations(t).as_matrix(),seconds=seconds/19,starts=0)
     try:
         grab();mark('left: approach loose bolt')
-        down=orientation([0,0,-1],[0,1,0])
+        pick_approach=np.array([0.,-2**-.5,-2**-.5])
+        down=orientation(pick_approach,[0,2**-.5,-2**-.5])
         head=e.data.body('bolt').xpos.copy()+[-.040,0,0]
-        pose('left',head+[0,0,.075],down,grip=1,seconds=2)
-        cartesian('left',head+[0,0,.018],down,seconds=2)
+        pose('left',head-.044*pick_approach+[0,0,.075],down,grip=1,seconds=2)
+        cartesian('left',head-.044*pick_approach,down,seconds=2)
         mark('left: close jaws on bolt shank')
         joint_move('left',np.r_[qcmd['left'][:6],.06],1);hold(.8)
         mark('left: lift bolt')
-        cartesian('left',head+[0,0,.075],down,seconds=3);hold(.8)
+        cartesian('left',head-.044*pick_approach+[0,0,.075],down,seconds=3);hold(.8)
         grasp_after_lift=measure.row(0,-1,{})
         lifted=max(r['grasp']['bolt']['lift_m'] for r in rows)>.03
         inserted=0.
@@ -92,17 +103,18 @@ def run():
             pose('left',head+[.03,.04,.05],down,grip=1,seconds=2)
         mark('right: approach loose nut')
         nut=e.data.body('nut').xpos.copy()
-        pose('right',nut+[0,0,.075],down,grip=1,seconds=2)
-        cartesian('right',nut+[0,0,.022],down,seconds=2)
+        pose('right',nut-.044*pick_approach+[0,0,.075],down,grip=1,seconds=2)
+        cartesian('right',nut-.044*pick_approach,down,seconds=2)
         mark('right: grasp and lift nut')
         joint_move('right',np.r_[qcmd['right'][:6],.30],1);hold(.6)
-        cartesian('right',nut+[0,0,.080],down,seconds=2)
+        cartesian('right',nut-.044*pick_approach+[0,0,.080],down,seconds=2)
         mark('right: attempt far-side nut pose (bolt insertion incomplete)' if not lifted else 'right: bring nut to far-side bolt tip')
-        far=orientation([1,0,0],[0,-2**-.5,2**-.5])
-        pose('right',HOLE+[-.17,0,0],far,seconds=4,starts=15)
+        a=np.deg2rad(15);far_approach=np.array([0,-np.cos(a),-np.sin(a)])
+        far=orientation(far_approach,[0,np.sin(a),-np.cos(a)])
+        pose('right',HOLE+[-.17,0,0]-.028*far_approach,far,seconds=4,starts=15)
         bolt=e.data.body('bolt');tip=bolt.xpos+.120*bolt.xmat.reshape(3,3)[:,2]
         target=np.array([max(-.16, min(-.10, tip[0]-.013-.022)),HOLE[1],HOLE[2]])
-        pose('right',target,far,seconds=2,starts=12);hold(1)
+        pose('right',target-.028*far_approach,far,seconds=2,starts=12);hold(1)
         if e.thread.engaged:
             for cycle in range(8):
                 mark(f'right: thread roll stroke {cycle+1}')
@@ -112,7 +124,7 @@ def run():
                 joint_move('right',np.r_[q[:6],.30],.3)
         else:mark('stop: nut did not enter thread engagement gate')
         hold(2)
-        result=dict(inference_calls=0,object_pose_overrides=False,grasp_welds=False,rows=len(rows),sim_seconds=float(e.data.time),stages=stages,bolt_grasped=any(r['grasp']['bolt']['grasped'] for r in rows),nut_grasped=any(r['grasp']['nut']['grasped'] for r in rows),max_bolt_inserted_depth_m=inserted,max_nut_turns=max(r['nut_turns'] for r in rows),nut_ever_engaged=any(r['nut_engaged'] for r in rows),thread_events=e.thread.events,row_measurements=rows)
+        result=dict(bolt_mass_kg=float(e.model.body('bolt').mass[0]),nut_mass_kg=float(e.model.body('nut').mass[0]),inference_calls=0,object_pose_overrides=False,grasp_welds=False,rows=len(rows),sim_seconds=float(e.data.time),stages=stages,bolt_grasped=any(r['grasp']['bolt']['grasped'] for r in rows),nut_grasped=any(r['grasp']['nut']['grasped'] for r in rows),max_bolt_inserted_depth_m=inserted,max_nut_turns=max(r['nut_turns'] for r in rows),nut_ever_engaged=any(r['nut_engaged'] for r in rows),thread_events=e.thread.events,row_measurements=rows)
         sweep.atomic(OUT/'scripted_demo_log.json',result)
         print({k:v for k,v in result.items() if k not in ('row_measurements','stages')},flush=True)
     finally:writer.close();renderer.close();e.close()

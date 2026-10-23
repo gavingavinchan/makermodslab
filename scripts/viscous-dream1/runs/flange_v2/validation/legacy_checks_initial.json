@@ -1,0 +1,51 @@
+[
+  {
+    "check": [
+      "sweep.py",
+      "--check"
+    ],
+    "exit_code": 1
+  },
+  {
+    "check": [
+      "sweep_runner_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "sweep_baseline_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "onearm_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "onearm_isolate_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "propeller_ik_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "propeller_check.py"
+    ],
+    "exit_code": 1
+  },
+  {
+    "check": [
+      "flange_runner_check.py"
+    ],
+    "exit_code": 0
+  }
+]

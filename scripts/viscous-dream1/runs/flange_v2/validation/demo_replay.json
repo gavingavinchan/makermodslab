@@ -1,0 +1,7 @@
+{
+ "inference_calls": 0,
+ "object_pose_overrides": false,
+ "max_object_replay_error_m": 0.0,
+ "rows": 555,
+ "passed": true
+}

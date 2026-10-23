@@ -1,0 +1,63 @@
+{
+  "inference_calls": 0,
+  "real_ledger_access": "blocked by audit hook",
+  "remote_network": "blocked; model metadata supplied locally in memory",
+  "accounting": "synthetic fixtures only",
+  "checks": [
+    {
+      "check": [
+        "sweep.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "console": "sweep.console.log"
+    },
+    {
+      "check": [
+        "sweep_runner_check.py"
+      ],
+      "exit_code": 0,
+      "console": "sweep_runner_check.console.log"
+    },
+    {
+      "check": [
+        "sweep_baseline_check.py"
+      ],
+      "exit_code": 0,
+      "console": "baseline_guarded.console.log"
+    },
+    {
+      "check": [
+        "onearm_check.py"
+      ],
+      "exit_code": 0,
+      "console": "onearm_check.console.log"
+    },
+    {
+      "check": [
+        "onearm_isolate_check.py"
+      ],
+      "exit_code": 0,
+      "console": "onearm_isolate_check.console.log"
+    },
+    {
+      "check": [
+        "propeller_ik_check.py"
+      ],
+      "exit_code": 0,
+      "console": "propeller_ik_check.console.log"
+    },
+    {
+      "check": [
+        "propeller_check.py"
+      ],
+      "exit_code": 0,
+      "console": "propeller_check.console.log"
+    }
+  ],
+  "retries": {
+    "sweep": "Unnecessary real-ledger construction removed for no-call CLI checks; SDK model metadata supplied locally. Guarded rerun passed.",
+    "baseline": "Repeated with child-process guards inherited; all 18 passed.",
+    "propeller": "Runner-lock conflict with a concurrent sweep check; isolated rerun passed."
+  }
+}

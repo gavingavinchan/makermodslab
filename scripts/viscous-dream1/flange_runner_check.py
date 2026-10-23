@@ -9,7 +9,7 @@ class ForbiddenLedger:
 
 
 def check():
-    root=HERE/'runs/flange/dry';folder=root/'B0/flange/ep_00'
+    root=HERE/'runs/flange_v2/dry';folder=root/'B0/flange/ep_00'
     # This is a flange-only disposable local fixture; regenerate against current scene.
     for name in ('log.json','chunks.jsonl','run.mp4','contact_sheet.jpg'):
         p=folder/name
@@ -22,7 +22,7 @@ def check():
     second=sweep.episode('flange',sweep.DEFAULT,0,False,ForbiddenLedger(),dry_root=root,prompt=PROMPT,stub=True)
     assert first==second
     assert sweep.episode('flange',sweep.DEFAULT,0,False,ForbiddenLedger(),dry_root=root,prompt=PROMPT,stub=True)==first
-    sweep.atomic(HERE/'runs/flange/validation/runner_checks.json',dict(inference_calls=0,ledger_access_forbidden=True,chunks=4,rows=192,deterministic_replay_passed=True,finished_skip_passed=True,files=sorted(p.name for p in folder.iterdir())))
+    sweep.atomic(HERE/'runs/flange_v2/validation/runner_checks.json',dict(inference_calls=0,ledger_access_forbidden=True,chunks=4,rows=192,deterministic_replay_passed=True,finished_skip_passed=True,files=sorted(p.name for p in folder.iterdir())))
     print('PASS: flange plugs into original runner; 4 x 48 stub rows, exact replay/skip, no ledger access or client')
 
 if __name__=='__main__':check()

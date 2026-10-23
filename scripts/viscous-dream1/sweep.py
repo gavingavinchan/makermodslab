@@ -519,7 +519,8 @@ def main():
     ensure_tip()
     with (ROOT / 'runner.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        ledger = Ledger()
+        # Scene previews and no-call checks never need the real ledger.
+        ledger = None if args.task == 'flange' or args.check else Ledger()
         if args.check:
             from sweep_check import check
             check()
@@ -528,7 +529,7 @@ def main():
             from flange_scene import PROMPT
             for index in range(args.episodes):
                 episode('flange', parse_config(args.config), index, args.live, ledger,
-                        dry_root=HERE/'runs/flange/dry', prompt=PROMPT, stub=True)
+                        dry_root=HERE/'runs/flange_v2/dry', prompt=PROMPT, stub=True)
         elif args.task == 'propeller':
             from propeller_sweep import PROMPTS, authorize
             if args.live: ledger = authorize()

@@ -1,0 +1,966 @@
+[
+ {
+  "roll_deg": -180,
+  "pe": 0.000223572303733916,
+  "ae": 0.8577292119747613,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.0034948668079536607
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.0034952235764390037
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010714998119796018
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010714668861673583
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.01922664511601755
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019226952675405258
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.02870397537693941
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028703682870794278
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812795889267325
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812447133638692
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019292693591441458
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.0193529408945617
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943839608235295
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943589793099569
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908169882777372
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908461217186396
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0058752385628045075
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.006076321474704304
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.006076101613877092
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005935432307879883
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004141150683006491
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0041419027763499846
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004142015902799971
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.003924916584927358
+   }
+  ],
+  "q": [
+   0.0011918239665907378,
+   -2.606259123195981,
+   2.73880165755665,
+   -1.4351874179531896,
+   -1.5559999999999998,
+   -1.6774628670483718
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    -1.0,
+    1.2246467991473532e-16,
+    0.0
+   ],
+   [
+    -1.2246467991473532e-16,
+    -1.0,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": -135,
+  "pe": 0.0002235717236725826,
+  "ae": 0.8577292331094629,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.003494887784505761
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.0034952445538123074
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010715017863984537
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010714688605110476
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019226663886838566
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019226971446921245
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.02870370096687556
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028703993473674107
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812785773285377
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812437014318456
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.01929267762283115
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.01935292494549685
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943823534086315
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943573718430216
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908151977786208
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908443312811136
+   }
+  ],
+  "q": [
+   0.0011918249013900674,
+   -2.606309942396772,
+   2.738906724265586,
+   -1.4352414973329202,
+   -1.5559999999999998,
+   -2.4628611986699402
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    -0.7071067811865475,
+    0.7071067811865476,
+    0.0
+   ],
+   [
+    -0.7071067811865476,
+    -0.7071067811865475,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": -90,
+  "pe": 0.0010585022554514651,
+  "ae": 0.7421192913505928,
+  "contacts": [],
+  "q": [
+   -0.0018439259249962891,
+   -1.9779088891809005,
+   1.130288324577742,
+   1.0043023599723098,
+   -1.5559999999999998,
+   1.575590666639352
+  ],
+  "rotation": [
+   [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   [
+    6.123233995736766e-17,
+    1.0,
+    0.0
+   ],
+   [
+    -1.0,
+    6.123233995736766e-17,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": -45,
+  "pe": 0.001058504469856982,
+  "ae": 0.7421185399816833,
+  "contacts": [],
+  "q": [
+   -0.001843933951977306,
+   -1.9797825696295193,
+   1.1279155490062618,
+   1.0176040407563145,
+   -1.5559999999999998,
+   0.7811372784067646
+  ],
+  "rotation": [
+   [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   [
+    0.7071067811865476,
+    0.7071067811865475,
+    0.0
+   ],
+   [
+    -0.7071067811865475,
+    0.7071067811865476,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": 0,
+  "pe": 0.0010585030406550682,
+  "ae": 0.7421190405367014,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005009580539038581
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005005476364785685
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005005430664682094
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005009638386414025
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0049967677740094
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004996762256638505
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004992492126084573
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0049922851799656665
+   }
+  ],
+  "q": [
+   -0.0018439287210727513,
+   -1.9779414448486672,
+   1.1302459490930137,
+   1.0045367431208072,
+   -1.5559999999999998,
+   0.004634888115454544
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": 45,
+  "pe": 0.0010585046247865437,
+  "ae": 0.7421184985379371,
+  "contacts": [],
+  "q": [
+   -0.0018439344348681365,
+   -1.9780234247938637,
+   1.1301393984823693,
+   1.005126470321708,
+   -1.5559999999999998,
+   -0.78116447209913
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.7071067811865476,
+    -0.7071067811865475,
+    0.0
+   ],
+   [
+    0.7071067811865475,
+    0.7071067811865476,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": 90,
+  "pe": 0.00022357186720475459,
+  "ae": 0.8577292294682354,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.003495245649763035
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.0034948888805410843
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010715018868662858
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.010714689609867285
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019226664819599705
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019226972379608583
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028703994356418426
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028703701849690597
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812785182980315
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.028812436423798368
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019292676898243166
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.019352924222128264
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943822802555747
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.006943572986962706
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908151110849991
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_pitch_link"
+    ],
+    "dist_m": -0.007908442445802133
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.006563554677436719
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0064702274448310265
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.002426376674354203
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.001353452026545112
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.016735451978185423
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.01681591647494423
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.016823504820958117
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.016735231155864883
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0005669275756606635
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.003339578244602683
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0032419111484237257
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0033279452111666784
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.01326152171852966
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0005673446544572961
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.002942094481404539
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.003020987422972958
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.003030922840131862
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0030495491344751016
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0030174523695880666
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.0014185122700522137
+   }
+  ],
+  "q": [
+   0.0011918244828424802,
+   -2.6063422885025314,
+   2.7389735735659526,
+   -1.435275988082916,
+   -1.5559999999999998,
+   -0.10666672135898919
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    6.123233995736766e-17,
+    -1.0,
+    0.0
+   ],
+   [
+    1.0,
+    6.123233995736766e-17,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": 135,
+  "pe": 0.0010585037512500597,
+  "ae": 0.7421187829789776,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_stand_-1_28",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.010014428512382283
+   },
+   {
+    "bodies": [
+     "pipe_stand_-1_28",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.008502186883360158
+   },
+   {
+    "bodies": [
+     "pipe_stand_-1_28",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.008645059536258465
+   },
+   {
+    "bodies": [
+     "pipe_stand_-1_28",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.007349536039216592
+   },
+   {
+    "bodies": [
+     "pipe_stand_-1_28",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.007352765792001642
+   }
+  ],
+  "q": [
+   -0.001843931261014943,
+   -1.977983319899397,
+   1.1301914967824809,
+   1.0048380282181726,
+   -1.5559999999999998,
+   -2.351764559945861
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    -0.7071067811865475,
+    -0.7071067811865476,
+    0.0
+   ],
+   [
+    0.7071067811865476,
+    -0.7071067811865475,
+    0.0
+   ]
+  ]
+ },
+ {
+  "roll_deg": 180,
+  "pe": 0.0009442961628498495,
+  "ae": 0.7769292094036286,
+  "contacts": [
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.00542400644347144
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005525036941348458
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005524484307343233
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.005453275152544044
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.00458398143740493
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004584664821295407
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.00458492264665114
+   },
+   {
+    "bodies": [
+     "pipe_-1",
+     "right_wrist_roll_link"
+    ],
+    "dist_m": -0.004477364844740735
+   }
+  ],
+  "q": [
+   -0.0014290575087450568,
+   -1.9615493885267528,
+   1.3629742528647661,
+   0.25946369188583635,
+   -1.5559999999999998,
+   -2.6409999999999996
+  ],
+  "rotation": [
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    -1.0,
+    -1.2246467991473532e-16,
+    0.0
+   ],
+   [
+    1.2246467991473532e-16,
+    -1.0,
+    0.0
+   ]
+  ]
+ }
+]

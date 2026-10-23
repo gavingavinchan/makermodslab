@@ -122,7 +122,7 @@ previous checks. Results live in runs/propeller/validation.
 Flange scene preview (2026-10-23, **local only**):
 `sweep.py --task flange --config B0 --episodes 1` executes four 48-row hold-stub
 chunks through the existing runner, including fsync, row logs, replay, policy
-sheet and video. Outputs go to `runs/flange/dry/`; the ledger is never accessed.
+sheet and video. Outputs go to `runs/flange_v2/dry/`; the ledger is never accessed.
 The flange task rejects live execution before constructing a scene/client.
 Legacy task caps, stage selection, modes, station cameras/lights and arm JSONs
 are unchanged. `flange_render.py` makes the three 1280×720 inspection renders;
@@ -130,14 +130,19 @@ are unchanged. `flange_render.py` makes the three 1280×720 inspection renders;
 welds), with top + inspection view. The current attempt lifts the nut but fails
 to lift the bolt; it does not prove full assembly feasibility.
 
-`flange_scene.py` adds fixed steel pipes/blue four-hole enlarged DN50 PN16-style
-flanges, real convex-decomposed clearance holes, and free M30-size fasteners.
+`flange_scene.py` adds fixed 0.6 m coated pipes/grey eight-hole weld-neck-style
+flanges with seven paired-nut studs, real convex-decomposed clearance holes, and free M30-size fasteners.
 Its 1 ms ideal thread projection engages only near the tip, within 3 mm radial
 and 10 degrees axial error; rotation advances the nut 3.5 mm/revolution. Reverse
 rotation or sufficient attempted withdrawal releases it. The bolt is never
 snapped or constrained to the holes. This is an ideal thread surrogate, not a
-thread torque or cross-threading simulation. See `runs/flange/flange_scene_report.md`.
+thread torque or cross-threading simulation. See `runs/flange_v2/flange_v2_report.md`; `runs/flange/` is preserved as the before.
 `flange_check.py`, `flange_ik_check.py`, and `flange_runner_check.py` are zero-call
 physics, native IK and exact local-stub replay checks. Per-row logs include
 insertion depth, nut engagement/turns/advance, lift/between-finger/contact grasp,
 object/fixture/gripper/table contacts, and requested-hand distances.
+
+Subsea v2 preview: `flange_assets_v2.py` authors local procedural meshes/PNG textures;
+`flange_clearance_check.py` verifies sampled joint paths against both arms, table and full
+pipework. `flange_visibility_check.py` records actual object pixels and target-mouth
+occlusion in unchanged call-1 cameras. All current flange outputs default to `runs/flange_v2/`.

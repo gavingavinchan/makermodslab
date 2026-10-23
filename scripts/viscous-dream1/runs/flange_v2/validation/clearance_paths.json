@@ -1,0 +1,184 @@
+{
+ "inference_calls": 0,
+ "rest_fixture_contacts": [],
+ "all_paths_passed": true,
+ "collision_evaluations": 1390,
+ "paths": [
+  {
+   "side": "left",
+   "target": "bolt_pick",
+   "waypoints": [
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     1.018636703491211,
+     -2.1221396923065186,
+     1.6113989353179932,
+     -0.4187258780002594,
+     -0.6440842151641846,
+     2.4246344566345215
+    ]
+   ],
+   "samples": 244,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "left",
+   "target": "left_rest",
+   "waypoints": [
+    [
+     1.018636703491211,
+     -2.1221396923065186,
+     1.6113989353179932,
+     -0.4187258780002594,
+     -0.6440842151641846,
+     2.4246344566345215
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "samples": 244,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "right",
+   "target": "nut_pick",
+   "waypoints": [
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     -1.0787724256515503,
+     -2.1540799140930176,
+     1.6050701141357422,
+     -0.4249178171157837,
+     0.672488808631897,
+     0.644324004650116
+    ]
+   ],
+   "samples": 217,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "right",
+   "target": "right_rest",
+   "waypoints": [
+    [
+     -1.0787724256515503,
+     -2.1540799140930176,
+     1.6050701141357422,
+     -0.4249178171157837,
+     0.672488808631897,
+     0.644324004650116
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "samples": 217,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "left",
+   "target": "hole_entrance_bolt_axis_minus_x",
+   "waypoints": [
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.6708430051803589,
+     -1.6046679019927979,
+     0.881732165813446,
+     0.546577513217926,
+     -0.6434475183486938,
+     1.7767261266708374
+    ]
+   ],
+   "samples": 179,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "left",
+   "target": "bolt_through_both_grip_axis_minus_x",
+   "waypoints": [
+    [
+     0.6708430051803589,
+     -1.6046679019927979,
+     0.881732165813446,
+     0.546577513217926,
+     -0.6434475183486938,
+     1.7767261266708374
+    ],
+    [
+     0.964224100112915,
+     -2.1165997982025146,
+     1.6001957654953003,
+     0.2300480157136917,
+     -0.9161219000816345,
+     1.9327938556671143
+    ]
+   ],
+   "samples": 73,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  },
+  {
+   "side": "right",
+   "target": "far_side_nut",
+   "waypoints": [
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     -0.8892205357551575,
+     -1.9284398555755615,
+     1.3130626678466797,
+     0.36120083928108215,
+     0.8484498262405396,
+     1.2507036924362183
+    ]
+   ],
+   "samples": 194,
+   "max_joint_step_rad": 0.01,
+   "fixture_table_and_other_arm_contacts": 0
+  }
+ ],
+ "scope": "Kinematic arms versus full fixture, table and other arm. Loose-part contact allowed. Loaded dynamics and grasping not proven."
+}

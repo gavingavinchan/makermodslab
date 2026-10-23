@@ -1,0 +1,63 @@
+{
+ "top": {
+  "hole_mouth_in_frame": true,
+  "hole_mouth_visible": false,
+  "loose_object_pixels_raw_640x360": {
+   "bolt": 889,
+   "nut": 350
+  },
+  "hole_mouth_world_m": [
+   -0.037,
+   -0.12451505843608915,
+   0.9171645709543638
+  ],
+  "hole_mouth_pixel_raw": [
+   333.27065800370576,
+   147.0486315850002
+  ],
+  "hole_mouth_ray_blocked": true,
+  "occluder": "flange_visual_-1",
+  "policy_camera_unchanged": true
+ },
+ "left": {
+  "hole_mouth_in_frame": true,
+  "hole_mouth_visible": true,
+  "loose_object_pixels_raw_640x360": {
+   "bolt": 3218,
+   "nut": 0
+  },
+  "hole_mouth_world_m": [
+   0.037,
+   -0.12451505843608915,
+   0.9171645709543638
+  ],
+  "hole_mouth_pixel_raw": [
+   587.415888744264,
+   142.00734570624553
+  ],
+  "hole_mouth_ray_blocked": false,
+  "occluder": null,
+  "policy_camera_unchanged": true
+ },
+ "right": {
+  "hole_mouth_in_frame": true,
+  "hole_mouth_visible": true,
+  "loose_object_pixels_raw_640x360": {
+   "bolt": 1076,
+   "nut": 1185
+  },
+  "hole_mouth_world_m": [
+   -0.037,
+   -0.12451505843608915,
+   0.9171645709543638
+  ],
+  "hole_mouth_pixel_raw": [
+   52.58411124090941,
+   142.00734570624553
+  ],
+  "hole_mouth_ray_blocked": false,
+  "occluder": null,
+  "policy_camera_unchanged": true
+ },
+ "assessment": "Top flange face remains edge-on and target mouth is occluded. Each loose object is visible in top plus at least one wrist. Wrist hole-mouth visibility is documented by projection/ray and human review; no camera/run rotation applied."
+}

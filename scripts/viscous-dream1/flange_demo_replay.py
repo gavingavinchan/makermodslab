@@ -9,7 +9,7 @@ from flange_scene import HERE,Measurements
 
 
 def replay():
-    out=HERE/'runs/flange';log=json.loads((out/'scripted_demo_log.json').read_text())
+    out=HERE/'runs/flange_v2';log=json.loads((out/'scripted_demo_log.json').read_text())
     e,*_=sweep.initialize('flange',sweep.DEFAULT,20261023);o=Measurements(e)
     r=mujoco.Renderer(e.model,width=640,height=360)
     font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',16)

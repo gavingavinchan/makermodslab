@@ -5,15 +5,13 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 import numpy as np
 import mujoco
-import trimesh
-from shapely.geometry import Point, Polygon
 
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE/'assets/flange'
-CENTER = np.array([0., -.16, .965])
-HOLE = CENTER + [0., .125, 0.]
-BOLT = np.array([.19, .065, .787])
-NUT = np.array([-.15, .065, .774])
+CENTER = np.array([0., -.24, .965])
+HOLE = CENTER + [0., .125*np.cos(np.pi/8), -.125*np.sin(np.pi/8)]
+BOLT = np.array([.12, -.04, .787])
+NUT = np.array([-.07, -.04, .774])
 PITCH = .0035
 LENGTH = .120
 NUT_HALF = .013
@@ -23,122 +21,106 @@ PROMPT = 'insert the bolt through the flange holes and screw the nut onto the ot
 def numbers(v): return ' '.join(f'{x:.9g}' for x in np.asarray(v).ravel())
 
 
-def extrude(poly, length):
-    m = trimesh.creation.extrude_polygon(poly, length, engine='earcut')
-    m.apply_translation([0,0,-length/2]);m.fix_normals()
-    return m
-
-
-def generate_pipe_obj():
-    n=96;verts=[];normals=[];faces=[]
-    for radius,inner in [(.0603,False),(.0525,True)]:
-     start=len(verts)
-     for z in (-.095,.095):
-      for i in range(n):
-       a=2*np.pi*i/n;verts.append([radius*np.cos(a),radius*np.sin(a),z]);normals.append([(-1 if inner else 1)*np.cos(a),(-1 if inner else 1)*np.sin(a),0])
-     for i in range(n):
-      j=(i+1)%n
-      for f in ([i,j,n+j],[i,n+j,n+i]):faces.append([start+k for k in (f[::-1] if inner else f)])
-    for z,sign in [(-.095,-1),(.095,1)]:
-     start=len(verts)
-     for radius in (.0603,.0525):
-      for i in range(n):
-       a=2*np.pi*i/n;verts.append([radius*np.cos(a),radius*np.sin(a),z]);normals.append([0,0,sign])
-     for i in range(n):
-      j=(i+1)%n
-      for f in ([i,j,n+j],[i,n+j,n+i]):faces.append([start+k for k in (f if sign==1 else f[::-1])])
-    p=ASSETS/'pipe.obj'
-    p.write_text('\n'.join(['# Split normals for smooth steel tube, sharp annular rims']+['v '+' '.join(map(str,v)) for v in verts]+['vn '+' '.join(map(str,v)) for v in normals]+['f '+' '.join(f'{i+1}//{i+1}' for i in f) for f in faces])+'\n')
-
-
 def generate_assets():
-    """Triangulate the perforated face, then merge triangles into convex prisms.
-    Every collision prism stays OUTSIDE all five holes. A nonconvex visual mesh
-    alone would be convexified by MuJoCo and incorrectly close the holes.
-    """
-    ASSETS.mkdir(parents=True,exist_ok=True)
-    circle=lambda radius:Point(0,0).buffer(radius,quad_segs=24)
-    flange=circle(.165).difference(circle(.0525))
-    for a in np.arange(4)*np.pi/2:
-        flange=flange.difference(Point(.125*np.cos(a),.125*np.sin(a)).buffer(.017,quad_segs=12))
-    extrude(flange,.036).export(ASSETS/'flange.stl')
-    v,f=trimesh.creation.triangulate_polygon(flange,engine='earcut')
-    cells=[Polygon(v[t]) for t in f]
-    # Greedy convex merging reduces static contact pieces without bridging holes.
-    changed=True
-    while changed:
-        changed=False
-        for i in range(len(cells)):
-            for j in range(i+1,len(cells)):
-                u=cells[i].union(cells[j])
-                if u.geom_type=='Polygon' and abs(u.convex_hull.area-u.area)<1e-12:
-                    cells[i]=u;cells.pop(j);changed=True;break
-            if changed:break
-    for old in ASSETS.glob('flange_cell_*.stl'):old.unlink()
-    for i,p in enumerate(cells):extrude(p,.036).export(ASSETS/f'flange_cell_{i:03d}.stl')
-    generate_pipe_obj()
-    # Hexagonal nut with real open bore and flat-shaded wrench faces.
-    r=.046/np.sqrt(3)
-    hexagon=Polygon(np.c_[r*np.cos(np.arange(6)*np.pi/3),r*np.sin(np.arange(6)*np.pi/3)])
-    nut=hexagon.difference(Point(0,0).buffer(.0155,quad_segs=12))
-    extrude(nut,.026).export(ASSETS/'nut.stl')
-    # Six trapezoids each split into small convex sectors: physical through bore.
-    for i in range(48):
-        a,b=2*np.pi*np.array([i,i+1])/48
-        def radius(t):
-            normal=(np.floor(t/(np.pi/3))+.5)*np.pi/3
-            return .023/np.cos(t-normal)
-        p=Polygon([[.0155*np.cos(a),.0155*np.sin(a)],[radius(a)*np.cos(a),radius(a)*np.sin(a)],
-                   [radius(b)*np.cos(b),radius(b)*np.sin(b)],[.0155*np.cos(b),.0155*np.sin(b)]])
-        extrude(p,.026).export(ASSETS/f'nut_cell_{i:02d}.stl')
-    # Flat hexagonal wrench faces; simplified unchamfered head.
-    m=trimesh.creation.cylinder(radius=r,height=.020,sections=6)
-    m.apply_translation([0,0,-.010]);m.export(ASSETS/'head.stl')
-    return len(cells)
+    """Regenerate v2 visuals/textures and convex contacts, entirely locally."""
+    from flange_assets_v2 import generate
+    generate()
+    return len(list((ASSETS/'v2_collision').glob('flange_*.stl')))
 
 
 def add_scene(root):
-    if not (ASSETS/'flange.stl').exists():generate_assets()
-    if not (ASSETS/'pipe.obj').exists():generate_pipe_obj()
+    if not (ASSETS/'v2.version').exists():
+        from flange_assets_v2 import generate
+        generate()
     root.find('size').set('memory','512M')
     world,asset=root.find('worldbody'),root.find('asset')
     for name in ('apple','orange','bowl','banana','water_bottle','plate'):
         node=world.find(f"body[@name='{name}']")
         if node is not None:world.remove(node)
-    for name,rgba,spec,shine in [('flange_blue','.25 .38 .48 1','.55','.55'),('pipe_steel','.43 .48 .51 1','.7','.65'),('zinc','.72 .76 .79 1','.85','.8'),('stand_steel','.13 .16 .18 1','.35','.3')]:
-        ET.SubElement(asset,'material',name=name,rgba=rgba,specular=spec,shininess=shine)
-    def mesh(name,path,smooth=False):
-        ET.SubElement(asset,'mesh',name=name,file=str(path),smoothnormal=str(smooth).lower())
-    mesh('flange_visual',ASSETS/'flange.stl');mesh('pipe_visual',ASSETS/'pipe.obj')
-    cells=sorted(ASSETS.glob('flange_cell_*.stl'))
+    # Realistic coating palette; explicit mesh UVs, light wear, satin highlights.
+    for name,texture,spec,shine,reflect in [
+        ('flange_epoxy','epoxy_grey','.45','.32','.03'),
+        ('pipe_coating','pipe_fbe','.24','.22','0'),
+        ('pipe_steel','steel_worn','.7','.55','.06'),
+        ('zinc','ptfe_blue','.50','.42','.02')]:
+        ET.SubElement(asset,'texture',name=name+'_texture',type='2d',file=str(ASSETS/(texture+'.png')))
+        ET.SubElement(asset,'material',name=name,texture=name+'_texture',texuniform='false',rgba='1 1 1 1',specular=spec,shininess=shine,reflectance=reflect)
+    for name,rgba in [('stand_steel','.13 .16 .18 1'),('gasket_steel','.19 .22 .23 1'),('weld_steel','.28 .31 .30 1'),('marking','.85 .68 .20 1')]:
+        ET.SubElement(asset,'material',name=name,rgba=rgba,specular='.45',shininess='.35')
+    def mesh(name,path,smooth=False,**kw):
+        ET.SubElement(asset,'mesh',name=name,file=str(path),smoothnormal=str(smooth).lower(),**kw)
+    for name,file in [('flange_visual','flange_v2.obj'),('pipe_visual','pipe_v2.obj'),('coating_visual','coating_v2.obj'),('hub_visual','hub_v2.obj'),('weld_visual','weld_v2.obj'),('raised_visual','raised_face_v2.obj'),('gasket_visual','gasket_v2.obj'),('nut_chamfered','nut_v2.obj')]:
+        mesh(name,ASSETS/file,**({'scale':'1 1 .9166666667'} if name=='flange_visual' else {}))
+    cells=sorted((ASSETS/'v2_collision').glob('flange_*.stl'))
     for i,p in enumerate(cells):mesh(f'flange_cell_{i}',p)
     def geom(body,name,**kw):
         return ET.SubElement(body,'geom',name=name,**{k:str(v) for k,v in kw.items()})
-    # Mesh z axes are rotated onto world x. Bodies have no joints: world fixed.
+    def visual(body,name,meshname,material,**kw):
+        return geom(body,name,type='mesh',mesh=meshname,material=material,mass=0,contype=0,conaffinity=0,group=2,**kw)
+    # Preserve the task frame and 74 mm flange stack; extend only outboard.
     for sign in (-1,1):
-        body=ET.SubElement(world,'body',name=f'flange_{sign}',pos=numbers(CENTER+[sign*.019,0,0]),euler=f'0 {np.pi/2} 0')
-        geom(body,f'flange_visual_{sign}',type='mesh',mesh='flange_visual',material='flange_blue',contype=0,conaffinity=0,group=2)
+        body=ET.SubElement(world,'body',name=f'flange_{sign}',pos=numbers(CENTER+[sign*.0205,0,0]),euler=f'0 {np.pi/2} 0')
+        visual(body,f'flange_visual_{sign}','flange_visual','flange_epoxy')
         for i in range(len(cells)):
             geom(body,f'flange_contact_{sign}_{i}',type='mesh',mesh=f'flange_cell_{i}',rgba='0 0 0 0',group=3,margin='.0001')
-        pipe=ET.SubElement(world,'body',name=f'pipe_{sign}',pos=numbers(CENTER+[sign*.131,0,0]),euler=f'0 {np.pi/2} 0')
-        geom(pipe,f'pipe_visual_{sign}',type='mesh',mesh='pipe_visual',material='pipe_steel',contype=0,conaffinity=0,group=2)
-        # Convex annular sectors leave the pipe bore open, too.
-        for k in range(24):
-            a,b=2*np.pi*np.array([k,k+1])/24
-            verts=[[r*np.cos(t),r*np.sin(t),z] for z in (-.095,.095) for t in (a,b) for r in (.0525,.0603)]
-            name=f'pipe_sector_{sign}_{k}'
-            ET.SubElement(asset,'mesh',name=name,vertex=numbers(verts))
+        hub=ET.SubElement(world,'body',name=f'pipe_hub_{sign}',pos=numbers(CENTER+[sign*.037,0,0]),euler=f'0 {sign*np.pi/2} 0')
+        visual(hub,f'hub_visual_{sign}','hub_visual','flange_epoxy')
+        # The taper is a physical annulus, decomposed without capping the bore.
+        for k in range(32):
+            a,b=2*np.pi*np.array([k,k+1])/32
+            verts=[[r*np.cos(t),r*np.sin(t),z] for z,ro in ((0,.092),(.008,.091),(.018,.086),(.070,.063),(.080,.0603)) for t in (a,b) for r in (.0525,ro)]
+            name=f'pipe_hub_sector_{sign}_{k}';ET.SubElement(asset,'mesh',name=name,vertex=numbers(verts))
+            geom(hub,name,type='mesh',mesh=name,rgba='0 0 0 0',group=3)
+        pipe=ET.SubElement(world,'body',name=f'pipe_{sign}',pos=numbers(CENTER+[sign*.417,0,0]),euler=f'0 {sign*np.pi/2} 0')
+        visual(pipe,f'pipe_visual_{sign}','pipe_visual','pipe_steel')
+        visual(pipe,f'coating_visual_{sign}','coating_visual','pipe_coating')
+        visual(pipe,f'weld_visual_{sign}','weld_visual','weld_steel',pos='0 0 -.300')
+        for k in range(32):
+            a,b=2*np.pi*np.array([k,k+1])/32
+            # Metal wall and coating both participate in contact; bore stays open.
+            verts=[[r*np.cos(t),r*np.sin(t),z] for z in (-.300,.300) for t in (a,b) for r in (.0525,.0633)]
+            name=f'pipe_sector_{sign}_{k}';ET.SubElement(asset,'mesh',name=name,vertex=numbers(verts))
             geom(pipe,name,type='mesh',mesh=name,rgba='0 0 0 0',group=3)
-        stand=ET.SubElement(world,'body',name=f'pipe_stand_{sign}',pos=numbers(CENTER+[sign*.16,0,0]))
-        geom(stand,f'stand_base_{sign}',type='box',pos='0 0 -.197',size='.055 .075 .008',material='stand_steel')
-        geom(stand,f'stand_post_{sign}',type='box',pos='0 0 -.137',size='.016 .028 .055',material='stand_steel')
-        for sy in (-1,1):
-            geom(stand,f'vblock_{sign}_{sy}',type='box',pos=f'0 {sy*.047} -.069',size='.045 .012 .030',euler=f'{-sy*.60} 0 0',material='stand_steel')
-    # A 2 mm sealing gap separates the fixed mating faces; bolt holes remain clear.
+        # Two grounded saddle stands per section, away from the insertion corridor.
+        for station in (.28,.55):
+            key=f'{sign}_{int(station*100)}'
+            stand=ET.SubElement(world,'body',name=f'pipe_stand_{key}',pos=numbers(CENTER+[sign*station,0,0]))
+            geom(stand,f'stand_base_{key}',type='box',pos='0 0 -.197',size='.045 .075 .008',material='stand_steel')
+            geom(stand,f'stand_post_{key}',type='box',pos='0 0 -.137',size='.014 .028 .055',material='stand_steel')
+            for sy in (-1,1):
+                geom(stand,f'vblock_{key}_{sy}',type='box',pos=f'0 {sy*.047} -.069',size='.037 .012 .030',euler=f'{-sy*.60} 0 0',material='stand_steel')
+        # A machined raised face with a dark ring gasket visible at its outer edge.
+        raised=ET.SubElement(world,'body',name=f'flange_raised_{sign}',pos=numbers(CENTER+[sign*.002867,0,0]),euler=f'0 {-sign*np.pi/2} 0')
+        name=f'raised_scaled_{sign}';mesh(name,ASSETS/'raised_face_v2.obj',scale='1 1 1.133333333')
+        visual(raised,f'raised_face_{sign}',name,'pipe_steel')
+    gasket=ET.SubElement(world,'body',name='flange_gasket',pos=numbers(CENTER),euler=f'0 {np.pi/2} 0')
+    mesh('gasket_scaled',ASSETS/'gasket_v2.obj',scale='1.06122449 1.06122449 .6')
+    visual(gasket,'gasket','gasket_scaled','gasket_steel')
+    # Seven M30 studs with two heavy hex nuts each. The lower arm-side hole stays empty.
+    for k in range(8):
+        angle=k*np.pi/4+np.pi/8
+        if k==1:continue
+        xyz=CENTER+[0,.125*np.sin(angle),-.125*np.cos(angle)]
+        stud=ET.SubElement(world,'body',name=f'flange_stud_{k}',pos=numbers(xyz),euler=f'0 {np.pi/2} 0')
+        geom(stud,f'stud_{k}',type='cylinder',size='.015 .078',material='zinc')
+        for sign in (-1,1):
+            visual(stud,f'stud_nut_{k}_{sign}','nut_chamfered','zinc',pos=f'0 0 {sign*.050}')
+            # Convex sectors preserve the physical hex and bore of each installed nut.
+            for j in range(48):
+                name=f'installed_nut_cell_{j}'
+                if asset.find(f"mesh[@name='{name}']") is None:mesh(name,ASSETS/f'nut_cell_{j:02d}.stl')
+                geom(stud,f'stud_nut_contact_{k}_{sign}_{j}',type='mesh',mesh=name,pos=f'0 0 {sign*.050}',rgba='0 0 0 0',group=3)
+        for j in range(44):
+            z=-.076+j*PITCH
+            geom(stud,f'stud_thread_{k}_{j}',type='cylinder',pos=f'0 0 {z}',size='.01525 .00035',material='pipe_steel',contype=0,conaffinity=0)
+    # 33 mm rings, 8 mm root gap, two 3.4 mm raised faces and a 1.2 mm gasket.
+    # The outer contact faces remain at x +/-37 mm; the task stack stays 74 mm.
     bolt=ET.SubElement(world,'body',name='bolt',pos=numbers(BOLT),euler=f'0 {-np.pi/2} 0')
     ET.SubElement(bolt,'freejoint',name='bolt_free')
     mesh('bolt_head',ASSETS/'head.stl')
-    geom(bolt,'bolt_head',type='mesh',mesh='bolt_head',mass='.13',material='zinc',friction='1.5 .02 .002')
+    mesh('bolt_head_chamfered',ASSETS/'head_v2.obj')
+    visual(bolt,'bolt_head_chamfered','bolt_head_chamfered','zinc')
+    geom(bolt,'bolt_head',type='mesh',mesh='bolt_head',mass='.13',rgba='0 0 0 0',group=3,friction='1.5 .02 .002')
     geom(bolt,'bolt_shank',type='cylinder',pos='0 0 .057',size='.015 .057',mass='.50',material='zinc',friction='.5 .01 .001')
     geom(bolt,'bolt_tip',type='cylinder',pos='0 0 .117',size='.0138 .003',mass='.02',material='zinc')
     # Fine thread crests are visual only. The shank is the contact envelope.
@@ -146,7 +128,7 @@ def add_scene(root):
         geom(bolt,f'bolt_thread_{k}',type='cylinder',pos=f'0 0 {.047+k*PITCH}',size='.01525 .00040',mass=0,material='pipe_steel',contype=0,conaffinity=0)
     nut=ET.SubElement(world,'body',name='nut',pos=numbers(NUT))
     ET.SubElement(nut,'freejoint',name='nut_free')
-    mesh('nut_visual',ASSETS/'nut.stl')
+    mesh('nut_visual',ASSETS/'nut_v2.obj')
     geom(nut,'nut_visual',type='mesh',mesh='nut_visual',mass=0,material='zinc',contype=0,conaffinity=0,group=2)
     for i in range(48):
         name=f'nut_cell_{i}';mesh(name,ASSETS/f'nut_cell_{i:02d}.stl')
