@@ -118,6 +118,13 @@ restore paths in the DAgger runner.
   what it does, not a precise success rate.
   *Result (2026-10-23):* it knows to take the sponge to the propeller but not to
   scrub. See "Propeller scrubbing" under the Dream-1 trial.
+- *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
+  instead "two pipes with flanges, and then the task: insert and screw in the nut".
+  Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
+  push through the aligned holes and a nut to thread onto it. Gavin wants to see the
+  environment before any billed run ("I want to see the environment setup first").
+  Scene, thread model and a scripted feasibility demo first, no calls:
+  `scripts/viscous-dream1/BRIEF_FLANGE_SCENE.md`.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
@@ -721,7 +728,9 @@ file instead.
   --extra arm-dynamics`.
 
 **Resume Dream-1 here (2026-10-23):** B3a (propeller scrubbing in sim) is done:
-zero-shot Dream-1 carries the sponge to the propeller but never scrubs. Next is B3b,
+zero-shot Dream-1 carries the sponge to the propeller but never scrubs. B3c (flange
+bolting scene) is being built by Codex on gavin-linux (`flange_codex.log`, output
+`runs/flange/`); show Gavin the scene before any live run. Then B3b,
 the BlueROV2 scene (see B3); its three open questions are for Gavin first.
 
 **Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
