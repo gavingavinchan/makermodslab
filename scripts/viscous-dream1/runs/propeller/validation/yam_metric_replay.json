@@ -1,0 +1,41 @@
+{
+ "inference_calls": 0,
+ "budget_used_before": 1626,
+ "budget_used_after": 1626,
+ "ledger_requests_unchanged": true,
+ "episodes": [
+  {
+   "episode": "YAM/propeller/P3/ep_02",
+   "chunks_sha256": "84a199ca66f0d55b1325ce4ce69be3e2ac32678dd7c6e1d3f15c38edf0797419",
+   "physics_samples_identical": true,
+   "tool_contact_rows": 46,
+   "gripper_contact_rows": 0,
+   "grasped": true,
+   "reversals": 1,
+   "path_in_contact_m": 0.049158336438955695,
+   "path_within_1cm_m": 0.13462104316813955
+  },
+  {
+   "episode": "YAM/propeller/P3/ep_03",
+   "chunks_sha256": "27955df6e0270bd92b4efa7aa98ffce1d12499b0627bf7608c745acede02b3ad",
+   "physics_samples_identical": true,
+   "tool_contact_rows": 0,
+   "gripper_contact_rows": 77,
+   "grasped": false,
+   "reversals": 1,
+   "path_in_contact_m": 0.06802476709063836,
+   "path_within_1cm_m": 0.10679603743344074
+  },
+  {
+   "episode": "YAM/propeller/P3/ep_04",
+   "chunks_sha256": "cb27ff212b851e7fa6d935dd000db4a2cdfcad0d5d16589ef0cd438c2a766d06",
+   "physics_samples_identical": true,
+   "tool_contact_rows": 0,
+   "gripper_contact_rows": 104,
+   "grasped": false,
+   "reversals": 0,
+   "path_in_contact_m": 0.022738357446025894,
+   "path_within_1cm_m": 0.03843639168101834
+  }
+ ]
+}

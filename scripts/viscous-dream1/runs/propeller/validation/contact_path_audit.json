@@ -1,0 +1,114 @@
+{
+ "inference_calls": 0,
+ "ledger_unchanged": true,
+ "episodes": [
+  {
+   "log": "runs/sweep/B0/propeller/P2/ep_00/log.json",
+   "physical_contact_path_m": 0.06564757534183342,
+   "path_within_1cm_m": 0.10982469804820622,
+   "chunks_sha256": "dfb5418419ca1ab44983ca56f4f58caa1586b743537142f9b08a45e5644d1b40"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P2/ep_01/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "d349d6568209e1cfeb751548390a374cf3076d31d3579c8bdab3bfd7a5d382ef"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P3/ep_00/log.json",
+   "physical_contact_path_m": 0.14474584940776664,
+   "path_within_1cm_m": 0.1754140435705073,
+   "chunks_sha256": "601321e6d4d46d80ed17dd70820bf6e991962f1235925adec08610de1f3983b0"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P3/ep_04/log.json",
+   "physical_contact_path_m": 0.04872825212969733,
+   "path_within_1cm_m": 0.10069962108264456,
+   "chunks_sha256": "633c53b5acdeec186bbc4bc6ddacbd88627d2d8f413e5d6800f7e761ee63d06e"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P3/ep_03/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "fd5a6dd520f51e4cb3096d723705d56f17b52c34014d2b304038329eb786ef0a"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P3/ep_01/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "575f564fbda67c22e0735f3fd7d89cb8e8bc6f2968670b4887406f52beb60531"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P3/ep_02/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "e144f537b4fb2c89e80ceff0682b1a77df1468d4b0c89040ccd8b0c9947ab94c"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P1/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "d6c231cb6ed92e2724b50b7f692472d341742af0c86207c88a8ca51d177069f8"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P1/ep_01/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "0e05425ca9a4deb4e0d0c1ba60e748c61c937f2c9e2f333a3c71711b66e789a6"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P4/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "f5535aa8432255da52f5a179147f6b8dfaa57014c9bf4067bbb6ef67c3c0a604"
+  },
+  {
+   "log": "runs/sweep/B0/propeller/P4/ep_01/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "3a46719e673da6617b46f31cd72cee9f48163f6d6d31727b38ecea9583a41bc7"
+  },
+  {
+   "log": "runs/sweep/YAM/propeller/P3/ep_04/log.json",
+   "physical_contact_path_m": 0.022738357446025894,
+   "path_within_1cm_m": 0.03843639168101834,
+   "chunks_sha256": "cb27ff212b851e7fa6d935dd000db4a2cdfcad0d5d16589ef0cd438c2a766d06"
+  },
+  {
+   "log": "runs/sweep/YAM/propeller/P3/ep_03/log.json",
+   "physical_contact_path_m": 0.06802476709063836,
+   "path_within_1cm_m": 0.10679603743344074,
+   "chunks_sha256": "27955df6e0270bd92b4efa7aa98ffce1d12499b0627bf7608c745acede02b3ad"
+  },
+  {
+   "log": "runs/sweep/YAM/propeller/P3/ep_02/log.json",
+   "physical_contact_path_m": 0.049158336438955695,
+   "path_within_1cm_m": 0.13462104316813955,
+   "chunks_sha256": "84a199ca66f0d55b1325ce4ce69be3e2ac32678dd7c6e1d3f15c38edf0797419"
+  },
+  {
+   "log": "runs/propeller/dry/B0/propeller/P2/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "07da8d0f9ef95eafd25f4574130ef831eb25e96d3832760eb12304aa02abe681"
+  },
+  {
+   "log": "runs/propeller/dry/B0/propeller/P3/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "07da8d0f9ef95eafd25f4574130ef831eb25e96d3832760eb12304aa02abe681"
+  },
+  {
+   "log": "runs/propeller/dry/B0/propeller/P1/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "07da8d0f9ef95eafd25f4574130ef831eb25e96d3832760eb12304aa02abe681"
+  },
+  {
+   "log": "runs/propeller/dry/B0/propeller/P4/ep_00/log.json",
+   "physical_contact_path_m": 0.0,
+   "path_within_1cm_m": 0.0,
+   "chunks_sha256": "07da8d0f9ef95eafd25f4574130ef831eb25e96d3832760eb12304aa02abe681"
+  }
+ ]
+}

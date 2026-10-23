@@ -87,3 +87,34 @@ Default `wrist_r='normal'` and all previous configuration names are unchanged.
 and audits right-body contacts after every 1 ms physics step.
 `onearm_isolate_report.py` regenerates the final isolation report and checks
 paired spawns, accounting, protected hashes, permitted files, and video metadata.
+
+Propeller exploration (2026-10-23): `propeller_sweep.py` runs four 30-chunk local
+stub episodes without inference; `propeller_sweep.py --live` runs Stage A (two
+paired seeds per P1–P4), selects tool-contact rows then reversals (stable P1–P4
+tie order), and runs three more Viscous plus three YAM vision episodes with that
+prompt. It calls the existing `sweep.episode` runner, ledger, fsynced chunks and
+seeded replay; `sweep.py --task propeller --prompt-id P1 --episodes 1` is also
+available. Legacy task caps and stage iteration are unchanged. Live startup
+migrates cap 1312→1912 exactly once under the ledger lock, recording Gavin's
+600-call authorization. The full experiment needs at most 420 calls.
+
+`propeller_scene.py` generates three twisted bronze blades under assets/propeller,
+with six convex collision segments per blade, a fixed hub and stand, and a free
+9×6×4 cm yellow/green sponge. All fruit, bottle, bowl and plate are removed in this
+task only. Table, cameras, lights and arm bases are unchanged; no brush is added.
+Per-row contact booleans collect every physics substep. Grasp means >3 cm lift
+and sponge centre between distal fingers. Scrub path projects row displacement
+onto the nearest blade triangle plane while actual sponge/finger collision
+surfaces are within 1 cm; reversals require >1 cm out then >1 cm back along an
+initial tangent with hysteresis, resetting outside each contact bout. This is a
+motion signal, not cleanliness. `path_in_contact_m` sums projected travel only
+in rows with physical contact by that effector; `path_within_1cm_m` also includes
+the proximity band used for reversals. Requested-hand proximity is point-to-surface
+against the propeller and oriented sponge before execution, for both hands.
+Each episode runs 30 calls with no success stop. Video shows top and left wrist;
+first-episode sheets contain the exact three encoded call-1 policy JPEGs.
+
+No-call checks: `propeller_ik_check.py` (native client IK, three points over a 3 cm
+surface pass; multistart seed), `propeller_check.py` (measurements, locked cap
+migration fixture, four full stub episodes and deterministic replay), and all
+previous checks. Results live in runs/propeller/validation.

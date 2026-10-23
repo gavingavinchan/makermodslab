@@ -1,0 +1,49 @@
+{
+ "max_blade_diameter_m": 0.20844386517995217,
+ "mesh_extents_m": [
+  0.18771084398031235,
+  0.040752362459897995,
+  0.18073799461126328
+ ],
+ "blade_count": 3,
+ "collision_segments_per_blade": 6,
+ "hub_height_above_table_m": 0.18499999999999994,
+ "videos": {
+  "runs/propeller/dry/B0/propeller/P2/ep_00/run.mp4": {
+   "size": [
+    1280,
+    368
+   ],
+   "fps": 5.0,
+   "frames": 361,
+   "duration": 72.2
+  },
+  "runs/propeller/dry/B0/propeller/P3/ep_00/run.mp4": {
+   "size": [
+    1280,
+    368
+   ],
+   "fps": 5.0,
+   "frames": 361,
+   "duration": 72.2
+  },
+  "runs/propeller/dry/B0/propeller/P1/ep_00/run.mp4": {
+   "size": [
+    1280,
+    368
+   ],
+   "fps": 5.0,
+   "frames": 361,
+   "duration": 72.2
+  },
+  "runs/propeller/dry/B0/propeller/P4/ep_00/run.mp4": {
+   "size": [
+    1280,
+    368
+   ],
+   "fps": 5.0,
+   "frames": 361,
+   "duration": 72.2
+  }
+ }
+}

@@ -1,0 +1,1476 @@
+{
+ "episodes": [
+  {
+   "path": "runs/sweep/B0/propeller/P1/ep_00/log.json",
+   "seed": 20261023,
+   "jitter_xy_m": [
+    -0.007384096984303401,
+    0.0038625564279753596
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 0,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.09208209958207142,
+    "right": 0.2069183817319748
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.14342427892304066,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1826159030156966,
+    0.05886255642797536,
+    0.7769387984333825
+   ],
+   "prompt": "pick up the sponge and scrub the propeller",
+   "prompt_id": "P1",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.4434935339367824
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P1/ep_01/log.json",
+   "seed": 20261024,
+   "jitter_xy_m": [
+    0.01033548291589851,
+    -0.00035498735475582993
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 1,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.08124959269558824,
+    "right": 0.2734094519679632
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.027251679041056964,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20033548243387483,
+    0.05464501322585433,
+    0.7769387984319837
+   ],
+   "prompt": "pick up the sponge and scrub the propeller",
+   "prompt_id": "P1",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.3544805729645883
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P2/ep_00/log.json",
+   "seed": 20261023,
+   "jitter_xy_m": [
+    -0.007384096984303401,
+    0.0038625564279753596
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 0,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.03153707271623187,
+    "right": 0.27440673642337376
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.2694361948984304,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1826159030156966,
+    0.05886255642797536,
+    0.7769387984333825
+   ],
+   "prompt": "clean the propeller with the sponge",
+   "prompt_id": "P2",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 79,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.06564757534183342,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.44321216263847224
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.10982469804820622
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P2/ep_01/log.json",
+   "seed": 20261024,
+   "jitter_xy_m": [
+    0.01033548291589851,
+    -0.00035498735475582993
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 1,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.08802976346057813,
+    "right": 0.27829697891401045
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.029411377262134386,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20033548243387483,
+    0.05464501322585433,
+    0.7769387984319837
+   ],
+   "prompt": "clean the propeller with the sponge",
+   "prompt_id": "P2",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.34226735441234357
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P3/ep_00/log.json",
+   "seed": 20261023,
+   "jitter_xy_m": [
+    -0.007384096984303401,
+    0.0038625564279753596
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 0,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.054729515673998044,
+    "right": 0.27451420123742776
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.21790882838029302,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1826159030156966,
+    0.05886255642797536,
+    0.7769387984333825
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 455,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.14474584940776664,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.42813452662026097
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.1754140435705073
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P3/ep_01/log.json",
+   "seed": 20261024,
+   "jitter_xy_m": [
+    0.01033548291589851,
+    -0.00035498735475582993
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 1,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.10498286461893942,
+    "right": 0.29032636864054634
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.00926528086119216,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20033548243387483,
+    0.05464501322585433,
+    0.7769387984319837
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.42802875433976056
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P3/ep_02/log.json",
+   "seed": 20261025,
+   "jitter_xy_m": [
+    -0.013592382267323826,
+    -0.014303939727747385
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 2,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.13195267216759887,
+    "right": 0.27448078538956067
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.025449106824587342,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1764076177326762,
+    0.040696060272252615,
+    0.7769387984333825
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.4000708337901303
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P3/ep_03/log.json",
+   "seed": 20261026,
+   "jitter_xy_m": [
+    0.011477211356216228,
+    0.005182366775069679
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 3,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.12420596250846692,
+    "right": 0.28159667327882715
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.23406760938195592,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20147721134551727,
+    0.06018236605996257,
+    0.7769387984319837
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.46223074592882724
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P3/ep_04/log.json",
+   "seed": 20261027,
+   "jitter_xy_m": [
+    0.019483724690316128,
+    0.018490336017849846
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 4,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.05835356481157494,
+    "right": 0.2481826824701003
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.28402242359643115,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20948372469031612,
+    0.07349033601784985,
+    0.7769387984333825
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 95,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.04872825212969733,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.44118388681058923
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.10069962108264456
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P4/ep_00/log.json",
+   "seed": 20261023,
+   "jitter_xy_m": [
+    -0.007384096984303401,
+    0.0038625564279753596
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 0,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.10218191806305207,
+    "right": 0.23911010893897217
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.02138987205189191,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1826159030156966,
+    0.05886255642797536,
+    0.7769387984333825
+   ],
+   "prompt": "scrub the propeller blade back and forth with the sponge",
+   "prompt_id": "P4",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.40102154738137263
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/B0/propeller/P4/ep_01/log.json",
+   "seed": 20261024,
+   "jitter_xy_m": [
+    0.01033548291589851,
+    -0.00035498735475582993
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal"
+   },
+   "config_name": "B0",
+   "episode": 1,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.061211046000784065,
+    "right": 0.24557801649617142
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.0180642062310713,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20033548243387483,
+    0.05464501322585433,
+    0.7769387984319837
+   ],
+   "prompt": "scrub the propeller blade back and forth with the sponge",
+   "prompt_id": "P4",
+   "rig": "viscous",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.0,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.3699012599555987
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "path_within_1cm_m": 0.0
+  },
+  {
+   "path": "runs/sweep/YAM/propeller/P3/ep_02/log.json",
+   "seed": 20261025,
+   "jitter_xy_m": [
+    -0.013592382267323826,
+    -0.014303939727747385
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal",
+    "rig": "yam"
+   },
+   "config_name": "YAM",
+   "episode": 2,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.043718657111445604,
+    "right": 0.19034498696573768
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": true,
+   "max_lift_m": 0.3479676982657294,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.1764076177326762,
+    0.040696060272252615,
+    0.7769387984329372
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "yam",
+   "tool_propeller_contact_rows": 46,
+   "gripper_propeller_contact_rows": 0,
+   "scrub_reversals": 1,
+   "path_in_contact_m": 0.049158336438955695,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.3292309040431122
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "yam",
+     "head": "eef"
+    },
+    "robot": "other_embodiment",
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "measurement_note": "Recomputed from unchanged saved joint chunks using physical distal fingertip mesh points; zero inference; sponge trajectory and contact counts identical.",
+   "path_within_1cm_m": 0.13462104316813955
+  },
+  {
+   "path": "runs/sweep/YAM/propeller/P3/ep_03/log.json",
+   "seed": 20261026,
+   "jitter_xy_m": [
+    0.011477211356216228,
+    0.005182366775069679
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal",
+    "rig": "yam"
+   },
+   "config_name": "YAM",
+   "episode": 3,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 0.012351438451815282,
+    "right": 0.2686809733947234
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.013117873383383993,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20147721136697547,
+    0.060182367161086645,
+    0.7769387984319847
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "yam",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 77,
+   "scrub_reversals": 1,
+   "path_in_contact_m": 0.06802476709063836,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.46435771951506644
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "yam",
+     "head": "eef"
+    },
+    "robot": "other_embodiment",
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "measurement_note": "Recomputed from unchanged saved joint chunks using physical distal fingertip mesh points; zero inference; sponge trajectory and contact counts identical.",
+   "path_within_1cm_m": 0.10679603743344074
+  },
+  {
+   "path": "runs/sweep/YAM/propeller/P3/ep_04/log.json",
+   "seed": 20261027,
+   "jitter_xy_m": [
+    0.019483724690316128,
+    0.018490336017849846
+   ],
+   "task": "propeller",
+   "configuration": {
+    "tcp": "pad",
+    "arms": "both",
+    "rows": 48,
+    "region": "off",
+    "wrist_r": "normal",
+    "rig": "yam"
+   },
+   "config_name": "YAM",
+   "episode": 4,
+   "calls_used": 30,
+   "success": false,
+   "first_success_call": null,
+   "confirmed_success_call": null,
+   "closest_requested_hand_to_object_m": {
+    "left": 1.6398872770486675e-05,
+    "right": 0.27433229821583643
+   },
+   "object_to_target_min_m": 1.0,
+   "grasped": false,
+   "max_lift_m": 0.00947787473404349,
+   "finger_table_contact_rows": 0,
+   "executed_rows": 1440,
+   "finished": true,
+   "start_object_xyz": [
+    0.20948372469031612,
+    0.07349033601784985,
+    0.7769387984329372
+   ],
+   "prompt": "wipe the propeller",
+   "prompt_id": "P3",
+   "rig": "yam",
+   "tool_propeller_contact_rows": 0,
+   "gripper_propeller_contact_rows": 104,
+   "scrub_reversals": 0,
+   "path_in_contact_m": 0.022738357446025894,
+   "closest_requested_hand_to_sponge_m": {
+    "left": 0.0,
+    "right": 0.44196966897439216
+   },
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "yam",
+     "head": "eef"
+    },
+    "robot": "other_embodiment",
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   },
+   "termination": "episode_cap",
+   "measurement_note": "Recomputed from unchanged saved joint chunks using physical distal fingertip mesh points; zero inference; sponge trajectory and contact counts identical.",
+   "path_within_1cm_m": 0.03843639168101834
+  }
+ ],
+ "ledger": {
+  "cap": 1912,
+  "used": 1626,
+  "task_billed": 420,
+  "task_warming": 0,
+  "task_uncertain": 0
+ }
+}

@@ -67,9 +67,12 @@ class BoxYamEnv(yam_env.YamEnv):
 def viscous_xml(task="apple", wrist="maker"):
     # Start with the actual Dream scene so all object builders, transforms, lighting,
     # contact defaults, and calibrated top-camera parameters are retained exactly.
-    if task not in ("apple", "box", "cube") or wrist not in ("maker", "legacy"):
+    if task not in ("apple", "box", "cube", "propeller") or wrist not in ("maker", "legacy"):
         raise ValueError("Unknown Viscous task or wrist mount")
     root = ET.fromstring(cube_xml(task) if task in ("box", "cube") else yam_env.build_xml())
+    if task == 'propeller':
+        from propeller_scene import add_scene
+        root = add_scene(root)
     source = ET.parse(SCENE).getroot()
     root.find("option").set("timestep", ".001")
     world = root.find("worldbody")
@@ -197,6 +200,8 @@ class ViscousAppleEnv(yam_env.YamEnv):
                 dofs = [self.model.joint(f"{side}_finger_{s}").dofadr[0] for s in (-1, 1)]
                 self.data.ctrl[finger] = target[6] + sum(self.data.qfrc_bias[dofs]) / self.model.actuator_gainprm[finger, 0]
             mujoco.mj_step(self.model, self.data)
+            if getattr(self, 'row_observer', None):
+                self.row_observer()
         mujoco.mj_forward(self.model, self.data)
         return self.state()
 

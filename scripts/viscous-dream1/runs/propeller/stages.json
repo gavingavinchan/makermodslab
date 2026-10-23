@@ -1,0 +1,48 @@
+{
+ "start_used": 1206,
+ "max_task_calls": 600,
+ "stage_a": {
+  "P1": {
+   "episodes": 2,
+   "tool_contact_rows": 0,
+   "reversals": 0
+  },
+  "P2": {
+   "episodes": 2,
+   "tool_contact_rows": 79,
+   "reversals": 0
+  },
+  "P3": {
+   "episodes": 2,
+   "tool_contact_rows": 455,
+   "reversals": 0
+  },
+  "P4": {
+   "episodes": 2,
+   "tool_contact_rows": 0,
+   "reversals": 0
+  }
+ },
+ "stage_b": {
+  "viscous": {
+   "episodes": 3,
+   "tool_contact_rows": 95,
+   "reversals": 0
+  },
+  "yam": {
+   "episodes": 3,
+   "tool_contact_rows": 46,
+   "reversals": 2
+  }
+ },
+ "winner": "P3",
+ "complete": true,
+ "billed_calls_added": 420,
+ "ledger": {
+  "cap": 1912,
+  "budget_used": 1626,
+  "confirmed_billed": 1626,
+  "uncertain": 0
+ },
+ "yam_metrics_replayed_without_inference": true
+}

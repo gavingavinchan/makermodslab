@@ -116,6 +116,8 @@ restore paths in the DAgger runner.
   propeller fixed on a stand, a sponge beside it, four prompts, YAM as a control.
   Brief `scripts/viscous-dream1/BRIEF_PROPELLER.md`. Exploratory: Gavin wants to see
   what it does, not a precise success rate.
+  *Result (2026-10-23):* it knows to take the sponge to the propeller but not to
+  scrub. See "Propeller scrubbing" under the Dream-1 trial.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
@@ -521,6 +523,31 @@ session, in parallel with a haptics session.
   is the measured fix; a dummy (camera plus a gripper in its view) is untested. 1206
   billed calls so far, 106 left under the ledger cap.
 
+- *Propeller scrubbing, zero-shot (2026-10-23, goal B3a).* Scene: the Dream table
+  with the clutter removed, a fixed 20.8 cm bronze three-blade propeller on an 18.5 cm
+  stand (shaft horizontal, blades facing the arms), a free 9 x 6 x 4 cm sponge. Viscous
+  `B0` (two arms, Maker-style wrists), 30 calls per episode, no success stop. 420
+  billed calls (ledger cap raised 1312 -> 1912 for this; 1626 used).
+
+  | Arm | Prompt | Ep | Sponge grasped | Sponge-propeller contact rows | Scrub reversals |
+  |---|---|---|---|---|---|
+  | Viscous | "pick up the sponge and scrub the propeller" | 2 | 1 | 0 | 0 |
+  | Viscous | "clean the propeller with the sponge" | 2 | 1 | 79 | 0 |
+  | Viscous | "wipe the propeller" | 5 | 3 | 550 | 0 |
+  | Viscous | "scrub the propeller blade back and forth with the sponge" | 2 | 0 | 0 | 0 |
+  | YAM | "wipe the propeller" | 3 | 1 | 46 | 2 (brief) |
+
+  So zero-shot Dream-1 gets half the idea: it picks up the sponge, carries it to the
+  propeller and presses it on the lower blade, then withdraws (checked by eye in
+  `runs/sweep/B0/propeller/P3/ep_00/run.mp4`). It never strokes back and forth. YAM
+  does no better (two momentary reversals, one with the sponge dropped), so this is
+  the task, not our arm: scrubbing is not in Dream-1's repertoire, and the more
+  explicit prompts ("scrub ... back and forth") did worse than the vague "wipe". The
+  sim has no dirt, so "clean" cannot be judged. A real scrub needs a fine-tune on
+  scrubbing demos or a scripted stroke once the sponge is on the blade. Report
+  `runs/propeller_report.md`, code `propeller_*.py`, mesh `assets/propeller/`; only
+  `log.json` and three videos are committed (chunks stay on gavin-linux).
+
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 
 *Intent:* prove the haptic signal on the arm before building the leader loop
@@ -693,9 +720,9 @@ file instead.
 - Pinocchio is installed in both venvs. On a new machine: `uv sync --extra test
   --extra arm-dynamics`.
 
-**Resume Dream-1 here (2026-10-23):** B3a (propeller scrubbing in sim) is running
-as a Codex job on gavin-linux (`~/dreamtrial/viscous_sim`, log `propeller_codex.log`,
-report `runs/propeller_report.md`). After it: B3b, the BlueROV2 scene (see B3).
+**Resume Dream-1 here (2026-10-23):** B3a (propeller scrubbing in sim) is done:
+zero-shot Dream-1 carries the sponge to the propeller but never scrubs. Next is B3b,
+the BlueROV2 scene (see B3); its three open questions are for Gavin first.
 
 **Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
 Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial"

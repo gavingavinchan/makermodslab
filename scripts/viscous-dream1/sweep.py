@@ -89,6 +89,7 @@ class Ledger:
 
 
 def config_name(c):
+    if c.get('rig') == 'yam': return 'YAM'
     parts = []
     for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', c.get('wrist_r', 'normal')), ('rows', 'r24'), ('region', 'table')]:
         if c.get(key, DEFAULT[key]) != DEFAULT[key]:
@@ -116,9 +117,13 @@ def ensure_tip():
 
 
 def initialize(task, c, seed):
-    env = SweepEnv(task, c)
+    if task == 'propeller' and c.get('rig') == 'yam':
+        from propeller_scene import yam_env
+        env = yam_env()
+    else:
+        env = SweepEnv(task, c)
     jitter = np.random.default_rng(seed).uniform(-.02, .02, 2)
-    env.data.joint(task + '_free').qpos[:2] += jitter
+    env.data.joint(('sponge' if task == 'propeller' else task) + '_free').qpos[:2] += jitter
     mujoco.mj_forward(env.model, env.data)
     windows = {k: deque(maxlen=y.FRAMES) for k in y.VIDEO_ROLES}
     steps = 0
@@ -132,6 +137,7 @@ def initialize(task, c, seed):
 
 def policy(c, env):
     result = y.vision_config(y.BETA_MODEL)
+    if c.get('rig') == 'yam': return result
     result.pop('robot')
     result['ik']['arm'] = str(HERE / ('viscous_arm_fingertip.json' if c['tcp'] == 'fingertip' else 'viscous_arm.json'))
     if c['region'] == 'table':
@@ -145,7 +151,7 @@ def base_object(env, task, side):
         pos = np.array([-.305, .24, .772])
         rot = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1.]])
     else:
-        base = env.data.body(side + '_base_link'); pos = base.xpos; rot = base.xmat.reshape(3, 3)
+        base = env.data.body(side + ('_base_link' if hasattr(env, 'qadr') else '_base')); pos = base.xpos; rot = base.xmat.reshape(3, 3)
     return rot.T @ (env.data.body(task).xpos - pos)
 
 
@@ -203,27 +209,44 @@ def input_sheet(windows, path):
     canvas.save(path, quality=95)
 
 
-def episode(task, c, index, live, ledger, dry_root=None):
+def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=None, stub=False, first_episode_index=0):
     name = config_name(c)
-    out = (dry_root or ROOT) / name / task / f'ep_{index:02d}'
+    directory = (dry_root or ROOT) / name / task
+    if variant: directory = directory / variant
+    out = directory / f'ep_{index:02d}'
+    instruction = prompt or PROMPTS.get(task, 'clean the propeller with the sponge')
+    call_cap = 30 if task == 'propeller' else CAPS[task]
+    propeller = task == 'propeller'
+    obj = 'sponge' if propeller else task
     out.mkdir(parents=True, exist_ok=True)
     log_path = out / 'log.json'
     prior = json.loads(log_path.read_text()) if log_path.exists() else None
     if prior and prior.get('finished') and (out / 'run.mp4').exists():
         return prior
-    seed = 20261020 + (10000 if task == 'box' else 0) + index
-    episode_id = f'{name}/{task}/ep_{index:02d}'
+    seed = (20261023 if propeller else 20261020 + (10000 if task == 'box' else 0)) + index
+    episode_id = f'{name}/{task}/' + (f'{variant}/' if variant else '') + f'ep_{index:02d}'
     env, windows, steps, images, jitter = initialize(task, c, seed)
     new_mode = env.parked or env.copy_right or env.fixed_right
-    if index == 0 and new_mode:
+    if (index == 0 and new_mode) or (propeller and index == first_episode_index):
         input_sheet(windows, out / 'contact_sheet.jpg')
-    rec = y.Recorder(env); rec.grab(env, images['top'])
-    start_z = float(env.data.body(task).xpos[2])
+    if propeller:
+        from propeller_scene import Measurements, ViewsRecorder
+        observer = Measurements(env)
+        rec = ViewsRecorder(env)
+    else:
+        rec = y.Recorder(env)
+    rec.grab(env, images['top'])
+    start_z = float(env.data.body(obj).xpos[2])
     metrics = dict(seed=seed, jitter_xy_m=jitter.tolist(), task=task, configuration=c, config_name=name,
                    episode=index, calls_used=0, success=False, first_success_call=None, confirmed_success_call=None,
                    closest_requested_hand_to_object_m={s: None for s in env.sides}, object_to_target_min_m=1.,
                    grasped=False, max_lift_m=0., finger_table_contact_rows=0, executed_rows=0,
-                   calls=[], finished=False, start_object_xyz=env.data.body(task).xpos.tolist())
+                   calls=[], finished=False, start_object_xyz=env.data.body(obj).xpos.tolist())
+    if propeller:
+        metrics.update(prompt=instruction, prompt_id=variant, rig=c.get('rig','viscous'),
+                       tool_propeller_contact_rows=0, gripper_propeller_contact_rows=0,
+                       scrub_reversals=0, path_in_contact_m=0., path_within_1cm_m=0., row_measurements=[],
+                       closest_requested_hand_to_sponge_m={s:None for s in env.sides})
     metrics['policy'] = policy(c, env)
     metrics['calls_used'] = ledger.episode_calls(episode_id) if live else 0
     atomic(log_path, metrics)
@@ -248,31 +271,46 @@ def episode(task, c, index, live, ledger, dry_root=None):
         for i, (l, r) in enumerate(zip(left, right)):
             requested = {s: np.array(chunk['per_key'][f'action.{s}_eef_xyz'][i]) for s in env.sides}
             # Compare requested positions to the object's position before this row, as in earlier reports.
-            distances = {s: float(np.linalg.norm(requested[s] - base_object(env, task, s))) for s in env.sides}
-            env.step(l, r)
-            _, distance, z, contact = measure_row(env, task, requested)
-            for s, value in distances.items():
-                old = metrics['closest_requested_hand_to_object_m'][s]
-                metrics['closest_requested_hand_to_object_m'][s] = value if old is None else min(old, value)
-            metrics['object_to_target_min_m'] = min(metrics['object_to_target_min_m'], distance)
-            metrics['max_lift_m'] = max(metrics['max_lift_m'], z - start_z)
-            metrics['grasped'] |= z - start_z > .03
-            metrics['finger_table_contact_rows'] += int(contact)
-            metrics['executed_rows'] += 1
+            if propeller:
+                requested_dist = observer.requested(requested)
+                env.step(l, r)
+                sample = observer.row(call, i, requested_dist)
+                metrics['row_measurements'].append(sample)
+                for side, d in requested_dist.items():
+                    for key, field in [('propeller_m','closest_requested_hand_to_object_m'),('sponge_m','closest_requested_hand_to_sponge_m')]:
+                        old = metrics[field][side]
+                        metrics[field][side] = d[key] if old is None else min(old,d[key])
+                metrics['grasped'] |= sample['tool_grasped']
+                metrics['max_lift_m'] = max(metrics['max_lift_m'],sample['sponge_lift_m'])
+                for field,source in [('tool_propeller_contact_rows','tool_propeller_contact'),('gripper_propeller_contact_rows','gripper_propeller_contact'),('scrub_reversals','scrub_reversals'),('path_in_contact_m','path_in_contact_m'),('path_within_1cm_m','path_within_1cm_m')]:
+                    metrics[field] += sample[source]
+                metrics['executed_rows'] += 1
+            else:
+                distances = {s: float(np.linalg.norm(requested[s] - base_object(env, task, s))) for s in env.sides}
+                env.step(l, r)
+                _, distance, z, contact = measure_row(env, task, requested)
+                for s, value in distances.items():
+                    old = metrics['closest_requested_hand_to_object_m'][s]
+                    metrics['closest_requested_hand_to_object_m'][s] = value if old is None else min(old, value)
+                metrics['object_to_target_min_m'] = min(metrics['object_to_target_min_m'], distance)
+                metrics['max_lift_m'] = max(metrics['max_lift_m'], z - start_z)
+                metrics['grasped'] |= z - start_z > .03
+                metrics['finger_table_contact_rows'] += int(contact)
+                metrics['executed_rows'] += 1
             commanded = {'q_l_chunk': l, 'q_r_chunk': r}
             if steps % y.FRAME_EVERY_STEPS == 0:
                 images = y.capture(env, windows)
                 if client:
-                    y.feed(y.CustomGripFeed(client), env, windows, PROMPTS[task], y.BETA_MODEL, steps)
+                    y.feed(client if c.get('rig') == 'yam' else y.CustomGripFeed(client), env, windows, instruction, y.BETA_MODEL, steps)
                 rec.grab(env, images['top'])
             steps += 1
-        rest = success(env, task)
+        rest = False if propeller else success(env, task)
         consecutive = consecutive + 1 if rest else 0
         if rest and metrics['first_success_call'] is None: metrics['first_success_call'] = call
         if consecutive >= 2:
             metrics['success'] = True; metrics['confirmed_success_call'] = call
         metrics['calls'].append(dict(call=call, rows=rows, resting_at_target=rest,
-                                     object_xyz=env.data.body(task).xpos.tolist(), notices=chunk['notices']))
+                                     object_xyz=env.data.body(obj).xpos.tolist(), notices=chunk['notices']))
         rec.milestones.append(len(rec.frames) - 1)
         metrics['calls_used'] = ledger.episode_calls(episode_id) if live else 0
         if env.parked:
@@ -282,6 +320,18 @@ def episode(task, c, index, live, ledger, dry_root=None):
 
     try:
         for chunk in saved: execute(chunk)
+        if propeller and (stub or not live):
+            # Execute full-length local hold replies through the same durable chunk/measurement path.
+            for call in range(len(saved)+1,call_cap+1):
+                state=env.state()
+                per_key={f'action.{side}_eef_xyz':np.repeat(base_object(env,'propeller',side)[None],c['rows'],axis=0).tolist() for side in env.sides}
+                chunk=dict(call=call,executed_rows=c['rows'],per_key=per_key,notices=['local stub; no inference'],execution={side:np.repeat(state[side][None],c['rows'],axis=0).tolist() for side in env.sides})
+                with chunks_path.open('a') as f:
+                    f.write(json.dumps(chunk)+'\n');f.flush();os.fsync(f.fileno())
+                execute(chunk)
+            metrics.update(finished=True,dry_run=True,termination='stub_fixed_30_calls',stub_calls=call_cap)
+            atomic(log_path,metrics)
+            return metrics
         if not live:
             if new_mode:
                 # Full maximum-length episode, holding the working arm's initial pose.
@@ -305,9 +355,9 @@ def episode(task, c, index, live, ledger, dry_root=None):
         ik = client._policy._ik
         trace = IKTrace(ik, task)
         # Sim time, not network latency, drives motion. Match the existing client path.
-        y.feed(y.CustomGripFeed(client), env, windows, PROMPTS[task], y.BETA_MODEL, steps, every=0)
-        while not metrics['success'] and ledger.episode_calls(episode_id) < CAPS[task]:
-            request = ledger.reserve(episode_id, CAPS[task])
+        y.feed(client if c.get('rig') == 'yam' else y.CustomGripFeed(client), env, windows, instruction, y.BETA_MODEL, steps, every=0)
+        while not metrics['success'] and ledger.episode_calls(episode_id) < call_cap:
+            request = ledger.reserve(episode_id, call_cap)
             try:
                 reply = client.get_action(commanded=commanded)
             except dream.DreamServerError as error:
@@ -325,7 +375,7 @@ def episode(task, c, index, live, ledger, dry_root=None):
             with chunks_path.open('a') as f:
                 f.write(json.dumps(chunk) + '\n'); f.flush(); os.fsync(f.fileno())
             execute(chunk)
-            print(f"{episode_id}: call {request['call']}/{CAPS[task]}, success={metrics['success']}, lift={metrics['max_lift_m']:.3f}, budget={ledger.read()['budget_used']}/{ledger.cap}", flush=True)
+            print(f"{episode_id}: call {request['call']}/{call_cap}, success={metrics['success']}, lift={metrics['max_lift_m']:.3f}, budget={ledger.read()['budget_used']}/{ledger.cap}", flush=True)
         metrics['calls_used'] = ledger.episode_calls(episode_id)
         metrics['finished'] = True
         metrics['termination'] = 'success_two_calls' if metrics['success'] else 'episode_cap'
@@ -337,7 +387,7 @@ def episode(task, c, index, live, ledger, dry_root=None):
         if rec.frames:
             import imageio.v2 as imageio
             imageio.mimsave(out / 'run.mp4', rec.frames, fps=5)
-            if index == 0 and not new_mode: sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
+            if index == 0 and not (new_mode or propeller): sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
         env.close(); rec.renderer.close()
 
 
@@ -431,8 +481,9 @@ def stages(live, ledger):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
-    p.add_argument('--task', choices=['apple', 'box', 'both'], default='both')
+    p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller'], default='both')
     p.add_argument('--episodes', type=int, default=6)
+    p.add_argument('--prompt-id', choices=['P1','P2','P3','P4'], default='P1', help='Propeller prompt')
     p.add_argument('--live', action='store_true')
     p.add_argument('--stages', action='store_true')
     p.add_argument('--check', action='store_true')
@@ -446,6 +497,13 @@ def main():
             from sweep_check import check
             check()
         elif args.stages: stages(args.live, ledger)
+        elif args.task == 'propeller':
+            from propeller_sweep import PROMPTS, authorize
+            if args.live: ledger = authorize()
+            for index in range(args.episodes):
+                episode('propeller', parse_config(args.config), index, args.live, ledger,
+                        dry_root=None if args.live else ROOT/'dry',
+                        prompt=PROMPTS[args.prompt_id], variant=args.prompt_id)
         else:
             assert args.episodes > 0
             run_config(parse_config(args.config), CAPS if args.task == 'both' else [args.task], args.episodes, args.live, ledger)

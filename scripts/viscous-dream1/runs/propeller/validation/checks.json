@@ -1,0 +1,16 @@
+{
+ "inference_calls": 0,
+ "protected_sha256": {
+  "viscous_arm.json": "cbbd055358a98b8ef39eecde33df87db265ed2ebd7b06f8fd46f32674fe0d2b0",
+  "viscous_arm_fingertip.json": "b29d3461b256d10a36a43a6ac31a8acba5a9750c4384c9d8fec1b7103dab572a"
+ },
+ "reversal_hysteresis_passed": true,
+ "normal_motion_excluded": true,
+ "grasp_between_fingers_passed": true,
+ "contact_once_per_row_passed": true,
+ "fixed_propeller_passed": true,
+ "locked_idempotent_cap_migration_passed": true,
+ "full_stub_prompts": 4,
+ "rows_per_prompt": 1440,
+ "replay_passed": true
+}
