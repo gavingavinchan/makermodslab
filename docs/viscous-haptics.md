@@ -105,6 +105,25 @@ restore paths in the DAgger runner.
   Viscous (it does on YAM). The Viscous IK and frames are fine. The task (2 cm white
   cube) also fails even on YAM. Next: a Maker-tuned checkpoint or a Viscous fine-tune,
   after Gavin sets the tool point with `dreamcli tcp`. Details under "Findings".
+- *Status (2026-10-21):* resolved in sim. With a Maker-style wrist camera the
+  Viscous puts the apple in the bowl 6/6, and one arm plus a parked second arm
+  also 6/6. Details under "Findings".
+- *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
+  propeller and ask it to clean it. Let's see whether it knows how to do that, or
+  at least ... do scrubbing motion on it. Let's see what happens." This is the
+  Viscous arm's showcase job (the ROV propeller-cleaning film in
+  viscous-arm-simulation `cinematic/`), here on the sim table: a small bronze
+  propeller fixed on a stand, a sponge beside it, four prompts, YAM as a control.
+  Brief `scripts/viscous-dream1/BRIEF_PROPELLER.md`. Exploratory: Gavin wants to see
+  what it does, not a precise success rate.
+- *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
+  the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
+  on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
+  `model/viscous_rov.urdf`, two arms, eight thrusters), and make it "look like it's a
+  real" ROV, i.e. the real vehicle's look rather than a bare table rig. Questions to
+  settle with Gavin before building: what the arms work on (the propeller from B3a?),
+  underwater look or dry, and where the "top" camera goes, since Dream-1 expects a
+  station-like overhead view and an ROV has a forward camera.
 
 ### P. How the work is done (process intent)
 
@@ -673,6 +692,10 @@ file instead.
   collection planner refuses to start from the tipped pose.
 - Pinocchio is installed in both venvs. On a new machine: `uv sync --extra test
   --extra arm-dynamics`.
+
+**Resume Dream-1 here (2026-10-23):** B3a (propeller scrubbing in sim) is running
+as a Codex job on gavin-linux (`~/dreamtrial/viscous_sim`, log `propeller_codex.log`,
+report `runs/propeller_report.md`). After it: B3b, the BlueROV2 scene (see B3).
 
 **Resume here (2026-10-21):** Gavin's first item is goal B3, finding why
 Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial"
