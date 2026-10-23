@@ -1,0 +1,49 @@
+{
+  "overviews": [
+    "overview_front.png",
+    "overview_top.png",
+    "overview_closeup.png"
+  ],
+  "policy_frame_size": [
+    320,
+    176
+  ],
+  "videos": {
+    "scripted_demo.mp4": {
+      "codec": "h264",
+      "pix_fmt": "yuv420p(progressive)",
+      "fps": 10.0,
+      "size": [
+        1280,
+        400
+      ],
+      "duration": 27.8
+    },
+    "dry/B0/flange/ep_00/run.mp4": {
+      "codec": "h264",
+      "pix_fmt": "yuv420p(progressive)",
+      "fps": 5.0,
+      "size": [
+        1280,
+        368
+      ],
+      "duration": 9.8
+    }
+  },
+  "ledger_and_arm_json_hashes_unchanged": true,
+  "physics_checks": true,
+  "ik_reach": true,
+  "runner_checks": true,
+  "demo_replay": true,
+  "legacy_suites_passed": 7,
+  "demo": {
+    "inference_calls": 0,
+    "rows": 555,
+    "bolt_grasped": false,
+    "nut_grasped": true,
+    "max_bolt_inserted_depth_m": 0.0,
+    "max_nut_turns": 0.0,
+    "nut_ever_engaged": false
+  },
+  "inference_calls": 0
+}

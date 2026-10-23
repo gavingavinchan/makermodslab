@@ -109,6 +109,10 @@ class SweepEnv(ViscousAppleEnv):
                 self.model.site(side + '_tcp').pos[:] = tool.xmat.reshape(3, 3).T @ (point - tool.xpos)
                 self.model.site_sameframe[self.model.site(side + '_tcp').id] = 0
         self.reset()
+        if task == 'flange':
+            from flange_scene import ThreadModel
+            self.thread = ThreadModel(self)
+            self.row_observer = self.thread.step
 
     def reset(self):
         mujoco.mj_resetData(self.model, self.data)

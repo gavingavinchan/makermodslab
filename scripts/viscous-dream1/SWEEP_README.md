@@ -118,3 +118,26 @@ No-call checks: `propeller_ik_check.py` (native client IK, three points over a 3
 surface pass; multistart seed), `propeller_check.py` (measurements, locked cap
 migration fixture, four full stub episodes and deterministic replay), and all
 previous checks. Results live in runs/propeller/validation.
+
+Flange scene preview (2026-10-23, **local only**):
+`sweep.py --task flange --config B0 --episodes 1` executes four 48-row hold-stub
+chunks through the existing runner, including fsync, row logs, replay, policy
+sheet and video. Outputs go to `runs/flange/dry/`; the ledger is never accessed.
+The flange task rejects live execution before constructing a scene/client.
+Legacy task caps, stage selection, modes, station cameras/lights and arm JSONs
+are unchanged. `flange_render.py` makes the three 1280×720 inspection renders;
+`flange_demo.py` records a contact-only IK attempt (no object setters or grasp
+welds), with top + inspection view. The current attempt lifts the nut but fails
+to lift the bolt; it does not prove full assembly feasibility.
+
+`flange_scene.py` adds fixed steel pipes/blue four-hole enlarged DN50 PN16-style
+flanges, real convex-decomposed clearance holes, and free M30-size fasteners.
+Its 1 ms ideal thread projection engages only near the tip, within 3 mm radial
+and 10 degrees axial error; rotation advances the nut 3.5 mm/revolution. Reverse
+rotation or sufficient attempted withdrawal releases it. The bolt is never
+snapped or constrained to the holes. This is an ideal thread surrogate, not a
+thread torque or cross-threading simulation. See `runs/flange/flange_scene_report.md`.
+`flange_check.py`, `flange_ik_check.py`, and `flange_runner_check.py` are zero-call
+physics, native IK and exact local-stub replay checks. Per-row logs include
+insertion depth, nut engagement/turns/advance, lift/between-finger/contact grasp,
+object/fixture/gripper/table contacts, and requested-hand distances.

@@ -122,8 +122,8 @@ def initialize(task, c, seed):
         env = yam_env()
     else:
         env = SweepEnv(task, c)
-    jitter = np.random.default_rng(seed).uniform(-.02, .02, 2)
-    env.data.joint(('sponge' if task == 'propeller' else task) + '_free').qpos[:2] += jitter
+    jitter = np.zeros(2) if task == 'flange' else np.random.default_rng(seed).uniform(-.02, .02, 2)
+    env.data.joint(('bolt' if task == 'flange' else 'sponge' if task == 'propeller' else task) + '_free').qpos[:2] += jitter
     mujoco.mj_forward(env.model, env.data)
     windows = {k: deque(maxlen=y.FRAMES) for k in y.VIDEO_ROLES}
     steps = 0
@@ -210,14 +210,17 @@ def input_sheet(windows, path):
 
 
 def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=None, stub=False, first_episode_index=0):
+    if task == 'flange' and live:
+        raise ValueError('Flange scene is local-only; live inference is not authorized.')
     name = config_name(c)
     directory = (dry_root or ROOT) / name / task
     if variant: directory = directory / variant
     out = directory / f'ep_{index:02d}'
-    instruction = prompt or PROMPTS.get(task, 'clean the propeller with the sponge')
-    call_cap = 30 if task == 'propeller' else CAPS[task]
+    instruction = prompt or PROMPTS.get(task, 'insert the bolt through the flange holes and screw the nut onto the other end' if task == 'flange' else 'clean the propeller with the sponge')
+    flange = task == 'flange'
+    call_cap = 4 if flange else 30 if task == 'propeller' else CAPS[task]
     propeller = task == 'propeller'
-    obj = 'sponge' if propeller else task
+    obj = 'bolt' if flange else 'sponge' if propeller else task
     out.mkdir(parents=True, exist_ok=True)
     log_path = out / 'log.json'
     prior = json.loads(log_path.read_text()) if log_path.exists() else None
@@ -227,9 +230,14 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
     episode_id = f'{name}/{task}/' + (f'{variant}/' if variant else '') + f'ep_{index:02d}'
     env, windows, steps, images, jitter = initialize(task, c, seed)
     new_mode = env.parked or env.copy_right or env.fixed_right
-    if (index == 0 and new_mode) or (propeller and index == first_episode_index):
+    if (index == 0 and new_mode) or ((propeller or flange) and index == first_episode_index):
         input_sheet(windows, out / 'contact_sheet.jpg')
-    if propeller:
+    if flange:
+        from flange_scene import Measurements
+        from propeller_scene import ViewsRecorder
+        observer = Measurements(env)
+        rec = ViewsRecorder(env)
+    elif propeller:
         from propeller_scene import Measurements, ViewsRecorder
         observer = Measurements(env)
         rec = ViewsRecorder(env)
@@ -247,6 +255,8 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
                        tool_propeller_contact_rows=0, gripper_propeller_contact_rows=0,
                        scrub_reversals=0, path_in_contact_m=0., path_within_1cm_m=0., row_measurements=[],
                        closest_requested_hand_to_sponge_m={s:None for s in env.sides})
+    if flange:
+        metrics.update(prompt=instruction, closest_requested_hand_to_nut_m={s:None for s in env.sides}, closest_requested_hand_to_hole_m={s:None for s in env.sides}, row_measurements=[], nut_engaged=False, max_bolt_inserted_depth_m=0., max_nut_turns=0., tool_fixture_contact_rows=0, gripper_fixture_contact_rows=0)
     metrics['policy'] = policy(c, env)
     metrics['calls_used'] = ledger.episode_calls(episode_id) if live else 0
     atomic(log_path, metrics)
@@ -271,7 +281,24 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
         for i, (l, r) in enumerate(zip(left, right)):
             requested = {s: np.array(chunk['per_key'][f'action.{s}_eef_xyz'][i]) for s in env.sides}
             # Compare requested positions to the object's position before this row, as in earlier reports.
-            if propeller:
+            if flange:
+                requested_dist = observer.requested(requested)
+                env.step(l, r)
+                sample = observer.row(call, i, requested_dist)
+                metrics['row_measurements'].append(sample)
+                metrics['grasped'] |= sample['tool_grasped']
+                metrics['max_lift_m'] = max(metrics['max_lift_m'], sample['grasp']['bolt']['lift_m'], sample['grasp']['nut']['lift_m'])
+                for side, distances in requested_dist.items():
+                    for key, field in [('bolt_m','closest_requested_hand_to_object_m'),('nut_m','closest_requested_hand_to_nut_m'),('hole_m','closest_requested_hand_to_hole_m')]:
+                        old=metrics[field][side]
+                        metrics[field][side]=distances[key] if old is None else min(old,distances[key])
+                metrics['max_bolt_inserted_depth_m'] = max(metrics['max_bolt_inserted_depth_m'],sample['bolt_inserted_depth_m'])
+                metrics['max_nut_turns'] = max(metrics['max_nut_turns'],sample['nut_turns'])
+                metrics['nut_engaged'] |= sample['nut_engaged']
+                for field, source in [('tool_fixture_contact_rows','tool_fixture_contact'),('gripper_fixture_contact_rows','gripper_fixture_contact'),('finger_table_contact_rows','finger_table_contact')]:
+                    metrics[field] += sample[source]
+                metrics['executed_rows'] += 1
+            elif propeller:
                 requested_dist = observer.requested(requested)
                 env.step(l, r)
                 sample = observer.row(call, i, requested_dist)
@@ -304,7 +331,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
                     y.feed(client if c.get('rig') == 'yam' else y.CustomGripFeed(client), env, windows, instruction, y.BETA_MODEL, steps)
                 rec.grab(env, images['top'])
             steps += 1
-        rest = False if propeller else success(env, task)
+        rest = False if (propeller or flange) else success(env, task)
         consecutive = consecutive + 1 if rest else 0
         if rest and metrics['first_success_call'] is None: metrics['first_success_call'] = call
         if consecutive >= 2:
@@ -320,16 +347,16 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
 
     try:
         for chunk in saved: execute(chunk)
-        if propeller and (stub or not live):
+        if (propeller or flange) and (stub or not live):
             # Execute full-length local hold replies through the same durable chunk/measurement path.
             for call in range(len(saved)+1,call_cap+1):
                 state=env.state()
-                per_key={f'action.{side}_eef_xyz':np.repeat(base_object(env,'propeller',side)[None],c['rows'],axis=0).tolist() for side in env.sides}
+                per_key={f'action.{side}_eef_xyz':np.repeat(base_object(env,'bolt' if flange else 'propeller',side)[None],c['rows'],axis=0).tolist() for side in env.sides}
                 chunk=dict(call=call,executed_rows=c['rows'],per_key=per_key,notices=['local stub; no inference'],execution={side:np.repeat(state[side][None],c['rows'],axis=0).tolist() for side in env.sides})
                 with chunks_path.open('a') as f:
                     f.write(json.dumps(chunk)+'\n');f.flush();os.fsync(f.fileno())
                 execute(chunk)
-            metrics.update(finished=True,dry_run=True,termination='stub_fixed_30_calls',stub_calls=call_cap)
+            metrics.update(finished=True,dry_run=True,termination=f'stub_fixed_{call_cap}_calls',stub_calls=call_cap)
             atomic(log_path,metrics)
             return metrics
         if not live:
@@ -387,7 +414,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
         if rec.frames:
             import imageio.v2 as imageio
             imageio.mimsave(out / 'run.mp4', rec.frames, fps=5)
-            if index == 0 and not (new_mode or propeller): sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
+            if index == 0 and not (new_mode or propeller or flange): sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
         env.close(); rec.renderer.close()
 
 
@@ -481,7 +508,7 @@ def stages(live, ledger):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
-    p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller'], default='both')
+    p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller', 'flange'], default='both')
     p.add_argument('--episodes', type=int, default=6)
     p.add_argument('--prompt-id', choices=['P1','P2','P3','P4'], default='P1', help='Propeller prompt')
     p.add_argument('--live', action='store_true')
@@ -497,6 +524,11 @@ def main():
             from sweep_check import check
             check()
         elif args.stages: stages(args.live, ledger)
+        elif args.task == 'flange':
+            from flange_scene import PROMPT
+            for index in range(args.episodes):
+                episode('flange', parse_config(args.config), index, args.live, ledger,
+                        dry_root=HERE/'runs/flange/dry', prompt=PROMPT, stub=True)
         elif args.task == 'propeller':
             from propeller_sweep import PROMPTS, authorize
             if args.live: ledger = authorize()
