@@ -3,7 +3,7 @@
 """Encode, fully decode and inventory final media; frames stay outside the repo."""
 from pathlib import Path
 import argparse, hashlib, json, subprocess, shutil
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageStat
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / 'results'
@@ -18,13 +18,22 @@ validation = json.loads((OUT / 'report.json').read_text())
 assert audit['passed'] and audit['samples'] == 1343 and audit['scene_sha256'] == scene_sha
 assert validation['core_checks_passed'] and validation['final_scene_sha256'] == scene_sha
 assert validation['mask_outside_exported_nominal_union_pixels'] == 0
+render_inputs=json.loads((a.scratch/'render_inputs.json').read_text())
+assert render_inputs['scene_sha256']==scene_sha
+assert render_inputs['motion_sha256']==hashlib.sha256((OUT/'motion.json').read_bytes()).hexdigest()
+assert render_inputs['frames']==expected and render_inputs['fps']==motion['fps']
 
 frames = [a.scratch / f'frame_{f:04d}.png' for f in range(1, expected + 1)]
 assert all(f.is_file() for f in frames), 'Incomplete rendered sequence'
+visual_stats=[]
 for f in frames:
     with Image.open(f) as im:
         assert im.size == (1280, 720), (f, im.size)
         im.verify()
+    with Image.open(f) as im:
+        stat=ImageStat.Stat(im.convert('L').resize((64,36)))
+        assert stat.mean[0]>2 and stat.stddev[0]>8,('Black or nearly uniform frame',f)
+        visual_stats.append((stat.mean[0],stat.stddev[0]))
 movie = OUT / 'cleaning_preview.mp4'
 subprocess.run(['ffmpeg', '-y', '-v', 'error', '-framerate', str(motion['fps']),
                 '-start_number', '1', '-i', str(a.scratch / 'frame_%04d.png'),
@@ -63,5 +72,6 @@ report = dict(passed=True, png_frames_verified=expected, full_decode_exit_code=d
               frame_selection=selected, render=dict(engine='Cycles', samples=32,
               denoising=True, device='NVIDIA RTX 5070 Ti OptiX', fps=24, duration_s=28),
               scope='Frame dimensions/PNG validity, complete H.264 decode, stream duration and count; visual QA remains separate')
+report.update(render_inputs=render_inputs,minimum_frame_luma_mean=min(x[0] for x in visual_stats),minimum_frame_luma_stddev=min(x[1] for x in visual_stats),black_or_uniform_frame_check_passed=True)
 (OUT / 'media_verification.json').write_text(json.dumps(report, indent=2) + '\n')
 print(json.dumps(report, indent=2))

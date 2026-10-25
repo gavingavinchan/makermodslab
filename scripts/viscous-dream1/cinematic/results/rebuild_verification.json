@@ -1,27 +1,29 @@
 {
   "passed": true,
-  "method": "Selective self-contained package copied into isolated Linux scratch with no sibling source checkout; native IK plan and no-render scene rebuilt",
+  "method": "Self-contained package copied to isolated Linux scratch with no sibling source checkout; native IK plan and no-render scene rebuilt",
   "checks": {
     "motion.json": {
       "identical": true,
-      "selected_sha256": "c6be8e5d8aa42b9c29eba45a0d503b7404a13cb8a85f0c1018c7cefa30f64638",
-      "rebuilt_sha256": "c6be8e5d8aa42b9c29eba45a0d503b7404a13cb8a85f0c1018c7cefa30f64638"
+      "selected_sha256": "6d255840c84a771de71e4bed3a895457f1070dd11ad03e9131a4c25b77ff01e3",
+      "rebuilt_sha256": "6d255840c84a771de71e4bed3a895457f1070dd11ad03e9131a4c25b77ff01e3"
     },
     "texture_mask_evidence.npz": {
       "identical": true,
-      "selected_sha256": "4f61ba8c58dc22b9af363b40ff60e4c91c9d6af74fd78465ee4e5b66121ef889",
-      "rebuilt_sha256": "4f61ba8c58dc22b9af363b40ff60e4c91c9d6af74fd78465ee4e5b66121ef889"
+      "selected_sha256": "1f6cd869fd4295b0859364c3af0311bd0c12cd0579d3844ec5d4e0f6b1006e88",
+      "rebuilt_sha256": "1f6cd869fd4295b0859364c3af0311bd0c12cd0579d3844ec5d4e0f6b1006e88"
     },
     "mask_report.json": {
       "identical": true,
-      "selected_sha256": "ccc19986289361ef947d9ca6203cb46beaf1868364764f39ad239ac565f6f1d9",
-      "rebuilt_sha256": "ccc19986289361ef947d9ca6203cb46beaf1868364764f39ad239ac565f6f1d9"
+      "selected_sha256": "6190639508973f2a831395e587593be5437f779bc890993a7cf0642a34bfacbf",
+      "rebuilt_sha256": "6190639508973f2a831395e587593be5437f779bc890993a7cf0642a34bfacbf"
     }
   },
   "scene_mesh_geometry_identical": true,
-  "scene_all_object_world_transform_max_error": 0.0,
+  "scene_object_names_identical": true,
+  "scene_all_object_world_transform_and_lens_max_error": 0.0,
   "frames_compared": [
     1,
+    25,
     48,
     49,
     120,
@@ -29,6 +31,9 @@
     350,
     600,
     601,
+    624,
+    625,
     672
-  ]
+  ],
+  "selected_scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c"
 }

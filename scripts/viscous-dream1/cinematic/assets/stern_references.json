@@ -1,0 +1,21 @@
+{
+  "model": "Original closed single-screw workboat stern, revised 2026-10-25",
+  "scope": "Photographic structural reference; no dimensional reconstruction or third-party ship CAD claim",
+  "reference_pages": [
+    "https://smh-marine.com/projects.html",
+    "https://www.palumbogroup.it/palumbo-shipyard-malta"
+  ],
+  "additional_photographs": [
+    "https://smh-marine.com/assets/projects/drydocking-stern-propeller-anonymized-01.webp",
+    "https://smh-marine.com/assets/projects/propulsion-stern-anonymized.webp"
+  ],
+  "observed_features": [
+    "Broad transom with full bilges, rather than an isolated rounded underside",
+    "Centreline hull run rising above the propeller aperture",
+    "Shaft boss emerging from the forward hull and a single coaxial shaft",
+    "Separate aft foil rudder and stock entering the overhead hull",
+    "Plating seams and sacrificial anodes on the rudder"
+  ],
+  "adaptation": "Illustrative hull stations proportioned around the unchanged 960 mm approved propeller; closed hull mesh, flat aft transom, restrained red-oxide coating, metallic rudder anodes",
+  "photographs_included_in_repository": false
+}

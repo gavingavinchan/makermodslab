@@ -293,6 +293,44 @@ restore paths in the DAgger runner.
   The isolated package rebuild reproduces motion/mask bytes and nine-keyframe
   scene geometry/transforms. Manifest, audits and all limitations are in
   `cinematic/README.md` and `cinematic/results/`; no Dream or hardware calls.
+  *Horizontal vehicle correction (2026-10-25, Gavin):* "have the bluerov be
+  horizontal"; the previous 62.4° presentation tilt is rejected. Keep native
+  mounts/CAD and solve whole-vehicle yaw/translation plus arm branches with
+  pitch and roll fixed at zero. Gavin also requests better ship references or
+  an adapted ship CAD model. Additional SMH Marine dry-dock stern photographs
+  now inform a closed, fuller transom/hull run, shaft boss, rudder and anodes;
+  this replaces the earlier crude illustrative loft. The level solution now
+  follows all 672 frames with original t/u and the full 143.10 mm radial span,
+  removing the earlier chord narrowing and inboard shift. The same outer-edge
+  point is held with a revised tangent-plane grip approach; allowing circular
+  pad-axis roll in IK avoids the earlier pitched-vehicle workaround. Both grips
+  check against the actual CAD. Minimum joint margin is now 0.02541 rad; peak
+  joint speed 0.4745 rad/s. The final saved scene passes all 1,343 film/half-frame
+  poses over 9,069 intersection pairs, with no unintended intersections. The
+  isolated rebuild reproduces motion/mask bytes and exact scene geometry,
+  transforms and camera lenses. Nominal reveal is 135.41 cm²; it
+  remains distinct from the bench's actual geometric contact area. The revised
+  first full render's image-variation check caught an obstructed ending: the
+  camera pullback crossed the vehicle and produced nearly uniform frames.
+  It is replaced by a cut at frame 625, after holding the clear contact shot.
+  Final review also caught the opening camera's equivalent +π/−π Euler keys
+  interpolating through a turn. Compatible Euler keys fix it, with aim/up
+  checks at every film frame and a stronger raster-variation gate. The final
+  28 s movie is complete: all 672 frames decode, no frame fails the image
+  variation check, and maximum camera aim/up errors are 0.0211°/0.0156°.
+  The final scene hash is
+  `0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c`;
+  the movie hash is
+  `072b41d2322ca0bdd7c905d978cf30c051923d3239c926130a80dea76c48a2d5`.
+  The new frame cache is bound to scene/motion hashes. Parent reviewed the
+  corrected opening, ending, full contact sheet and eye-level profile; all
+  72 manifest files match across machines. The final isolated rebuild matches
+  motion/mask bytes and exact geometry/transforms/lenses at twelve keyframes,
+  including the former opening-wrap frame and the final camera cut. Use
+  `cinematic/results/cleaning_preview.mp4`, `final_scene.blend` and
+  `horizontal_profile.png`; reproduction and source photographs are linked in
+  `cinematic/README.md`. This is still a kinematic presentation, not validated
+  wet dynamics. Keep the horizontal constraint in later refinements.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

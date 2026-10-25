@@ -1,39 +1,39 @@
 {
   "passed": true,
-  "max_native_fk_vs_blender_matrix_error": 3.661820561218221e-07,
-  "scene_sha256": "03ea122fcf1e2a91f31e78bf7142e4b5ee64f29bab1f6788def95ee52eff3a3e",
+  "max_native_fk_vs_blender_matrix_error": 3.4733236431438996e-07,
+  "scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c",
   "samples": 1343,
   "frame_step": 0.5,
   "film_frames": 672,
-  "collision_pair_count": 8399,
-  "elapsed_s": 437.64971242903266,
+  "collision_pair_count": 9069,
+  "elapsed_s": 556.2650935809943,
   "issues": [],
   "grip_checks": [
     {
       "side": "left",
       "jaw": "left",
-      "blade_surface_intersection_triangle_pairs": 150,
-      "nearest_vertex_blade_distance_m": 0.002147505059838295
+      "blade_surface_intersection_triangle_pairs": 37,
+      "nearest_vertex_blade_distance_m": 0.0007725146715529263
     },
     {
       "side": "left",
       "jaw": "right",
-      "blade_surface_intersection_triangle_pairs": 71,
-      "nearest_vertex_blade_distance_m": 0.0008748025866225362
+      "blade_surface_intersection_triangle_pairs": 97,
+      "nearest_vertex_blade_distance_m": 0.00021230867423582822
     },
     {
       "side": "right",
       "jaw": "left",
-      "cylinder_to_jaw_min_distance_m": 9.463422429689672e-06,
+      "cylinder_to_jaw_min_distance_m": 9.467049494560342e-06,
       "closest_sleeve_point_local_m": [
-        0.014110731892287731,
-        0.007542339153587818,
-        -0.005099998787045479
+        0.0141107477247715,
+        0.007542315870523453,
+        -0.005100006237626076
       ],
       "closest_jaw_point_in_tool_local_m": [
-        0.014110732823610306,
-        0.007533027790486813,
-        -0.005101695656776428
+        0.01411074586212635,
+        0.007533022668212652,
+        -0.0051016975194215775
       ],
       "tool_root_to_tcp_translation_m": [
         0,
@@ -49,16 +49,16 @@
     {
       "side": "right",
       "jaw": "right",
-      "cylinder_to_jaw_min_distance_m": 9.463422429689672e-06,
+      "cylinder_to_jaw_min_distance_m": 9.466639312449843e-06,
       "closest_sleeve_point_local_m": [
-        -0.01411074586212635,
-        0.0075423261150717735,
-        -0.005099993199110031
+        -0.014110734686255455,
+        0.00754231121391058,
+        -0.005100006237626076
       ],
       "closest_jaw_point_in_tool_local_m": [
-        -0.01411074586212635,
-        0.007533014751970768,
-        -0.00510169193148613
+        -0.014110727235674858,
+        0.007533018942922354,
+        -0.0051016975194215775
       ],
       "tool_root_to_tcp_translation_m": [
         0,

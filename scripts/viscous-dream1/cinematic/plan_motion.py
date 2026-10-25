@@ -13,6 +13,7 @@ from surface import surface,orientation,BENCH_CENTER
 HERE=Path(__file__).parent
 sys.path.insert(0,str(HERE/'vendor'))
 from bimanual_common import inverse,fk,NAMES,JD
+from scipy.optimize import least_squares
 p=argparse.ArgumentParser();p.add_argument('--draft',action='store_true');a=p.parse_args()
 pose=json.loads((HERE/'selected_pose.json').read_text());B=np.array(pose['B']);base=np.array(pose['base']);M=np.eye(4);M[:3,:3]=B;M[:3,3]=base
 if a.draft:
@@ -24,6 +25,16 @@ else:
 ts=np.array([x['time_s'] for x in source]);ts-=ts[0]
 FPS=24;END=672;start=3.;finish=25.
 seeds={k:np.array(v) for k,v in pose['seeds'].items()};records=[];errors=[]
+def axis_inverse(side,pos,axis,seed):
+    lo=np.array([float(JD[n].find('limit').get('lower'))+.015 for n in NAMES[side]])
+    hi=np.array([float(JD[n].find('limit').get('upper'))-.015 for n in NAMES[side]])
+    hi[1]=min(hi[1],pose.get('shoulder_lift_cap',hi[1]))
+    def residual(q):
+        T=fk(side,q)
+        return np.r_[10*(T[:3,3]-pos),2*(T[:3,2]-axis),.001*(q-seed)]
+    sol=least_squares(residual,np.clip(seed,lo+1e-8,hi-1e-8),bounds=(lo,hi),max_nfev=150,xtol=1e-11,ftol=1e-11,gtol=1e-11)
+    T=fk(side,sol.x)
+    return sol.x,float(np.linalg.norm(np.r_[5*(T[:3,3]-pos),T[:3,2]-axis]))
 for f in range(1,END+1):
     sec=(f-1)/FPS;u_time=np.clip((sec-start)/(finish-start),0,1)*ts[-1]
     t=float(np.interp(u_time,ts,[x['actual_t'] for x in source]));u=float(np.interp(u_time,ts,[x['actual_u'] for x in source]));i=min(len(source)-1,int(np.searchsorted(ts,u_time)))
@@ -31,11 +42,14 @@ for f in range(1,END+1):
     outer=np.clip((t-.80)/.10,0,1);late=np.clip((u-.18)/.04,0,1)
     t-=pose.get('late_outer_radial_trim_t',0)*(outer*outer*(3-2*outer))*(late*late*(3-2*late))
     t+=pose.get('radial_offset_t',0)
-    point,n=surface(t,u);rot=orientation(-n,pose.get('tool_x',[-1,0,0]));gap=.018*max(0,1-sec/start)**2
+    point,n=surface(t,u);rot=orientation(-n,pose.get('tool_x',[-1,0,0]));gap=pose.get('initial_gap_m',.018)*max(0,1-sec/start)**2
     pos=point+(.101+gap)*n
     joints={}
     for side,target,Rw in [('left',np.array(pose['leftp']),np.array(pose['leftR'])),('right',pos,rot)]:
-        q,e=inverse(side,B.T@(target-base),B.T@Rw,seeds[side]);seeds[side]=q
+        if side=='right' and pose.get('free_pad_roll'):
+            q,e=axis_inverse(side,B.T@(target-base),B.T@Rw[:,2],seeds[side])
+        else:q,e=inverse(side,B.T@(target-base),B.T@Rw,seeds[side])
+        seeds[side]=q
         if e>1e-5:raise RuntimeError((f,side,e,t,u))
         joints.update(zip(NAMES[side],q.tolist()));errors.append(e)
     # Opening is displacement per jaw from CAD closed. Tool sleeve radius=16 mm.
@@ -46,5 +60,8 @@ for f in range(1,END+1):
 report=dict(fps=FPS,end=END,frames=records,rov_transform=M.tolist(),max_ik_residual=max(errors),pad_radius_m=.026,pad_anchor_m=.101,tool_mount_offset_m=.020,contact_frames=[round(start*FPS)+1,round(finish*FPS)+1],draft=a.draft,source='draft geometric plan' if a.draft else 'assets/coverage_plan.json',retarget='Observed t/u projected to identical corrected surface; native IK and actual native-FK tool footprint; free pad-axis roll selected for native limits; physical pad tilt replaced by surface-normal alignment. Cinematic retiming to 22s.',physics_claim='Kinematic presentation only; no wet dynamics, thrust, torque, force, autonomy or abrasion simulation')
 report['source_contract_sha256']=hashlib.sha256((HERE/'assets/coverage_plan.json').read_bytes()).hexdigest() if not a.draft else None
 report['original_contract_sha256']=hashlib.sha256((HERE/'assets/coverage_plan.json').read_bytes()).hexdigest() if not a.draft else None
+report.update(free_pad_axis_roll=pose.get('free_pad_roll',False),initial_gap_m=pose.get('initial_gap_m',.018),require_horizontal=pose.get('require_horizontal',False))
+if pose.get('free_pad_roll'):
+    report['retarget']='Observed t/u projected to the identical corrected surface; native IK constrains contact position and pad axis while retaining continuous wrist roll. Original native mounts; strict level vehicle. Kinematic presentation only.'
 (HERE/'results/motion.json').write_text(json.dumps(report,separators=(',',':')))
 print('MOTION',len(records),'max residual',max(errors),'t',min(x['t'] for x in records),max(x['t'] for x in records),flush=True)

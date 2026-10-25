@@ -1,0 +1,20 @@
+{
+  "source_scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c",
+  "vehicle_up_axis": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "camera_position": [
+    3.0282795429229736,
+    -1.4795527458190918,
+    0.10000000149011612
+  ],
+  "camera_target": [
+    0.5699999928474426,
+    0.23999999463558197,
+    0.10000000149011612
+  ],
+  "orthographic_horizontal_span_m": 2.299999952316284,
+  "scope": "Eye-level still from the unchanged packed scene; native vehicle remains level. The source blend is never saved by this helper."
+}

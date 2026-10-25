@@ -6,9 +6,9 @@
   "mount_separation_m": 0.4930500090122223,
   "native_thruster_joints": 8,
   "max_joint_limit_excursion": 0,
-  "max_joint_speed_rad_s": 0.24845656463678978,
+  "max_joint_speed_rad_s": 0.4744922515773875,
   "max_actual_native_FK_pad_error_m": 0,
-  "max_Blender_to_native_FK_matrix_error": 2.011663734265051e-07,
+  "max_Blender_to_native_FK_matrix_error": 2.3717327436723057e-07,
   "sampled_frames": [
     1,
     73,
@@ -25,53 +25,53 @@
     {
       "side": "left",
       "jaw": "left",
-      "nearest_vertex_blade_distance_m": 0.0021475034300237894,
+      "nearest_vertex_blade_distance_m": 0.0007725137402303517,
       "tcp_local_bounds": [
         [
-          0.0005573309026658535,
-          -0.020596422255039215,
-          -0.06327017396688461
+          0.0005573263042606413,
+          -0.020596425980329514,
+          -0.06327011436223984
         ],
         [
-          0.028057338669896126,
-          0.020000003278255463,
-          0.034329891204833984
+          0.028057318180799484,
+          0.020000021904706955,
+          0.03432992845773697
         ]
       ]
     },
     {
       "side": "left",
       "jaw": "right",
-      "nearest_vertex_blade_distance_m": 0.0008748025866225362,
+      "nearest_vertex_blade_distance_m": 0.0002123096928698942,
       "tcp_local_bounds": [
         [
           -0.028057336807250977,
-          -0.020000001415610313,
-          -0.059770192950963974
+          -0.02000000700354576,
+          -0.059770118445158005
         ],
         [
-          -0.0005573220551013947,
-          0.020597342401742935,
-          0.03432987630367279
+          -0.0005573341622948647,
+          0.020597349852323532,
+          0.03432993218302727
         ]
       ]
     },
     {
       "side": "right",
       "jaw": "left",
-      "grip_band_min_radial_distance_m": 0.016457650645142485
+      "grip_band_min_radial_distance_m": 0.016457674501653766
     },
     {
       "side": "right",
       "jaw": "right",
-      "grip_band_min_radial_distance_m": 0.016457684208629572
+      "grip_band_min_radial_distance_m": 0.01645765204407709
     }
   ],
   "mask_outside_nominal_contact_footprint_pixels": 0,
-  "mask_max_radius_m": 0.025999982348280215,
+  "mask_max_radius_m": 0.02599997267585643,
   "mask_scope": "Nominal compliant 52 mm face footprint with \u00b13mm normal tolerance; cinematic visual approximation, not exact bench ellipsoid intersection or material abrasion physics",
   "source_rig_sha256": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
-  "final_blend_bytes": 98087207,
+  "final_blend_bytes": 98322028,
   "external_unpacked_images": [],
   "physics_scope": "Kinematic presentation only; no wet dynamics, thrust, torque, force, autonomy or abrasion simulation",
   "mask_outside_exported_nominal_union_pixels": 0,
@@ -79,22 +79,22 @@
   "tool_asset_sha256": "5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87",
   "static_vehicle_transform": [
     [
-      0.22625323614225504,
-      0.8693535761389586,
-      0.43935615710896875,
-      0.4653493507565255
+      -0.5731842946852116,
+      0.8194264850041257,
+      0.0,
+      0.7532829337990435
     ],
     [
-      -0.40430099094388483,
-      -0.32655002701838853,
-      0.8543452396871434,
-      0.479443228541473
+      -0.8194264850041257,
+      -0.5731842946852116,
+      0.0,
+      0.5473056631138484
     ],
     [
-      0.8861998543539429,
-      -0.3709305049583999,
-      0.2775975119383398,
-      -0.2941106004011021
+      0.0,
+      0.0,
+      1.0,
+      0.2870099939235261
     ],
     [
       0.0,
@@ -103,32 +103,32 @@
       1.0
     ]
   ],
-  "vehicle_forward_up_angle_deg": 62.399539348300785,
+  "vehicle_forward_up_angle_deg": 0.0,
   "minimum_joint_limit_margins_rad": {
-    "left_shoulder_pan": 2.044151962637224,
-    "left_shoulder_lift": 0.005000008133672185,
-    "left_elbow_flex": 1.7406944001382065,
-    "left_wrist_flex": 1.183581382351857,
-    "left_wrist_yaw": 0.6647349886996752,
-    "left_wrist_roll": 2.5949657172371183,
-    "right_shoulder_pan": 1.710774050831204,
-    "right_shoulder_lift": 0.30226431053691705,
-    "right_elbow_flex": 1.9130628537179608,
-    "right_wrist_flex": 1.2252906223782736,
-    "right_wrist_yaw": 0.9641736830544714,
-    "right_wrist_roll": 1.2485255263312456
+    "left_shoulder_pan": 2.188729821200603,
+    "left_shoulder_lift": 0.025411250073786196,
+    "left_elbow_flex": 2.057423378022276,
+    "left_wrist_flex": 1.4788707024300372,
+    "left_wrist_yaw": 0.5824062612229447,
+    "left_wrist_roll": 2.268186452217066,
+    "right_shoulder_pan": 1.6387743078584047,
+    "right_shoulder_lift": 0.3363815513264635,
+    "right_elbow_flex": 1.124076326745815,
+    "right_wrist_flex": 0.23597426548443412,
+    "right_wrist_yaw": 0.9199307632087016,
+    "right_wrist_roll": 1.4102453467904401
   },
-  "minimum_joint_limit_margin_rad": 0.005000008133672185,
-  "peak_joint_step_rad": 0.01035235685986624,
-  "peak_joint_speed_rad_s": 0.24845656463678978,
-  "max_pad_to_retargeted_surface_error_m": 3.015061387584018e-11,
-  "max_observed_to_native_surface_path_deviation_m": 0.010564501987097632,
-  "actual_native_radial_span_m": 0.14309976605119762,
+  "minimum_joint_limit_margin_rad": 0.025411250073786196,
+  "peak_joint_step_rad": 0.019770510482391146,
+  "peak_joint_speed_rad_s": 0.4744922515773875,
+  "max_pad_to_retargeted_surface_error_m": 3.940032360220435e-09,
+  "max_observed_to_native_surface_path_deviation_m": 3.940032360220435e-09,
+  "actual_native_radial_span_m": 0.14309976605311847,
   "actual_native_u_range": [
-    0.12973874029369248,
-    0.2111487982677357
+    0.1295645671561541,
+    0.2652479971128928
   ],
-  "rendered_unique_nominal_area_m2": 0.01175600774268394,
+  "rendered_unique_nominal_area_m2": 0.013540989908052156,
   "nominal_face_area_m2": 0.1250314676346217,
   "native_tool_mount_translation_m": [
     0,
@@ -142,16 +142,27 @@
   ],
   "right_jaw_displacement_m": 0.012,
   "left_jaw_displacement_m": 0.0008,
-  "retarget_adaptation": "u = .13 + .60*(observed_u-.13); observed radial t shifted inward by .003 (1.185mm), preserving full radial span; four distinct offset alternating passes; pad roll selected for native limits; normal aligned to same corrected analytic face; 25.5s source scrub retimed to22s",
+  "retarget_adaptation": {
+    "chord_scale": 1.0,
+    "chord_pivot": 0.13,
+    "radial_offset_t": 0.0,
+    "free_pad_axis_roll": true,
+    "left_approach_adjustment_rad": -0.5269065660947495,
+    "initial_gap_m": 0.0
+  },
+  "vehicle_roll_deg": 0.0,
+  "vehicle_up_axis_error": 0.0,
   "core_checks_passed": true,
   "saved_mask_image_max_time_error_frames": 3.0517578125e-05,
   "saved_shader_clock_max_error_frames": 0,
   "clean_mask_frame_range": [
     73.0,
-    601.0
+    592.0
   ],
   "packed_image_verified": true,
-  "final_scene_sha256": "03ea122fcf1e2a91f31e78bf7142e4b5ee64f29bab1f6788def95ee52eff3a3e",
+  "final_scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c",
+  "max_active_camera_aim_error_deg": 0.021066675538340705,
+  "max_active_camera_up_error_deg": 0.015540261311378891,
   "frozen_input_hashes": {
     "assets/coverage_plan.json": "b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db",
     "assets/native_rov.blend": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",

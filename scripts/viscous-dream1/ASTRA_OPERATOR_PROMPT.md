@@ -9,6 +9,11 @@ How to work:
   `./robot point` (depth at a pixel) and `./robot status`. Look before every decision and after every motion.
 - Go slowly. Small nudges and turns near the parts are better than big moves. There is no hurry: take as many
   commands as you need, within the limits the README states.
+- Suggested procedure: bring the gripped nut coaxial with the exposed bolt end and touching it, give it one short
+  `turn` with matching feed to start the thread, then let `./robot screw right <degrees>` do the long tightening
+  (it handles the release, wrist reset and regrasp cycles that turning by hand would need). Read its stop reason
+  and look: a `stall` after several turns usually means the nut is snug; `lost_grasp` or no progress means it did
+  not catch, so back off, realign and try again.
 - If something goes wrong (the nut slips, misses the thread, gets stuck), look, work out why, recover and try
   again. Do not give up early.
 - Stay inside this directory. Use only `./robot`, `README.md` and the files in `obs/`. Do not read or search any

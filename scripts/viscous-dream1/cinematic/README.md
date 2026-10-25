@@ -4,14 +4,19 @@ An editable 28-second, 1280×720, 24 fps Cycles presentation of the original
 BlueROV2 Heavy with its two natively mounted Viscous arms, working on the approved
 960 mm, four-blade helical propeller. The environment is a generic single-screw
 workboat stern with a shaft boss, hull aperture and aft rudder. There is no seabed.
-The stern was modeled for this illustration, with the [Palumbo Malta shipyard
-photograph](https://www.palumbogroup.it/palumbo-shipyard-malta) as a layout reference;
-it is not a reconstruction or dimensional survey of that ship.
+The stern was rebuilt from additional [SMH Marine dry-dock photographs](https://smh-marine.com/projects.html)
+and the [Palumbo Malta shipyard photographs](https://www.palumbogroup.it/palumbo-shipyard-malta).
+It now has a closed, fuller hull, broad transom, rising centreline run, shaft boss,
+separate rudder and sacrificial anodes. Source links and modeled structural
+features are in `assets/stern_references.json`. This is original illustrative
+geometry, not a dimensional reconstruction or an imported ship CAD model.
 
 Open `results/final_scene.blend` or play `results/cleaning_preview.mp4`.
 `results/contact_sheet.jpg` summarizes the film. The three `comparison_*.png`
 images use exactly the same camera to show dirty, partially cleaned and final
 surfaces. The film contains no engineering overlays. Reports are separate.
+`results/horizontal_profile.png` is an eye-level view of the same saved scene,
+so the vehicle's horizontal frame can also be judged without a tilted camera.
 
 ## What is verified
 
@@ -59,24 +64,30 @@ through all 25,500 scrub substeps. Its measured radial span was 143.10 mm, with
 bound. **Those bench margins are not native-vehicle clearance measurements.**
 
 The native vehicle uses new inverse-kinematic solutions, never copied bench joint
-angles. `selected_pose.json` fixes one whole-vehicle placement and one continuous
-elbow branch. To avoid chassis/hand intersections while retaining the full radial
-span, the presentation makes these explicit adaptations:
+angles. Gavin rejected the earlier pitched presentation and requires the BlueROV
+to be horizontal. `selected_pose.json` now fixes **zero vehicle pitch and roll**,
+with native mounts unchanged. The level solution uses these choices:
 
-- `u_native = 0.13 + 0.60 * (observed_u - 0.13)`; four distinct overlapping lanes
-  remain, with alternate outward/inward sweeps and shifts at every reversal.
-- `t_native = observed_t - 0.003`: 1.185 mm inboard, preserving the **143.10 mm
-  span**, rather than preserving the absolute endpoints. Maximum deviation from
-  the observed source surface path is **10.56 mm**.
-- The pad aligns with the same analytic face normal; pad-axis roll is chosen for
-  the native joint limits. The physical run's full pad tilt is not reproduced.
+- `t_native = observed_t`, `u_native = observed_u`: the full **143.10 mm radial
+  span** and four overlapping alternating lanes are retained without the earlier
+  chord narrowing or inboard shift. Contact anchors follow the analytic surface
+  projection of the observed t/u track; this does not reproduce the physics pad's
+  full 3D centre pose, tilt or forces.
+- The circular pad's axis follows the same analytic normal. Roll about that axis
+  is free in the IK solve, with continuity maintained from the previous joint
+  state; the cylindrical tool remains rigidly mounted in the native hand.
+- The left hand holds the same outer-edge surface location at `t=.97,u=0`.
+  Its approach turns by 30.19° within the tangent plane, with the closing axis
+  aligned to the blade normal. Both actual CAD jaws are checked against the blade.
 - Source scrub time 25.5 seconds is retimed to 22 seconds, film seconds 3–25.
-  The initial three seconds approach by 18 mm; the final three hold the endpoint.
-  The close shot spans seconds 5–25 continuously. No lane reset, time reversal,
+  The initial three seconds hold an initialized contact pose; the final three
+  hold the endpoint. No pickup or approach is demonstrated.
+  The close shot spans seconds 5–26 continuously, then cuts to the full vehicle.
+  No camera pullback travels through the ROV. No lane reset, time reversal,
   branch jump or hidden repositioning is used.
-- Vehicle forward-up angle is **62.40°**. The left shoulder has only **0.005 rad
-  (0.286°)** limit margin. Peak joint speed is **0.2485 rad/s**, peak frame step
-  **0.01035 rad**. Full transform and every joint margin are in `report.json`.
+- Vehicle pitch and roll are **0°**. Minimum joint-limit margin is **0.02541 rad
+  (1.456°)**. Peak joint speed is **0.4745 rad/s**, peak frame step **0.01977 rad**.
+  Full transform, surface residuals and every joint margin are in `report.json`.
 
 This is a **kinematic Blender presentation**. It does not validate wet dynamics,
 stationkeeping, thrust, forces, torque, joint backlash, autonomy or hardware
@@ -98,12 +109,12 @@ four-nearest surface samples; provenance and source mask hash alongside it).
 No mask sample lies outside the native pad footprint or the frozen source nominal
 union. Backfaces and the three other blades stay green.
 
-The final presentation reveals **117.56 cm²**, about **9.4% of the 1,250.31 cm²
+The level presentation reveals **135.41 cm²**, about **10.8% of the 1,250.31 cm²
 working face**. This is distinct from the source bench's actual geometric
 ellipsoid-touch union **57.40 cm²** (versus 24.22 cm² for the single-strip baseline,
 2.37×), and its broader nominal disk union **137.09 cm²** (versus 97.97 cm²,
-1.40×). It does not claim a whole blade was cleaned. The earlier 122.19 cm² draft
-was reduced by clipping to the exported nominal union.
+1.40×). It does not claim a whole blade was cleaned. This presentation footprint
+is clipped to the same frozen exported nominal union.
 
 ## Reproduce from a fresh repository clone
 
@@ -131,13 +142,21 @@ $PY validate_scene.py
 $PY audit_geometry.py
 $PY render.py --comparison --frames 1 350 672
 $PY render.py --frames 1 350 590 672
+$PY render_profile.py
 $PY render.py --scratch /tmp/viscous-cinematic-frames
 python3 package_media.py --scratch /tmp/viscous-cinematic-frames
 python3 manifest.py
 ```
 
+For the isolated rebuild comparison, run
+`$PY verify_rebuild.py --scratch /tmp/viscous-isolated-rebuild` with a new,
+nonexistent scratch path. This rebuild does not change the selected blend.
+
 `render.py` resumes existing frame files. Use an empty scratch directory when
-changing the scene. Full PNG frames remain in Linux scratch storage, outside the
+changing the scene; cached frames are bound to scene/motion hashes. Camera key
+angles use compatible Euler representations, and every film frame checks its
+camera aim and up direction. Packaging also rejects nearly uniform raster frames.
+Full PNG frames remain in Linux scratch storage, outside the
 repository. The final scene packs its image resources and uses relative paths.
 Do not re-save or modify the original source blend. Source CAD belongs to its
 owner; inclusion here does not invent or grant a new CAD license. Authored scene
@@ -149,7 +168,7 @@ package, including dependency hashes. `report.json`, `geometry_audit.json`,
 numerical evidence and exact artifact identities.
 
 The isolated-package rebuild reproduced motion and mask bytes exactly, and all
-scene mesh coordinates and object/camera transforms matched at nine keyframes
+scene mesh coordinates and object/camera transforms matched at twelve keyframes
 (`results/rebuild_verification.json`). Extremal motion screenshots are selected
 in `results/evidence_selection.json`; no collision worst frame exists because
 the dense audit reported zero unintended intersections.

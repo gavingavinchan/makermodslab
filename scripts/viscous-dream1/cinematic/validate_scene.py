@@ -90,17 +90,29 @@ report=dict(original_mesh_instances=len(original),mesh_parent_local_transform_di
 allowed=np.load(HERE/'assets/allowed_nominal_mask.npz')['allowed'].ravel()
 report['mask_outside_exported_nominal_union_pixels']=int(np.count_nonzero((times<10000)&~allowed))
 report.update(source_contract_sha256=motion['original_contract_sha256'],tool_asset_sha256=hashlib.sha256((HERE/'tool/polisher.blend').read_bytes()).hexdigest(),static_vehicle_transform=M.tolist(),vehicle_forward_up_angle_deg=float(np.degrees(np.arcsin(M[2,0]))),minimum_joint_limit_margins_rad=margins,minimum_joint_limit_margin_rad=min(margins.values()),peak_joint_step_rad=peak_step,peak_joint_speed_rad_s=peak_step*24,max_pad_to_retargeted_surface_error_m=max(residual),max_observed_to_native_surface_path_deviation_m=max(deviation),actual_native_radial_span_m=float(np.ptp(radial)),actual_native_u_range=[min(r['u'] for r in contact),max(r['u'] for r in contact)],rendered_unique_nominal_area_m2=unique_area,nominal_face_area_m2=float(cell_area.sum()),native_tool_mount_translation_m=[0,0,.020],native_TCP_to_pad_contact_m=[0,0,.101],right_jaw_displacement_m=.012,left_jaw_displacement_m=.0008,retarget_adaptation='u = .13 + .60*(observed_u-.13); observed radial t shifted inward by .003 (1.185mm), preserving full radial span; four distinct offset alternating passes; pad roll selected for native limits; normal aligned to same corrected analytic face; 25.5s source scrub retimed to22s')
-report['core_checks_passed']=not differences and mount_delta<1e-9 and urdf_rig_error<2e-7 and limit_excursion<1e-9 and pad_error<1e-7 and blender_fk_error<1e-6 and bad==0 and report['mask_outside_exported_nominal_union_pixels']==0
+pose=json.loads((HERE/'selected_pose.json').read_text())
+report['vehicle_roll_deg']=float(np.degrees(np.arctan2(M[2,1],M[2,2])))
+report['vehicle_up_axis_error']=float(np.linalg.norm(M[:3,2]-[0,0,1]))
+report['retarget_adaptation']=dict(chord_scale=pose.get('chord_scale',1),chord_pivot=pose.get('chord_pivot',0),radial_offset_t=pose.get('radial_offset_t',0),free_pad_axis_roll=pose.get('free_pad_roll',False),left_approach_adjustment_rad=pose.get('left_approach_adjustment_rad',0),initial_gap_m=pose.get('initial_gap_m',.018))
+report['core_checks_passed']=not differences and not collisions and mount_delta<1e-9 and urdf_rig_error<2e-7 and limit_excursion<1e-9 and pad_error<1e-7 and max(residual)<1e-5 and blender_fk_error<1e-6 and bad==0 and report['mask_outside_exported_nominal_union_pixels']==0
+if pose.get('require_horizontal'):report['core_checks_passed'] &= report['vehicle_up_axis_error']<1e-12
 # Verify that the saved shader carries the audited first-touch image and a
 # continuously increasing frame clock; no material reset can hide in a cut.
 image=bpy.data.images['Exact accumulated contact time']
 pixels=np.empty(len(image.pixels),dtype=np.float32);image.pixels.foreach_get(pixels)
 image_error=float(np.max(abs(pixels.reshape(-1,4)[:,0]*10000-times)))
 clock=bpy.data.materials['Blade 0 | exact high-resolution footprint clock'].node_tree.nodes['Cinematic frame']
-clock_error=0
+clock_error=0;camera_aim_error=0;camera_up_error=0
+camera_targets={'Camera / establishing stern':(.35,0,.15),'Camera / complete native ROV':(.35,0,.15),'Camera / hands and polisher':(.35,.04,.07),'Camera / result and native vehicle':(.35,0,.15)}
 for f in range(1,s.frame_end+1):
     s.frame_set(f);clock_error=max(clock_error,abs(clock.outputs[0].default_value-f))
+    cam=s.camera;C=np.array(cam.matrix_world);expected=np.array(camera_targets[cam.name])-C[:3,3];expected/=np.linalg.norm(expected)
+    actual=-C[:3,2];camera_aim_error=max(camera_aim_error,float(np.arccos(np.clip(expected@actual,-1,1))))
+    up=np.array([0.,0.,1.]);up-=expected*(expected@up);up/=np.linalg.norm(up)
+    camera_up_error=max(camera_up_error,float(np.arccos(np.clip(up@C[:3,1],-1,1))))
 report.update(saved_mask_image_max_time_error_frames=image_error,saved_shader_clock_max_error_frames=clock_error,clean_mask_frame_range=[float(times.min()),float(times[times<10000].max())],packed_image_verified=bool(image.packed_file),final_scene_sha256=hashlib.sha256((OUT/'final_scene.blend').read_bytes()).hexdigest())
+report.update(max_active_camera_aim_error_deg=float(np.degrees(camera_aim_error)),max_active_camera_up_error_deg=float(np.degrees(camera_up_error)))
+report['core_checks_passed'] &= camera_aim_error<.002 and camera_up_error<.002
 assert image_error<.01 and clock_error<.001 and image.packed_file
 expected_hashes={'assets/coverage_plan.json':'b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db','assets/native_rov.blend':'5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef','tool/polisher.blend':'5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87'}
 # Frozen source identities are task inputs, not dynamically accepted checksums.
