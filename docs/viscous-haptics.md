@@ -142,6 +142,15 @@ restore paths in the DAgger runner.
   `scripted_feasibility.mp4`; report and reproduction instructions are linked
   from `scripts/viscous-dream1/PROPELLER_CARDINAL_README.md`. Code, procedural
   blade assets and required arm CAD are repo-local; old tasks are unchanged.
+  *Scale/presentation refinement (2026-10-24, Gavin):* make the blade "at least
+  double or triple the size". The tabletop is temporary scaffolding for Dream-1;
+  establish motion first, then remove the desk and make the task look underwater
+  and beautiful in a video. An underwater scene preview is requested now too.
+  Target 3× linear propeller size (320 → 960 mm diameter), same-size arms/tool,
+  same left outer-edge hold/right scrub. Recheck reach and clearance rather than
+  enlarging only the camera view. Keep a table motion view and a distinct
+  underwater presentation view; neither is a new Dream result. Brief:
+  `scripts/viscous-dream1/BRIEF_PROPELLER_LARGE.md`.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
