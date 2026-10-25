@@ -1,0 +1,22 @@
+[
+ {
+  "check": "flange_check.py",
+  "exit_code": 0
+ },
+ {
+  "check": "flange_holding_check.py",
+  "exit_code": 0
+ },
+ {
+  "check": "flange_pregrasp_check.py",
+  "exit_code": 0
+ },
+ {
+  "check": "flange_ik_check.py",
+  "exit_code": 0
+ },
+ {
+  "check": "flange_clearance_check.py",
+  "exit_code": 0
+ }
+]

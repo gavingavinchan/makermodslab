@@ -194,13 +194,29 @@ class Measurements:
     def __init__(self,env):
         self.env=env;self.contacts_seen=set();self.start={n:env.data.body(n).xpos[2] for n in ('bolt','nut')}
         self.event_cursor=0
+        self.torque_peak={s:np.zeros(6) for s in env.sides}
+        self.torque_time={v:{s:np.zeros(6) for s in env.sides} for v in (5,14)}
+        self.torque_total_peak={s:np.zeros(6) for s in env.sides}
+        self.torque_total_time={v:{s:np.zeros(6) for s in env.sides} for v in (5,14)}
         self.previous=env.row_observer;env.row_observer=self.contacts
         m=env.model
-        self.fingers={s:{i for i in range(m.ngeom) if (m.geom_contype[i] or m.geom_conaffinity[i]) and m.body(m.geom_bodyid[i]).name.startswith(s+'_') and 'gripper_' in m.body(m.geom_bodyid[i]).name} for s in env.sides}
+        self.fingers={s:set.union(*env.grasps.jaws[s]) for s in env.sides}
         self.tip_local={}
         for side in env.sides:
             self.tip_local[side]=[]
             approach=env.data.site(side+'_tcp').xmat.reshape(3,3)[:,2]
+            if getattr(env,'rig',None)=='yam':
+                for ids in env.grasps.jaws[side]:
+                    cloud=[]
+                    for g in ids:
+                        mid=m.geom_dataid[g]
+                        if mid<0:continue
+                        v=m.mesh_vert[m.mesh_vertadr[mid]:m.mesh_vertadr[mid]+m.mesh_vertnum[mid]]
+                        cloud.append(v@env.data.geom_xmat[g].reshape(3,3).T+env.data.geom_xpos[g])
+                    cloud=np.concatenate(cloud);proj=cloud@approach
+                    tip=cloud[proj>proj.max()-.0001].mean(0);g=next(iter(ids))
+                    self.tip_local[side].append((g,env.data.geom_xmat[g].reshape(3,3).T@(tip-env.data.geom_xpos[g])))
+                continue
             for name in (side+'_visual_043',side+'_visual_042'):
                 g=m.geom(name).id;mid=m.geom_dataid[g]
                 v=m.mesh_vert[m.mesh_vertadr[mid]:m.mesh_vertadr[mid]+m.mesh_vertnum[mid]].copy()
@@ -210,6 +226,14 @@ class Measurements:
         self.fixture={i for i in range(m.ngeom) if m.body(m.geom_bodyid[i]).name.startswith(('flange_','pipe_'))}
         self.objects={n:{i for i in range(m.ngeom) if m.geom_bodyid[i]==m.body(n).id} for n in ('bolt','nut')}
     def contacts(self):
+        for s in self.env.sides:
+            torque=np.abs(self.env.data.actuator_force[self.env.aids[s]])
+            self.torque_peak[s]=np.maximum(self.torque_peak[s],torque)
+            self.torque_total_peak[s]=np.maximum(self.torque_total_peak[s],torque)
+            for v in (5,14):
+                duration=(torque>v)*self.env.model.opt.timestep
+                self.torque_time[v][s]+=duration
+                self.torque_total_time[v][s]+=duration
         self.previous()
         for c in self.env.data.contact:
             a,b=int(c.geom1),int(c.geom2)
@@ -225,7 +249,7 @@ class Measurements:
     def requested(self,requested):
         e=self.env;result={}
         for s,p in requested.items():
-            base=e.data.body(s+'_base_link');world=base.xpos+base.xmat.reshape(3,3)@p
+            base=e.data.body(s+getattr(e,'base_suffix','_base_link'));world=base.xpos+base.xmat.reshape(3,3)@p
             result[s]={n+'_m':float(np.linalg.norm(world-e.data.body(n).xpos)) for n in ('bolt','nut')}
             result[s]['hole_m']=float(np.linalg.norm(world-HOLE))
             bolt=e.data.body('bolt');tip=bolt.xpos+LENGTH*bolt.xmat.reshape(3,3)[:,2]
@@ -253,4 +277,13 @@ class Measurements:
         self.event_cursor+=len(events)
         row['grasp_events']=events
         row['grasp_attached']=dict(e.grasps.active) if hasattr(e,'grasps') else {}
+        row['arm_torque_peak_abs_Nm']={s:a.tolist() for s,a in self.torque_peak.items()}
+        row['arm_time_above_s']={str(v):{s:a.tolist() for s,a in by_side.items()} for v,by_side in self.torque_time.items()}
+        for s in e.sides:
+            self.torque_peak[s][:]=0
+            for v in (5,14):self.torque_time[v][s][:]=0
         self.contacts_seen.clear();return row
+
+    def torque_summary(self):
+        return dict(arm_torque_max_abs_Nm={s:a.tolist() for s,a in self.torque_total_peak.items()},
+                    arm_time_above_s={str(v):{s:a.tolist() for s,a in by_side.items()} for v,by_side in self.torque_total_time.items()})

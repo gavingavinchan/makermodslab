@@ -1,0 +1,53 @@
+[
+  {
+    "check": [
+      "sweep.py",
+      "--check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "sweep_runner_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "sweep_baseline_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "onearm_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "onearm_isolate_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "propeller_ik_check.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": [
+      "propeller_check.py"
+    ],
+    "exit_code": 0,
+    "retry": "propeller_check.isolated.log",
+    "initial_failure": "shared runner lock contention; first isolation wrapper default-root mismatch was also guarded"
+  },
+  {
+    "check": [
+      "flange_runner_check.py"
+    ],
+    "exit_code": 0
+  }
+]

@@ -117,20 +117,28 @@ def ensure_tip():
 
 
 def initialize(task, c, seed):
-    if task == 'propeller' and c.get('rig') == 'yam':
+    if task == 'flange' and c.get('rig') == 'yam':
+        from flange_yam import yam_env
+        env = yam_env()
+    elif task == 'propeller' and c.get('rig') == 'yam':
         from propeller_scene import yam_env
         env = yam_env()
     else:
         env = SweepEnv(task, c)
-    if task == 'flange' and c.get('start', 'table') == 'pregrasp':
+    if task == 'flange' and c.get('start', 'table') in ('pregrasp','inserted'):
         from flange_start import setup
-        setup(env, 'pregrasp', seed)
-    jitter = np.zeros(2) if task == 'flange' else np.random.default_rng(seed).uniform(-.02, .02, 2)
+        setup(env, c['start'], seed)
+    jitter = np.zeros(2) if task == 'flange' and c.get('start','table')!='table' else np.random.default_rng(seed).uniform(-.02, .02, 2)
     env.data.joint(('bolt' if task == 'flange' else 'sponge' if task == 'propeller' else task) + '_free').qpos[:2] += jitter
+    if task=='flange' and c.get('start','table')=='table':
+        rng=np.random.default_rng(seed);rng.uniform(-.02,.02,2)
+        nut_jitter=rng.uniform(-.02,.02,2)
+        env.data.joint('nut_free').qpos[:2]+=nut_jitter
+        env.start_info=dict(start='table',seed=seed,bolt_jitter_xy_m=jitter.tolist(),nut_jitter_xy_m=nut_jitter.tolist())
     mujoco.mj_forward(env.model, env.data)
     windows = {k: deque(maxlen=y.FRAMES) for k in y.VIDEO_ROLES}
     steps = 0
-    pregrasp_command = env.state() if task == 'flange' and c.get('start') == 'pregrasp' else None
+    pregrasp_command = env.state() if task == 'flange' and c.get('start') in ('pregrasp','inserted') else None
     while any(len(w) < y.FRAMES for w in windows.values()):
         state = {side:q.copy() for side,q in pregrasp_command.items()} if pregrasp_command is not None else env.state()
         if pregrasp_command is not None:
@@ -158,7 +166,7 @@ def base_object(env, task, side):
         pos = np.array([-.305, .24, .772])
         rot = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1.]])
     else:
-        base = env.data.body(side + ('_base_link' if hasattr(env, 'qadr') else '_base')); pos = base.xpos; rot = base.xmat.reshape(3, 3)
+        base = env.data.body(side + getattr(env,'base_suffix',('_base_link' if hasattr(env, 'qadr') else '_base'))); pos = base.xpos; rot = base.xmat.reshape(3, 3)
     return rot.T @ (env.data.body(task).xpos - pos)
 
 
@@ -217,7 +225,7 @@ def input_sheet(windows, path):
 
 
 def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=None, stub=False, first_episode_index=0):
-    if task == 'flange' and live:
+    if task == 'flange' and live and c.get('flange_trial')!='dream2':
         raise ValueError('Flange live inference is blocked: scripted pregrasp insertion and two nut turns have not passed.')
     name = config_name(c)
     directory = (dry_root or ROOT) / name / task
@@ -225,7 +233,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
     out = directory / f'ep_{index:02d}'
     instruction = prompt or PROMPTS.get(task, 'insert the bolt through the flange holes and screw the nut onto the other end' if task == 'flange' else 'clean the propeller with the sponge')
     flange = task == 'flange'
-    call_cap = 4 if flange else 30 if task == 'propeller' else CAPS[task]
+    call_cap = (30 if live or c.get('flange_trial')=='dream2' else 4) if flange else 30 if task == 'propeller' else CAPS[task]
     propeller = task == 'propeller'
     obj = 'bolt' if flange else 'sponge' if propeller else task
     out.mkdir(parents=True, exist_ok=True)
@@ -233,7 +241,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
     prior = json.loads(log_path.read_text()) if log_path.exists() else None
     if prior and prior.get('finished') and (out / 'run.mp4').exists():
         return prior
-    seed = (20261023 if propeller else 20261020 + (10000 if task == 'box' else 0)) + index
+    seed = (20261024 if flange else 20261023 if propeller else 20261020 + (10000 if task == 'box' else 0)) + index
     episode_id = f'{name}/{task}/' + (f'{variant}/' if variant else '') + f'ep_{index:02d}'
     env, windows, steps, images, jitter = initialize(task, c, seed)
     new_mode = env.parked or env.copy_right or env.fixed_right
@@ -264,6 +272,8 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
                        closest_requested_hand_to_sponge_m={s:None for s in env.sides})
     if flange:
         metrics.update(prompt=instruction, closest_requested_hand_to_nut_m={s:None for s in env.sides}, closest_requested_hand_to_hole_m={s:None for s in env.sides}, row_measurements=[], nut_engaged=False, max_bolt_inserted_depth_m=0., max_nut_turns=0., tool_fixture_contact_rows=0, gripper_fixture_contact_rows=0)
+        metrics.update(start=getattr(env,'start_info',{'start':'table'}),bolt_through_both=False,
+                       closest_requested_hand_to_bolt_tip_m={s:None for s in env.sides},rig=c.get('rig','viscous'))
     metrics['policy'] = policy(c, env)
     metrics['calls_used'] = ledger.episode_calls(episode_id) if live else 0
     atomic(log_path, metrics)
@@ -296,12 +306,14 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
                 metrics['grasped'] |= sample['tool_grasped']
                 metrics['max_lift_m'] = max(metrics['max_lift_m'], sample['grasp']['bolt']['lift_m'], sample['grasp']['nut']['lift_m'])
                 for side, distances in requested_dist.items():
-                    for key, field in [('bolt_m','closest_requested_hand_to_object_m'),('nut_m','closest_requested_hand_to_nut_m'),('hole_m','closest_requested_hand_to_hole_m')]:
+                    for key, field in [('bolt_m','closest_requested_hand_to_object_m'),('nut_m','closest_requested_hand_to_nut_m'),('hole_m','closest_requested_hand_to_hole_m'),('bolt_tip_m','closest_requested_hand_to_bolt_tip_m')]:
                         old=metrics[field][side]
                         metrics[field][side]=distances[key] if old is None else min(old,distances[key])
                 metrics['max_bolt_inserted_depth_m'] = max(metrics['max_bolt_inserted_depth_m'],sample['bolt_inserted_depth_m'])
                 metrics['max_nut_turns'] = max(metrics['max_nut_turns'],sample['nut_turns'])
                 metrics['nut_engaged'] |= sample['nut_engaged']
+                metrics['bolt_through_both'] |= sample['bolt_through_both']
+                metrics.update(observer.torque_summary())
                 for field, source in [('tool_fixture_contact_rows','tool_fixture_contact'),('gripper_fixture_contact_rows','gripper_fixture_contact'),('finger_table_contact_rows','finger_table_contact')]:
                     metrics[field] += sample[source]
                 metrics['executed_rows'] += 1
@@ -338,7 +350,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
                     y.feed(client if c.get('rig') == 'yam' else y.CustomGripFeed(client), env, windows, instruction, y.BETA_MODEL, steps)
                 rec.grab(env, images['top'])
             steps += 1
-        rest = False if (propeller or flange) else success(env, task)
+        rest = bool(env.thread.engaged and env.thread.turns>=2) if flange else False if propeller else success(env, task)
         consecutive = consecutive + 1 if rest else 0
         if rest and metrics['first_success_call'] is None: metrics['first_success_call'] = call
         if consecutive >= 2:

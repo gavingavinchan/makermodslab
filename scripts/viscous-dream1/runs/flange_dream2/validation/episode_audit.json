@@ -1,0 +1,295 @@
+{
+ "episodes": [
+  {
+   "episode": "B0/flange/G1/ep_00",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G1_ep_00.jpg"
+  },
+  {
+   "episode": "B0/flange/G1/ep_01",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G1_ep_01.jpg"
+  },
+  {
+   "episode": "B0/flange/G2/ep_00",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G2_ep_00.jpg"
+  },
+  {
+   "episode": "B0/flange/G2/ep_01",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G2_ep_01.jpg"
+  },
+  {
+   "episode": "B0/flange/G3/ep_00",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G3_ep_00.jpg"
+  },
+  {
+   "episode": "B0/flange/G3/ep_01",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G3_ep_01.jpg"
+  },
+  {
+   "episode": "B0/flange/G3/ep_02",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G3_ep_02.jpg"
+  },
+  {
+   "episode": "B0/flange/G3/ep_03",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_G3_ep_03.jpg"
+  },
+  {
+   "episode": "B0/flange/T/ep_00",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_T_ep_00.jpg"
+  },
+  {
+   "episode": "B0/flange/T/ep_01",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_B0_flange_T_ep_01.jpg"
+  },
+  {
+   "episode": "YAM/flange/G3/ep_02",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_YAM_flange_G3_ep_02.jpg"
+  },
+  {
+   "episode": "YAM/flange/G3/ep_03",
+   "calls": 30,
+   "rows": 1440,
+   "video": {
+    "ffmpeg_version": "7.0.2-static https://johnvansickle.com/ffmpeg/ built with gcc 8 (Debian 8.3.0-6)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 5.0,
+    "source_size": [
+     1920,
+     400
+    ],
+    "size": [
+     1920,
+     400
+    ],
+    "rotate": 0,
+    "duration": 72.2
+   },
+   "full_decode_passed": true,
+   "review": "runs/flange_dream2/validation/review_YAM_flange_G3_ep_03.jpg"
+  }
+ ],
+ "ledger": {
+  "cap": 2212,
+  "budget_used": 1986,
+  "confirmed_billed": 1986,
+  "uncertain": 0
+ },
+ "task_requests": {
+  "billed": 360,
+  "pool_warming": 0,
+  "uncertain": 0
+ },
+ "protected_sha256": {
+  "viscous_arm.json": "cbbd055358a98b8ef39eecde33df87db265ed2ebd7b06f8fd46f32674fe0d2b0",
+  "viscous_arm_fingertip.json": "b29d3461b256d10a36a43a6ac31a8acba5a9750c4384c9d8fec1b7103dab572a"
+ }
+}

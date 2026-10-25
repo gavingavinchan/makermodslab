@@ -11,7 +11,7 @@ No measured transmission efficiency, physical gap or hardware claim.
 Optional fallback: actual bilateral jaw/part contact while commanded closed
 activates a MuJoCo weld at its current relative pose. Opening command >.65
 releases immediately at the next 1 ms observer tick. No proximity-only attach,
-object teleport, arm torque increase or fixture movement. Events are durable
+object teleport or fixture movement. Events are durable
 in episode row logs. This surrogate eliminates local grasp slip, not arm load.
 """
 import xml.etree.ElementTree as ET
@@ -24,22 +24,28 @@ RELEASE=.65
 def configure(root):
     eq=root.find('equality')
     for side in ('left','right'):
+        # Gavin 2026-10-24: flange simulation only, keep real-arm overruns visible.
+        for drive in root.findall('actuator/position'):
+            if drive.get('joint') in {f'{side}_joint{i}' for i in range(1,7)}:
+                drive.set('forcerange','-25 25')
         root.find(f"actuator/position[@name='{side}_gripper_left_joint_drive']").set('forcerange',f'-{FORCE_N:g} {FORCE_N:g}')
         for part in ('bolt','nut'):
             ET.SubElement(eq,'weld',name=f'grasp_{side}_{part}',body1=side+'_wrist_roll_link',body2=part,active='false',solref='.002 1')
-    ET.SubElement(eq,'weld',name='flange_bolt_fixture',body1='bolt',active='false',solref='.002 1')
+    ET.SubElement(eq,'weld',name='flange_bolt_fixture',body1='world',body2='bolt',active='false',solref='.002 1')
 
 class Grasps:
     def __init__(self,e,enabled=False):
         self.e=e;self.enabled=enabled;self.events=[];self.active={}
         m=e.model
-        self.jaws={s:[{g for g in range(m.ngeom) if m.body(m.geom_bodyid[g]).name==s+'_'+jaw and (m.geom_contype[g] or m.geom_conaffinity[g])} for jaw in ('gripper_left','gripper_right')] for s in e.sides}
+        self.jaws={s:[{g for g in range(m.ngeom) if m.geom_bodyid[g]==m.joint(f'{s}_finger_{sign}').bodyid[0] and (m.geom_contype[g] or m.geom_conaffinity[g])} for sign in (-1,1)] for s in e.sides}
         self.parts={p:{g for g in range(m.ngeom) if m.geom_bodyid[g]==m.body(p).id} for p in ('bolt','nut')}
     def command(self,s):
-        return getattr(self.e, 'gripper_command', {}).get(s, float(self.e.data.actuator(s+'_gripper_left_joint_drive').ctrl[0]/.0524125))
+        if s in getattr(self.e,'gripper_command',{}):return self.e.gripper_command[s]
+        if getattr(self.e,'rig',None)=='yam':return float(self.e.data.actuator(f'{s}_finger_-1').ctrl[0]/self.e.grip_open)
+        return float(self.e.data.actuator(s+'_gripper_left_joint_drive').ctrl[0]/.0524125)
     def attach(self,s,p):
         e=self.e;m,d=e.model,e.data
-        hand=d.body(s+'_wrist_roll_link');obj=d.body(p)
+        hand=d.body(getattr(e,'hand_bodies',{}).get(s,s+'_wrist_roll_link'));obj=d.body(p)
         R=hand.xmat.reshape(3,3);rel=R.T@(obj.xpos-hand.xpos);rot=R.T@obj.xmat.reshape(3,3)
         k=m.equality(f'grasp_{s}_{p}').id
         m.eq_data[k,3:6]=rel;mujoco.mju_mat2Quat(m.eq_data[k,6:10],rot.ravel());d.eq_active[k]=1
@@ -52,7 +58,7 @@ class Grasps:
                 d.eq_active[m.equality(f'grasp_{s}_{p}').id]=0;del self.active[s]
                 self.events.append(dict(time=float(d.time),event='release',side=s,part=p,command=self.command(s)))
         for s in e.sides:
-            opening=sum(d.joint(f'{s}_finger_{k}').qpos[0] for k in (-1,1))/(2*.0524125)
+            opening=sum(d.joint(f'{s}_finger_{k}').qpos[0] for k in (-1,1))/(2*getattr(e,'grip_open',.0524125))
             if s in self.active or self.command(s)>.45 or self.command(s)>=opening-.001:continue
             for p,parts in self.parts.items():
                 if p in self.active.values():continue

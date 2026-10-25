@@ -118,6 +118,15 @@ restore paths in the DAgger runner.
   what it does, not a precise success rate.
   *Result (2026-10-23):* it knows to take the sponge to the propeller but not to
   scrub. See "Propeller scrubbing" under the Dream-1 trial.
+  *Revisit (2026-10-24, Gavin):* the earlier result "wasn't done very nicely".
+  First find real cleaning videos and set the environment up correctly. Keep a
+  desk for Dream-1; use **four blades pointing up/down/left/right**, select the
+  horizontal **left blade**, **left arm gripping its outer edge**, **right arm
+  scrubbing it**. Codex Astra may help if Dream-1 cannot do it. Commercial
+  polishing footage found and representative frames inspected; references and
+  the environment-first brief are in
+  `scripts/viscous-dream1/BRIEF_PROPELLER_BIMANUAL.md`. Build and show the scene
+  and simultaneous working poses before any further billed policy trial.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
@@ -138,6 +147,15 @@ restore paths in the DAgger runner.
   the flange task alone lifts them to 25 Nm and logs time above 5 and 14 Nm
   (`BRIEF_FLANGE_DREAM2.md`). The real dry arm dropped at ~5.6 Nm on the shoulder,
   so these poses need a lower, closer fixture or buoyancy before hardware.
+  *Result (2026-10-24):* 0/12. 360 billed calls (ledger 1986/2212). With the parts
+  held, Dream-1 brings the nut toward the bolt in free air (G1), or drops the bolt
+  and re-grasps it (G2). With the bolt already through (G3) it carries the nut to
+  the flange and holds it near the bolt tip, at best 10 mm off axis against the 3 mm
+  engagement gate, and never turns it. YAM does no better, so like scrubbing, this is
+  a skill zero-shot Dream-1 lacks. The scripted demo also fails, on IK branch and
+  joint limits at the hole rather than torque, so the fixture placement itself is
+  marginal for the Viscous. Report `runs/flange_dream2_report.md`; logs gzipped,
+  six videos kept, chunks on gavin-linux.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

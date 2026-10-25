@@ -1,0 +1,66 @@
+{
+ "start_used": 1626,
+ "max_task_calls": 400,
+ "scripted_success": false,
+ "conditions": [
+  "T",
+  "G1",
+  "G2",
+  "G3"
+ ],
+ "stage_a": {
+  "T": {
+   "episodes": 2,
+   "max_insertion_m": 0.0,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  },
+  "G1": {
+   "episodes": 2,
+   "max_insertion_m": 0.0,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  },
+  "G2": {
+   "episodes": 2,
+   "max_insertion_m": 0.0,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  },
+  "G3": {
+   "episodes": 2,
+   "max_insertion_m": 0.074,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  }
+ },
+ "stage_b": {
+  "viscous": {
+   "episodes": 2,
+   "max_insertion_m": 0.074,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  },
+  "yam": {
+   "episodes": 2,
+   "max_insertion_m": 0.074,
+   "nut_engaged_eps": 0,
+   "max_turns": 0.0,
+   "calls": 60
+  }
+ },
+ "winner": "G3",
+ "complete": true,
+ "billed_calls_added": 360,
+ "ledger": {
+  "cap": 2212,
+  "budget_used": 1986,
+  "confirmed_billed": 1986,
+  "uncertain": 0
+ }
+}

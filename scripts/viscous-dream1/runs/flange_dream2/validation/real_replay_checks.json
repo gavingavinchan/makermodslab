@@ -1,0 +1,16 @@
+[
+ {
+  "rig": "viscous",
+  "episode": 0,
+  "rows": 1440,
+  "inference_calls": 0,
+  "exact_row_and_torque_replay": true
+ },
+ {
+  "rig": "yam",
+  "episode": 2,
+  "rows": 1440,
+  "inference_calls": 0,
+  "exact_row_and_torque_replay": true
+ }
+]

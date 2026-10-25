@@ -9,7 +9,7 @@ from flange_scene import HOLE,Measurements,HERE
 from flange_start import setup,local_ik
 from flange_ik_check import orientation
 
-OUT=HERE/'runs/flange_dream/scripted'
+OUT=HERE/'runs/flange_dream2/scripted'
 
 def run(render=True,force_only=False):
     OUT.mkdir(parents=True,exist_ok=True)
@@ -18,6 +18,7 @@ def run(render=True,force_only=False):
     renderer=mujoco.Renderer(e.model,width=640,height=360) if render else None
     writer=imageio.get_writer(OUT/'run.mp4',fps=10,codec='libx264',pixelformat='yuv420p',macro_block_size=1,quality=8) if render else None
     rows=[];chunks=[];ik_errors=[];stage='pregrasp: close on head and nut';idx=0
+    correction={s:np.zeros(6) for s in e.sides}
     desired={side:e.data.site(side+'_tcp').xpos.copy() for side in e.sides}
     def grab():
         images=e.images();renderer.update_scene(e.data,camera='flange_detail');close=renderer.render().copy()
@@ -29,7 +30,7 @@ def run(render=True,force_only=False):
         dr=ImageDraw.Draw(im);dr.text((12,367),f'{stage} | t={e.data.time:.1f}s | depth={rows[-1]["bolt_inserted_depth_m"]*1000 if rows else 0:.1f}mm | engaged={e.thread.engaged} | turns={e.thread.turns:.3f} | attach={e.grasps.active}',fill='white')
         if rows:
             error=max(np.max(np.abs(np.array(rows[-1]['qactual'][s][:6])-qcmd[s][:6])) for s in e.sides)
-            dr.text((12,384),f'5 Nm arm limits | max joint tracking error {np.degrees(error):.1f} deg | no inference | contact-gated physical grasp weld',fill='#ffcf70')
+            dr.text((12,384),f'25 Nm arm limits | max joint tracking error {np.degrees(error):.1f} deg | no inference | contact-gated physical grasp weld',fill='#ffcf70')
         writer.append_data(np.asarray(im))
         if idx%40==0:im.save(OUT/f'frame_{idx:04d}.jpg')
     def step():
@@ -38,9 +39,12 @@ def run(render=True,force_only=False):
         for side in e.sides:
             base=e.data.body(side+'_base_link');requested[side]=base.xmat.reshape(3,3).T@(desired[side]-base.xpos)
         distances=measure.requested(requested)
-        e.step(qcmd['left'],qcmd['right']);r=measure.row(0,idx,distances)
-        r.update(stage=stage,time=float(e.data.time),qcmd={s:q.tolist() for s,q in qcmd.items()},qactual={s:q.tolist() for s,q in e.state().items()},tcp={s:e.data.site(s+'_tcp').xpos.tolist() for s in e.sides},joint_force={s:e.data.actuator_force[e.aids[s]].tolist() for s in e.sides})
-        rows.append(r);chunks.append(dict(row=idx,left=qcmd['left'].tolist(),right=qcmd['right'].tolist()))
+        commands={s:np.r_[np.clip(qcmd[s][:6]+correction[s],ik.limits[s][:,0],ik.limits[s][:,1]),qcmd[s][6]] for s in e.sides}
+        e.step(commands['left'],commands['right']);r=measure.row(0,idx,distances)
+        for s in e.sides:
+            correction[s]=np.clip(correction[s]+.15*(qcmd[s][:6]-e.state()[s][:6]),-.08,.08)
+        r.update(stage=stage,time=float(e.data.time),qcmd={s:q.tolist() for s,q in commands.items()},qreference={s:q.tolist() for s,q in qcmd.items()},qactual={s:q.tolist() for s,q in e.state().items()},tcp={s:e.data.site(s+'_tcp').xpos.tolist() for s in e.sides},joint_force={s:e.data.actuator_force[e.aids[s]].tolist() for s in e.sides})
+        rows.append(r);chunks.append(dict(row=idx,left=commands['left'].tolist(),right=commands['right'].tolist()))
         if render and idx%2==0:grab()
         idx+=1
     def hold(t):
@@ -55,6 +59,10 @@ def run(render=True,force_only=False):
     def pose(side,p,R,seconds=2,starts=0):
         desired[side]=np.asarray(p).copy()
         q,res=ik.fit(side,np.asarray(p),R,qcmd[side][:6],starts=starts)
+        if np.linalg.norm(res[:3])>.002 or np.linalg.norm(res[3:])/.15>.04:
+            candidate,better=ik.fit(side,np.asarray(p),R,qcmd[side][:6],starts=8)
+            # Switch only to a nearby solution during a continuous loaded motion.
+            if np.linalg.norm(candidate-qcmd[side][:6])<.5 and np.linalg.norm(better)<np.linalg.norm(res):q,res=candidate,better
         ik_errors.append(dict(side=side,stage=stage,target=np.asarray(p).tolist(),position_m=float(np.linalg.norm(res[:3])),rotation_deg=float(np.degrees(np.linalg.norm(res[3:])/.15))))
         if np.linalg.norm(res[:3])>.002 or np.linalg.norm(res[3:])/.15>.04:
             print('IK_LIMIT',side,np.linalg.norm(res[:3]),np.degrees(np.linalg.norm(res[3:])/.15),flush=True)
@@ -96,6 +104,7 @@ def run(render=True,force_only=False):
         hold(1)
     finally:
         result=dict(inference_calls=0,finished=True,start=e.start_info,ik_errors=ik_errors,holding='force_only' if force_only else '160N + contact gated MuJoCo weld',success=bool(any(r['bolt_through_both'] for r in rows) and max([r['nut_turns'] for r in rows],default=0)>=2),max_bolt_inserted_depth_m=max([r['bolt_inserted_depth_m'] for r in rows],default=0),max_nut_turns=max([r['nut_turns'] for r in rows],default=0),nut_ever_engaged=any(r['nut_engaged'] for r in rows),grasp_events=e.grasps.events,thread_events=e.thread.events,row_measurements=rows)
+        result.update(measure.torque_summary())
         sweep.atomic(OUT/'log.json',result)
         with (OUT/'chunks.jsonl').open('w') as f:
             for c in chunks:f.write(json.dumps(c)+'\n')

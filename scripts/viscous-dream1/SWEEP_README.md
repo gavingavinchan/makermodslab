@@ -123,13 +123,14 @@ Flange scene preview (2026-10-23, **local only**):
 `sweep.py --task flange --config B0 --episodes 1` executes four 48-row hold-stub
 chunks through the existing runner, including fsync, row logs, replay, policy
 sheet and video. Outputs go to `runs/flange_v2/dry/`; the ledger is never accessed.
-The flange task rejects live execution before constructing a scene/client.
+The generic flange CLI rejects live execution before constructing a scene/client;
+the authorized experiment below uses its explicit `flange_trial=dream2` gate.
 Legacy task caps, stage selection, modes, station cameras/lights and arm JSONs
 are unchanged. `flange_render.py` makes the three 1280×720 inspection renders;
 `flange_demo.py --start pregrasp` records the loaded feasibility attempt with
 top, enlarged inspection, and left-wrist panes. `--start table` remains the default.
-The 2026-10-24 pregrasp attempt fails insertion/threading, so live execution remains
-blocked. Results and holding assumptions: `runs/flange_dream_report.md`.
+The first 2026-10-24 pregrasp attempt failed insertion/threading. Its preserved
+results and holding assumptions are in `runs/flange_dream_report.md`.
 
 `flange_scene.py` adds fixed 0.6 m coated pipes/grey eight-hole weld-neck-style
 flanges with seven paired-nut studs, real convex-decomposed clearance holes, and free M30-size fasteners.
@@ -151,10 +152,31 @@ occlusion in unchanged call-1 cameras. Scene-preview outputs remain in `runs/fla
 from the ideal 5 Nm / CAD crank-slider Jacobian; other tasks retain ±10 N. The
 flange-only fallback attaches a physical MuJoCo weld at current relative pose after
 both jaws contact while closing, releases on opening command >0.65, and logs each
-event. It retains payload load and the original ±5 Nm arm limits.
+event. It retains payload load. The flange-only arm limits are now ±25 Nm,
+authorized by Gavin on 2026-10-24; other Viscous tasks remain ±5 Nm / ±10 N.
 `sweep.py --task flange --start pregrasp --episodes 1` initializes bolt-in-left /
 nut-in-right with paired ±2 mm hand-pose jitter and executes four local stub chunks.
 `flange_holding_check.py` checks force isolation, one-jaw rejection, five-second hold
 and release. Row logs additionally include grasp events/active welds and raw requested
 hand-to-bolt-tip distance. Pregrasp initialization is the only object pose setter;
 subsequent arm/object motion uses physics and the existing ideal thread model.
+
+Flange Dream-1 rerun: `flange_dream_sweep.py --live` runs Stage A (two episodes
+each T/G1/G2/G3, 30 calls each) and Stage B (two fresh episodes of its winner
+and two paired YAM vision episodes). G3 starts with a fixture-welded bolt already
+through both rings and only the nut in the right hand. Success requires >=2 nut
+turns at two consecutive call endpoints. A failed scripted gate no longer blocks
+the authorized G3/G2 fallback; all four conditions fit the 360-call full plan.
+The existing ledger cap is asserted to be 2212 and never raised. A separate
+400-call task ceiling is enforced from 1626 used. Outputs, durable replay chunks,
+H.264/yuv420p three-pane videos and plan are under `runs/flange_dream2/`;
+report: `runs/flange_dream2_report.md`. No `--live` runs four local hold stubs.
+
+Flange rows record six absolute actuator-torque peaks per arm sampled at every
+physics substep (Viscous 1 ms, stock YAM 2 ms), plus seconds above 5 and 14 Nm.
+Episode totals include executed action rows, excluding observation warmup.
+YAM retains its stock ±40 Nm arm servos and cameras, with the same contact-gated
+weld model and 80 N per independent jaw (160 N total). Its nut grasp is centered
+on its stock TCP, and its slightly jittered forward-facing pregrasp uses YAM IK.
+`flange_dream2_check.py` verifies force isolation, G3, row/episode torque totals,
+two-endpoint early stop and exact interrupted/finished replay without inference.
