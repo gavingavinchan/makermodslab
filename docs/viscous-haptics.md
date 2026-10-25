@@ -180,6 +180,12 @@ restore paths in the DAgger runner.
   joint limits at the hole rather than torque, so the fixture placement itself is
   marginal for the Viscous. Report `runs/flange_dream2_report.md`; logs gzipped,
   six videos kept, chunks on gavin-linux.
+  *Next (Gavin, 2026-10-24): "try with Astra then".* Codex model `gpt-6-astra` as the
+  robot's brain instead of Dream-1: it looks through the same cameras, can query a
+  calibrated depth point per pixel, and commands hand moves, wrist turns and grips
+  through a `robot` CLI on a live sim (no object poses, no Dream calls). Interface
+  first (`BRIEF_ASTRA_HARNESS.md`, validated by a scripted operator on G3), then
+  Astra on G3, G1 and T.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
