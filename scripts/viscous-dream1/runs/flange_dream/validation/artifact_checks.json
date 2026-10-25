@@ -1,0 +1,38 @@
+{
+  "force_only": {
+    "path": "runs/flange_dream/force_only/run.mp4",
+    "full_decode_passed": true,
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "width": 1920,
+    "height": 400
+  },
+  "scripted": {
+    "path": "runs/flange_dream/scripted/run.mp4",
+    "full_decode_passed": true,
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "width": 1920,
+    "height": 400
+  },
+  "pregrasp_stub": {
+    "path": "runs/flange_dream/dry_pregrasp/B0/flange/ep_00/run.mp4",
+    "full_decode_passed": true,
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "width": 1920,
+    "height": 400
+  },
+  "table_stub": {
+    "path": "runs/flange_v2/dry/B0/flange/ep_00/run.mp4",
+    "full_decode_passed": true,
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "width": 1920,
+    "height": 400
+  },
+  "protected_arm_hashes_unchanged": true,
+  "scene_builder_byte_identical": true,
+  "thread_model_byte_identical": true,
+  "inference_calls": 0
+}

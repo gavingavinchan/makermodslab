@@ -126,9 +126,10 @@ sheet and video. Outputs go to `runs/flange_v2/dry/`; the ledger is never access
 The flange task rejects live execution before constructing a scene/client.
 Legacy task caps, stage selection, modes, station cameras/lights and arm JSONs
 are unchanged. `flange_render.py` makes the three 1280×720 inspection renders;
-`flange_demo.py` records a contact-only IK attempt (no object setters or grasp
-welds), with top + inspection view. The current attempt lifts the nut but fails
-to lift the bolt; it does not prove full assembly feasibility.
+`flange_demo.py --start pregrasp` records the loaded feasibility attempt with
+top, enlarged inspection, and left-wrist panes. `--start table` remains the default.
+The 2026-10-24 pregrasp attempt fails insertion/threading, so live execution remains
+blocked. Results and holding assumptions: `runs/flange_dream_report.md`.
 
 `flange_scene.py` adds fixed 0.6 m coated pipes/grey eight-hole weld-neck-style
 flanges with seven paired-nut studs, real convex-decomposed clearance holes, and free M30-size fasteners.
@@ -145,4 +146,15 @@ object/fixture/gripper/table contacts, and requested-hand distances.
 Subsea v2 preview: `flange_assets_v2.py` authors local procedural meshes/PNG textures;
 `flange_clearance_check.py` verifies sampled joint paths against both arms, table and full
 pipework. `flange_visibility_check.py` records actual object pixels and target-mouth
-occlusion in unchanged call-1 cameras. All current flange outputs default to `runs/flange_v2/`.
+occlusion in unchanged call-1 cameras. Scene-preview outputs remain in `runs/flange_v2/`; new holding/demo evidence is in
+`runs/flange_dream/`. Flange gripper force is now ±160 N generalized (about 80 N/jaw),
+from the ideal 5 Nm / CAD crank-slider Jacobian; other tasks retain ±10 N. The
+flange-only fallback attaches a physical MuJoCo weld at current relative pose after
+both jaws contact while closing, releases on opening command >0.65, and logs each
+event. It retains payload load and the original ±5 Nm arm limits.
+`sweep.py --task flange --start pregrasp --episodes 1` initializes bolt-in-left /
+nut-in-right with paired ±2 mm hand-pose jitter and executes four local stub chunks.
+`flange_holding_check.py` checks force isolation, one-jaw rejection, five-second hold
+and release. Row logs additionally include grasp events/active welds and raw requested
+hand-to-bolt-tip distance. Pregrasp initialization is the only object pose setter;
+subsequent arm/object motion uses physics and the existing ideal thread model.

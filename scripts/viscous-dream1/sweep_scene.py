@@ -112,7 +112,12 @@ class SweepEnv(ViscousAppleEnv):
         if task == 'flange':
             from flange_scene import ThreadModel
             self.thread = ThreadModel(self)
-            self.row_observer = self.thread.step
+            from flange_holding import Grasps
+            self.grasps = Grasps(self, config.get('flange_attach', True))
+            def flange_step():
+                self.grasps.step()
+                self.thread.step()
+            self.row_observer = flange_step
 
     def reset(self):
         mujoco.mj_resetData(self.model, self.data)

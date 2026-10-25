@@ -1,4 +1,4 @@
-"""Contact-only scripted arm demo. No grasp welds, object setters or inference.
+"""Scripted flange arm demo. No inference; optional contact-gated grasp welds.
 Joint waypoints use local IK, followed by the existing B0 actuator servos.
 The free bolt/nut move only from gravity, collisions and ThreadModel when engaged.
 """
@@ -12,10 +12,11 @@ import sweep
 from flange_scene import HERE,HOLE,Measurements
 from flange_ik_check import LocalIK,orientation
 
-OUT=HERE/'runs/flange_v2'
+OUT=HERE/'runs/flange_dream/scripted_table'
 
 
 def run():
+    (OUT/'validation').mkdir(parents=True,exist_ok=True)
     e,*_=sweep.initialize('flange',sweep.DEFAULT,20261023)
     ik=LocalIK(e);measure=Measurements(e)
     renderer=mujoco.Renderer(e.model,width=640,height=360)
@@ -23,7 +24,7 @@ def run():
     rows=[];stages=[];rowindex=0;stage='initial';qcmd=e.state()
     def grab():
         top=e.images()['top'];renderer.update_scene(e.data,camera='flange_detail');close=renderer.render().copy()
-        im=Image.new('RGB',(1280,400),'#14212b');im.paste(Image.fromarray(top),(0,0));im.paste(Image.fromarray(close),(640,0))
+        im=Image.new('RGB',(1920,400),'#14212b');im.paste(Image.fromarray(top),(0,0));im.paste(Image.fromarray(close),(640,0));im.paste(Image.fromarray(e.images()['left']),(1280,0))
         dr=ImageDraw.Draw(im);t=e.thread
         dr.text((12,366),f'{stage}   |   t={e.data.time:.1f}s   |   engaged={t.engaged}   turns={t.turns:.2f}   advance={t.advance*1000:.1f}mm',fill='white')
         writer.append_data(np.asarray(im))
@@ -124,9 +125,18 @@ def run():
                 joint_move('right',np.r_[q[:6],.30],.3)
         else:mark('stop: nut did not enter thread engagement gate')
         hold(2)
-        result=dict(bolt_mass_kg=float(e.model.body('bolt').mass[0]),nut_mass_kg=float(e.model.body('nut').mass[0]),inference_calls=0,object_pose_overrides=False,grasp_welds=False,rows=len(rows),sim_seconds=float(e.data.time),stages=stages,bolt_grasped=any(r['grasp']['bolt']['grasped'] for r in rows),nut_grasped=any(r['grasp']['nut']['grasped'] for r in rows),max_bolt_inserted_depth_m=inserted,max_nut_turns=max(r['nut_turns'] for r in rows),nut_ever_engaged=any(r['nut_engaged'] for r in rows),thread_events=e.thread.events,row_measurements=rows)
+        result=dict(bolt_mass_kg=float(e.model.body('bolt').mass[0]),nut_mass_kg=float(e.model.body('nut').mass[0]),inference_calls=0,object_pose_overrides=False,grasp_welds=e.grasps.enabled,grasp_events=e.grasps.events,rows=len(rows),sim_seconds=float(e.data.time),stages=stages,bolt_grasped=any(r['grasp']['bolt']['grasped'] for r in rows),nut_grasped=any(r['grasp']['nut']['grasped'] for r in rows),max_bolt_inserted_depth_m=inserted,max_nut_turns=max(r['nut_turns'] for r in rows),nut_ever_engaged=any(r['nut_engaged'] for r in rows),thread_events=e.thread.events,row_measurements=rows)
         sweep.atomic(OUT/'scripted_demo_log.json',result)
         print({k:v for k,v in result.items() if k not in ('row_measurements','stages')},flush=True)
     finally:writer.close();renderer.close();e.close()
 
-if __name__=='__main__':run()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--start',choices=['table','pregrasp'],default='table')
+    parser.add_argument('--no-render',action='store_true')
+    args=parser.parse_args()
+    if args.start=='pregrasp':
+        from flange_pregrasp_demo import run as pregrasp_run
+        pregrasp_run(not args.no_render)
+    else:run()

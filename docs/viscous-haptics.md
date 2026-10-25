@@ -131,6 +131,13 @@ restore paths in the DAgger runner.
   can start the task with the [bolt] and nut already in the grippers."
   `BRIEF_FLANGE_DREAM.md`: grip force derived from the RS00 rating (or a logged
   grasp-attach), a `pregrasp` start, then Dream-1 on table and pregrasp starts.
+  Result: holding works (160 N jaw drive derived from the RS00 rating and the CAD
+  crank, plus contact-gated welds), but the scripted insertion needs 7.8-9.4 Nm
+  (7 Nm for the arm alone) against the 5 Nm limit, so no calls were made
+  (`runs/flange_dream_report.md`). Gavin: "don't worry about the torque limits":
+  the flange task alone lifts them to 25 Nm and logs time above 5 and 14 Nm
+  (`BRIEF_FLANGE_DREAM2.md`). The real dry arm dropped at ~5.6 Nm on the shoulder,
+  so these poses need a lower, closer fixture or buoyancy before hardware.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

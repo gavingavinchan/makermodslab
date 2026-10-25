@@ -193,6 +193,7 @@ class ThreadModel:
 class Measurements:
     def __init__(self,env):
         self.env=env;self.contacts_seen=set();self.start={n:env.data.body(n).xpos[2] for n in ('bolt','nut')}
+        self.event_cursor=0
         self.previous=env.row_observer;env.row_observer=self.contacts
         m=env.model
         self.fingers={s:{i for i in range(m.ngeom) if (m.geom_contype[i] or m.geom_conaffinity[i]) and m.body(m.geom_bodyid[i]).name.startswith(s+'_') and 'gripper_' in m.body(m.geom_bodyid[i]).name} for s in env.sides}
@@ -227,6 +228,8 @@ class Measurements:
             base=e.data.body(s+'_base_link');world=base.xpos+base.xmat.reshape(3,3)@p
             result[s]={n+'_m':float(np.linalg.norm(world-e.data.body(n).xpos)) for n in ('bolt','nut')}
             result[s]['hole_m']=float(np.linalg.norm(world-HOLE))
+            bolt=e.data.body('bolt');tip=bolt.xpos+LENGTH*bolt.xmat.reshape(3,3)[:,2]
+            result[s]['bolt_tip_m']=float(np.linalg.norm(world-tip))
         return result
     def row(self,call,index,requested_dist):
         e=self.env;b=e.data.body('bolt');axis=b.xmat.reshape(3,3)[:,2];tip=b.xpos+LENGTH*axis
@@ -243,7 +246,11 @@ class Measurements:
                 u=np.dot(p-a,axis)/max(length**2,1e-9)
                 between[s]=bool(-.15<=u<=1.15 and np.linalg.norm(p-(a+u*axis))<.045)
             grasp[n]=dict(lift_m=float(e.data.body(n).xpos[2]-self.start[n]),between_fingers=between,
-                          grasped=bool(e.data.body(n).xpos[2]>self.start[n]+.03 and any(n+'_'+s in self.contacts_seen for s in e.sides) and any(between.values())))
+                          grasped=bool(n in getattr(getattr(e,'grasps',None),'active',{}).values() or (e.data.body(n).xpos[2]>self.start[n]+.03 and any(n+'_'+s in self.contacts_seen for s in e.sides) and any(between.values()))))
         t=e.thread
         row=dict(call=call,row=index,bolt_xyz=b.xpos.tolist(),nut_xyz=e.data.body('nut').xpos.tolist(),bolt_inserted_depth_m=depth,bolt_through_both=depth>=.0739,nut_engaged=t.engaged,nut_turns=t.turns,nut_advance_m=t.advance,grasp=grasp,tool_grasped=any(g['grasped'] for g in grasp.values()),tool_fixture_contact=any(n+'_fixture' in self.contacts_seen for n in ('bolt','nut')),gripper_fixture_contact='gripper_fixture' in self.contacts_seen,finger_table_contact='finger_table' in self.contacts_seen,contacts=sorted(self.contacts_seen),requested_hand=requested_dist)
+        events=e.grasps.events[self.event_cursor:] if hasattr(e,'grasps') else []
+        self.event_cursor+=len(events)
+        row['grasp_events']=events
+        row['grasp_attached']=dict(e.grasps.active) if hasattr(e,'grasps') else {}
         self.contacts_seen.clear();return row

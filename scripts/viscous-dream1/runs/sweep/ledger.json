@@ -1,5 +1,5 @@
 {
- "cap": 1912,
+ "cap": 2212,
  "requests": [
   {
    "id": 1,
@@ -11401,6 +11401,15 @@
    "budget_used_at_authorization": 1206,
    "utc": "2026-10-23T05:32:45Z",
    "reason": "Gavin 2026-10-23: authorizes 600 more billed calls for zero-shot bench propeller cleaning; Stage A at most 240, Stage B at most 180."
+  },
+  {
+   "id": "flange_dream_20261024_300_calls",
+   "old_cap": 1912,
+   "new_cap": 2212,
+   "additional_calls": 300,
+   "budget_used_at_authorization": 1626,
+   "utc": "2026-10-25T01:12:47Z",
+   "reason": "Gavin 2026-10-24 BRIEF_FLANGE_DREAM: authorizes 300 additional billed calls; flange task at most 400 calls, Stage A <=240, Stage B <=120. Authorization recorded only; scripted feasibility failed, so Part 2 has not started and no calls have been reserved."
   }
  ]
 }

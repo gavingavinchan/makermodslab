@@ -122,13 +122,20 @@ def initialize(task, c, seed):
         env = yam_env()
     else:
         env = SweepEnv(task, c)
+    if task == 'flange' and c.get('start', 'table') == 'pregrasp':
+        from flange_start import setup
+        setup(env, 'pregrasp', seed)
     jitter = np.zeros(2) if task == 'flange' else np.random.default_rng(seed).uniform(-.02, .02, 2)
     env.data.joint(('bolt' if task == 'flange' else 'sponge' if task == 'propeller' else task) + '_free').qpos[:2] += jitter
     mujoco.mj_forward(env.model, env.data)
     windows = {k: deque(maxlen=y.FRAMES) for k in y.VIDEO_ROLES}
     steps = 0
+    pregrasp_command = env.state() if task == 'flange' and c.get('start') == 'pregrasp' else None
     while any(len(w) < y.FRAMES for w in windows.values()):
-        state = env.state(); env.step(state['left'], state['right'])
+        state = {side:q.copy() for side,q in pregrasp_command.items()} if pregrasp_command is not None else env.state()
+        if pregrasp_command is not None:
+            for side in env.sides: state[side][6] = 0.
+        env.step(state['left'], state['right'])
         if steps % y.FRAME_EVERY_STEPS == 0:
             images = y.capture(env, windows)
         steps += 1
@@ -211,7 +218,7 @@ def input_sheet(windows, path):
 
 def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=None, stub=False, first_episode_index=0):
     if task == 'flange' and live:
-        raise ValueError('Flange scene is local-only; live inference is not authorized.')
+        raise ValueError('Flange live inference is blocked: scripted pregrasp insertion and two nut turns have not passed.')
     name = config_name(c)
     directory = (dry_root or ROOT) / name / task
     if variant: directory = directory / variant
@@ -234,7 +241,7 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
         input_sheet(windows, out / 'contact_sheet.jpg')
     if flange:
         from flange_scene import Measurements
-        from propeller_scene import ViewsRecorder
+        from flange_recording import ViewsRecorder
         observer = Measurements(env)
         rec = ViewsRecorder(env)
     elif propeller:
@@ -413,7 +420,10 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
             client.close()
         if rec.frames:
             import imageio.v2 as imageio
-            imageio.mimsave(out / 'run.mp4', rec.frames, fps=5)
+            if flange:
+                imageio.mimsave(out / 'run.mp4', rec.frames, fps=5, codec='libx264', pixelformat='yuv420p')
+            else:
+                imageio.mimsave(out / 'run.mp4', rec.frames, fps=5)
             if index == 0 and not (new_mode or propeller or flange): sheet(rec, out / 'contact_sheet.jpg', [c['call'] for c in metrics['calls']])
         env.close(); rec.renderer.close()
 
@@ -510,11 +520,13 @@ def main():
     p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
     p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller', 'flange'], default='both')
     p.add_argument('--episodes', type=int, default=6)
+    p.add_argument('--start', choices=['table','pregrasp'], default='table', help='Flange-only pregrasp start')
     p.add_argument('--prompt-id', choices=['P1','P2','P3','P4'], default='P1', help='Propeller prompt')
     p.add_argument('--live', action='store_true')
     p.add_argument('--stages', action='store_true')
     p.add_argument('--check', action='store_true')
     args = p.parse_args()
+    if args.start != 'table' and args.task != 'flange': p.error('--start pregrasp requires --task flange')
     ROOT.mkdir(parents=True, exist_ok=True)
     ensure_tip()
     with (ROOT / 'runner.lock').open('a') as lock:
@@ -528,8 +540,8 @@ def main():
         elif args.task == 'flange':
             from flange_scene import PROMPT
             for index in range(args.episodes):
-                episode('flange', parse_config(args.config), index, args.live, ledger,
-                        dry_root=HERE/'runs/flange_v2/dry', prompt=PROMPT, stub=True)
+                episode('flange', dict(parse_config(args.config), **({'start':'pregrasp'} if args.start=='pregrasp' else {})), index, args.live, ledger,
+                        dry_root=HERE/('runs/flange_dream/dry_pregrasp' if args.start=='pregrasp' else 'runs/flange_v2/dry'), prompt=PROMPT, stub=True)
         elif args.task == 'propeller':
             from propeller_sweep import PROMPTS, authorize
             if args.live: ledger = authorize()

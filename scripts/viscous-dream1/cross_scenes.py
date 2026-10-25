@@ -133,6 +133,9 @@ def viscous_xml(task="apple", wrist="maker"):
         for section in ("contact", "equality", "actuator"):
             for element in source.find(section):
                 root.find(section).append(renamed(element))
+    if task == 'flange':
+        from flange_holding import configure
+        configure(root)
     return ET.tostring(root, encoding="unicode")
 
 
@@ -195,6 +198,8 @@ class ViscousAppleEnv(yam_env.YamEnv):
                 raise ValueError("Expected seven finite commands with normalized gripper.")
             limits = np.array([self.model.joint(f"{side}_joint{i}").range for i in range(1, 7)])
             commands[side] = np.r_[np.clip(action[:6], limits[:, 0], limits[:, 1]), action[6] * OPEN]
+        if hasattr(self, 'grasps'):
+            self.gripper_command = {side: float(action[6]) for side, action in [('left', left), ('right', right)]}
         for _ in range(50):
             for side, target in commands.items():
                 aids = self.aids[side]
