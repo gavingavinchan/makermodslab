@@ -229,6 +229,12 @@ restore paths in the DAgger runner.
   ROV Blender integration are separate coordinated subtasks; no policy/autonomy
   or validated wet-dynamics claim. Brief and source/interface details:
   `scripts/viscous-dream1/BRIEF_PROPELLER_CINEMATIC.md`.
+  *Zigzag refinement (2026-10-24, Gavin):* explicitly use a zigzag/serpentine
+  trajectory: long sweep, shift across the blade, reverse on the next lane.
+  The video should visibly cover new dirty area throughout instead of cleaning
+  the same strip repeatedly. Overlap adjacent lanes to avoid gaps, measure
+  unique swept area, and drive the persistent green-to-copper reveal from the
+  actual pad footprint. Forwarded to both ongoing coverage and Blender workers.
   *Polisher asset milestone (2026-10-24):* `cinematic/tool/polisher.blend`
   replaces the primitive visual tool with a sealed marine-blue housing,
   rubber grasp sleeve, machined spindle/fittings, layered backing and grainy

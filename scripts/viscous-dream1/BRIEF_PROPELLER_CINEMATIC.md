@@ -9,6 +9,13 @@ greenish propeller becoming copper/bronze where cleaned, and bring in the actual
 BlueROV with its mounted arms. Cover different areas instead of repeatedly
 scrubbing one strip. Make the environment realistic, principally in Blender.
 
+Gavin explicitly refined this to a **zigzag/serpentine path** later in the same
+session: sweep along one lane, shift across the blade, reverse along the next
+lane, and repeat. Throughout the video the pad should enter new dirty areas,
+rather than polish one strip repeatedly. Use overlapping lanes to avoid gaps;
+report unique swept area and lane spacing. The dirt reveal must follow these
+actual passes. Keep the left-hand hold and edge-clearance constraints intact.
+
 Gavin's follow-up explicitly directs us to **MakerMods Brain for the CAD** and
 to do **Blender and most heavy work on gavin-linux**. The Mac is the orchestration,
 code review and artifact-viewing machine. This authorizes the environment phase
