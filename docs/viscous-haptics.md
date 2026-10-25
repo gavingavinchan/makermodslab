@@ -192,6 +192,14 @@ restore paths in the DAgger runner.
   `scripts/viscous-dream1/runs/propeller_corrected/`; reproduction and full
   evidence are in `scripts/viscous-dream1/PROPELLER_CORRECTED_README.md`.
   Gavin reviews the geometry/motion before the later BlueROV/ship scene.
+  *Larger-motion request (2026-10-24, Gavin):* "i want larger motions, the side
+  way motions is not enough." The corrected scene's 31.506 mm radial stroke
+  reads as a small wiggle. Keep the corrected propeller and all scene/model
+  settings unchanged; expand real pad sweeps across the same blade, targeting
+  100–150 mm actual in-contact travel with a slower/longer clip if needed.
+  Preserve the left outer-edge hold and measure stroke spans and contact,
+  rather than substituting accumulated distance or camera movement. Brief:
+  `scripts/viscous-dream1/BRIEF_PROPELLER_WIDE.md`. Still no scenery rebuild.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
