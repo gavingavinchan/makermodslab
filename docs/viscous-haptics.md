@@ -175,6 +175,23 @@ restore paths in the DAgger runner.
   open water, without a fabricated seabed. Manufacturer propeller images and
   primary shipyard references recorded in
   `scripts/viscous-dream1/BRIEF_PROPELLER_CORRECT.md`; no scenery rebuild now.
+  *Corrected propeller result (2026-10-24):* `propeller_corrected` replaces the
+  leaf-strip blades with smooth cylindrical helical sections, rounded tips and
+  coherent pitch, using Solé/France Hélices/Palumbo photographs as visual
+  references. Diameter stays 960 mm; four blades are exact 90° copies. The
+  visible surface uses the collision cells' exterior triangles. Non-blade XML
+  and compiled table/risers/stand/bases/cameras/lights/tool/force limits are
+  verified unchanged. The 12 s scripted scrub maintains both holds and pad
+  contact at every substep, with 31.506 mm radial travel and three strict
+  reversals. Left contacts lie at 453.601–478.827 mm radius; unintended
+  penetration is zero and maximum intended penetration is 0.772 mm. Release
+  drops the free tool 561.829 mm. Mesh/contact checks and all 150 video frames
+  pass. Initialized pregrasp, fixed shaft and left-arm 5 Nm saturation remain;
+  this is not a policy/autonomy or hardware result. No Dream calls or scenery
+  changes. Show the head-on/oblique/side renders and 15 s clip under
+  `scripts/viscous-dream1/runs/propeller_corrected/`; reproduction and full
+  evidence are in `scripts/viscous-dream1/PROPELLER_CORRECTED_README.md`.
+  Gavin reviews the geometry/motion before the later BlueROV/ship scene.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

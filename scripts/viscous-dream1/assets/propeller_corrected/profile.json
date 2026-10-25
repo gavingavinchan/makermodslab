@@ -1,0 +1,10 @@
+{
+  "profile": "sole-inspired-helical-v1",
+  "diameter_m": 0.96,
+  "root_radius_m": 0.085,
+  "pitch_m": 0.754,
+  "radial_cells": 48,
+  "chord_cells": 16,
+  "source": "propeller_corrected_scene.py",
+  "reference": "https://soleadvance.com/Fotos/FA1628_001.jpg"
+}

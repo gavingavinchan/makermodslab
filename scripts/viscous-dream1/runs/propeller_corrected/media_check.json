@@ -1,0 +1,20 @@
+{
+  "frames_decoded": 150,
+  "fps": 10.0,
+  "duration_s": 15.0,
+  "size": [
+    1600,
+    940
+  ],
+  "replay_rows": 300,
+  "release_rows": 30,
+  "finite_and_monotonic_physics_states": true,
+  "sha256": {
+    "scripted_feasibility.mp4": "013efe9451bed56ff8051dd63e86718931fdd0cae26fe85a3d4a766031bc1706",
+    "physics_replay.npz": "74595e2fcae620eb43e705ac516ed5a70183d3e1a083a0b041cdfe22d70226bf",
+    "trajectory.jsonl": "d8e3bef3cfdff7ff1dcce5f965d6f6a647277b0fdb77773a141f2833fd3bfe44",
+    "release_trace.json": "6bc5183ecaab20c1c8b6f978da58b9b41f91b83fc6248f2c4f82a98a4000f0cd",
+    "geometry_check.json": "10d13cfbf3d1ac30fe568c785b76848d209924020629a297a7ede2cc6e2efbf3",
+    "check.json": "af28012484459df89f9d4be798957a8eff0bc3d43759891d985f0f34a4d4ea83"
+  }
+}
