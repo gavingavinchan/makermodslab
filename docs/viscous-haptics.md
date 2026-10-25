@@ -166,6 +166,15 @@ restore paths in the DAgger runner.
   preview, not floating-ROV or wet dynamics. Both 15 s videos fully decode;
   geometry/contact checks pass. See `PROPELLER_LARGE_README.md` and the report
   in `scripts/viscous-dream1/runs/propeller_large/`; the 320 mm baseline remains.
+  *Correction (2026-10-24, Gavin):* the blades are "wonky". Correct the marine
+  propeller geometry and motion, changing only the propeller and its interaction
+  targets in the current bench scene, then show him before changing the
+  environment. The underwater service-frame/generic-hull preview is rejected.
+  The later scene must mount both arms on the actual BlueROV2 Heavy, working
+  beside a correctly referenced ship underside/stern/propeller arrangement in
+  open water, without a fabricated seabed. Manufacturer propeller images and
+  primary shipyard references recorded in
+  `scripts/viscous-dream1/BRIEF_PROPELLER_CORRECT.md`; no scenery rebuild now.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
