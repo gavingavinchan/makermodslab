@@ -214,6 +214,21 @@ restore paths in the DAgger runner.
   views and evidence are linked in `PROPELLER_WIDE_README.md`. Initialized
   pregrasp, fixed shaft and continuous left-arm 5 Nm saturation remain;
   this is scripted simulation, with no Dream calls or hardware activity.
+  *Presentation phase authorized (2026-10-24, Gavin):* extend the sweep toward
+  the edge if possible and explain the limit if difficult. Now make it realistic:
+  improve the drill/polisher 3D model, clean different overlapping areas, and
+  reveal copper/bronze beneath green fouling only where the pad has passed.
+  Bring in the actual BlueROV with both arms mounted on it, proper ship-underside
+  context and no seabed. "Do a lot ... in Blender"; his follow-up explicitly
+  says find the CAD in MakerMods Brain and do Blender/most hard work on
+  **gavin-linux**, not the Mac. Brain's `Viscous Bimanual ROV Model` note and
+  source JSON locate the native CAD-derived BlueROV2 Heavy rig at Linux
+  `Documents/viscous-rov-model/blender/viscous_rov.blend`; its original SHA-256
+  matches on disk, with native arm mounts 493.05 mm apart. This is separate from
+  the newer concept vehicle. Physical edge coverage, the tool asset, and native
+  ROV Blender integration are separate coordinated subtasks; no policy/autonomy
+  or validated wet-dynamics claim. Brief and source/interface details:
+  `scripts/viscous-dream1/BRIEF_PROPELLER_CINEMATIC.md`.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
