@@ -186,6 +186,13 @@ restore paths in the DAgger runner.
   through a `robot` CLI on a live sim (no object poses, no Dream calls). Interface
   first (`BRIEF_ASTRA_HARNESS.md`, validated by a scripted operator on G3), then
   Astra on G3, G1 and T.
+  *Goal reframed (Gavin, 2026-10-24):* "I don't really care how it's done ... go
+  very slow, whatever ... as long as I can post this online and say that this is
+  fully autonomous." So the deliverable is one clean, successful, fully autonomous
+  sim video. Rules that keep the claim true: one continuous episode with no human
+  input, resets or edits; the agent decides from cameras and depth only (no
+  privileged object poses); real-time or labelled speed-up; logs kept. Post it as
+  simulation, with the arm torque limit lifted beyond the real motors.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
