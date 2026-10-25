@@ -1,0 +1,328 @@
+{
+  "inference_calls": 0,
+  "vendored_arm_hashes_passed": true,
+  "no_external_arm_checkout_required": true,
+  "table_and_top_camera_identical_to_Dream": true,
+  "cardinal_tips_world_relative_m": [
+    [
+      0.16,
+      4.2862637970157364e-19,
+      2.326828918379971e-18
+    ],
+    [
+      7.470345474798855e-18,
+      4.2862637970157364e-19,
+      0.16
+    ],
+    [
+      -0.16,
+      4.2862637970157364e-19,
+      1.726751986797768e-17
+    ],
+    [
+      -2.70646942611565e-17,
+      4.2862637970157364e-19,
+      -0.16
+    ]
+  ],
+  "watertight_blades": 4,
+  "convex_blade_contact_parts": 192,
+  "no_welds": true,
+  "free_tool": true,
+  "fixed_hub": true,
+  "policy_images": {
+    "top": [
+      360,
+      640,
+      3
+    ],
+    "left": [
+      360,
+      640,
+      3
+    ],
+    "right": [
+      360,
+      640,
+      3
+    ]
+  },
+  "poses": {
+    "left": {
+      "target": [
+        0.07065748514123085,
+        -0.11194523236263065,
+        0.9739481889954029
+      ],
+      "R": [
+        [
+          0.2717052565203073,
+          0.09351503044261658,
+          -0.9578262852211513
+        ],
+        [
+          -0.9056841884010247,
+          -0.31171676814205523,
+          -0.2873478855663454
+        ],
+        [
+          -0.32544186033700606,
+          0.9455620527180586,
+          0.0
+        ]
+      ],
+      "q": [
+        -0.055913797512161,
+        -2.132902819320093,
+        1.4294522943678591,
+        0.864926660260482,
+        1.3352533298303193,
+        0.3314789896392015
+      ],
+      "error_m": 1.727588922053261e-13,
+      "error_deg": 4.0675125238137466e-10
+    },
+    "right": {
+      "target": [
+        -0.016748464761119183,
+        -0.021079947659241857,
+        1.0189291322277736
+      ],
+      "R": [
+        [
+          0.9973713157939217,
+          0.0,
+          0.07246004713979382
+        ],
+        [
+          0.06649049419672934,
+          -0.39746822323159925,
+          -0.9152038164816569
+        ],
+        [
+          0.028800566191931776,
+          0.9176159390077723,
+          -0.3964234047907724
+        ]
+      ],
+      "q": [
+        -1.0786580355706081,
+        -1.8510183661669928,
+        2.1529139332688056,
+        -0.8143973139239039,
+        0.8825377838878559,
+        -0.5841414955165869
+      ],
+      "error_m": 2.0957346487416627e-12,
+      "error_deg": 7.983896258501678e-10
+    }
+  },
+  "initial_contacts": [],
+  "ready_contacts": [
+    {
+      "geoms": [
+        "left_collision_043_22",
+        "cardinal_blade_0_15_0"
+      ],
+      "bodies": [
+        "left_gripper_left",
+        "cardinal_propeller"
+      ],
+      "distance_m": -2.749733918452157e-05,
+      "normal_N": 0.42781633339576813,
+      "position": [
+        0.058663107089690046,
+        -0.12189414965062997,
+        0.9661915069558649
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_043_22",
+        "cardinal_blade_0_15_1"
+      ],
+      "bodies": [
+        "left_gripper_left",
+        "cardinal_propeller"
+      ],
+      "distance_m": -0.000157602156684727,
+      "normal_N": 2.2203175796271126,
+      "position": [
+        0.05964624962686778,
+        -0.12238173860675794,
+        0.9681193574749962
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_043_22",
+        "cardinal_blade_0_15_1"
+      ],
+      "bodies": [
+        "left_gripper_left",
+        "cardinal_propeller"
+      ],
+      "distance_m": -0.00011492545943603445,
+      "normal_N": 1.6060896543908054,
+      "position": [
+        0.059985103744259596,
+        -0.12294780252903582,
+        0.9700188573747526
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_042_22",
+        "cardinal_blade_0_12_1"
+      ],
+      "bodies": [
+        "left_gripper_right",
+        "cardinal_propeller"
+      ],
+      "distance_m": -8.972491887114769e-05,
+      "normal_N": 1.4641257775244847,
+      "position": [
+        0.03540817276617727,
+        -0.11397504149615757,
+        0.975143082379596
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_042_22",
+        "cardinal_blade_0_12_1"
+      ],
+      "bodies": [
+        "left_gripper_right",
+        "cardinal_propeller"
+      ],
+      "distance_m": -0.00010780958363418216,
+      "normal_N": 1.7001007349183224,
+      "position": [
+        0.03514936048901536,
+        -0.11304713194475707,
+        0.972395574630537
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_042_22",
+        "cardinal_blade_0_13_1"
+      ],
+      "bodies": [
+        "left_gripper_right",
+        "cardinal_propeller"
+      ],
+      "distance_m": -7.5585042491797e-05,
+      "normal_N": 1.2809332609835509,
+      "position": [
+        0.035597379992114875,
+        -0.11465338804507581,
+        0.9771501185595769
+      ]
+    },
+    {
+      "geoms": [
+        "left_collision_042_22",
+        "cardinal_blade_0_13_1"
+      ],
+      "bodies": [
+        "left_gripper_right",
+        "cardinal_propeller"
+      ],
+      "distance_m": -8.976143187341946e-05,
+      "normal_N": 1.4636815321025265,
+      "position": [
+        0.03540790040301967,
+        -0.11397325786497806,
+        0.9751376983122046
+      ]
+    },
+    {
+      "geoms": [
+        "cardinal_handle",
+        "right_collision_043_22"
+      ],
+      "bodies": [
+        "cardinal_tool",
+        "right_gripper_left"
+      ],
+      "distance_m": -0.0006910660696035823,
+      "normal_N": 9.950341123048858,
+      "position": [
+        0.001848077835049414,
+        -0.04978221880494909,
+        1.0016471661933584
+      ]
+    },
+    {
+      "geoms": [
+        "cardinal_handle",
+        "right_collision_043_22"
+      ],
+      "bodies": [
+        "cardinal_tool",
+        "right_gripper_left"
+      ],
+      "distance_m": -0.0006957738042468779,
+      "normal_N": 10.03240283656098,
+      "position": [
+        -0.0018189336694954068,
+        -0.005165782845149132,
+        1.0225221740775938
+      ]
+    },
+    {
+      "geoms": [
+        "cardinal_handle",
+        "right_collision_042_22"
+      ],
+      "bodies": [
+        "cardinal_tool",
+        "right_gripper_right"
+      ],
+      "distance_m": -0.0006984607331929757,
+      "normal_N": 9.968321267816115,
+      "position": [
+        -0.03303443007214276,
+        -0.007381612729772076,
+        1.0217783090838541
+      ]
+    },
+    {
+      "geoms": [
+        "cardinal_handle",
+        "right_collision_042_22"
+      ],
+      "bodies": [
+        "cardinal_tool",
+        "right_gripper_right"
+      ],
+      "distance_m": -0.0007031687498398521,
+      "normal_N": 10.049374009874708,
+      "position": [
+        -0.029367198905603936,
+        -0.052000721311481216,
+        1.0009020507410775
+      ]
+    },
+    {
+      "geoms": [
+        "cardinal_pad",
+        "cardinal_blade_0_7_1"
+      ],
+      "bodies": [
+        "cardinal_tool",
+        "cardinal_propeller"
+      ],
+      "distance_m": -9.72048144656892e-05,
+      "normal_N": 0.9496272575843916,
+      "position": [
+        -0.009838416209739314,
+        -0.1127526097681476,
+        0.9768876957172464
+      ]
+    }
+  ],
+  "scripted_artifact_checks_passed": true
+}

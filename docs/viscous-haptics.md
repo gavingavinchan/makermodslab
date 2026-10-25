@@ -127,6 +127,21 @@ restore paths in the DAgger runner.
   the environment-first brief are in
   `scripts/viscous-dream1/BRIEF_PROPELLER_BIMANUAL.md`. Build and show the scene
   and simultaneous working poses before any further billed policy trial.
+  *Environment result (2026-10-24):* Codex Astra built the isolated
+  `propeller_cardinal` scene: 320 mm pitched bronze propeller, cardinal blades,
+  fixed horizontal shaft, original desk and three policy cameras. Bases moved
+  to 440 mm spacing so both arms reach the screen-left blade. The left jaws
+  pinch its outer 135–160 mm radius; the right jaws hold a free 52 mm circular
+  pad. A 15 s scripted physics clip, from an explicitly initialized pregrasp,
+  maintains both grasps throughout the 12 s scrub and actual pad contact for
+  99.46%, with 26.14 mm radial travel, two continuous-contact reversals, no
+  unintended collisions and no welds. Opening the right jaws drops the tool.
+  The left arm stays at its 5 Nm cap; pickup/approach, torque margin, abrasion
+  and Dream performance remain unproven. No new Dream calls or hardware access.
+  Show `scripts/viscous-dream1/runs/propeller_cardinal/ready_detail.png` and
+  `scripted_feasibility.mp4`; report and reproduction instructions are linked
+  from `scripts/viscous-dream1/PROPELLER_CARDINAL_README.md`. Code, procedural
+  blade assets and required arm CAD are repo-local; old tasks are unchanged.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

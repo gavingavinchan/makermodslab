@@ -1,0 +1,15 @@
+{
+  "frames": 150,
+  "fps": 10.0,
+  "size": [
+    1600,
+    940
+  ],
+  "duration": 15.0,
+  "sampled_frame_indices": [
+    0,
+    49,
+    99,
+    149
+  ]
+}

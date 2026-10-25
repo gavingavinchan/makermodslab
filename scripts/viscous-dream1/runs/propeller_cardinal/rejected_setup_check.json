@@ -1,0 +1,159 @@
+{
+  "task": "propeller_cardinal",
+  "inference_calls": 0,
+  "billed_calls": 0,
+  "scripted_not_policy_success": true,
+  "simulation_only": true,
+  "attachment": "none; free tool held by bilateral jaw contact",
+  "start": "pregrasp initialized once; no pickup/approach demonstration",
+  "duration_s": 12.999999999998234,
+  "scrub_s": 10,
+  "diameter_m": 0.32,
+  "center_world_m": [
+    -0.14,
+    -0.06,
+    0.96
+  ],
+  "target": "blade_0, world +X = screen-left from +Y arms/front view",
+  "blade_count": 4,
+  "blade_axes_world": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      -1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      -1
+    ]
+  ],
+  "poses": {
+    "left": {
+      "target": [
+        0.03128528411705265,
+        -0.05199086885948928,
+        0.9657135026938672
+      ],
+      "R": [
+        [
+          0.27356287627669096,
+          -0.08793270189567362,
+          -0.9578262852211513
+        ],
+        [
+          -0.9118762542556366,
+          0.29310900631891207,
+          -0.2873478855663454
+        ],
+        [
+          0.30601478664916415,
+          0.9520267592626093,
+          0.0
+        ]
+      ],
+      "q": [
+        0.4177332129476943,
+        -1.9327069408507527,
+        1.0675357874120113,
+        1.0266472887805063,
+        0.8616063193684976,
+        -0.31100416934164493
+      ],
+      "error_m": 1.4318740337837115e-13,
+      "error_deg": 7.540887661725851e-11
+    },
+    "right": {
+      "target": [
+        -0.04356630813439387,
+        0.039007355373843096,
+        0.9288137888773216
+      ],
+      "R": [
+        [
+          -0.9983133073499124,
+          0.0,
+          -0.05805635510501137
+        ],
+        [
+          0.053273436805053684,
+          -0.3974682232315993,
+          -0.9160682029478447
+        ],
+        [
+          -0.023075556310891657,
+          -0.9176159390077723,
+          0.39679781650083124
+        ]
+      ],
+      "q": [
+        1.7242360873550562,
+        -0.09954758678118703,
+        3.6755221755928056,
+        -1.6383794302079224,
+        -1.1534770182750718,
+        1.3216685421305967
+      ],
+      "error_m": 7.8683850205253e-11,
+      "error_deg": 4.011695901948858e-08
+    }
+  },
+  "scrub_contact_fraction": {
+    "pad": 0.4455,
+    "left_bilateral": 1.0,
+    "right_bilateral": 1.0,
+    "simultaneous": 0.4455
+  },
+  "scrub_reversals": 0,
+  "scrub_tangent_path_continuous_contact_m": 0.029156002219290725,
+  "pad_motion_xyz_range_m": [
+    0.022601567805562786,
+    0.010360707338686659,
+    0.03719189675219936
+  ],
+  "max_intended_penetration_m": 0.004115166649738024,
+  "max_unwanted_penetration_m": 0.0010037199428143406,
+  "unexpected_contact_pairs": {
+    "right_collision_forearm_shell_07 / table": 0.0010037199428143406
+  },
+  "max_pad_normal_N": 6.3198994165745415,
+  "max_arm_force_Nm": 5.0,
+  "arm_force_limits_Nm": {
+    "left": [
+      -5.0,
+      5.0
+    ],
+    "right": [
+      -5.0,
+      5.0
+    ]
+  },
+  "max_scrub_ik_error_m": 1.3822585092920356e-07,
+  "max_scrub_ik_angle_deg": 6.161959037462935e-05,
+  "versions": {
+    "mujoco": "3.16.0",
+    "numpy": "2.2.6",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.1",
+    "dreamlabs": "1.0.1",
+    "dreamlabs_client": "1.0.3",
+    "imageio": "2.38.1",
+    "Pillow": "13.0.0"
+  },
+  "files_sha256": {
+    "propeller_cardinal_scene.py": "3975b46f44224970531228da5f4dc15d73697daf2456861fb87654fc6b43dfd6",
+    "propeller_cardinal_check.py": "0fe229a5b2b7deba09df9055056c396f254171caee605192bb9b8ac6487f5d2c",
+    "propeller_cardinal_demo.py": "1f71e6ff929252eead2c57ec8b3942354eca97f65e590a44d91a43cec856eb75"
+  },
+  "feasibility_passed": false
+}
