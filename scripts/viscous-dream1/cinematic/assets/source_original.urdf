@@ -1,0 +1,1640 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="viscous_bimanual_rov_cad_v1">
+  <!--CAD kinematic/visual model. ROV inertia, hydrodynamics and propulsion forces are NOT identified. Arm limits remain provisional. q=0 reproduces source folded pose.-->
+  <link name="rov_base">
+    <visual name="rov_base_00">
+      <geometry>
+        <mesh filename="meshes/rov_base_00.stl" />
+      </geometry>
+      <material name="rov_base_material_00">
+        <color rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_01">
+      <geometry>
+        <mesh filename="meshes/rov_base_01.stl" />
+      </geometry>
+      <material name="rov_base_material_01">
+        <color rgba="0.298039 0.298039 0.298039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_02">
+      <geometry>
+        <mesh filename="meshes/rov_base_02.stl" />
+      </geometry>
+      <material name="rov_base_material_02">
+        <color rgba="0.866667 0.909804 1 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_03">
+      <geometry>
+        <mesh filename="meshes/rov_base_03.stl" />
+      </geometry>
+      <material name="rov_base_material_03">
+        <color rgba="0.752941 0.752941 0.752941 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_04">
+      <geometry>
+        <mesh filename="meshes/rov_base_04.stl" />
+      </geometry>
+      <material name="rov_base_material_04">
+        <color rgba="0.792157 0.819608 0.933333 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_05">
+      <geometry>
+        <mesh filename="meshes/rov_base_05.stl" />
+      </geometry>
+      <material name="rov_base_material_05">
+        <color rgba="0.796078 0.823529 0.937255 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_06">
+      <geometry>
+        <mesh filename="meshes/rov_base_06.stl" />
+      </geometry>
+      <material name="rov_base_material_06">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_07">
+      <geometry>
+        <mesh filename="meshes/rov_base_07.stl" />
+      </geometry>
+      <material name="rov_base_material_07">
+        <color rgba="0.207843 0.207843 0.207843 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_08">
+      <geometry>
+        <mesh filename="meshes/rov_base_08.stl" />
+      </geometry>
+      <material name="rov_base_material_08">
+        <color rgba="0.294118 0.294118 0.294118 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_09">
+      <geometry>
+        <mesh filename="meshes/rov_base_09.stl" />
+      </geometry>
+      <material name="rov_base_material_09">
+        <color rgba="0.62 0.8 0.88 0.2" />
+      </material>
+    </visual>
+    <visual name="rov_base_10">
+      <geometry>
+        <mesh filename="meshes/rov_base_10.stl" />
+      </geometry>
+      <material name="rov_base_material_10">
+        <color rgba="1 0.94902 0.909804 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_11">
+      <geometry>
+        <mesh filename="meshes/rov_base_11.stl" />
+      </geometry>
+      <material name="rov_base_material_11">
+        <color rgba="0.843137 0.815686 0.752941 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_12">
+      <geometry>
+        <mesh filename="meshes/rov_base_12.stl" />
+      </geometry>
+      <material name="rov_base_material_12">
+        <color rgba="0.14902 0.6 0.815686 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_13">
+      <geometry>
+        <mesh filename="meshes/rov_base_13.stl" />
+      </geometry>
+      <material name="rov_base_material_13">
+        <color rgba="0.098039 0.098039 0.098039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_14">
+      <geometry>
+        <mesh filename="meshes/rov_base_14.stl" />
+      </geometry>
+      <material name="rov_base_material_14">
+        <color rgba="0.776471 0.756863 0.737255 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_15">
+      <geometry>
+        <mesh filename="meshes/rov_base_15.stl" />
+      </geometry>
+      <material name="rov_base_material_15">
+        <color rgba="0.956863 0.956863 0.956863 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_16">
+      <geometry>
+        <mesh filename="meshes/rov_base_16.stl" />
+      </geometry>
+      <material name="rov_base_material_16">
+        <color rgba="0.34902 0.34902 0.34902 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_17">
+      <geometry>
+        <mesh filename="meshes/rov_base_17.stl" />
+      </geometry>
+      <material name="rov_base_material_17">
+        <color rgba="0.431373 0.45098 0.431373 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_18">
+      <geometry>
+        <mesh filename="meshes/rov_base_18.stl" />
+      </geometry>
+      <material name="rov_base_material_18">
+        <color rgba="0.937255 0.937255 0.937255 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_19">
+      <geometry>
+        <mesh filename="meshes/rov_base_19.stl" />
+      </geometry>
+      <material name="rov_base_material_19">
+        <color rgba="0.168627 0.6 0.811765 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_20">
+      <geometry>
+        <mesh filename="meshes/rov_base_20.stl" />
+      </geometry>
+      <material name="rov_base_material_20">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_21">
+      <geometry>
+        <mesh filename="meshes/rov_base_21.stl" />
+      </geometry>
+      <material name="rov_base_material_21">
+        <color rgba="0.698039 0.698039 0.698039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_22">
+      <geometry>
+        <mesh filename="meshes/rov_base_22.stl" />
+      </geometry>
+      <material name="rov_base_material_22">
+        <color rgba="0.2 0.4 0.698039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_23">
+      <geometry>
+        <mesh filename="meshes/rov_base_23.stl" />
+      </geometry>
+      <material name="rov_base_material_23">
+        <color rgba="0.588235 0.572549 0.52549 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_24">
+      <geometry>
+        <mesh filename="meshes/rov_base_24.stl" />
+      </geometry>
+      <material name="rov_base_material_24">
+        <color rgba="0.2 0.462745 0.231373 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_25">
+      <geometry>
+        <mesh filename="meshes/rov_base_25.stl" />
+      </geometry>
+      <material name="rov_base_material_25">
+        <color rgba="0.019608 0.431373 0.066667 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_26">
+      <geometry>
+        <mesh filename="meshes/rov_base_26.stl" />
+      </geometry>
+      <material name="rov_base_material_26">
+        <color rgba="0.760784 0.772549 0.560784 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_27">
+      <geometry>
+        <mesh filename="meshes/rov_base_27.stl" />
+      </geometry>
+      <material name="rov_base_material_27">
+        <color rgba="0.486275 0.070588 0.070588 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_28">
+      <geometry>
+        <mesh filename="meshes/rov_base_28.stl" />
+      </geometry>
+      <material name="rov_base_material_28">
+        <color rgba="0.780392 0.682353 0.509804 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_29">
+      <geometry>
+        <mesh filename="meshes/rov_base_29.stl" />
+      </geometry>
+      <material name="rov_base_material_29">
+        <color rgba="0.003922 0.168627 0.576471 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_30">
+      <geometry>
+        <mesh filename="meshes/rov_base_30.stl" />
+      </geometry>
+      <material name="rov_base_material_30">
+        <color rgba="0.101961 0.101961 0.101961 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_31">
+      <geometry>
+        <mesh filename="meshes/rov_base_31.stl" />
+      </geometry>
+      <material name="rov_base_material_31">
+        <color rgba="0.368627 0.254902 0.07451 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_32">
+      <geometry>
+        <mesh filename="meshes/rov_base_32.stl" />
+      </geometry>
+      <material name="rov_base_material_32">
+        <color rgba="0.909804 0.678431 0.137255 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_33">
+      <geometry>
+        <mesh filename="meshes/rov_base_33.stl" />
+      </geometry>
+      <material name="rov_base_material_33">
+        <color rgba="0.984314 0.980392 0.960784 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_34">
+      <geometry>
+        <mesh filename="meshes/rov_base_34.stl" />
+      </geometry>
+      <material name="rov_base_material_34">
+        <color rgba="0.764706 0.486275 0.145098 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_35">
+      <geometry>
+        <mesh filename="meshes/rov_base_35.stl" />
+      </geometry>
+      <material name="rov_base_material_35">
+        <color rgba="0.235294 0.235294 0.235294 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_36">
+      <geometry>
+        <mesh filename="meshes/rov_base_36.stl" />
+      </geometry>
+      <material name="rov_base_material_36">
+        <color rgba="0.627451 0.627451 0.627451 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_37">
+      <geometry>
+        <mesh filename="meshes/rov_base_37.stl" />
+      </geometry>
+      <material name="rov_base_material_37">
+        <color rgba="0.839216 0.466667 0.368627 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_38">
+      <geometry>
+        <mesh filename="meshes/rov_base_38.stl" />
+      </geometry>
+      <material name="rov_base_material_38">
+        <color rgba="0.956863 0.898039 0.654902 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_39">
+      <geometry>
+        <mesh filename="meshes/rov_base_39.stl" />
+      </geometry>
+      <material name="rov_base_material_39">
+        <color rgba="1 0.807843 0.498039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_40">
+      <geometry>
+        <mesh filename="meshes/rov_base_40.stl" />
+      </geometry>
+      <material name="rov_base_material_40">
+        <color rgba="0.721569 0.721569 0.721569 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_41">
+      <geometry>
+        <mesh filename="meshes/rov_base_41.stl" />
+      </geometry>
+      <material name="rov_base_material_41">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_42">
+      <geometry>
+        <mesh filename="meshes/rov_base_42.stl" />
+      </geometry>
+      <material name="rov_base_material_42">
+        <color rgba="0.780392 0.498039 0 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_43">
+      <geometry>
+        <mesh filename="meshes/rov_base_43.stl" />
+      </geometry>
+      <material name="rov_base_material_43">
+        <color rgba="0.458824 0.341176 0.172549 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_44">
+      <geometry>
+        <mesh filename="meshes/rov_base_44.stl" />
+      </geometry>
+      <material name="rov_base_material_44">
+        <color rgba="0.501961 1 0.501961 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_45">
+      <geometry>
+        <mesh filename="meshes/rov_base_45.stl" />
+      </geometry>
+      <material name="rov_base_material_45">
+        <color rgba="0.898039 0.898039 0.898039 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_46">
+      <geometry>
+        <mesh filename="meshes/rov_base_46.stl" />
+      </geometry>
+      <material name="rov_base_material_46">
+        <color rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_47">
+      <geometry>
+        <mesh filename="meshes/rov_base_47.stl" />
+      </geometry>
+      <material name="rov_base_material_47">
+        <color rgba="0.215686 0.168627 0 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_48">
+      <geometry>
+        <mesh filename="meshes/rov_base_48.stl" />
+      </geometry>
+      <material name="rov_base_material_48">
+        <color rgba="1 1 0.752941 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_49">
+      <geometry>
+        <mesh filename="meshes/rov_base_49.stl" />
+      </geometry>
+      <material name="rov_base_material_49">
+        <color rgba="0 0.752941 0 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_50">
+      <geometry>
+        <mesh filename="meshes/rov_base_50.stl" />
+      </geometry>
+      <material name="rov_base_material_50">
+        <color rgba="1 0.752941 0 1" />
+      </material>
+    </visual>
+    <visual name="rov_base_51">
+      <geometry>
+        <mesh filename="meshes/rov_base_51.stl" />
+      </geometry>
+      <material name="rov_base_material_51">
+        <color rgba="0.513725 0.513725 0.513725 1" />
+      </material>
+    </visual>
+    <collision name="rov_base_collision_00">
+      <geometry>
+        <mesh filename="meshes/rov_base_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_01">
+      <geometry>
+        <mesh filename="meshes/rov_base_01.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_02">
+      <geometry>
+        <mesh filename="meshes/rov_base_02.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_03">
+      <geometry>
+        <mesh filename="meshes/rov_base_03.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_04">
+      <geometry>
+        <mesh filename="meshes/rov_base_04.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_05">
+      <geometry>
+        <mesh filename="meshes/rov_base_05.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_06">
+      <geometry>
+        <mesh filename="meshes/rov_base_06.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_07">
+      <geometry>
+        <mesh filename="meshes/rov_base_07.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_08">
+      <geometry>
+        <mesh filename="meshes/rov_base_08.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_09">
+      <geometry>
+        <mesh filename="meshes/rov_base_09.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_10">
+      <geometry>
+        <mesh filename="meshes/rov_base_10.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_11">
+      <geometry>
+        <mesh filename="meshes/rov_base_11.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_12">
+      <geometry>
+        <mesh filename="meshes/rov_base_12.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_13">
+      <geometry>
+        <mesh filename="meshes/rov_base_13.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_14">
+      <geometry>
+        <mesh filename="meshes/rov_base_14.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_15">
+      <geometry>
+        <mesh filename="meshes/rov_base_15.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_16">
+      <geometry>
+        <mesh filename="meshes/rov_base_16.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_17">
+      <geometry>
+        <mesh filename="meshes/rov_base_17.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_18">
+      <geometry>
+        <mesh filename="meshes/rov_base_18.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_19">
+      <geometry>
+        <mesh filename="meshes/rov_base_19.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_20">
+      <geometry>
+        <mesh filename="meshes/rov_base_20.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_21">
+      <geometry>
+        <mesh filename="meshes/rov_base_21.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_22">
+      <geometry>
+        <mesh filename="meshes/rov_base_22.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_23">
+      <geometry>
+        <mesh filename="meshes/rov_base_23.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_24">
+      <geometry>
+        <mesh filename="meshes/rov_base_24.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_25">
+      <geometry>
+        <mesh filename="meshes/rov_base_25.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_26">
+      <geometry>
+        <mesh filename="meshes/rov_base_26.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_27">
+      <geometry>
+        <mesh filename="meshes/rov_base_27.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_28">
+      <geometry>
+        <mesh filename="meshes/rov_base_28.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_29">
+      <geometry>
+        <mesh filename="meshes/rov_base_29.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_30">
+      <geometry>
+        <mesh filename="meshes/rov_base_30.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_31">
+      <geometry>
+        <mesh filename="meshes/rov_base_31.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_32">
+      <geometry>
+        <mesh filename="meshes/rov_base_32.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_33">
+      <geometry>
+        <mesh filename="meshes/rov_base_33.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_34">
+      <geometry>
+        <mesh filename="meshes/rov_base_34.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_35">
+      <geometry>
+        <mesh filename="meshes/rov_base_35.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_36">
+      <geometry>
+        <mesh filename="meshes/rov_base_36.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_37">
+      <geometry>
+        <mesh filename="meshes/rov_base_37.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_38">
+      <geometry>
+        <mesh filename="meshes/rov_base_38.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_39">
+      <geometry>
+        <mesh filename="meshes/rov_base_39.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_40">
+      <geometry>
+        <mesh filename="meshes/rov_base_40.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_41">
+      <geometry>
+        <mesh filename="meshes/rov_base_41.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_42">
+      <geometry>
+        <mesh filename="meshes/rov_base_42.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_43">
+      <geometry>
+        <mesh filename="meshes/rov_base_43.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_44">
+      <geometry>
+        <mesh filename="meshes/rov_base_44.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_45">
+      <geometry>
+        <mesh filename="meshes/rov_base_45.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_46">
+      <geometry>
+        <mesh filename="meshes/rov_base_46.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_47">
+      <geometry>
+        <mesh filename="meshes/rov_base_47.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_48">
+      <geometry>
+        <mesh filename="meshes/rov_base_48.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_49">
+      <geometry>
+        <mesh filename="meshes/rov_base_49.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_50">
+      <geometry>
+        <mesh filename="meshes/rov_base_50.stl" />
+      </geometry>
+    </collision>
+    <collision name="rov_base_collision_51">
+      <geometry>
+        <mesh filename="meshes/rov_base_51.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_base_link">
+    <inertial>
+      <origin xyz="-8.84586621215e-08 1.62154393358e-05 0.0359861827342" rpy="0 0 0" />
+      <mass value="0.435544232582" />
+      <inertia ixx="0.000319489370852" ixy="-1.38195824948e-08" ixz="7.49332758336e-10" iyy="0.000216075003314" iyz="-2.24200946365e-07" izz="0.000271906703184" />
+    </inertial>
+    <visual name="left_base_link_00">
+      <geometry>
+        <mesh filename="meshes/left_base_link_00.stl" />
+      </geometry>
+      <material name="left_base_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="left_base_link_01">
+      <geometry>
+        <mesh filename="meshes/left_base_link_01.stl" />
+      </geometry>
+      <material name="left_base_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_base_link_02">
+      <geometry>
+        <mesh filename="meshes/left_base_link_02.stl" />
+      </geometry>
+      <material name="left_base_link_material_02">
+        <color rgba="0.627451 0.627451 0.627451 1" />
+      </material>
+    </visual>
+    <collision name="left_base_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_base_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_base_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_base_link_01.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_base_link_collision_02">
+      <geometry>
+        <mesh filename="meshes/left_base_link_02.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_yaw_link">
+    <inertial>
+      <origin xyz="-0.000128336200716 -0.00118505903902 0.0458240424225" rpy="0 0 0" />
+      <mass value="0.449870587785" />
+      <inertia ixx="0.00032796560427" ixy="6.80145683345e-08" ixz="-1.37248630227e-06" iyy="0.000278232746431" iyz="3.80261037427e-06" izz="0.000232044290727" />
+    </inertial>
+    <visual name="left_yaw_link_00">
+      <geometry>
+        <mesh filename="meshes/left_yaw_link_00.stl" />
+      </geometry>
+      <material name="left_yaw_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_yaw_link_01">
+      <geometry>
+        <mesh filename="meshes/left_yaw_link_01.stl" />
+      </geometry>
+      <material name="left_yaw_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="left_yaw_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_yaw_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_yaw_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_yaw_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_upper_arm_link">
+    <inertial>
+      <origin xyz="-0.129741791156 -0.000566773711077 -7.83760123683e-08" rpy="0 0 0" />
+      <mass value="0.486593592881" />
+      <inertia ixx="0.000344506255137" ixy="-4.78981459111e-05" ixz="-1.51520381479e-07" iyy="0.00168790947736" iyz="9.40997363075e-10" izz="0.00184151529025" />
+    </inertial>
+    <visual name="left_upper_arm_link_00">
+      <geometry>
+        <mesh filename="meshes/left_upper_arm_link_00.stl" />
+      </geometry>
+      <material name="left_upper_arm_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_upper_arm_link_01">
+      <geometry>
+        <mesh filename="meshes/left_upper_arm_link_01.stl" />
+      </geometry>
+      <material name="left_upper_arm_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="left_upper_arm_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_upper_arm_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_upper_arm_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_upper_arm_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_forearm_link">
+    <inertial>
+      <origin xyz="0.103351869295 7.69668349149e-05 0.0526505056896" rpy="0 0 0" />
+      <mass value="0.523296810198" />
+      <inertia ixx="0.000498589913533" ixy="3.72448020097e-05" ixz="-0.000315553381151" iyy="0.00173137827819" iyz="1.62160882815e-05" izz="0.00174824792899" />
+    </inertial>
+    <visual name="left_forearm_link_00">
+      <geometry>
+        <mesh filename="meshes/left_forearm_link_00.stl" />
+      </geometry>
+      <material name="left_forearm_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_forearm_link_01">
+      <geometry>
+        <mesh filename="meshes/left_forearm_link_01.stl" />
+      </geometry>
+      <material name="left_forearm_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="left_forearm_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_forearm_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_forearm_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_forearm_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_pitch_link">
+    <inertial>
+      <origin xyz="0.0736904003854 9.43694797208e-08 0.0507139642881" rpy="0 0 0" />
+      <mass value="0.404985564232" />
+      <inertia ixx="0.000317020106609" ixy="-1.27236351025e-08" ixz="-0.000145472110861" iyy="0.000478693120364" iyz="1.012573649e-08" izz="0.000441394493776" />
+    </inertial>
+    <visual name="left_wrist_pitch_link_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_pitch_link_00.stl" />
+      </geometry>
+      <material name="left_wrist_pitch_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="left_wrist_pitch_link_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_pitch_link_01.stl" />
+      </geometry>
+      <material name="left_wrist_pitch_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <collision name="left_wrist_pitch_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_pitch_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_wrist_pitch_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_pitch_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_yaw_link">
+    <inertial>
+      <origin xyz="-0.000774742464374 3.57321818711e-05 -0.0418115559197" rpy="0 0 0" />
+      <mass value="0.397588220347" />
+      <inertia ixx="0.000215433375245" ixy="-4.7360058658e-07" ixz="-2.00359479786e-05" iyy="0.000242402985729" iyz="-1.72208651777e-07" izz="0.00019362994161" />
+    </inertial>
+    <visual name="left_wrist_yaw_link_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_yaw_link_00.stl" />
+      </geometry>
+      <material name="left_wrist_yaw_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="left_wrist_yaw_link_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_yaw_link_01.stl" />
+      </geometry>
+      <material name="left_wrist_yaw_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <collision name="left_wrist_yaw_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_yaw_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_wrist_yaw_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_yaw_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_roll_link">
+    <inertial>
+      <origin xyz="0.0384757820571 -8.58342350198e-05 -0.00118018132675" rpy="0 0 0" />
+      <mass value="0.571025538639" />
+      <inertia ixx="0.000600229759963" ixy="1.30154225127e-06" ixz="3.80305342188e-05" iyy="0.00065181839796" iyz="-4.60817518795e-06" izz="0.000613713599932" />
+    </inertial>
+    <visual name="left_wrist_roll_link_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_00.stl" />
+      </geometry>
+      <material name="left_wrist_roll_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="left_wrist_roll_link_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_01.stl" />
+      </geometry>
+      <material name="left_wrist_roll_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_wrist_roll_link_02">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_02.stl" />
+      </geometry>
+      <material name="left_wrist_roll_link_material_02">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="left_wrist_roll_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_wrist_roll_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_01.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_wrist_roll_link_collision_02">
+      <geometry>
+        <mesh filename="meshes/left_wrist_roll_link_02.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_gripper_left">
+    <inertial>
+      <origin xyz="0.0890248952332 0.0147884674501 -0.016695812262" rpy="0 0 0" />
+      <mass value="0.0403983627729" />
+      <inertia ixx="5.19071427725e-06" ixy="1.91714566673e-06" ixz="3.64675565411e-07" iyy="1.55902398311e-05" iyz="-2.04251835159e-07" izz="1.40107233094e-05" />
+    </inertial>
+    <visual name="left_gripper_left_00">
+      <geometry>
+        <mesh filename="meshes/left_gripper_left_00.stl" />
+      </geometry>
+      <material name="left_gripper_left_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_gripper_left_01">
+      <geometry>
+        <mesh filename="meshes/left_gripper_left_01.stl" />
+      </geometry>
+      <material name="left_gripper_left_material_01">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="left_gripper_left_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_gripper_left_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_gripper_left_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_gripper_left_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_gripper_right">
+    <inertial>
+      <origin xyz="0.0903406609559 -0.0147288603577 -0.013200703895" rpy="0 0 0" />
+      <mass value="0.0385148405324" />
+      <inertia ixx="5.33771724056e-06" ixy="-1.85235721868e-06" ixz="1.96051035795e-06" iyy="1.47305825516e-05" iyz="3.7635135495e-07" izz="1.29903555995e-05" />
+    </inertial>
+    <visual name="left_gripper_right_00">
+      <geometry>
+        <mesh filename="meshes/left_gripper_right_00.stl" />
+      </geometry>
+      <material name="left_gripper_right_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="left_gripper_right_01">
+      <geometry>
+        <mesh filename="meshes/left_gripper_right_01.stl" />
+      </geometry>
+      <material name="left_gripper_right_material_01">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="left_gripper_right_collision_00">
+      <geometry>
+        <mesh filename="meshes/left_gripper_right_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="left_gripper_right_collision_01">
+      <geometry>
+        <mesh filename="meshes/left_gripper_right_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_tool0" />
+  <link name="right_base_link">
+    <inertial>
+      <origin xyz="-8.84586742925e-08 -1.62154393388e-05 0.035986182732" rpy="0 0 0" />
+      <mass value="0.435544232582" />
+      <inertia ixx="0.000319489370862" ixy="1.38195824918e-08" ixz="7.49332690354e-10" iyy="0.000216075003325" iyz="2.24200946361e-07" izz="0.000271906703182" />
+    </inertial>
+    <visual name="right_base_link_00">
+      <geometry>
+        <mesh filename="meshes/right_base_link_00.stl" />
+      </geometry>
+      <material name="right_base_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="right_base_link_01">
+      <geometry>
+        <mesh filename="meshes/right_base_link_01.stl" />
+      </geometry>
+      <material name="right_base_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_base_link_02">
+      <geometry>
+        <mesh filename="meshes/right_base_link_02.stl" />
+      </geometry>
+      <material name="right_base_link_material_02">
+        <color rgba="0.627451 0.627451 0.627451 1" />
+      </material>
+    </visual>
+    <collision name="right_base_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_base_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_base_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_base_link_01.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_base_link_collision_02">
+      <geometry>
+        <mesh filename="meshes/right_base_link_02.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_yaw_link">
+    <inertial>
+      <origin xyz="-0.000128336200728 0.00118505904113 0.0458240424225" rpy="0 0 0" />
+      <mass value="0.449870587785" />
+      <inertia ixx="0.00032796560427" ixy="-6.80145684168e-08" ixz="-1.37248630217e-06" iyy="0.000278232746429" iyz="-3.80261038166e-06" izz="0.000232044290727" />
+    </inertial>
+    <visual name="right_yaw_link_00">
+      <geometry>
+        <mesh filename="meshes/right_yaw_link_00.stl" />
+      </geometry>
+      <material name="right_yaw_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_yaw_link_01">
+      <geometry>
+        <mesh filename="meshes/right_yaw_link_01.stl" />
+      </geometry>
+      <material name="right_yaw_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="right_yaw_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_yaw_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_yaw_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_yaw_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_upper_arm_link">
+    <inertial>
+      <origin xyz="-0.129741791156 0.00056677371303 -7.83760232461e-08" rpy="0 0 0" />
+      <mass value="0.486593592881" />
+      <inertia ixx="0.000344506255139" ixy="4.78981459399e-05" ixz="-1.51520381636e-07" iyy="0.00168790947736" iyz="-9.40997321855e-10" izz="0.00184151529025" />
+    </inertial>
+    <visual name="right_upper_arm_link_00">
+      <geometry>
+        <mesh filename="meshes/right_upper_arm_link_00.stl" />
+      </geometry>
+      <material name="right_upper_arm_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_upper_arm_link_01">
+      <geometry>
+        <mesh filename="meshes/right_upper_arm_link_01.stl" />
+      </geometry>
+      <material name="right_upper_arm_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="right_upper_arm_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_upper_arm_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_upper_arm_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_upper_arm_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_forearm_link">
+    <inertial>
+      <origin xyz="0.103351869295 -7.6966833099e-05 0.0526505056896" rpy="0 0 0" />
+      <mass value="0.523296810198" />
+      <inertia ixx="0.000498589913536" ixy="-3.72448020427e-05" ixz="-0.000315553381152" iyy="0.00173137827818" iyz="-1.62160882874e-05" izz="0.00174824792899" />
+    </inertial>
+    <visual name="right_forearm_link_00">
+      <geometry>
+        <mesh filename="meshes/right_forearm_link_00.stl" />
+      </geometry>
+      <material name="right_forearm_link_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_forearm_link_01">
+      <geometry>
+        <mesh filename="meshes/right_forearm_link_01.stl" />
+      </geometry>
+      <material name="right_forearm_link_material_01">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <collision name="right_forearm_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_forearm_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_forearm_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_forearm_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_wrist_pitch_link">
+    <inertial>
+      <origin xyz="0.0736904003858 -9.43694927847e-08 0.0507139642904" rpy="0 0 0" />
+      <mass value="0.404985564232" />
+      <inertia ixx="0.000317020106626" ixy="1.27236351641e-08" ixz="-0.000145472110873" iyy="0.000478693120384" iyz="-1.01257364036e-08" izz="0.000441394493777" />
+    </inertial>
+    <visual name="right_wrist_pitch_link_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_pitch_link_00.stl" />
+      </geometry>
+      <material name="right_wrist_pitch_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="right_wrist_pitch_link_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_pitch_link_01.stl" />
+      </geometry>
+      <material name="right_wrist_pitch_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <collision name="right_wrist_pitch_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_pitch_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_wrist_pitch_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_pitch_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_wrist_yaw_link">
+    <inertial>
+      <origin xyz="-0.000774742476017 -3.57321818827e-05 -0.041811555932" rpy="0 0 0" />
+      <mass value="0.397588220541" />
+      <inertia ixx="0.000215433375392" ixy="4.73600586511e-07" ixz="-2.00359480756e-05" iyy="0.000242402985936" iyz="1.72208651704e-07" izz="0.000193629941706" />
+    </inertial>
+    <visual name="right_wrist_yaw_link_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_yaw_link_00.stl" />
+      </geometry>
+      <material name="right_wrist_yaw_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="right_wrist_yaw_link_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_yaw_link_01.stl" />
+      </geometry>
+      <material name="right_wrist_yaw_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <collision name="right_wrist_yaw_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_yaw_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_wrist_yaw_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_yaw_link_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_wrist_roll_link">
+    <inertial>
+      <origin xyz="0.0384757821607 8.58342349546e-05 -0.00118018138518" rpy="0 0 0" />
+      <mass value="0.571025538639" />
+      <inertia ixx="0.000600229754591" ixy="-1.30154224498e-06" ixz="3.80305297167e-05" iyy="0.000651818393111" iyz="4.60817518784e-06" izz="0.000613713600268" />
+    </inertial>
+    <visual name="right_wrist_roll_link_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_00.stl" />
+      </geometry>
+      <material name="right_wrist_roll_link_material_00">
+        <color rgba="0.08 0.1 0.12 1" />
+      </material>
+    </visual>
+    <visual name="right_wrist_roll_link_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_01.stl" />
+      </geometry>
+      <material name="right_wrist_roll_link_material_01">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_wrist_roll_link_02">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_02.stl" />
+      </geometry>
+      <material name="right_wrist_roll_link_material_02">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="right_wrist_roll_link_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_wrist_roll_link_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_01.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_wrist_roll_link_collision_02">
+      <geometry>
+        <mesh filename="meshes/right_wrist_roll_link_02.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_gripper_left">
+    <inertial>
+      <origin xyz="0.0890248952332 -0.0147884674501 -0.016695812262" rpy="0 0 0" />
+      <mass value="0.0403983627729" />
+      <inertia ixx="5.19071427725e-06" ixy="-1.91714566673e-06" ixz="3.64675565411e-07" iyy="1.55902398311e-05" iyz="2.04251835159e-07" izz="1.40107233094e-05" />
+    </inertial>
+    <visual name="right_gripper_left_00">
+      <geometry>
+        <mesh filename="meshes/right_gripper_left_00.stl" />
+      </geometry>
+      <material name="right_gripper_left_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_gripper_left_01">
+      <geometry>
+        <mesh filename="meshes/right_gripper_left_01.stl" />
+      </geometry>
+      <material name="right_gripper_left_material_01">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="right_gripper_left_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_gripper_left_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_gripper_left_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_gripper_left_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_gripper_right">
+    <inertial>
+      <origin xyz="0.0903406609559 0.0147288603577 -0.013200703895" rpy="0 0 0" />
+      <mass value="0.0385148405324" />
+      <inertia ixx="5.33771724056e-06" ixy="1.85235721869e-06" ixz="1.96051035795e-06" iyy="1.47305825516e-05" iyz="-3.7635135495e-07" izz="1.29903555995e-05" />
+    </inertial>
+    <visual name="right_gripper_right_00">
+      <geometry>
+        <mesh filename="meshes/right_gripper_right_00.stl" />
+      </geometry>
+      <material name="right_gripper_right_material_00">
+        <color rgba="0.64 0.68 0.71 1" />
+      </material>
+    </visual>
+    <visual name="right_gripper_right_01">
+      <geometry>
+        <mesh filename="meshes/right_gripper_right_01.stl" />
+      </geometry>
+      <material name="right_gripper_right_material_01">
+        <color rgba="0.12 0.14 0.16 1" />
+      </material>
+    </visual>
+    <collision name="right_gripper_right_collision_00">
+      <geometry>
+        <mesh filename="meshes/right_gripper_right_00.stl" />
+      </geometry>
+    </collision>
+    <collision name="right_gripper_right_collision_01">
+      <geometry>
+        <mesh filename="meshes/right_gripper_right_01.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_tool0" />
+  <link name="thruster_horizontal_left_front_rotor">
+    <visual name="thruster_horizontal_left_front_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_left_front_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_horizontal_left_front_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_horizontal_left_front_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_left_front_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_horizontal_right_front_rotor">
+    <visual name="thruster_horizontal_right_front_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_right_front_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_horizontal_right_front_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_horizontal_right_front_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_right_front_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_horizontal_left_rear_rotor">
+    <visual name="thruster_horizontal_left_rear_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_left_rear_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_horizontal_left_rear_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_horizontal_left_rear_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_left_rear_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_horizontal_right_rear_rotor">
+    <visual name="thruster_horizontal_right_rear_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_right_rear_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_horizontal_right_rear_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_horizontal_right_rear_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_horizontal_right_rear_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_vertical_right_front_rotor">
+    <visual name="thruster_vertical_right_front_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_right_front_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_vertical_right_front_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_vertical_right_front_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_right_front_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_vertical_left_rear_rotor">
+    <visual name="thruster_vertical_left_rear_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_left_rear_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_vertical_left_rear_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_vertical_left_rear_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_left_rear_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_vertical_left_front_rotor">
+    <visual name="thruster_vertical_left_front_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_left_front_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_vertical_left_front_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_vertical_left_front_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_left_front_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="thruster_vertical_right_rear_rotor">
+    <visual name="thruster_vertical_right_rear_rotor_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_right_rear_rotor_00.stl" />
+      </geometry>
+      <material name="thruster_vertical_right_rear_rotor_material_00">
+        <color rgba="0.117647 0.419608 0.568627 1" />
+      </material>
+    </visual>
+    <collision name="thruster_vertical_right_rear_rotor_collision_00">
+      <geometry>
+        <mesh filename="meshes/thruster_vertical_right_rear_rotor_00.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="left_mount" type="fixed">
+    <parent link="rov_base" />
+    <child link="left_base_link" />
+    <origin xyz="0.165721504063 0.246525 -0.226" rpy="-1.05599623516e-15 1.7763568394e-15 2.79597479552e-15" />
+  </joint>
+  <joint name="left_shoulder_pan" type="revolute">
+    <parent link="left_base_link" />
+    <child link="left_yaw_link" />
+    <origin xyz="1.66533453694e-16 1.36002320517e-15 0.0574" rpy="7.10040080301e-15 -1.487698853e-14 1.06338962194e-14" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-3.234999999999989" upper="2.2270000000000105" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_shoulder_lift" type="revolute">
+    <parent link="left_yaw_link" />
+    <child link="left_upper_arm_link" />
+    <origin xyz="-4.58992371888e-10 6.83685053016e-11 0.053599999559" rpy="3.14159265319 0.61086524037 3.14159265256" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-0.5472725867803963" upper="2.5307274132196036" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_elbow_flex" type="revolute">
+    <parent link="left_upper_arm_link" />
+    <child link="left_forearm_link" />
+    <origin xyz="-0.160000002567 -4.41920139371e-10 1.55670298874e-09" rpy="3.14159264865 -1.04719758229 3.14159264818" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.0943950712969577" upper="2.2886049287030423" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_flex" type="revolute">
+    <parent link="left_forearm_link" />
+    <child link="left_wrist_pitch_link" />
+    <origin xyz="0.137999996198 -3.10502235035e-10 0.0587877567933" rpy="9.96607034483e-09 0.449389073928 2.20133272968e-09" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.659610926071941" upper="2.055389073928059" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_yaw" type="revolute">
+    <parent link="left_wrist_pitch_link" />
+    <child link="left_wrist_yaw_link" />
+    <origin xyz="0.0803686907164 -1.5666912212e-12 0.0331094178827" rpy="8.79377479068e-12 -4.13002965161e-14 1.46523399322e-11" />
+    <axis xyz="-0.160775313598 2.88046501262e-14 -0.986991032653" />
+    <limit lower="-1.5559999999841245" upper="1.5050000000158754" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_roll" type="revolute">
+    <parent link="left_wrist_yaw_link" />
+    <child link="left_wrist_roll_link" />
+    <origin xyz="0.0315560923865 -3.96960242455e-13 -0.0513413384447" rpy="-1.47810633095e-11 -3.97903932026e-13 -9.44929698225e-12" />
+    <axis xyz="-0.986991032653 -3.07367803248e-15 0.160775313598" />
+    <limit lower="-2.6410000000130696" upper="2.6799999999869306" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_gripper_left_joint" type="prismatic">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_gripper_left" />
+    <origin xyz="0 0 0" rpy="1.74798116303e-27 0 1.06327565855e-27" />
+    <axis xyz="0 1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+  </joint>
+  <joint name="left_gripper_right_joint" type="prismatic">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_gripper_right" />
+    <origin xyz="0 0 0" rpy="1.74798116303e-27 0 1.06327565855e-27" />
+    <axis xyz="0 -1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+    <mimic joint="left_gripper_left_joint" multiplier="1" offset="0" />
+  </joint>
+  <joint name="left_tool_fixed" type="fixed">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_tool0" />
+    <origin xyz="0.132424713453 -7.42853001334e-12 -0.0215712455172" rpy="1.73227246214 0 1.57079632679" />
+  </joint>
+  <joint name="right_mount" type="fixed">
+    <parent link="rov_base" />
+    <child link="right_base_link" />
+    <origin xyz="0.165721504063 -0.246525 -0.226" rpy="1.05599623516e-15 1.7763568394e-15 -2.79597479552e-15" />
+  </joint>
+  <joint name="right_shoulder_pan" type="revolute">
+    <parent link="right_base_link" />
+    <child link="right_yaw_link" />
+    <origin xyz="1.66533453694e-16 -1.36002320517e-15 0.0574" rpy="-7.10040080301e-15 -1.487698853e-14 -1.06338962194e-14" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.234999999999989" upper="2.2270000000000105" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_shoulder_lift" type="revolute">
+    <parent link="right_yaw_link" />
+    <child link="right_upper_arm_link" />
+    <origin xyz="-4.58992371888e-10 -6.83685053016e-11 0.053599999559" rpy="-3.14159265319 0.61086524037 -3.14159265256" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-0.5472725867803963" upper="2.5307274132196036" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_elbow_flex" type="revolute">
+    <parent link="right_upper_arm_link" />
+    <child link="right_forearm_link" />
+    <origin xyz="-0.160000002567 4.41920139371e-10 1.55670298874e-09" rpy="-3.14159264865 -1.04719758229 -3.14159264818" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.0943950712969577" upper="2.2886049287030423" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_flex" type="revolute">
+    <parent link="right_forearm_link" />
+    <child link="right_wrist_pitch_link" />
+    <origin xyz="0.137999996198 3.10502235035e-10 0.0587877567933" rpy="-9.96607034483e-09 0.449389073928 -2.20133272968e-09" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.659610926071941" upper="2.055389073928059" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_yaw" type="revolute">
+    <parent link="right_wrist_pitch_link" />
+    <child link="right_wrist_yaw_link" />
+    <origin xyz="0.0803686907164 1.5666912212e-12 0.0331094178827" rpy="-8.79377479068e-12 -4.13002965161e-14 -1.46523399322e-11" />
+    <axis xyz="0.160775313598 2.88046501262e-14 0.986991032653" />
+    <limit lower="-1.5559999999841245" upper="1.5050000000158754" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_roll" type="revolute">
+    <parent link="right_wrist_yaw_link" />
+    <child link="right_wrist_roll_link" />
+    <origin xyz="0.0315560923865 3.96960242455e-13 -0.0513413384447" rpy="1.47810633095e-11 -3.97903932026e-13 9.44929698225e-12" />
+    <axis xyz="0.986991032653 -3.07367803248e-15 -0.160775313598" />
+    <limit lower="-2.6410000000130696" upper="2.6799999999869306" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_gripper_left_joint" type="prismatic">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_gripper_left" />
+    <origin xyz="0 0 0" rpy="-1.74798116303e-27 0 -1.06327565855e-27" />
+    <axis xyz="0 -1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+  </joint>
+  <joint name="right_gripper_right_joint" type="prismatic">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_gripper_right" />
+    <origin xyz="0 0 0" rpy="-1.74798116303e-27 0 -1.06327565855e-27" />
+    <axis xyz="0 1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+    <mimic joint="right_gripper_left_joint" multiplier="1" offset="0" />
+  </joint>
+  <joint name="right_tool_fixed" type="fixed">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_tool0" />
+    <origin xyz="0.132424713453 7.42853001334e-12 -0.0215712455172" rpy="-1.73227246214 0 -1.57079632679" />
+  </joint>
+  <joint name="thruster_horizontal_left_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_left_front_rotor" />
+    <origin xyz="0.133127421283 0.102795078358 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="-0.866025403784 0.5 -3.72218307863e-16" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_right_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_right_front_rotor" />
+    <origin xyz="0.133127421959 -0.102795077967 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="-0.866025403784 -0.5 -3.51399838727e-16" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_left_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_left_rear_rotor" />
+    <origin xyz="-0.147933808402 0.103265155266 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="0.838670567945 0.544639035015 -2.66792421809e-15" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_right_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_right_rear_rotor" />
+    <origin xyz="-0.147933809745 -0.103265154395 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="0.838670567945 -0.544639035015 -2.24847300104e-15" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_right_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_right_front_rotor" />
+    <origin xyz="0.119998766029 -0.218025 0.10638007828" rpy="0 0 0" />
+    <axis xyz="-2.86652135005e-16 2.60475976864e-16 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_left_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_left_rear_rotor" />
+    <origin xyz="-0.120001233971 0.218025 0.106380073204" rpy="0 0 0" />
+    <axis xyz="-2.06577457504e-15 -3.02898088032e-16 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_left_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_left_front_rotor" />
+    <origin xyz="0.119998766029 0.218025 0.104548875991" rpy="0 0 0" />
+    <axis xyz="1.37711352594e-16 -2.69015381421e-15 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_right_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_right_rear_rotor" />
+    <origin xyz="-0.120001233971 -0.218025 0.104548876078" rpy="0 0 0" />
+    <axis xyz="-2.20295589908e-15 2.57295217097e-15 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+</robot>

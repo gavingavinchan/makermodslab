@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "asset_version": "1.0",
+  "asset_version": "1.1",
   "blend": "scripts/viscous-dream1/cinematic/tool/polisher.blend",
   "generator": "scripts/viscous-dream1/cinematic/tool/build_polisher.py",
   "blender_version": "4.5.3 LTS",
@@ -49,6 +49,7 @@
     "grip_nominal_length_m": 0.07,
     "grip_straight_length_m": 0.068,
     "pad_diameter_m": 0.052,
+    "rear_package_max_radius_m": 0.010840000332219994,
     "baseline_pad_centre_z_m": 0.075,
     "baseline_pad_half_thickness_m": 0.006,
     "abrasive_contact_z_m": 0.081

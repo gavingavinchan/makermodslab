@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "method": "Selective self-contained package copied into isolated Linux scratch with no sibling source checkout; native IK plan and no-render scene rebuilt",
+  "checks": {
+    "motion.json": {
+      "identical": true,
+      "selected_sha256": "c6be8e5d8aa42b9c29eba45a0d503b7404a13cb8a85f0c1018c7cefa30f64638",
+      "rebuilt_sha256": "c6be8e5d8aa42b9c29eba45a0d503b7404a13cb8a85f0c1018c7cefa30f64638"
+    },
+    "texture_mask_evidence.npz": {
+      "identical": true,
+      "selected_sha256": "4f61ba8c58dc22b9af363b40ff60e4c91c9d6af74fd78465ee4e5b66121ef889",
+      "rebuilt_sha256": "4f61ba8c58dc22b9af363b40ff60e4c91c9d6af74fd78465ee4e5b66121ef889"
+    },
+    "mask_report.json": {
+      "identical": true,
+      "selected_sha256": "ccc19986289361ef947d9ca6203cb46beaf1868364764f39ad239ac565f6f1d9",
+      "rebuilt_sha256": "ccc19986289361ef947d9ca6203cb46beaf1868364764f39ad239ac565f6f1d9"
+    }
+  },
+  "scene_mesh_geometry_identical": true,
+  "scene_all_object_world_transform_max_error": 0.0,
+  "frames_compared": [
+    1,
+    48,
+    49,
+    120,
+    121,
+    350,
+    600,
+    601,
+    672
+  ]
+}

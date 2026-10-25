@@ -1,0 +1,161 @@
+{
+  "original_mesh_instances": 100,
+  "mesh_parent_local_transform_differences": [],
+  "native_mount_transform_difference": 0.0,
+  "urdf_to_native_rig_joint_origin_max_difference": 1.7282090261732542e-07,
+  "mount_separation_m": 0.4930500090122223,
+  "native_thruster_joints": 8,
+  "max_joint_limit_excursion": 0,
+  "max_joint_speed_rad_s": 0.24845656463678978,
+  "max_actual_native_FK_pad_error_m": 0,
+  "max_Blender_to_native_FK_matrix_error": 2.011663734265051e-07,
+  "sampled_frames": [
+    1,
+    73,
+    150,
+    240,
+    350,
+    450,
+    550,
+    601,
+    672
+  ],
+  "sampled_surface_intersections": [],
+  "finger_contact_checks": [
+    {
+      "side": "left",
+      "jaw": "left",
+      "nearest_vertex_blade_distance_m": 0.0021475034300237894,
+      "tcp_local_bounds": [
+        [
+          0.0005573309026658535,
+          -0.020596422255039215,
+          -0.06327017396688461
+        ],
+        [
+          0.028057338669896126,
+          0.020000003278255463,
+          0.034329891204833984
+        ]
+      ]
+    },
+    {
+      "side": "left",
+      "jaw": "right",
+      "nearest_vertex_blade_distance_m": 0.0008748025866225362,
+      "tcp_local_bounds": [
+        [
+          -0.028057336807250977,
+          -0.020000001415610313,
+          -0.059770192950963974
+        ],
+        [
+          -0.0005573220551013947,
+          0.020597342401742935,
+          0.03432987630367279
+        ]
+      ]
+    },
+    {
+      "side": "right",
+      "jaw": "left",
+      "grip_band_min_radial_distance_m": 0.016457650645142485
+    },
+    {
+      "side": "right",
+      "jaw": "right",
+      "grip_band_min_radial_distance_m": 0.016457684208629572
+    }
+  ],
+  "mask_outside_nominal_contact_footprint_pixels": 0,
+  "mask_max_radius_m": 0.025999982348280215,
+  "mask_scope": "Nominal compliant 52 mm face footprint with \u00b13mm normal tolerance; cinematic visual approximation, not exact bench ellipsoid intersection or material abrasion physics",
+  "source_rig_sha256": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
+  "final_blend_bytes": 98087207,
+  "external_unpacked_images": [],
+  "physics_scope": "Kinematic presentation only; no wet dynamics, thrust, torque, force, autonomy or abrasion simulation",
+  "mask_outside_exported_nominal_union_pixels": 0,
+  "source_contract_sha256": "b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db",
+  "tool_asset_sha256": "5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87",
+  "static_vehicle_transform": [
+    [
+      0.22625323614225504,
+      0.8693535761389586,
+      0.43935615710896875,
+      0.4653493507565255
+    ],
+    [
+      -0.40430099094388483,
+      -0.32655002701838853,
+      0.8543452396871434,
+      0.479443228541473
+    ],
+    [
+      0.8861998543539429,
+      -0.3709305049583999,
+      0.2775975119383398,
+      -0.2941106004011021
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "vehicle_forward_up_angle_deg": 62.399539348300785,
+  "minimum_joint_limit_margins_rad": {
+    "left_shoulder_pan": 2.044151962637224,
+    "left_shoulder_lift": 0.005000008133672185,
+    "left_elbow_flex": 1.7406944001382065,
+    "left_wrist_flex": 1.183581382351857,
+    "left_wrist_yaw": 0.6647349886996752,
+    "left_wrist_roll": 2.5949657172371183,
+    "right_shoulder_pan": 1.710774050831204,
+    "right_shoulder_lift": 0.30226431053691705,
+    "right_elbow_flex": 1.9130628537179608,
+    "right_wrist_flex": 1.2252906223782736,
+    "right_wrist_yaw": 0.9641736830544714,
+    "right_wrist_roll": 1.2485255263312456
+  },
+  "minimum_joint_limit_margin_rad": 0.005000008133672185,
+  "peak_joint_step_rad": 0.01035235685986624,
+  "peak_joint_speed_rad_s": 0.24845656463678978,
+  "max_pad_to_retargeted_surface_error_m": 3.015061387584018e-11,
+  "max_observed_to_native_surface_path_deviation_m": 0.010564501987097632,
+  "actual_native_radial_span_m": 0.14309976605119762,
+  "actual_native_u_range": [
+    0.12973874029369248,
+    0.2111487982677357
+  ],
+  "rendered_unique_nominal_area_m2": 0.01175600774268394,
+  "nominal_face_area_m2": 0.1250314676346217,
+  "native_tool_mount_translation_m": [
+    0,
+    0,
+    0.02
+  ],
+  "native_TCP_to_pad_contact_m": [
+    0,
+    0,
+    0.101
+  ],
+  "right_jaw_displacement_m": 0.012,
+  "left_jaw_displacement_m": 0.0008,
+  "retarget_adaptation": "u = .13 + .60*(observed_u-.13); observed radial t shifted inward by .003 (1.185mm), preserving full radial span; four distinct offset alternating passes; pad roll selected for native limits; normal aligned to same corrected analytic face; 25.5s source scrub retimed to22s",
+  "core_checks_passed": true,
+  "saved_mask_image_max_time_error_frames": 3.0517578125e-05,
+  "saved_shader_clock_max_error_frames": 0,
+  "clean_mask_frame_range": [
+    73.0,
+    601.0
+  ],
+  "packed_image_verified": true,
+  "final_scene_sha256": "03ea122fcf1e2a91f31e78bf7142e4b5ee64f29bab1f6788def95ee52eff3a3e",
+  "frozen_input_hashes": {
+    "assets/coverage_plan.json": "b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db",
+    "assets/native_rov.blend": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
+    "tool/polisher.blend": "5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87"
+  },
+  "exported_source_mask_sha256": "d42f26c86538f776895291a761205d83b810189db84ee2f10d235e29ff528972"
+}

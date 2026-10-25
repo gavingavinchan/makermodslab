@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "png_frames_verified": 672,
+  "full_decode_exit_code": 0,
+  "full_decode_errors": "",
+  "ffprobe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "24/1",
+        "duration": "28.000000",
+        "nb_read_frames": "672"
+      }
+    ],
+    "format": {
+      "duration": "28.000000",
+      "size": "7225203"
+    }
+  },
+  "video_sha256": "8fbe63c06ec846aa867e29adefea69527aa31f2c38b5ead32ea65aacd317970c",
+  "scene_sha256": "03ea122fcf1e2a91f31e78bf7142e4b5ee64f29bab1f6788def95ee52eff3a3e",
+  "frame_selection": [
+    1,
+    80,
+    150,
+    240,
+    350,
+    450,
+    530,
+    590,
+    672
+  ],
+  "render": {
+    "engine": "Cycles",
+    "samples": 32,
+    "denoising": true,
+    "device": "NVIDIA RTX 5070 Ti OptiX",
+    "fps": 24,
+    "duration_s": 28
+  },
+  "scope": "Frame dimensions/PNG validity, complete H.264 decode, stream duration and count; visual QA remains separate"
+}

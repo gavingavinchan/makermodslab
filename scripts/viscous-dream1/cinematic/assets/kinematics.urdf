@@ -1,0 +1,248 @@
+<robot name="viscous_bimanual_rov_cad_v1">
+  <link name="rov_base">
+    </link>
+  <link name="left_base_link">
+    </link>
+  <link name="left_yaw_link">
+    </link>
+  <link name="left_upper_arm_link">
+    </link>
+  <link name="left_forearm_link">
+    </link>
+  <link name="left_wrist_pitch_link">
+    </link>
+  <link name="left_wrist_yaw_link">
+    </link>
+  <link name="left_wrist_roll_link">
+    </link>
+  <link name="left_gripper_left">
+    </link>
+  <link name="left_gripper_right">
+    </link>
+  <link name="left_tool0" />
+  <link name="right_base_link">
+    </link>
+  <link name="right_yaw_link">
+    </link>
+  <link name="right_upper_arm_link">
+    </link>
+  <link name="right_forearm_link">
+    </link>
+  <link name="right_wrist_pitch_link">
+    </link>
+  <link name="right_wrist_yaw_link">
+    </link>
+  <link name="right_wrist_roll_link">
+    </link>
+  <link name="right_gripper_left">
+    </link>
+  <link name="right_gripper_right">
+    </link>
+  <link name="right_tool0" />
+  <link name="thruster_horizontal_left_front_rotor">
+    </link>
+  <link name="thruster_horizontal_right_front_rotor">
+    </link>
+  <link name="thruster_horizontal_left_rear_rotor">
+    </link>
+  <link name="thruster_horizontal_right_rear_rotor">
+    </link>
+  <link name="thruster_vertical_right_front_rotor">
+    </link>
+  <link name="thruster_vertical_left_rear_rotor">
+    </link>
+  <link name="thruster_vertical_left_front_rotor">
+    </link>
+  <link name="thruster_vertical_right_rear_rotor">
+    </link>
+  <joint name="left_mount" type="fixed">
+    <parent link="rov_base" />
+    <child link="left_base_link" />
+    <origin xyz="0.165721504063 0.246525 -0.226" rpy="-1.05599623516e-15 1.7763568394e-15 2.79597479552e-15" />
+  </joint>
+  <joint name="left_shoulder_pan" type="revolute">
+    <parent link="left_base_link" />
+    <child link="left_yaw_link" />
+    <origin xyz="1.66533453694e-16 1.36002320517e-15 0.0574" rpy="7.10040080301e-15 -1.487698853e-14 1.06338962194e-14" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-3.234999999999989" upper="2.2270000000000105" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_shoulder_lift" type="revolute">
+    <parent link="left_yaw_link" />
+    <child link="left_upper_arm_link" />
+    <origin xyz="-4.58992371888e-10 6.83685053016e-11 0.053599999559" rpy="3.14159265319 0.61086524037 3.14159265256" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-0.5472725867803963" upper="2.5307274132196036" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_elbow_flex" type="revolute">
+    <parent link="left_upper_arm_link" />
+    <child link="left_forearm_link" />
+    <origin xyz="-0.160000002567 -4.41920139371e-10 1.55670298874e-09" rpy="3.14159264865 -1.04719758229 3.14159264818" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.0943950712969577" upper="2.2886049287030423" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_flex" type="revolute">
+    <parent link="left_forearm_link" />
+    <child link="left_wrist_pitch_link" />
+    <origin xyz="0.137999996198 -3.10502235035e-10 0.0587877567933" rpy="9.96607034483e-09 0.449389073928 2.20133272968e-09" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.659610926071941" upper="2.055389073928059" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_yaw" type="revolute">
+    <parent link="left_wrist_pitch_link" />
+    <child link="left_wrist_yaw_link" />
+    <origin xyz="0.0803686907164 -1.5666912212e-12 0.0331094178827" rpy="8.79377479068e-12 -4.13002965161e-14 1.46523399322e-11" />
+    <axis xyz="-0.160775313598 2.88046501262e-14 -0.986991032653" />
+    <limit lower="-1.5559999999841245" upper="1.5050000000158754" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_wrist_roll" type="revolute">
+    <parent link="left_wrist_yaw_link" />
+    <child link="left_wrist_roll_link" />
+    <origin xyz="0.0315560923865 -3.96960242455e-13 -0.0513413384447" rpy="-1.47810633095e-11 -3.97903932026e-13 -9.44929698225e-12" />
+    <axis xyz="-0.986991032653 -3.07367803248e-15 0.160775313598" />
+    <limit lower="-2.6410000000130696" upper="2.6799999999869306" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="left_gripper_left_joint" type="prismatic">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_gripper_left" />
+    <origin xyz="0 0 0" rpy="1.74798116303e-27 0 1.06327565855e-27" />
+    <axis xyz="0 1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+  </joint>
+  <joint name="left_gripper_right_joint" type="prismatic">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_gripper_right" />
+    <origin xyz="0 0 0" rpy="1.74798116303e-27 0 1.06327565855e-27" />
+    <axis xyz="0 -1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+    <mimic joint="left_gripper_left_joint" multiplier="1" offset="0" />
+  </joint>
+  <joint name="left_tool_fixed" type="fixed">
+    <parent link="left_wrist_roll_link" />
+    <child link="left_tool0" />
+    <origin xyz="0.132424713453 -7.42853001334e-12 -0.0215712455172" rpy="1.73227246214 0 1.57079632679" />
+  </joint>
+  <joint name="right_mount" type="fixed">
+    <parent link="rov_base" />
+    <child link="right_base_link" />
+    <origin xyz="0.165721504063 -0.246525 -0.226" rpy="1.05599623516e-15 1.7763568394e-15 -2.79597479552e-15" />
+  </joint>
+  <joint name="right_shoulder_pan" type="revolute">
+    <parent link="right_base_link" />
+    <child link="right_yaw_link" />
+    <origin xyz="1.66533453694e-16 -1.36002320517e-15 0.0574" rpy="-7.10040080301e-15 -1.487698853e-14 -1.06338962194e-14" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.234999999999989" upper="2.2270000000000105" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_shoulder_lift" type="revolute">
+    <parent link="right_yaw_link" />
+    <child link="right_upper_arm_link" />
+    <origin xyz="-4.58992371888e-10 -6.83685053016e-11 0.053599999559" rpy="-3.14159265319 0.61086524037 -3.14159265256" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-0.5472725867803963" upper="2.5307274132196036" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_elbow_flex" type="revolute">
+    <parent link="right_upper_arm_link" />
+    <child link="right_forearm_link" />
+    <origin xyz="-0.160000002567 4.41920139371e-10 1.55670298874e-09" rpy="-3.14159264865 -1.04719758229 -3.14159264818" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.0943950712969577" upper="2.2886049287030423" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_flex" type="revolute">
+    <parent link="right_forearm_link" />
+    <child link="right_wrist_pitch_link" />
+    <origin xyz="0.137999996198 3.10502235035e-10 0.0587877567933" rpy="-9.96607034483e-09 0.449389073928 -2.20133272968e-09" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.659610926071941" upper="2.055389073928059" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_yaw" type="revolute">
+    <parent link="right_wrist_pitch_link" />
+    <child link="right_wrist_yaw_link" />
+    <origin xyz="0.0803686907164 1.5666912212e-12 0.0331094178827" rpy="-8.79377479068e-12 -4.13002965161e-14 -1.46523399322e-11" />
+    <axis xyz="0.160775313598 2.88046501262e-14 0.986991032653" />
+    <limit lower="-1.5559999999841245" upper="1.5050000000158754" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_wrist_roll" type="revolute">
+    <parent link="right_wrist_yaw_link" />
+    <child link="right_wrist_roll_link" />
+    <origin xyz="0.0315560923865 3.96960242455e-13 -0.0513413384447" rpy="1.47810633095e-11 -3.97903932026e-13 9.44929698225e-12" />
+    <axis xyz="0.986991032653 -3.07367803248e-15 -0.160775313598" />
+    <limit lower="-2.6410000000130696" upper="2.6799999999869306" effort="5.0" velocity="2.0" />
+  </joint>
+  <joint name="right_gripper_left_joint" type="prismatic">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_gripper_left" />
+    <origin xyz="0 0 0" rpy="-1.74798116303e-27 0 -1.06327565855e-27" />
+    <axis xyz="0 -1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+  </joint>
+  <joint name="right_gripper_right_joint" type="prismatic">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_gripper_right" />
+    <origin xyz="0 0 0" rpy="-1.74798116303e-27 0 -1.06327565855e-27" />
+    <axis xyz="0 1 0" />
+    <limit lower="0.0" upper="0.0524125" effort="10.0" velocity="0.05" />
+    <mimic joint="right_gripper_left_joint" multiplier="1" offset="0" />
+  </joint>
+  <joint name="right_tool_fixed" type="fixed">
+    <parent link="right_wrist_roll_link" />
+    <child link="right_tool0" />
+    <origin xyz="0.132424713453 7.42853001334e-12 -0.0215712455172" rpy="-1.73227246214 0 -1.57079632679" />
+  </joint>
+  <joint name="thruster_horizontal_left_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_left_front_rotor" />
+    <origin xyz="0.133127421283 0.102795078358 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="-0.866025403784 0.5 -3.72218307863e-16" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_right_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_right_front_rotor" />
+    <origin xyz="0.133127421959 -0.102795077967 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="-0.866025403784 -0.5 -3.51399838727e-16" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_left_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_left_rear_rotor" />
+    <origin xyz="-0.147933808402 0.103265155266 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="0.838670567945 0.544639035015 -2.66792421809e-15" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_horizontal_right_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_horizontal_right_rear_rotor" />
+    <origin xyz="-0.147933809745 -0.103265154395 0.0411202335806" rpy="0 0 0" />
+    <axis xyz="0.838670567945 -0.544639035015 -2.24847300104e-15" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_right_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_right_front_rotor" />
+    <origin xyz="0.119998766029 -0.218025 0.10638007828" rpy="0 0 0" />
+    <axis xyz="-2.86652135005e-16 2.60475976864e-16 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_left_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_left_rear_rotor" />
+    <origin xyz="-0.120001233971 0.218025 0.106380073204" rpy="0 0 0" />
+    <axis xyz="-2.06577457504e-15 -3.02898088032e-16 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_left_front_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_left_front_rotor" />
+    <origin xyz="0.119998766029 0.218025 0.104548875991" rpy="0 0 0" />
+    <axis xyz="1.37711352594e-16 -2.69015381421e-15 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+  <joint name="thruster_vertical_right_rear_spin" type="continuous">
+    <parent link="rov_base" />
+    <child link="thruster_vertical_right_rear_rotor" />
+    <origin xyz="-0.120001233971 -0.218025 0.104548876078" rpy="0 0 0" />
+    <axis xyz="-2.20295589908e-15 2.57295217097e-15 1" />
+    <limit effort="0" velocity="1000" />
+  </joint>
+</robot>

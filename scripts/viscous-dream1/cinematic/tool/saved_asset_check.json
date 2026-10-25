@@ -4,7 +4,7 @@
   "saved_geometry_checks_passed": true,
   "clean_asset_no_camera_lights": true,
   "native_append_passed": true,
-  "deterministic_rebuild_geometry_sha256": "0c0a39f1f81e8cee41538e21d47cda9fefec3eddc3f65b85b2dde93a99bf76de",
+  "deterministic_rebuild_geometry_sha256": "1214a0fa5b40114d60919bb100b37af8fa034f2bdfbbff70e685510d808583f1",
   "create_tool_preserves_scene": true,
   "canonical_name_collision_refused": true,
   "hierarchy_passed": true,
@@ -14,21 +14,21 @@
         1280,
         720
       ],
-      "sha256": "2169931bc721cacde916733bb501da7aae50b433172e663ba9b9a3a8bdcab50f"
+      "sha256": "2be1f55f85aeea00e81ccbac6a2000e56e2d1ee4014d3b9190a1a40abb5cba9c"
     },
     "preview_pad.png": {
       "size": [
         1280,
         720
       ],
-      "sha256": "c0611d2940b67e7ebc749c8363210deb159996b32920624b973d09540c0f0b30"
+      "sha256": "6fad4d9a082c31ccc1cc6bbcd40114f32ec596fc4429a8baf1f8de66be78c9fb"
     },
     "preview_profile.png": {
       "size": [
         1280,
         720
       ],
-      "sha256": "e122cc111b892b10c61198bd3e1555b65e0614fb37b05afc712e2addb23a2724"
+      "sha256": "d86161b2459176e1bd46b7718f31483435d43dc810986c621d4ad09903f26aeb"
     }
   }
 }

@@ -1,0 +1,16 @@
+{
+  "reviewed_on": "2026-10-24",
+  "review_method": "Opened and visually inspected all three final Linux-rendered PNGs on Mac; no Mac modelling or rendering.",
+  "images": ["preview_hero.png", "preview_pad.png", "preview_profile.png"],
+  "findings": {
+    "whole_asset_inside_frame": true,
+    "clear_cylindrical_grip": true,
+    "housing_seam_and_recessed_fasteners_visible": true,
+    "metal_rubber_polymer_materials_read_separately": true,
+    "layered_pad_and_fine_abrasive_grain_visible": true,
+    "rear_connector_and_strain_relief_visible": true,
+    "branding_or_text_clutter": false
+  },
+  "refinement": "Version 1.1: re-rendered and visually reviewed after narrowing rear cap/seal/index ring to R10.84 mm and shrinking/reseating its three fasteners. Grip, front housing, pad, anchors and fine abrasive texture are unchanged.",
+  "limits": "Standalone studio review plus a passing frame-350 native-hand triangle test at +20 mm tool0 seating. All-frame assembled-scene clearance is owned by the scene coordinator. Mass, seal design and pressure rating are not validated."
+}

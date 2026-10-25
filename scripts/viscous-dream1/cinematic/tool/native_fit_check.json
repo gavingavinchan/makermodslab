@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "frame": 350,
+  "native_tool0_axial_seat_m": 0.02,
+  "replacement_blend_sha256": "5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87",
+  "changed_meshes": [
+    "ToolRearCap",
+    "ToolRearFastener_0",
+    "ToolRearFastener_1",
+    "ToolRearFastener_2",
+    "ToolRearIndexRing",
+    "ToolRearSeal"
+  ],
+  "unchanged_other_meshes": true,
+  "tested_tool_meshes": 33,
+  "native_hand_meshes": 11,
+  "issues": [],
+  "method": "Native visible mesh BVH triangles, replacement appended in memory; sleeve contact excluded",
+  "limits": "One frame only, all-frame audit belongs to scene coordinator; scene file never saved"
+}

@@ -1,0 +1,8 @@
+{
+  "outermost_native_pad_frame": 481,
+  "largest_source_to_native_deviation_frame": 571,
+  "peak_joint_step_frame": 242,
+  "selected_grip_inspection_frame": 350,
+  "collision_worst_frame": null,
+  "collision_note": "No rejected intersections in dense audit; screenshots select extremal path/step and grip inspection poses, not a claimed signed-distance minimum."
+}

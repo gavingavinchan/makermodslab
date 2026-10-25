@@ -260,11 +260,39 @@ restore paths in the DAgger runner.
   `scripts/viscous-dream1/`. Frozen `coverage_plan.json` SHA-256 is
   `b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db`.
   Initialized pregrasp, fixed shaft and continuous left-arm 5 Nm saturation
-  remain. Native-ROV Blender retargeting is still in progress: early draft
-  poses intersected the chassis; a revised elbow branch/whole-vehicle pose
-  clears four extreme targets, pending the complete path audit and revised
-  camera QA before final rendering. This presentation does not validate wet
-  dynamics or the new visual tool's physics.
+  remain. Those bench results do not validate native-vehicle dynamics or the
+  new visual tool's physics.
+  *Native-ROV cinematic complete (2026-10-25):* the 28 s, 720p/24 fps film is
+  `scripts/viscous-dream1/cinematic/results/cleaning_preview.mp4`; editable,
+  packed `final_scene.blend` and reproducible source/assets are alongside it.
+  Built and rendered on gavin-linux in Blender 4.5.3/Cycles/OptiX. The original
+  2026-09-18 CAD-derived BlueROV2 Heavy retains all 100 native mesh instances,
+  their parents/local geometry, 493.05 mm arm mounts and eight thrusters. The
+  approved 960 mm four-blade STLs sit under a reference-informed single-screw
+  hull aperture with shaft boss and aft rudder, in open water with no seabed.
+  Parent reviewed final establishing/contact views, matched green-to-copper
+  frames and the finished frame sequence; all 65 manifest file hashes match.
+  The full 672-frame movie decodes without errors.
+  Exact IK alone had hidden arm/chassis crossings: evaluated Blender/native
+  FK assertions and visible-mesh BVH checks drove the final placement and
+  continuous elbow branch. All 1,343 film/half-frame poses pass 8,399 geometry
+  pairs with no unintended intersections; explicit native bearing and intended
+  grip/pad interfaces are excluded. This is an intersection audit, not a
+  signed-distance clearance certificate. Tool v1.1 narrows only its rear
+  fittings to clear native fingers; a +20 mm mounting offset puts its contact
+  anchor 101 mm from tool0. The actual sleeve/jaw fit was checked.
+  Native retargeting keeps the 143.10 mm radial span and four alternating lanes
+  but narrows chord offsets by 40%, shifts 1.185 mm inboard, aligns the pad to
+  the face normal and retimes 25.5 s scrub to 22 s. Maximum source-path change
+  is 10.56 mm. The vehicle pitches up 62.4°; the limiting shoulder has only
+  0.005 rad joint margin. These are explicit kinematic-presentation limits,
+  with no stationkeeping, force/torque, wet-dynamics, autonomy or hardware
+  feasibility claim. The persistent copper reveal covers 117.56 cm² of nominal
+  pad footprint, clipped to the frozen source nominal union; it is distinct
+  from the bench's 57.40 cm² actual ellipsoid overlap and models no abrasion.
+  The isolated package rebuild reproduces motion/mask bytes and nine-keyframe
+  scene geometry/transforms. Manifest, audits and all limitations are in
+  `cinematic/README.md` and `cinematic/results/`; no Dream or hardware calls.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

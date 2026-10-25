@@ -28,6 +28,12 @@ needed. Keep mesh parenting intact and transform **only `CleaningToolRoot`**.
   values, not a claim that this layered visual pad is the original ellipsoid.
 - Total visual envelope: 52 × 52 × 145.12 mm;
   z = −64.12…+81 mm, including the rear connector.
+- Version 1.1 narrows the rear seal/cap/index ring to at most 10.84 mm radius
+  and moves smaller captive screw heads inward. The previous rear package
+  intersected native finger components when seated +20 mm along native tool0;
+  narrowing it preserves the D32 grip, all axial dimensions and both anchors.
+  The initially suggested 14 mm envelope still intersected the finger backs;
+  the final smaller package passes a frame-350 native-hand append test.
 
 The scene coordinator owns the transform to the actual native `right_tool0`.
 The bench's 20 mm grasp-TCP approach offset is **not baked into the asset**;
@@ -80,6 +86,11 @@ asset before creating a temporary studio, and renders three 1280×720 PNGs with
 envelope; `verification.json` records geometric checks; `saved_asset_check.json`
 records reopening and appendability checks. `sha256.json` records source/asset
 hashes. The three previews are hero, abrasive-face and side-profile views.
+`verify_native_fit.py` optionally appends this asset into the coordinator's
+`../results/final_scene.blend` in memory and tests the native right hand at frame
+350 with the root seated +20 mm on native tool0. It writes `native_fit_check.json`
+only in this directory and never saves the coordinator's scene. This focused
+check does not replace the coordinator's all-frame geometry audit.
 
 ## Engineering limits and provenance
 

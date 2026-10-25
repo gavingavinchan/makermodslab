@@ -1,0 +1,4 @@
+__pycache__/
+*.log
+*.blend1
+rear_radius_fit.json

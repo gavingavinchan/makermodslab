@@ -1,0 +1,9 @@
+{
+  "source": "runs/propeller_edge/coverage_mask.npz",
+  "sha256": "d42f26c86538f776895291a761205d83b810189db84ee2f10d235e29ff528972",
+  "method": "Conservative four-nearest surface-sample intersection with exported nominal cumulative footprint",
+  "shape": [
+    512,
+    1024
+  ]
+}

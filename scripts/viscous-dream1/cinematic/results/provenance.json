@@ -1,0 +1,10 @@
+{
+  "original_blend_sha256": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
+  "original_urdf_sha256": "13e48f38a738b0828758a806066ce45b221d595d150f7fa86b8236fc21ee7674",
+  "original_and_current_all_joints_identical": true,
+  "links": 29,
+  "joints": 28,
+  "source": "2026-09-18 original BlueROV2 Heavy bimanual CAD; user-owned",
+  "source_project": "viscous-rov-model",
+  "source_step": "Viscous ROV with Arms-2.step"
+}

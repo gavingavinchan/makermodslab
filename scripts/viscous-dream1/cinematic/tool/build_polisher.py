@@ -177,7 +177,7 @@ def create_tool(collection=None):
     pad_anchor = b.empty("ToolPadContactAnchor", b.root, (0, 0, .081))
     rotor = b.empty("ToolRotor", b.root)
     rotor["spin_axis"] = "local +Z; radians; origin remains handle centre"
-    b.root["asset_version"] = "1.0"
+    b.root["asset_version"] = "1.1"
     b.root["units"] = "metres"
     b.root["physics_validated"] = False
     b.root["baseline_mass_kg_not_assigned"] = .117
@@ -218,17 +218,21 @@ def create_tool(collection=None):
     b.lathe("ToolAbrasivePad", [(.0766, .0258), (.0773, .026),
             (.0792, .026), (.0802, .0256), (.0808, .0248),
             (.081, .0240)], grit, rotor)
-    # Back cap is outside grip, with an O-ring seam, captive hardware and gland.
-    b.lathe("ToolRearSeal", [(-.036, .0152), (-.035, .0152)], dark)
-    b.lathe("ToolRearCap", [(-.043, .010), (-.0425, .012),
-            (-.041, .0148), (-.040, .0157), (-.0365, .0157),
-            (-.036, .0153)], blue)
-    b.lathe("ToolRearIndexRing", [(-.0376, .0157), (-.0375, .0158),
-            (-.0369, .0158), (-.0368, .0157)], amber)
+    # Native jaws sweep around the rear package at the scene's +20 mm seat.
+    # R14 still intersects CAD finger backs; the measured fit needs R10.85.
+    b.lathe("ToolRearSeal", [(-.036, .0106), (-.035, .0106)], dark)
+    b.lathe("ToolRearCap", [(-.043, .0105), (-.0425, .0107),
+            (-.041, .0107), (-.040, .01076), (-.0365, .01076),
+            (-.036, .01053)], blue)
+    b.lathe("ToolRearIndexRing", [(-.0376, .01076), (-.0375, .01084),
+            (-.0369, .01084), (-.0368, .01076)], amber)
     for i in range(3):
         a = 2*math.pi*i/3
-        b.screw(f"ToolRearFastener_{i}", (.0103*math.cos(a), .0103*math.sin(a), -.0419),
-                (0, 0, -1), steel, dark)
+        fastener = b.screw(f"ToolRearFastener_{i}",
+                (.0092*math.cos(a), .0092*math.sin(a), -.0431), (0, 0, -1), steel, dark)
+        for vertex in fastener.data.vertices:
+            vertex.co.x *= .5
+            vertex.co.y *= .5
     b.lathe("ToolCableGlandNut", [(-.049, .007), (-.0485, .008),
             (-.043, .008), (-.0425, .007)], steel, segments=6)
     b.lathe("ToolCableStrainRelief", [(-.062, .0035), (-.061, .0041),
@@ -272,6 +276,10 @@ def audit(asset):
         if bb[o.name][0][2] < .034 and bb[o.name][1][2] > -.034:
             clear.append(o.name)
     assert not clear, clear
+    rear = [o for o in meshes if o.name.startswith("ToolRear")]
+    rear_radius = max(math.hypot(*(o.matrix_world @ v.co)[:2])
+                      for o in rear for v in o.data.vertices)
+    assert rear_radius <= .01085 + 1e-8
     assert abs(sleeve[1][0]-sleeve[0][0]-.032) < 1e-7
     assert abs(sleeve[1][2]-sleeve[0][2]-.070) < 1e-7
     assert abs(pad[1][0]-pad[0][0]-.052) < 1e-7
@@ -289,6 +297,7 @@ def audit(asset):
                 mesh_count=len(meshes), object_count=len(objects),
                 vertices=sum(len(o.data.vertices) for o in meshes),
                 clear_grip_band_z_m=[-.034, .034], grip_band_intruders=clear,
+                rear_package_max_radius_m=rear_radius,
                 external_libraries=0, external_images=0, rigid_bodies=0)
 
 
@@ -302,7 +311,7 @@ def write_manifest(asset, checks, out):
                          metallic=p.inputs["Metallic"].default_value,
                          roughness=p.inputs["Roughness"].default_value,
                          textures="embedded procedural nodes; no images"))
-    manifest = dict(schema_version=1, asset_version="1.0",
+    manifest = dict(schema_version=1, asset_version="1.1",
         blend="scripts/viscous-dream1/cinematic/tool/polisher.blend",
         generator="scripts/viscous-dream1/cinematic/tool/build_polisher.py",
         blender_version=bpy.app.version_string, collection=COLLECTION_NAME,
@@ -312,6 +321,7 @@ def write_manifest(asset, checks, out):
         rotor=dict(object="ToolRotor", parent=ROOT_NAME, axis="local +Z", pivot=[0,0,0]),
         dimensions=dict(grip_diameter_m=.032, grip_nominal_length_m=.070,
                         grip_straight_length_m=.068, pad_diameter_m=.052,
+                        rear_package_max_radius_m=checks["rear_package_max_radius_m"],
                         baseline_pad_centre_z_m=.075, baseline_pad_half_thickness_m=.006,
                         abrasive_contact_z_m=.081),
         mounting=dict(target="native right_tool0 via scene-owned anchor transform",

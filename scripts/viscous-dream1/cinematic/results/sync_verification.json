@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "files_verified": 65,
+  "method": "All selected Linux manifest SHA256 values independently recalculated from Mac files; includes exact final tool and verification files",
+  "manifest_sha256": "d5cbe007730b5170e6c82ca1d28edce9c0ae782d06f51114eb3d67d485c58065",
+  "scene_sha256": "03ea122fcf1e2a91f31e78bf7142e4b5ee64f29bab1f6788def95ee52eff3a3e",
+  "video_sha256": "8fbe63c06ec846aa867e29adefea69527aa31f2c38b5ead32ea65aacd317970c"
+}
