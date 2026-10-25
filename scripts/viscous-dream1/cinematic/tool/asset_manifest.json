@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "asset_version": "1.0",
+  "blend": "scripts/viscous-dream1/cinematic/tool/polisher.blend",
+  "generator": "scripts/viscous-dream1/cinematic/tool/build_polisher.py",
+  "blender_version": "4.5.3 LTS",
+  "collection": "CleaningTool",
+  "root": "CleaningToolRoot",
+  "units": "metres",
+  "forward_axis": "+Z from hand toward pad",
+  "anchors": {
+    "ToolGripAnchor": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation_euler": [
+        0,
+        0,
+        0
+      ]
+    },
+    "ToolPadContactAnchor": {
+      "position": [
+        0,
+        0,
+        0.081
+      ],
+      "rotation_euler": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "rotor": {
+    "object": "ToolRotor",
+    "parent": "CleaningToolRoot",
+    "axis": "local +Z",
+    "pivot": [
+      0,
+      0,
+      0
+    ]
+  },
+  "dimensions": {
+    "grip_diameter_m": 0.032,
+    "grip_nominal_length_m": 0.07,
+    "grip_straight_length_m": 0.068,
+    "pad_diameter_m": 0.052,
+    "baseline_pad_centre_z_m": 0.075,
+    "baseline_pad_half_thickness_m": 0.006,
+    "abrasive_contact_z_m": 0.081
+  },
+  "mounting": {
+    "target": "native right_tool0 via scene-owned anchor transform",
+    "bench_grasp_tcp_offset_along_approach_m": 0.02,
+    "offset_baked_into_asset": false,
+    "native_rov_mounts_modified": false
+  },
+  "bounds_m": {
+    "min": [
+      -0.026000000536441803,
+      -0.026000000536441803,
+      -0.06412000209093094
+    ],
+    "max": [
+      0.026000000536441803,
+      0.026000000536441803,
+      0.08100000023841858
+    ],
+    "size": [
+      0.052000001072883606,
+      0.052000001072883606,
+      0.14512000232934952
+    ]
+  },
+  "materials": [
+    {
+      "name": "Tool_AbrasiveMineral",
+      "base_color_linear": [
+        0.2199999988079071,
+        0.11999999731779099,
+        0.06499999761581421,
+        1.0
+      ],
+      "metallic": 0.07999999821186066,
+      "roughness": 0.8799999952316284,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_AmberAnodizedIndex",
+      "base_color_linear": [
+        0.8399999737739563,
+        0.3199999928474426,
+        0.03500000014901161,
+        1.0
+      ],
+      "metallic": 0.6200000047683716,
+      "roughness": 0.30000001192092896,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_BlackPolymer",
+      "base_color_linear": [
+        0.014000000432133675,
+        0.019999999552965164,
+        0.02500000037252903,
+        1.0
+      ],
+      "metallic": 0.05000000074505806,
+      "roughness": 0.36000001430511475,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_CompliantBacking",
+      "base_color_linear": [
+        0.04100000113248825,
+        0.04699999839067459,
+        0.04899999871850014,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.7599999904632568,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_GraspRubber",
+      "base_color_linear": [
+        0.03200000151991844,
+        0.039000000804662704,
+        0.0430000014603138,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.6000000238418579,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_MachinedStainless",
+      "base_color_linear": [
+        0.4300000071525574,
+        0.47999998927116394,
+        0.5099999904632568,
+        1.0
+      ],
+      "metallic": 0.949999988079071,
+      "roughness": 0.23999999463558197,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_Recess",
+      "base_color_linear": [
+        0.006000000052154064,
+        0.008999999612569809,
+        0.012000000104308128,
+        1.0
+      ],
+      "metallic": 0.20000000298023224,
+      "roughness": 0.4000000059604645,
+      "textures": "embedded procedural nodes; no images"
+    },
+    {
+      "name": "Tool_SatinMarineBlue",
+      "base_color_linear": [
+        0.017999999225139618,
+        0.11500000208616257,
+        0.16500000655651093,
+        1.0
+      ],
+      "metallic": 0.6800000071525574,
+      "roughness": 0.28999999165534973,
+      "textures": "embedded procedural nodes; no images"
+    }
+  ],
+  "physics": {
+    "baseline_mass_kg": 0.117,
+    "visual_asset_mass_kg": null,
+    "mass_and_inertia_validated": false,
+    "collision_validated": false,
+    "warning": "Artistic housing, connector and flat abrasive face differ from baseline physics. No rigid-body/collision model supplied."
+  },
+  "license": {
+    "spdx": "Apache-2.0",
+    "copyright": "Copyright 2026 MakerMods. All rights reserved.",
+    "provenance": "Original procedural geometry and shaders; no external textures, CAD or commercial branding."
+  },
+  "previews": [
+    "preview_hero.png",
+    "preview_pad.png",
+    "preview_profile.png"
+  ],
+  "api": "create_tool(collection=None) returns dict(root, grip_anchor, pad_contact_anchor, rotor, collection)"
+}

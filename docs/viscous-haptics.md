@@ -229,6 +229,16 @@ restore paths in the DAgger runner.
   ROV Blender integration are separate coordinated subtasks; no policy/autonomy
   or validated wet-dynamics claim. Brief and source/interface details:
   `scripts/viscous-dream1/BRIEF_PROPELLER_CINEMATIC.md`.
+  *Polisher asset milestone (2026-10-24):* `cinematic/tool/polisher.blend`
+  replaces the primitive visual tool with a sealed marine-blue housing,
+  rubber grasp sleeve, machined spindle/fittings, layered backing and grainy
+  abrasive pad. Original procedural Blender geometry/materials; 32 mm grasp
+  diameter, 52 mm pad and 52×52×145.12 mm overall envelope. Native append,
+  deterministic rebuild, clear jaw band, local anchors and packed resources
+  pass on Linux Blender 4.5.3; three CPU-rendered previews reviewed. Source,
+  manifest and focused verifier are beside the asset. Integration into the
+  native ROV is in progress; the visual shell has no validated mass/collision
+  model, so old free-tool physics does not validate this new casing.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
