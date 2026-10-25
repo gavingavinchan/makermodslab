@@ -60,7 +60,13 @@ Do not move arm bases or increase actuator limits to conceal a propeller problem
   manufacturer vehicle reference. Our actual custom bimanual mounting comes
   from `viscous-rov-model`, not a generic replacement vehicle.
 - [Palumbo Shipyards Malta](https://www.palumbogroup.it/palumbo-shipyard-malta):
-  shipyard dry-dock photos give real shaft/propeller/rudder/hull relationships.
+  [this dry-dock photograph](https://images.squarespace-cdn.com/content/v1/584eca8b9de4bb74d3231a73/1544529006672-3EQ3S7EONKSZNYJ565CS/14.JPG)
+  was visually inspected. It clearly shows a four-blade propeller on a shaft
+  emerging from a shaped stern boss, hull plating curving above the propeller
+  aperture, and the rudder aft of the propeller. It is a useful coherent
+  single-screw structural reference; its dry-dock floor/scaffolds are excluded
+  from the later submerged view. The blades also show smooth root transitions
+  and the physical depth/pitch absent from a flat fan silhouette.
 - [Damen Shiprepair](https://www.damen.com/services/shiprepair) and its
   [shiprepair brochure](https://medialibrary.damen.com/m/2e739159eb4c7216/original/damen-shiprepair-brochure.pdf):
   further primary shipyard references.
