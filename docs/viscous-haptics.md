@@ -200,6 +200,20 @@ restore paths in the DAgger runner.
   Preserve the left outer-edge hold and measure stroke spans and contact,
   rather than substituting accumulated distance or camera movement. Brief:
   `scripts/viscous-dream1/BRIEF_PROPELLER_WIDE.md`. Still no scenery rebuild.
+  *Wide-motion result (2026-10-24):* `propeller_wide` shifts the scrub patch
+  inward and commands wider, slower sweeps on the unchanged corrected scene.
+  Actual radial span is 131.641 mm (4.178× baseline); three complete strokes
+  measure 128.354 / 122.144 / 125.432 mm, each at 100% simultaneous contact.
+  The full 24 s scrub is 99.9667% in contact, with one initial 8 ms pad gap;
+  both grips stay at 100%. No unwanted collisions, maximum intended penetration
+  0.769 mm, release drops the free tool 578.599 mm. Model/XML and 3,563 frozen
+  baseline-file checks pass. The right hand rolls its grip 90° and follows
+  the surface normal; no geometry, fixture, camera, friction or force-limit
+  changes. Both 27 s real-time clips fully decode. Show
+  `scripts/viscous-dream1/runs/propeller_wide/contact_detail.mp4`; diagnostic
+  views and evidence are linked in `PROPELLER_WIDE_README.md`. Initialized
+  pregrasp, fixed shaft and continuous left-arm 5 Nm saturation remain;
+  this is scripted simulation, with no Dream calls or hardware activity.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

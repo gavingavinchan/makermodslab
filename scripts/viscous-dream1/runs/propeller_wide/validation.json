@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "frozen_baseline": {
+    "reference_commit": "81d64c1e",
+    "baseline_files_exactly_preserved": 3563,
+    "git_tree_listing_sha256": "687684da5bee4d8325f40b79a0649a84055ef2e108624e604850370ed1e94020"
+  },
+  "identical_entire_corrected_physics_model": true,
+  "canonical_xml_sha256": "e0d3d3d52cc34e1a07d36c8001cbc4ee6ff6d0c8bbaf74770acf085217e62448",
+  "compiled_model_sha256": "c2b3433db75dd703f990065e3c3d7d21347ca5217c0bb0e69632ee4fd93ce21a",
+  "left_hold_target_and_orientation_identical": true,
+  "arm_force_limits_Nm": {
+    "left": [
+      -5.0,
+      5.0
+    ],
+    "right": [
+      -5.0,
+      5.0
+    ]
+  },
+  "raw_substeps_verified": 27000,
+  "scrub_substeps": 24000,
+  "complete_strokes_all_100_percent_contact": true,
+  "no_weld_mocap_or_external_forces": true,
+  "fixed_shaft_free_tool": true,
+  "footprint": {
+    "conservative_pad_footprint_radius_m": 0.026,
+    "sampled_footprint_points": 3072000,
+    "footprint_t_range": [
+      0.38981701360144505,
+      0.8547246558452933
+    ],
+    "footprint_u_range": [
+      -0.14158804596267074,
+      0.19135530368967402
+    ],
+    "hub_radial_clearance_m": 0.13697772037257083,
+    "left_hold_contact_zone_radial_clearance_m": 0.03098456070328154,
+    "entire_pad_footprint_within_same_blade_face": true
+  },
+  "media_fully_decoded": true,
+  "versions": {
+    "mujoco": "3.16.0",
+    "numpy": "2.2.6",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.1",
+    "dreamlabs": "1.0.1",
+    "dreamlabs_client": "1.0.3",
+    "imageio": "2.38.1",
+    "Pillow": "13.0.0"
+  },
+  "evidence_sha256": {
+    "start_front.png": "2f4a645962f39e706a9262a9cf1475434eb9c4d7ec30e7b97aefd9f69b832669",
+    "outer_reversal_front.png": "3c9f48cd2c3ccb713dbd8c9bb4eae330ff8bf9eb3ca964595b4d17a498cccc81",
+    "mid_top.png": "391cc24a7142b54b88246857c3625b6f62ad521748f36f153821ba6ce9fcd5ec",
+    "physics_replay.npz": "443df5495c6fcd80abe9d7a957c16c71d9222c63acfaa371c860422795ae5e51",
+    "released_front.png": "d1587f87efa481f272be09f2fa1d266c91840306ae840e90594f58963c933a65",
+    "mid_front.png": "7ad336eb6e4d3aac98f7ab32afb562188f82176dcf1e63b0c5c078ac1ba09181",
+    "mid_right.png": "b89fd7d349eb72db154111d37d99af5c4ca53d380c75bcd600c7f991032d48db",
+    "inner_reversal_front.png": "1506643227326f5efb8404b18f0557c1cd89bda1bf5fc665231c16f7d91d9039",
+    "start_right.png": "7b879056406d5f64918951d1ff973fdb347c3dda6c618847fc2100c51ca07e40",
+    "inner_reversal_detail.png": "7bce6b118b3db526f6d24db72b9a5559a24185034cb25282b69edecd11025716",
+    "end_left.png": "4082b896dad77f2568743f8c42eb927e4074beadcf4232086c5fd2d465e1ef50",
+    "end_detail.png": "d0e1d8276143600e3e385f179d8de7852e3cd2f8d266ec7d01af4f6ada531a1e",
+    "substeps.npz": "66a7497c46b2a976ced3d63ececc435cb9fdf0580c9f553039ef0a406b322858",
+    "mid_left.png": "f45ee599ea7856f831c2f27d1ee66dddc9fdddf41e503cab23aa998dd9db62ef",
+    "start_left.png": "0f4e093fc8a2de2f19f486d374954f06721af7d8f13f0212de3b0516d51d47e3",
+    "start_top.png": "4fabe3e3f0d7b7b8fd7c3e5c70a04ddb4274d93880e3a0723da011ebb4df118c",
+    "diagnostic.mp4": "b1d45e4a1d3c9b1fe4a45d9a5d95b1a0b214d0badb577ef165745ff6a7e4ffde",
+    "trajectory.jsonl": "0407a6a5846542b3d280f3ebe80902dce9fa70ac5506a0bae1b3084e61bcd55c",
+    "release_trace.json": "b907b88790397fa96adb19aba7e312c2eb0aec63a32afce3bb5215cf06aa167a",
+    "media_check.json": "3479641e18f40b0d9df6165582fccda3239c742b7461a377f92ca7304ef428e2",
+    "mid_detail.png": "07278e5d18e9fe05724c676f9a98182b4291afac58617fa9415a5bca390273aa",
+    "candidate_summary.json": "0d1c15fb88bf53164241b4ef6a91fb2a58712125f655b566008bf92a243ec60b",
+    "check.json": "b4dd7fbe8a26c097200b9e567b8376d3f86aeae84dad703cdd7a8e6d14b7dfc1",
+    "end_front.png": "a22f5dc3df0f7e6907a5eb211fb1f4c2759851c66aa103bd81ac80f66eb573a7",
+    "end_top.png": "5004f76dc17db196a4c3fdccf66c84267f49aee666d637d8ac5d8f934ba7a78f",
+    "end_right.png": "5ca2ec49237a55e780798df6488211022a5bbc0902d572202c87f5e3d486a71f",
+    "outer_reversal_detail.png": "a91cdfb474d14ab0f1155763e92212e42ce2994d71028ef256c3191a40f189cd",
+    "start_detail.png": "c3c5067de214861c3762a36c6e3fc70b909331d6d5e68b4db3128dd1f0ed66d0",
+    "contact_detail.mp4": "fed70e6c6e82d1596a387955124d50d0b615f30a70dd8c530297b301de0e3237"
+  },
+  "validation_source_sha256": "634c29f5d220a14809822aa5216302e99d50946fdd9b31544aa06bdb7e14eba4"
+}

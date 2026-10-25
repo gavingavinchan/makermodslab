@@ -1,0 +1,123 @@
+{
+  "selected": "radial_150_loaded",
+  "reason": "All three complete strokes have uninterrupted simultaneous contact; exceeds 120 mm per stroke. Lower loading gave greater span but repeated contact gaps.",
+  "candidates": [
+    {
+      "candidate": "radial_126_slow",
+      "config": {
+        "name": "candidates/radial_126_slow",
+        "centre": 0.65,
+        "amplitude": 0.16,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "load": 0.001,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "actual_in_contact_radial_span_m": 0.12280793257455558,
+      "simultaneous_contact_fraction": 0.6495,
+      "max_intended_penetration_m": 0.003303610051631554,
+      "unexpected_contact_pairs": {},
+      "target_passed": false,
+      "rendered": false
+    },
+    {
+      "candidate": "radial_142",
+      "config": {
+        "name": "candidates/radial_142",
+        "centre": 0.62,
+        "amplitude": 0.18,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "load": 0.001,
+        "seconds": 24.0,
+        "period": 8.0
+      },
+      "actual_in_contact_radial_span_m": 0.1352401615365854,
+      "simultaneous_contact_fraction": 0.65,
+      "max_intended_penetration_m": 0.0032653929446212863,
+      "unexpected_contact_pairs": {},
+      "target_passed": false,
+      "rendered": false
+    },
+    {
+      "candidate": "radial_150_loaded",
+      "config": {
+        "name": "candidates/radial_150_loaded",
+        "centre": 0.64,
+        "amplitude": 0.19,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "actual_in_contact_radial_span_m": 0.13164139483659187,
+      "simultaneous_contact_fraction": 0.9996666666666667,
+      "max_intended_penetration_m": 0.0007692569280521195,
+      "unexpected_contact_pairs": {},
+      "target_passed": true,
+      "rendered": false
+    },
+    {
+      "candidate": "radial_150_roll90",
+      "config": {
+        "name": "candidates/radial_150_roll90",
+        "centre": 0.64,
+        "amplitude": 0.19,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.0015,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "actual_in_contact_radial_span_m": 0.13790233444756306,
+      "simultaneous_contact_fraction": 0.9965833333333334,
+      "max_intended_penetration_m": 0.0007434302619427466,
+      "unexpected_contact_pairs": {},
+      "target_passed": true,
+      "rendered": false
+    },
+    {
+      "candidate": "radial_light",
+      "config": {
+        "name": "candidates/radial_light",
+        "centre": 0.65,
+        "amplitude": 0.16,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "load": -0.002,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "actual_in_contact_radial_span_m": 0.08041462309961539,
+      "simultaneous_contact_fraction": 0.05620833333333333,
+      "max_intended_penetration_m": 0.000737568149210702,
+      "unexpected_contact_pairs": {},
+      "target_passed": false,
+      "rendered": false
+    },
+    {
+      "candidate": "radial_roll90",
+      "config": {
+        "name": "candidates/radial_roll90",
+        "centre": 0.65,
+        "amplitude": 0.16,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.001,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "actual_in_contact_radial_span_m": 0.1157498568045156,
+      "simultaneous_contact_fraction": 0.998375,
+      "max_intended_penetration_m": 0.0007407217702292395,
+      "unexpected_contact_pairs": {},
+      "target_passed": true,
+      "rendered": false
+    }
+  ]
+}
