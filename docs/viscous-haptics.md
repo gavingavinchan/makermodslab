@@ -125,6 +125,12 @@ restore paths in the DAgger runner.
   environment before any billed run ("I want to see the environment setup first").
   Scene, thread model and a scripted feasibility demo first, no calls:
   `scripts/viscous-dream1/BRIEF_FLANGE_SCENE.md`.
+  2026-10-23: v2 look (0.6 m coated pipes, weld-neck flanges, 7 coated studs, one
+  empty hole) approved ("good"); the sim gripper's placeholder 10 N cannot lift the
+  650 g bolt. 2026-10-24, Gavin: "now get Dream-1 to do the task. If too difficult you
+  can start the task with the [bolt] and nut already in the grippers."
+  `BRIEF_FLANGE_DREAM.md`: grip force derived from the RS00 rating (or a logged
+  grasp-attach), a `pregrasp` start, then Dream-1 on table and pregrasp starts.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
