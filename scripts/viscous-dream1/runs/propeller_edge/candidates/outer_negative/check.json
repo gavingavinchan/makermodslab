@@ -1,0 +1,310 @@
+{
+  "actual_pad_radial_span_m": 0.12424154659261549,
+  "pad_motion_xyz_range_m": [
+    0.12377962025919369,
+    0.012827711639305572,
+    0.017764796862357102
+  ],
+  "actual_full_3d_span_m": 0.12532701995316176,
+  "projected_radial_tangent_span_m": 0.12477614428526225,
+  "projected_chordwise_span_m": 0.015171849182053701,
+  "actual_t_range": [
+    0.4878019379834511,
+    0.8023374989774144
+  ],
+  "actual_u_range": [
+    -0.27635346421681994,
+    -0.20574778302887717
+  ],
+  "actual_continuous_contact_tangential_path_m": 0.20223212273424473,
+  "radial_reversals_10mm": 2,
+  "complete_strokes": [
+    {
+      "start_s": 5.1230000000000455,
+      "end_s": 11.553999999999036,
+      "radial_amplitude_m": 0.12424154659261549,
+      "endpoint_distance_m": 0.1253261865447955,
+      "projected_tangent_amplitude_m": 0.12489261590775141,
+      "simultaneous_contact_fraction": 0.9731032338308457,
+      "endpoints_in_contact": true
+    }
+  ],
+  "longest_contact_gap_s": 0.007,
+  "uninterrupted_contact_radial_spans_m": [
+    0.03755172301375259,
+    7.219230010446775e-05,
+    2.292056866753933e-05,
+    0.00024179431685644737,
+    5.445835005618571e-05,
+    5.35584504170461e-05,
+    5.0498022764744466e-05,
+    0.00015169947916188198,
+    4.6801600142087896e-05,
+    4.6994345877349186e-05,
+    3.677495147152987e-05,
+    4.339846632145372e-05,
+    0.00011744746312064569,
+    5.84235901889274e-05,
+    1.656463987093071e-05,
+    3.250825010386871e-05,
+    2.3415305744178827e-05,
+    1.4675287134335857e-05,
+    8.776252800807294e-05,
+    3.6311142337486224e-05,
+    2.160501099468526e-05,
+    1.442643500054741e-05,
+    2.76852740911937e-05,
+    1.3391444143862063e-05,
+    1.2665797919864108e-05,
+    5.154323462236432e-05,
+    4.7358246450746044e-05,
+    4.1965393813514495e-05,
+    1.1610861947008999e-05,
+    2.759982571171049e-05,
+    5.362946854603479e-06,
+    1.9408399946962973e-05,
+    2.2000935942678712e-05,
+    4.871686987795165e-05,
+    4.291353895968797e-05,
+    3.833975358491504e-05,
+    0.0001605966693470906,
+    0.0005609354690259138,
+    7.398978494022046e-05,
+    0.000274396092862228,
+    0.00040511665755621484,
+    0.0003785932900874367,
+    0.00042388281999738986,
+    8.145058436959118e-05,
+    0.0004410869389317451,
+    0.000525344827982166,
+    0.0006017590277745954,
+    0.0004710624337048719,
+    0.000137197376071041,
+    5.654269982252602e-05,
+    0.0005009221808714437,
+    0.0006643659179531025,
+    0.00010594496015736699,
+    0.0005474185234467521,
+    0.00016114668033545554,
+    0.000344210539797718,
+    0.00025228008345618,
+    0.0007694446495624674,
+    0.00018210559146680794,
+    0.0006931525538825811,
+    0.0011299395850979388,
+    0.0006192822323455305,
+    0.00028035554501076865,
+    0.0006992892700558029,
+    0.00018883783186102177,
+    0.0007907357331555787,
+    0.00019118141160834323,
+    0.0006817132330848019,
+    0.0002337330332142229,
+    0.0010270468275622169,
+    0.0011970541341179142,
+    0.0009290073214330841,
+    0.001184394227629726,
+    0.00019831381884310995,
+    0.0008483879198776245,
+    0.00164198697238227,
+    0.0026438234691938955,
+    0.0013746508470128815,
+    0.0014770876226192775,
+    0.006239379797903122,
+    0.0015064056246187896,
+    0.008684771582700257,
+    0.07571224410029653,
+    0.002050457244698989,
+    0.0015017088493525788
+  ],
+  "minimum_complete_stroke_m": 0.12424154659261549,
+  "scrub_contact_fraction": {
+    "pad": 0.9796666666666667,
+    "left_bilateral": 1.0,
+    "right_bilateral": 1.0,
+    "simultaneous": 0.9796666666666667
+  },
+  "task": "propeller_edge",
+  "config": {
+    "name": "candidates/outer_negative",
+    "lanes": "",
+    "shift_s": 1.5,
+    "centre": 0.7,
+    "amplitude": 0.21,
+    "u": -0.25,
+    "u_amplitude": 0.0,
+    "roll": 90.0,
+    "load": 0.003,
+    "seconds": 12.0,
+    "period": 12.0
+  },
+  "duration_s": 14.999999999997126,
+  "poses": {
+    "left": {
+      "target": [
+        0.07102278140767983,
+        -0.10168479754823825,
+        1.2945411390475285
+      ],
+      "R": [
+        [
+          0.2773886734082533,
+          0.07499554122918821,
+          -0.9578262852211513
+        ],
+        [
+          -0.9246289113608447,
+          -0.24998513743062736,
+          -0.2873478855663454
+        ],
+        [
+          -0.26099214574478774,
+          0.9653409241607501,
+          0.0
+        ]
+      ],
+      "q": [
+        -0.059123041556503275,
+        -2.0695821921528066,
+        1.334337890389797,
+        0.8967204370998982,
+        1.3384625738739624,
+        0.26404982753296585
+      ],
+      "error_m": 5.064780559472243e-14
+    },
+    "right": {
+      "target": [
+        -0.056440714232213265,
+        -0.001818114344249,
+        1.3083256711382685
+      ],
+      "R": [
+        [
+          -0.007112591987105892,
+          -0.9997231311320839,
+          -0.0224292691518787
+        ],
+        [
+          -0.302193862278104,
+          0.023530003813481633,
+          -0.9529560370352769
+        ],
+        [
+          0.9532199539648062,
+          6.245004513516506e-17,
+          -0.30227755352214414
+        ]
+      ],
+      "q": [
+        -0.9058193961427647,
+        -1.0381368130856812,
+        1.0080580119012312,
+        -0.2957835972798682,
+        0.8691033474792509,
+        -1.9554063865094147
+      ],
+      "error_m": 1.9700281321468266e-13
+    }
+  },
+  "baseline_actual_radial_span_m": 0.031506476078311196,
+  "baseline_check_sha256": "af28012484459df89f9d4be798957a8eff0bc3d43759891d985f0f34a4d4ea83",
+  "motion_source_sha256": "bc6d320c31089a8f36027b2259709ab131115b9a23030dd73ab12075ec504276",
+  "substep_sample_convention": "mj_step contact/geom positions at start of 1 ms integration; timestamp is integration end",
+  "max_intended_penetration_m": 0.0008111151423741042,
+  "max_unwanted_penetration_m": 0.0,
+  "unexpected_contact_pairs": {},
+  "intended_pair_max_penetration_m": {
+    "cardinal_blade_0_23_6 / cardinal_pad": 0.0002713958899954264,
+    "cardinal_handle / right_collision_042_22": 0.0007886278389119712,
+    "cardinal_handle / right_collision_043_22": 0.0008004454512130779,
+    "cardinal_blade_0_24_6 / cardinal_pad": 0.00036989924276696867,
+    "cardinal_blade_0_36_7 / left_collision_042_22": 0.00034433459840907144,
+    "cardinal_blade_0_37_7 / left_collision_042_22": 0.00016839364175430042,
+    "cardinal_blade_0_36_6 / left_collision_042_22": 0.0003434259302698729,
+    "cardinal_blade_0_37_6 / left_collision_042_22": 6.269431250199419e-05,
+    "cardinal_blade_0_45_1 / left_collision_043_22": 0.0004078946382310455,
+    "cardinal_blade_0_45_2 / left_collision_043_22": 0.000407894636667942,
+    "cardinal_blade_0_44_3 / left_collision_043_22": 0.0003637550892199274,
+    "cardinal_blade_0_44_4 / left_collision_043_22": 0.0003193681601800222,
+    "cardinal_blade_0_45_0 / left_collision_043_22": 0.00040075211196834604,
+    "cardinal_blade_0_45_3 / left_collision_043_22": 0.00039168517814715644,
+    "cardinal_blade_0_45_4 / left_collision_043_22": 0.00023808304661542836,
+    "cardinal_blade_0_46_0 / left_collision_043_22": 0.0002009546742118033,
+    "cardinal_blade_0_46_1 / left_collision_043_22": 0.00019416873239590693,
+    "cardinal_blade_0_43_4 / left_collision_043_22": 0.00014029722523590786,
+    "cardinal_blade_0_46_2 / left_collision_043_22": 0.00010621721082622977,
+    "cardinal_blade_0_43_5 / left_collision_043_22": 8.990577010947622e-05,
+    "cardinal_blade_0_44_5 / left_collision_043_22": 6.79903592558759e-05,
+    "cardinal_blade_0_25_6 / cardinal_pad": 0.0005078772417987366,
+    "cardinal_blade_0_26_6 / cardinal_pad": 0.0006354449126063985,
+    "cardinal_blade_0_25_7 / cardinal_pad": 6.854506432622771e-05,
+    "cardinal_blade_0_26_7 / cardinal_pad": 0.00030600820121370567,
+    "cardinal_blade_0_27_6 / cardinal_pad": 0.000706938406763953,
+    "cardinal_blade_0_27_7 / cardinal_pad": 0.0004453802891552627,
+    "cardinal_blade_0_28_6 / cardinal_pad": 0.0006035500148093442,
+    "cardinal_blade_0_28_7 / cardinal_pad": 0.0004315176998042014,
+    "cardinal_blade_0_29_6 / cardinal_pad": 0.00044962761996471067,
+    "cardinal_blade_0_29_7 / cardinal_pad": 5.71880560465781e-05,
+    "cardinal_blade_0_30_6 / cardinal_pad": 0.00015049839293468581,
+    "cardinal_blade_0_31_6 / cardinal_pad": 1.1837868895708088e-05,
+    "cardinal_blade_0_22_6 / cardinal_pad": 0.0002305518737265891,
+    "cardinal_blade_0_21_6 / cardinal_pad": 0.00031596623796211306,
+    "cardinal_blade_0_20_6 / cardinal_pad": 0.0004202739600191571,
+    "cardinal_blade_0_19_6 / cardinal_pad": 0.0005661999244728934,
+    "cardinal_blade_0_18_6 / cardinal_pad": 0.0005680362489348801,
+    "cardinal_blade_0_17_6 / cardinal_pad": 0.0008111151423741042,
+    "cardinal_blade_0_16_6 / cardinal_pad": 0.0005476116136882065,
+    "cardinal_blade_0_17_7 / cardinal_pad": 9.084048034939889e-05,
+    "cardinal_blade_0_16_7 / cardinal_pad": 8.682200282297562e-05,
+    "cardinal_blade_0_15_6 / cardinal_pad": 0.00041771279936003486,
+    "cardinal_blade_0_15_7 / cardinal_pad": 4.582725246973107e-05
+  },
+  "max_pad_normal_N": 16.215735899253655,
+  "max_scrub_ik_error_m": 2.451141239158948e-08,
+  "max_scrub_ik_angle_deg": 1.2930499465549059e-05,
+  "left_edge_radial_range_m": [
+    0.45360079976217244,
+    0.4788265316830989
+  ],
+  "arm_force_limit_fraction": {
+    "left": 1.0,
+    "right": 0.0
+  },
+  "peak_arm_force_by_side_Nm": {
+    "left": 5.0,
+    "right": 4.320988533838857
+  },
+  "inference_calls": 0,
+  "billed_calls": 0,
+  "simulation_only": true,
+  "initialized_pregrasp": true,
+  "fixed_shaft": true,
+  "live_ik_state_unchanged": true,
+  "no_external_forces": true,
+  "free_tool": true,
+  "baseline_ratio": 3.943365366656869,
+  "release_tool_drop_m": 0.5187582156236222,
+  "scene_invariants": {
+    "entire_corrected_xml_equal": true,
+    "xml_sha256": "d72ab5549c1d64e9184d204a9aa55577b0d434fea0e521f9a0b5430eed5dfc88",
+    "compiled_numeric_model_sha256": "c2b3433db75dd703f990065e3c3d7d21347ca5217c0bb0e69632ee4fd93ce21a",
+    "compiled_model_identical_before_after": true,
+    "no_welds": true,
+    "corrected_sources_sha256": {
+      "propeller_corrected_scene.py": "f50398647a40815db7a90ad2c660a5a990a51bc34084831aa0e3c1f69cc9c03c",
+      "propeller_corrected_demo.py": "8cc8e6d5369c39a8de3a89e42628116f44595ba209c77a111f9466f7ea28ae3e",
+      "propeller_corrected_check.py": "422598a1de85b26f559f00d257ae43f2c76ffc125217bcd7ef3e5d4754598575",
+      "cross_scenes.py": "4d550f0290a2a88a9f5247affc06997523e4f37ee7cbb12c74afcb4f9e0f4b74"
+    }
+  },
+  "clearance": {
+    "conservative_swept_pad_to_blade_boundary_m": 0.05086126708211368,
+    "boundary_closest_time_s": 5.124000000000046,
+    "left_gripper_clearance_m": 0.02453721703112682,
+    "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+    "safety_passed": true,
+    "conservative_footprint_tip_radius_m": 0.4279233120960787
+  },
+  "target_passed": false
+}

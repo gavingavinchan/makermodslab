@@ -245,6 +245,26 @@ restore paths in the DAgger runner.
   manifest and focused verifier are beside the asset. Integration into the
   native ROV is in progress; the visual shell has no validated mass/collision
   model, so old free-tool physics does not validate this new casing.
+  *Edge/zigzag milestone (2026-10-24):* the unchanged corrected bench now runs
+  four continuous lanes (`u=.13,.17,.21,.25`), shifting at every reversal.
+  Actual radial span 143.10 mm; all 25,500 scrub substeps retain pad contact
+  and both bilateral holds, with no unintended contacts. Conservative pad-rim
+  clearance is 1.90 mm and left-arm clearance 18.66 mm. Exact rim contact is
+  intentionally avoided. Geometric pad/surface overlap union is 57.40 cm²
+  versus 24.22 cm² for the instrumented single-lane rerun (2.37×); nominal
+  whole-disk footprint is 137.09 cm². Actual overlap covers only 4.59% of the
+  blade face, with no abrasion/material-removal claim. Parent reran the Linux
+  validator: 28,500 samples, 3,596 frozen baseline files and decoded videos
+  pass. Show `runs/propeller_edge/contact_detail.mp4`; source, coverage masks,
+  rejected trials and reproduction are in `PROPELLER_EDGE_README.md` under
+  `scripts/viscous-dream1/`. Frozen `coverage_plan.json` SHA-256 is
+  `b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db`.
+  Initialized pregrasp, fixed shaft and continuous left-arm 5 Nm saturation
+  remain. Native-ROV Blender retargeting is still in progress: early draft
+  poses intersected the chassis; a revised elbow branch/whole-vehicle pose
+  clears four extreme targets, pending the complete path audit and revised
+  camera QA before final rendering. This presentation does not validate wet
+  dynamics or the new visual tool's physics.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

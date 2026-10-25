@@ -1,0 +1,259 @@
+{
+  "actual_pad_radial_span_m": 0.13183352037851243,
+  "pad_motion_xyz_range_m": [
+    0.132870921225172,
+    0.009161023397104728,
+    0.011664869539806721
+  ],
+  "actual_full_3d_span_m": 0.13307749656462706,
+  "projected_radial_tangent_span_m": 0.13305201793829843,
+  "projected_chordwise_span_m": 0.00987814664016177,
+  "actual_t_range": [
+    0.454736250975344,
+    0.7884919987690463
+  ],
+  "actual_u_range": [
+    -0.0009390483210358506,
+    0.03949540916662531
+  ],
+  "actual_continuous_contact_tangential_path_m": 0.49202718929713274,
+  "radial_reversals_10mm": 4,
+  "complete_strokes": [
+    {
+      "start_s": 5.472000000000162,
+      "end_s": 11.45499999999909,
+      "radial_amplitude_m": 0.1282918740658351,
+      "endpoint_distance_m": 0.12928881485187177,
+      "projected_tangent_amplitude_m": 0.12927118049442984,
+      "simultaneous_contact_fraction": 1.0,
+      "endpoints_in_contact": true
+    },
+    {
+      "start_s": 11.45499999999909,
+      "end_s": 17.459999999998356,
+      "radial_amplitude_m": 0.12128108639271906,
+      "endpoint_distance_m": 0.12231425276248489,
+      "projected_tangent_amplitude_m": 0.12223289161457622,
+      "simultaneous_contact_fraction": 1.0,
+      "endpoints_in_contact": true
+    },
+    {
+      "start_s": 17.459999999998356,
+      "end_s": 23.55900000000581,
+      "radial_amplitude_m": 0.1248227327053964,
+      "endpoint_distance_m": 0.12610568202418637,
+      "projected_tangent_amplitude_m": 0.12601319006227424,
+      "simultaneous_contact_fraction": 1.0,
+      "endpoints_in_contact": true
+    }
+  ],
+  "longest_contact_gap_s": 0.008,
+  "uninterrupted_contact_radial_spans_m": [
+    0.0002233492179947727,
+    0.13183352037851243
+  ],
+  "minimum_complete_stroke_m": 0.12128108639271906,
+  "scrub_contact_fraction": {
+    "pad": 0.9996666666666667,
+    "left_bilateral": 1.0,
+    "right_bilateral": 1.0,
+    "simultaneous": 0.9996666666666667
+  },
+  "task": "propeller_edge",
+  "config": {
+    "name": "candidates/single_lane_baseline",
+    "lanes": "",
+    "shift_s": 1.5,
+    "centre": 0.64,
+    "amplitude": 0.19,
+    "u": 0.0,
+    "u_amplitude": 0.0,
+    "roll": 90.0,
+    "load": 0.003,
+    "seconds": 24.0,
+    "period": 12.0
+  },
+  "duration_s": 27.000000000010015,
+  "poses": {
+    "left": {
+      "target": [
+        0.07102278140767983,
+        -0.10168479754823825,
+        1.2945411390475285
+      ],
+      "R": [
+        [
+          0.2773886734082533,
+          0.07499554122918821,
+          -0.9578262852211513
+        ],
+        [
+          -0.9246289113608447,
+          -0.24998513743062736,
+          -0.2873478855663454
+        ],
+        [
+          -0.26099214574478774,
+          0.9653409241607501,
+          0.0
+        ]
+      ],
+      "q": [
+        -0.059123041556503275,
+        -2.0695821921528066,
+        1.334337890389797,
+        0.8967204370998982,
+        1.3384625738739624,
+        0.26404982753296585
+      ],
+      "error_m": 5.064780559472243e-14
+    },
+    "right": {
+      "target": [
+        -0.08683237608595443,
+        -0.019329407381855318,
+        1.3603264545979794
+      ],
+      "R": [
+        [
+          0.009268844277760447,
+          -0.9996145554665093,
+          0.02616923814801867
+        ],
+        [
+          -0.3337367766424425,
+          -0.02776221351933394,
+          -0.94225740825786
+        ],
+        [
+          0.9426207362678094,
+          6.071532165918825e-17,
+          -0.3338654632601775
+        ]
+      ],
+      "q": [
+        -0.5492498387298803,
+        -1.1250049970307754,
+        1.4421815872678134,
+        -0.543499059865883,
+        0.4888184058277338,
+        -1.7603114626542242
+      ],
+      "error_m": 1.2446403298881762e-13
+    }
+  },
+  "baseline_actual_radial_span_m": 0.031506476078311196,
+  "baseline_check_sha256": "af28012484459df89f9d4be798957a8eff0bc3d43759891d985f0f34a4d4ea83",
+  "motion_source_sha256": "89d7c55c801378da4d4decb92fe1134192cc9ccaabbfabcbea3cf5184136c8b2",
+  "substep_sample_convention": "mj_step contact/geom positions at start of 1 ms integration; timestamp is integration end",
+  "max_intended_penetration_m": 0.0007632827610246898,
+  "max_unwanted_penetration_m": 0.0,
+  "unexpected_contact_pairs": {},
+  "intended_pair_max_penetration_m": {
+    "cardinal_blade_0_21_7 / cardinal_pad": 0.00022966437510722428,
+    "cardinal_blade_0_21_8 / cardinal_pad": 0.0003200613366531935,
+    "cardinal_handle / right_collision_042_22": 0.0007632827610246898,
+    "cardinal_blade_0_20_7 / cardinal_pad": 0.0003220036347634837,
+    "cardinal_blade_0_20_8 / cardinal_pad": 0.0003804402979327865,
+    "cardinal_handle / right_collision_043_22": 0.0007630748121607142,
+    "cardinal_blade_0_36_7 / left_collision_042_22": 0.00034433459840907144,
+    "cardinal_blade_0_37_7 / left_collision_042_22": 0.00016839364175430042,
+    "cardinal_blade_0_36_6 / left_collision_042_22": 0.0003434259302698729,
+    "cardinal_blade_0_37_6 / left_collision_042_22": 6.269431250199419e-05,
+    "cardinal_blade_0_45_1 / left_collision_043_22": 0.0004078946382310455,
+    "cardinal_blade_0_45_2 / left_collision_043_22": 0.000407894636667942,
+    "cardinal_blade_0_44_3 / left_collision_043_22": 0.0003637550892199274,
+    "cardinal_blade_0_44_4 / left_collision_043_22": 0.0003193681601800222,
+    "cardinal_blade_0_45_0 / left_collision_043_22": 0.00040075211196834604,
+    "cardinal_blade_0_45_3 / left_collision_043_22": 0.00039168517814715644,
+    "cardinal_blade_0_45_4 / left_collision_043_22": 0.00023808304661542836,
+    "cardinal_blade_0_46_0 / left_collision_043_22": 0.0002009546742118033,
+    "cardinal_blade_0_46_1 / left_collision_043_22": 0.00019416873239590693,
+    "cardinal_blade_0_43_4 / left_collision_043_22": 0.00014029722523590786,
+    "cardinal_blade_0_46_2 / left_collision_043_22": 0.00010621721082622977,
+    "cardinal_blade_0_43_5 / left_collision_043_22": 8.990577010947622e-05,
+    "cardinal_blade_0_44_5 / left_collision_043_22": 6.79903592558759e-05,
+    "cardinal_blade_0_22_7 / cardinal_pad": 0.00024372946892969172,
+    "cardinal_blade_0_22_8 / cardinal_pad": 0.0002795967519305737,
+    "cardinal_blade_0_23_7 / cardinal_pad": 0.000268675521635348,
+    "cardinal_blade_0_23_8 / cardinal_pad": 0.0003236630771197864,
+    "cardinal_blade_0_24_8 / cardinal_pad": 0.000360005325800606,
+    "cardinal_blade_0_24_7 / cardinal_pad": 0.0002821666857387237,
+    "cardinal_blade_0_25_8 / cardinal_pad": 0.00037054833429863636,
+    "cardinal_blade_0_25_7 / cardinal_pad": 0.00026519313133602164,
+    "cardinal_blade_0_26_8 / cardinal_pad": 0.00040696558306836433,
+    "cardinal_blade_0_26_7 / cardinal_pad": 0.00027773171707746037,
+    "cardinal_blade_0_27_8 / cardinal_pad": 0.0004277044659016593,
+    "cardinal_blade_0_27_7 / cardinal_pad": 0.0002630172822117791,
+    "cardinal_blade_0_28_8 / cardinal_pad": 0.00043211955183503536,
+    "cardinal_blade_0_28_7 / cardinal_pad": 0.00026287817818353344,
+    "cardinal_blade_0_29_8 / cardinal_pad": 0.00038081115883202067,
+    "cardinal_blade_0_29_7 / cardinal_pad": 0.0001891138882340547,
+    "cardinal_blade_0_30_8 / cardinal_pad": 0.0003260277433143704,
+    "cardinal_blade_0_30_7 / cardinal_pad": 2.6423177241162662e-05,
+    "cardinal_blade_0_19_7 / cardinal_pad": 0.00029124024738578315,
+    "cardinal_blade_0_19_8 / cardinal_pad": 0.0003181281862641063,
+    "cardinal_blade_0_18_7 / cardinal_pad": 0.0002822033715660806,
+    "cardinal_blade_0_18_8 / cardinal_pad": 0.0002928894614654116,
+    "cardinal_blade_0_17_7 / cardinal_pad": 0.0002738107613551881,
+    "cardinal_blade_0_17_8 / cardinal_pad": 0.0002766520034695229,
+    "cardinal_blade_0_16_7 / cardinal_pad": 0.0002664441009173839,
+    "cardinal_blade_0_16_8 / cardinal_pad": 0.00026732918141015417,
+    "cardinal_blade_0_15_7 / cardinal_pad": 0.0002832210891592812,
+    "cardinal_blade_0_15_8 / cardinal_pad": 0.0002838511775891647,
+    "cardinal_blade_0_14_7 / cardinal_pad": 0.0002485810218012105,
+    "cardinal_blade_0_14_8 / cardinal_pad": 0.0002538412616892412,
+    "cardinal_blade_0_13_7 / cardinal_pad": 0.00014445144375709645,
+    "cardinal_blade_0_13_8 / cardinal_pad": 0.00014461960304078435
+  },
+  "max_pad_normal_N": 12.914318701131338,
+  "max_scrub_ik_error_m": 3.487722384455537e-08,
+  "max_scrub_ik_angle_deg": 2.5759309815023363e-05,
+  "left_edge_radial_range_m": [
+    0.45360079976217244,
+    0.4788265316830989
+  ],
+  "arm_force_limit_fraction": {
+    "left": 1.0,
+    "right": 0.0
+  },
+  "peak_arm_force_by_side_Nm": {
+    "left": 5.0,
+    "right": 3.6899396188195652
+  },
+  "inference_calls": 0,
+  "billed_calls": 0,
+  "simulation_only": true,
+  "initialized_pregrasp": true,
+  "fixed_shaft": true,
+  "live_ik_state_unchanged": true,
+  "no_external_forces": true,
+  "free_tool": true,
+  "baseline_ratio": 4.184330867432856,
+  "release_tool_drop_m": 0.5787457333339928,
+  "scene_invariants": {
+    "entire_corrected_xml_equal": true,
+    "xml_sha256": "d72ab5549c1d64e9184d204a9aa55577b0d434fea0e521f9a0b5430eed5dfc88",
+    "compiled_numeric_model_sha256": "c2b3433db75dd703f990065e3c3d7d21347ca5217c0bb0e69632ee4fd93ce21a",
+    "compiled_model_identical_before_after": true,
+    "no_welds": true,
+    "corrected_sources_sha256": {
+      "propeller_corrected_scene.py": "f50398647a40815db7a90ad2c660a5a990a51bc34084831aa0e3c1f69cc9c03c",
+      "propeller_corrected_demo.py": "8cc8e6d5369c39a8de3a89e42628116f44595ba209c77a111f9466f7ea28ae3e",
+      "propeller_corrected_check.py": "422598a1de85b26f559f00d257ae43f2c76ffc125217bcd7ef3e5d4754598575",
+      "cross_scenes.py": "4d550f0290a2a88a9f5247affc06997523e4f37ee7cbb12c74afcb4f9e0f4b74"
+    }
+  },
+  "clearance": {
+    "conservative_swept_pad_to_blade_boundary_m": 0.05442769777275178,
+    "boundary_closest_time_s": 5.410000000000141,
+    "sampled_boundary_clearance_m": 0.05445896688086546,
+    "maximum_pad_translation_per_ms_m": 6.253821622735055e-05,
+    "interpolated_left_clearance_lower_bound_m": 0.04857851090560066,
+    "left_gripper_clearance_m": 0.048611430739935464,
+    "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+    "safety_passed": true,
+    "conservative_footprint_tip_radius_m": 0.4224543395137733
+  },
+  "target_passed": true
+}

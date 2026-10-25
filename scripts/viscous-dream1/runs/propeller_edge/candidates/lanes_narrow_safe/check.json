@@ -1,0 +1,264 @@
+{
+  "actual_pad_radial_span_m": 0.13752810541653127,
+  "pad_motion_xyz_range_m": [
+    0.14472446029551572,
+    0.021127744029051654,
+    0.05132999690189233
+  ],
+  "actual_full_3d_span_m": 0.1511632673757251,
+  "projected_radial_tangent_span_m": 0.14985813148984425,
+  "projected_chordwise_span_m": 0.03820863536060337,
+  "actual_t_range": [
+    0.5741552361529397,
+    0.9223276549289683
+  ],
+  "actual_u_range": [
+    0.1257234551139489,
+    0.26756532225386
+  ],
+  "actual_continuous_contact_tangential_path_m": 0.5367930646065939,
+  "radial_reversals_10mm": 3,
+  "complete_strokes": [
+    {
+      "start_s": 5.422000000000145,
+      "end_s": 12.751999999998372,
+      "radial_amplitude_m": 0.13342025275360542,
+      "endpoint_distance_m": 0.1418877398461118,
+      "projected_tangent_amplitude_m": 0.14188227551207136,
+      "simultaneous_contact_fraction": 1.0,
+      "endpoints_in_contact": true
+    },
+    {
+      "start_s": 12.751999999998372,
+      "end_s": 20.20300000000171,
+      "radial_amplitude_m": 0.13752810541653127,
+      "endpoint_distance_m": 0.1434392567537945,
+      "projected_tangent_amplitude_m": 0.14343353981124238,
+      "simultaneous_contact_fraction": 1.0,
+      "endpoints_in_contact": true
+    }
+  ],
+  "longest_contact_gap_s": 0,
+  "uninterrupted_contact_radial_spans_m": [
+    0.13752810541653127
+  ],
+  "minimum_complete_stroke_m": 0.13342025275360542,
+  "scrub_contact_fraction": {
+    "pad": 1.0,
+    "left_bilateral": 1.0,
+    "right_bilateral": 1.0,
+    "simultaneous": 1.0
+  },
+  "task": "propeller_edge",
+  "config": {
+    "name": "candidates/lanes_narrow_safe",
+    "lanes": ".13,.19,.25",
+    "shift_s": 1.5,
+    "centre": 0.738,
+    "amplitude": 0.198,
+    "u": 0.0,
+    "u_amplitude": 0.0,
+    "roll": 90.0,
+    "load": 0.003,
+    "seconds": 24.0,
+    "period": 12.0
+  },
+  "duration_s": 27.000000000010015,
+  "poses": {
+    "left": {
+      "target": [
+        0.07102278140767983,
+        -0.10168479754823825,
+        1.2945411390475285
+      ],
+      "R": [
+        [
+          0.2773886734082533,
+          0.07499554122918821,
+          -0.9578262852211513
+        ],
+        [
+          -0.9246289113608447,
+          -0.24998513743062736,
+          -0.2873478855663454
+        ],
+        [
+          -0.26099214574478774,
+          0.9653409241607501,
+          0.0
+        ]
+      ],
+      "q": [
+        -0.059123041556503275,
+        -2.0695821921528066,
+        1.334337890389797,
+        0.8967204370998982,
+        1.3384625738739624,
+        0.26404982753296585
+      ],
+      "error_m": 5.064780559472243e-14
+    },
+    "right": {
+      "target": [
+        -0.050705546506255056,
+        -0.024454589548501104,
+        1.378530420879961
+      ],
+      "R": [
+        [
+          0.009060723432173925,
+          -0.9995689221392952,
+          0.027926209627757055
+        ],
+        [
+          -0.30848181723471824,
+          -0.02935932378798559,
+          -0.950777049860943
+        ],
+        [
+          0.9511870855549142,
+          6.071532165918825e-17,
+          -0.3086148542658769
+        ]
+      ],
+      "q": [
+        -0.7597130938981353,
+        -1.3229706272369544,
+        1.6820574027699855,
+        -0.6083754657498729,
+        0.6874462088420774,
+        -1.8404442940546732
+      ],
+      "error_m": 4.760413037368698e-13
+    }
+  },
+  "baseline_actual_radial_span_m": 0.031506476078311196,
+  "baseline_check_sha256": "af28012484459df89f9d4be798957a8eff0bc3d43759891d985f0f34a4d4ea83",
+  "motion_source_sha256": "0d33c373a210a4b376c62deaf997c32a6e1e5507d1cf5b0c10fa8d94bf4885a7",
+  "substep_sample_convention": "mj_step contact/geom positions at start of 1 ms integration; timestamp is integration end",
+  "max_intended_penetration_m": 0.0008344365552588155,
+  "max_unwanted_penetration_m": 0.0,
+  "unexpected_contact_pairs": {},
+  "intended_pair_max_penetration_m": {
+    "cardinal_blade_0_25_8 / cardinal_pad": 0.00022913905743637315,
+    "cardinal_handle / right_collision_042_22": 0.0008255923161284151,
+    "cardinal_handle / right_collision_043_22": 0.0008344365552588155,
+    "cardinal_blade_0_24_8 / cardinal_pad": 0.00022031569039621972,
+    "cardinal_blade_0_36_7 / left_collision_042_22": 0.00034433459840907144,
+    "cardinal_blade_0_37_7 / left_collision_042_22": 0.00016839364175430042,
+    "cardinal_blade_0_36_6 / left_collision_042_22": 0.0003434259302698729,
+    "cardinal_blade_0_37_6 / left_collision_042_22": 6.269431250199419e-05,
+    "cardinal_blade_0_45_1 / left_collision_043_22": 0.0004078946382310455,
+    "cardinal_blade_0_45_2 / left_collision_043_22": 0.000407894636667942,
+    "cardinal_blade_0_44_3 / left_collision_043_22": 0.0003637550892199274,
+    "cardinal_blade_0_44_4 / left_collision_043_22": 0.0003193681601800222,
+    "cardinal_blade_0_45_0 / left_collision_043_22": 0.00040075211196834604,
+    "cardinal_blade_0_45_3 / left_collision_043_22": 0.00039168517814715644,
+    "cardinal_blade_0_45_4 / left_collision_043_22": 0.00023808304661542836,
+    "cardinal_blade_0_46_0 / left_collision_043_22": 0.0002009546742118033,
+    "cardinal_blade_0_46_1 / left_collision_043_22": 0.00019416873239590693,
+    "cardinal_blade_0_43_4 / left_collision_043_22": 0.00014029722523590786,
+    "cardinal_blade_0_46_2 / left_collision_043_22": 0.00010621721082622977,
+    "cardinal_blade_0_43_5 / left_collision_043_22": 8.990577010947622e-05,
+    "cardinal_blade_0_44_5 / left_collision_043_22": 6.79903592558759e-05,
+    "cardinal_blade_0_26_8 / cardinal_pad": 0.00023843001392770277,
+    "cardinal_blade_0_27_8 / cardinal_pad": 0.00024493929991985323,
+    "cardinal_blade_0_28_8 / cardinal_pad": 0.0002792822376495065,
+    "cardinal_blade_0_29_8 / cardinal_pad": 0.00031964215415738865,
+    "cardinal_blade_0_30_8 / cardinal_pad": 0.00025171846969265977,
+    "cardinal_blade_0_31_8 / cardinal_pad": 0.00023117059412470099,
+    "cardinal_blade_0_31_9 / cardinal_pad": 0.00023896198676620357,
+    "cardinal_blade_0_32_8 / cardinal_pad": 0.00022260403850629188,
+    "cardinal_blade_0_32_9 / cardinal_pad": 0.0002418817129513059,
+    "cardinal_blade_0_33_8 / cardinal_pad": 0.00022517825966734327,
+    "cardinal_blade_0_33_9 / cardinal_pad": 0.00024115751166256397,
+    "cardinal_blade_0_34_8 / cardinal_pad": 0.000230171568695202,
+    "cardinal_blade_0_34_9 / cardinal_pad": 0.00023988767499858338,
+    "cardinal_blade_0_35_8 / cardinal_pad": 0.0002387879822515443,
+    "cardinal_blade_0_35_9 / cardinal_pad": 0.0002856512251389199,
+    "cardinal_blade_0_36_8 / cardinal_pad": 0.00024145442398039124,
+    "cardinal_blade_0_36_9 / cardinal_pad": 0.00033092175299846374,
+    "cardinal_blade_0_37_9 / cardinal_pad": 0.0003380742683559412,
+    "cardinal_blade_0_37_8 / cardinal_pad": 0.0002349582031559396,
+    "cardinal_blade_0_38_9 / cardinal_pad": 0.0003302366646406179,
+    "cardinal_blade_0_38_8 / cardinal_pad": 0.00017334427239297696,
+    "cardinal_blade_0_23_8 / cardinal_pad": 0.00021535165733152547,
+    "cardinal_blade_0_22_8 / cardinal_pad": 0.00021493659283163756,
+    "cardinal_blade_0_21_8 / cardinal_pad": 0.00021530433355436052,
+    "cardinal_blade_0_20_8 / cardinal_pad": 0.00021914410050446518,
+    "cardinal_blade_0_19_8 / cardinal_pad": 0.00024011653049137055,
+    "cardinal_blade_0_18_8 / cardinal_pad": 0.0003226260109001184,
+    "cardinal_blade_0_17_8 / cardinal_pad": 0.0004961205918465436,
+    "cardinal_blade_0_16_8 / cardinal_pad": 0.0003286504779900574,
+    "cardinal_blade_0_17_9 / cardinal_pad": 0.00041818561740056606,
+    "cardinal_blade_0_18_9 / cardinal_pad": 0.00033006890070575405,
+    "cardinal_blade_0_19_9 / cardinal_pad": 0.0002768222275071135,
+    "cardinal_blade_0_20_9 / cardinal_pad": 0.0002460200441482846,
+    "cardinal_blade_0_21_9 / cardinal_pad": 0.00023047630218353324,
+    "cardinal_blade_0_22_9 / cardinal_pad": 0.00022718271287783153,
+    "cardinal_blade_0_23_9 / cardinal_pad": 0.0002211035926325594,
+    "cardinal_blade_0_24_9 / cardinal_pad": 0.0002184451110527125,
+    "cardinal_blade_0_25_9 / cardinal_pad": 0.000219804172010799,
+    "cardinal_blade_0_26_9 / cardinal_pad": 0.00022599579782221717,
+    "cardinal_blade_0_27_9 / cardinal_pad": 0.0002277894334798048,
+    "cardinal_blade_0_28_9 / cardinal_pad": 0.00023354176595650393,
+    "cardinal_blade_0_29_9 / cardinal_pad": 0.00024132095181930903,
+    "cardinal_blade_0_30_9 / cardinal_pad": 0.00024038238209891718,
+    "cardinal_blade_0_39_9 / cardinal_pad": 0.00026795745259790467,
+    "cardinal_blade_0_39_10 / cardinal_pad": 0.00015139061373348526,
+    "cardinal_blade_0_38_10 / cardinal_pad": 0.00012230343264407878,
+    "cardinal_blade_0_40_10 / cardinal_pad": 2.6178597525364622e-05,
+    "cardinal_blade_0_40_9 / cardinal_pad": 2.2878076215308255e-05,
+    "cardinal_blade_0_16_9 / cardinal_pad": 4.6110012916380724e-05
+  },
+  "max_pad_normal_N": 13.279810627745452,
+  "max_scrub_ik_error_m": 4.2767257670123804e-08,
+  "max_scrub_ik_angle_deg": 2.454380366523964e-05,
+  "left_edge_radial_range_m": [
+    0.45360079976217244,
+    0.4788265316830989
+  ],
+  "arm_force_limit_fraction": {
+    "left": 1.0,
+    "right": 0.0
+  },
+  "peak_arm_force_by_side_Nm": {
+    "left": 5.0,
+    "right": 3.9590150798359787
+  },
+  "inference_calls": 0,
+  "billed_calls": 0,
+  "simulation_only": true,
+  "initialized_pregrasp": true,
+  "fixed_shaft": true,
+  "live_ik_state_unchanged": true,
+  "no_external_forces": true,
+  "free_tool": true,
+  "baseline_ratio": 4.365074185849826,
+  "release_tool_drop_m": 0.6209905735520335,
+  "scene_invariants": {
+    "entire_corrected_xml_equal": true,
+    "xml_sha256": "d72ab5549c1d64e9184d204a9aa55577b0d434fea0e521f9a0b5430eed5dfc88",
+    "compiled_numeric_model_sha256": "c2b3433db75dd703f990065e3c3d7d21347ca5217c0bb0e69632ee4fd93ce21a",
+    "compiled_model_identical_before_after": true,
+    "no_welds": true,
+    "corrected_sources_sha256": {
+      "propeller_corrected_scene.py": "f50398647a40815db7a90ad2c660a5a990a51bc34084831aa0e3c1f69cc9c03c",
+      "propeller_corrected_demo.py": "8cc8e6d5369c39a8de3a89e42628116f44595ba209c77a111f9466f7ea28ae3e",
+      "propeller_corrected_check.py": "422598a1de85b26f559f00d257ae43f2c76ffc125217bcd7ef3e5d4754598575",
+      "cross_scenes.py": "4d550f0290a2a88a9f5247affc06997523e4f37ee7cbb12c74afcb4f9e0f4b74"
+    }
+  },
+  "clearance": {
+    "conservative_swept_pad_to_blade_boundary_m": 0.0015952837814287666,
+    "boundary_closest_time_s": 20.211000000001718,
+    "sampled_boundary_clearance_m": 0.0016296474443343936,
+    "maximum_pad_translation_per_ms_m": 6.872732581125384e-05,
+    "interpolated_left_clearance_lower_bound_m": 0.022435275788548505,
+    "left_gripper_clearance_m": 0.022471529059110838,
+    "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+    "safety_passed": true,
+    "conservative_footprint_tip_radius_m": 0.47531942369694247
+  },
+  "target_passed": true
+}

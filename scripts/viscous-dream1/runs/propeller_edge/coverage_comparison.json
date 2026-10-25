@@ -1,0 +1,60 @@
+{
+  "baseline": "instrumented same-model rerun of wide .64 + .19 sine, u=0,24s scrub",
+  "selected_scrub_s": 25.5,
+  "baseline_scrub_s": 24,
+  "actual_geometric_touch_area_ratio": 2.3702379822326245,
+  "actual_geometric_touch_area_gain_m2": 0.0033183778079580793,
+  "nominal_footprint_area_ratio": 1.399280650240619,
+  "nominal_footprint_area_gain_m2": 0.003911680779294871,
+  "selected_geometric_touch_area_m2": 0.005740130708539053,
+  "baseline_geometric_touch_area_m2": 0.002421752900580974,
+  "selected_nominal_footprint_area_m2": 0.013708501078344097,
+  "baseline_nominal_footprint_area_m2": 0.009796820299049226,
+  "selected_actual_touch_width_m": 0.05663107334533679,
+  "baseline_actual_touch_width_m": 0.0331166172752444,
+  "selected_global_coverage_width_m": 0.09570214794753085,
+  "baseline_global_coverage_width_m": 0.06872373392950637,
+  "lane_offsets_u": [
+    0.13,
+    0.17,
+    0.21,
+    0.25
+  ],
+  "commanded_adjacent_lane_spacing_at_t074_m": [
+    0.007908447578299086,
+    0.007913207301233415,
+    0.007918047672484517
+  ],
+  "commanded_first_to_last_lane_offset_at_t074_m": 0.023736836744591,
+  "observed_lanes": [
+    {
+      "lane": 0,
+      "commanded_u": 0.13,
+      "actual_radial_span_m": 0.07051580431553994,
+      "samples_at_shared_t_band": 197,
+      "actual_u_mean_at_t074": 0.13033718479029163
+    },
+    {
+      "lane": 1,
+      "commanded_u": 0.17,
+      "actual_radial_span_m": 0.1422442701715419,
+      "samples_at_shared_t_band": 71,
+      "actual_u_mean_at_t074": 0.1747502909668093
+    },
+    {
+      "lane": 2,
+      "commanded_u": 0.21,
+      "actual_radial_span_m": 0.14241090926641614,
+      "samples_at_shared_t_band": 71,
+      "actual_u_mean_at_t074": 0.2358485848436828
+    },
+    {
+      "lane": 3,
+      "commanded_u": 0.25,
+      "actual_radial_span_m": 0.138709292661066,
+      "samples_at_shared_t_band": 79,
+      "actual_u_mean_at_t074": 0.2622111517643598
+    }
+  ],
+  "note": "Global width includes blade curvature and path orientation; shared-t lane spacing isolates the lateral shift. Areas are union areas, never accumulated overlapping footprints. Neither estimates abrasion."
+}

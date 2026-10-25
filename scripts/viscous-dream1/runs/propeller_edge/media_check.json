@@ -1,0 +1,29 @@
+{
+  "contact_detail": {
+    "frames_fully_decoded": 285,
+    "fps": 10,
+    "duration_s": 28.5,
+    "frame_shape": [
+      800,
+      1280,
+      3
+    ],
+    "fixed_original_camera": true,
+    "real_time": true,
+    "sha256": "fcce6d1649a2214336118863fb4989018dd3ac83d79a81a4e1f8052c0e36c9ee"
+  },
+  "diagnostic": {
+    "frames_fully_decoded": 285,
+    "fps": 10,
+    "duration_s": 28.5,
+    "frame_shape": [
+      1140,
+      1920,
+      3
+    ],
+    "fixed_original_camera": true,
+    "real_time": true,
+    "sha256": "02a1fa901fec104e0286a5306a33215b0c693cafb7a5cead12dbf3dd1bb9b4af"
+  },
+  "script_sha256": "513074d8f4d47f3b1f690d52c7dcdfaaa7e59b2992280409dd91669d832bfc09"
+}

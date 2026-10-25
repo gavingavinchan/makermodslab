@@ -1,0 +1,423 @@
+{
+  "selected": "four_lane_edge",
+  "why": "Four continuous zigzag lanes with a lateral shift at every reversal,143.10mm span,100% contact/both holds,1.90mm conservative rim margin.",
+  "candidates": [
+    {
+      "config": {
+        "name": "candidates/four_lane_edge",
+        "lanes": ".13,.17,.21,.25",
+        "shift_s": 1.5,
+        "centre": 0.742,
+        "amplitude": 0.202,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 25.5,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.14310059351495136,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.0019005600466590153,
+        "boundary_closest_time_s": 21.721000000003563,
+        "sampled_boundary_clearance_m": 0.0019426707742260553,
+        "maximum_pad_translation_per_ms_m": 8.422145513408014e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.01866051736033403,
+        "left_gripper_clearance_m": 0.018705030622955233,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.47512316589827197
+      },
+      "max_scrub_ik_error_m": 4.1462803950521585e-08,
+      "release_tool_drop_m": 0.6209445593173663
+    },
+    {
+      "config": {
+        "name": "candidates/four_lane_zigzag",
+        "lanes": ".13,.17,.21,.25",
+        "shift_s": 1.5,
+        "centre": 0.738,
+        "amplitude": 0.198,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 25.5,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.1391610767263478,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.004586680726173608,
+        "boundary_closest_time_s": 21.71000000000355,
+        "sampled_boundary_clearance_m": 0.0046274914945199155,
+        "maximum_pad_translation_per_ms_m": 8.162153669261525e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.02266169676953646,
+        "left_gripper_clearance_m": 0.022704895316298823,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.47186013139221705
+      },
+      "max_scrub_ik_error_m": 4.6850135302403977e-08,
+      "release_tool_drop_m": 0.6209950746911486
+    },
+    {
+      "config": {
+        "name": "candidates/lanes_broad",
+        "lanes": ".10,.20,.30",
+        "shift_s": 1.5,
+        "centre": 0.73,
+        "amplitude": 0.19,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.004,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.13023420978641836,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.008008606659594143,
+        "boundary_closest_time_s": 20.316000000001846,
+        "sampled_boundary_clearance_m": 0.008042118377928283,
+        "maximum_pad_translation_per_ms_m": 6.702343666828043e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.028514910618283408,
+        "left_gripper_clearance_m": 0.02854980205358454,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.46723327212833343
+      },
+      "max_scrub_ik_error_m": 0.00015306970371763173,
+      "release_tool_drop_m": 0.6300543034786025
+    },
+    {
+      "config": {
+        "name": "candidates/lanes_narrow",
+        "lanes": ".13,.19,.25",
+        "shift_s": 1.5,
+        "centre": 0.74,
+        "amplitude": 0.2,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.13913609046876535,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.00021943765383980736,
+        "boundary_closest_time_s": 20.260000000001778,
+        "sampled_boundary_clearance_m": 0.00025366131026366423,
+        "maximum_pad_translation_per_ms_m": 6.844731284771372e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.020772756803245303,
+        "left_gripper_clearance_m": 0.02080849375674869,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": false,
+        "conservative_footprint_tip_radius_m": 0.4768712810750234
+      },
+      "max_scrub_ik_error_m": 4.2768469940651036e-08,
+      "release_tool_drop_m": 0.62104634081595
+    },
+    {
+      "config": {
+        "name": "candidates/lanes_narrow_safe",
+        "lanes": ".13,.19,.25",
+        "shift_s": 1.5,
+        "centre": 0.738,
+        "amplitude": 0.198,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.13752810541653127,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.0015952837814287666,
+        "boundary_closest_time_s": 20.211000000001718,
+        "sampled_boundary_clearance_m": 0.0016296474443343936,
+        "maximum_pad_translation_per_ms_m": 6.872732581125384e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.022435275788548505,
+        "left_gripper_clearance_m": 0.022471529059110838,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.47531942369694247
+      },
+      "max_scrub_ik_error_m": 4.2767257670123804e-08,
+      "release_tool_drop_m": 0.6209905735520335
+    },
+    {
+      "config": {
+        "name": "candidates/lanes_safe",
+        "lanes": ".10,.19,.28",
+        "shift_s": 1.5,
+        "centre": 0.746,
+        "amplitude": 0.186,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.1289666033160503,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.002715500829152501,
+        "boundary_closest_time_s": 20.257000000001774,
+        "sampled_boundary_clearance_m": 0.0027475413793853105,
+        "maximum_pad_translation_per_ms_m": 6.408110046561937e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.019809610296560008,
+        "left_gripper_clearance_m": 0.019843038113011836,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4739604692042425
+      },
+      "max_scrub_ik_error_m": 6.367675721542658e-08,
+      "release_tool_drop_m": 0.626558214118122
+    },
+    {
+      "config": {
+        "name": "candidates/outer_center",
+        "lanes": "",
+        "shift_s": 1.5,
+        "centre": 0.7,
+        "amplitude": 0.21,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 12.0,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.14409957724126932,
+      "scrub_contact_fraction": {
+        "pad": 0.999,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 0.999
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.0209668147542685,
+        "boundary_closest_time_s": 5.432000000000149,
+        "left_gripper_clearance_m": 0.014739721661197084,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.45799877299666747
+      },
+      "max_scrub_ik_error_m": 6.168452392819607e-08,
+      "release_tool_drop_m": 0.5758933119753222
+    },
+    {
+      "config": {
+        "name": "candidates/outer_negative",
+        "lanes": "",
+        "shift_s": 1.5,
+        "centre": 0.7,
+        "amplitude": 0.21,
+        "u": -0.25,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 12.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.12424154659261549,
+      "scrub_contact_fraction": {
+        "pad": 0.9796666666666667,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 0.9796666666666667
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.05086126708211368,
+        "boundary_closest_time_s": 5.124000000000046,
+        "left_gripper_clearance_m": 0.02453721703112682,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4279233120960787
+      },
+      "max_scrub_ik_error_m": 2.451141239158948e-08,
+      "release_tool_drop_m": 0.5187582156236222
+    },
+    {
+      "config": {
+        "name": "candidates/outer_positive",
+        "lanes": "",
+        "shift_s": 1.5,
+        "centre": 0.7,
+        "amplitude": 0.21,
+        "u": 0.25,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 12.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.14550601963129806,
+      "scrub_contact_fraction": {
+        "pad": 1.0,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 1.0
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.012277981804642252,
+        "boundary_closest_time_s": 5.463000000000159,
+        "left_gripper_clearance_m": 0.0490345472355175,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4618178303325937
+      },
+      "max_scrub_ik_error_m": 4.986172580369898e-08,
+      "release_tool_drop_m": 0.039500156452856094
+    },
+    {
+      "config": {
+        "name": "candidates/single_lane_baseline",
+        "lanes": "",
+        "shift_s": 1.5,
+        "centre": 0.64,
+        "amplitude": 0.19,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 24.0,
+        "period": 12.0
+      },
+      "target_passed": true,
+      "actual_pad_radial_span_m": 0.13183352037851243,
+      "scrub_contact_fraction": {
+        "pad": 0.9996666666666667,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 0.9996666666666667
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.05442769777275178,
+        "boundary_closest_time_s": 5.410000000000141,
+        "sampled_boundary_clearance_m": 0.05445896688086546,
+        "maximum_pad_translation_per_ms_m": 6.253821622735055e-05,
+        "interpolated_left_clearance_lower_bound_m": 0.04857851090560066,
+        "left_gripper_clearance_m": 0.048611430739935464,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4224543395137733
+      },
+      "max_scrub_ik_error_m": 3.487722384455537e-08,
+      "release_tool_drop_m": 0.5787457333339928
+    },
+    {
+      "config": {
+        "name": "candidates/three_lanes",
+        "lanes": "0,.18,.36",
+        "shift_s": 1.5,
+        "centre": 0.7,
+        "amplitude": 0.21,
+        "u": 0.0,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 27.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.1708252291562596,
+      "scrub_contact_fraction": {
+        "pad": 0.7141111111111111,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 0.7141111111111111
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.043718273371196076,
+        "boundary_closest_time_s": 23.24100000000542,
+        "left_gripper_clearance_m": 0.029529384537765872,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4298474579780992
+      },
+      "max_scrub_ik_error_m": 0.004865334973579624,
+      "release_tool_drop_m": 0.10237577041303703
+    },
+    {
+      "config": {
+        "name": "candidates/tip_positive",
+        "lanes": "",
+        "shift_s": 1.5,
+        "centre": 0.715,
+        "amplitude": 0.225,
+        "u": 0.25,
+        "u_amplitude": 0.0,
+        "roll": 90.0,
+        "load": 0.003,
+        "seconds": 12.0,
+        "period": 12.0
+      },
+      "target_passed": false,
+      "actual_pad_radial_span_m": 0.15811707035038464,
+      "scrub_contact_fraction": {
+        "pad": 0.999,
+        "left_bilateral": 1.0,
+        "right_bilateral": 1.0,
+        "simultaneous": 0.999
+      },
+      "clearance": {
+        "conservative_swept_pad_to_blade_boundary_m": 0.0017622777308802344,
+        "boundary_closest_time_s": 5.413000000000142,
+        "left_gripper_clearance_m": 0.03540832069331632,
+        "clearance_evaluation": "every 1 ms; enclosing 26 mm disk vs exact polygon rim; mj_geomDistance tool+right fingers vs all collidable left geoms",
+        "safety_passed": true,
+        "conservative_footprint_tip_radius_m": 0.4745281479462235
+      },
+      "max_scrub_ik_error_m": 5.714866077408073e-08,
+      "release_tool_drop_m": 0.0401721612884296
+    }
+  ]
+}
