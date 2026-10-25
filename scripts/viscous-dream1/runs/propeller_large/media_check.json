@@ -1,0 +1,22 @@
+{
+  "scripted_feasibility.mp4": {
+    "frames_decoded": 150,
+    "fps": 10.0,
+    "duration_s": 15.0,
+    "size": [
+      1600,
+      940
+    ],
+    "sha256": "55e7ae21ad365d047b896a444a4cd22cd529793725be37f80fbd39a530966e0a"
+  },
+  "underwater/underwater_preview.mp4": {
+    "frames_decoded": 150,
+    "fps": 10.0,
+    "duration_s": 15.0,
+    "size": [
+      1280,
+      720
+    ],
+    "sha256": "7979e688726e475a5167360f30ecf07de0573ad59c9caa2d241d381c24c2f234"
+  }
+}

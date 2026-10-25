@@ -1,0 +1,18 @@
+{
+  "source": "../physics_replay.npz",
+  "source_sha256": "d5f78ddfd570d8011d2abaca854ce58596d8fec2fd7959fd67ba2e99d024268e",
+  "visual_replay_only": true,
+  "underwater_dynamics": false,
+  "dream_calls": 0,
+  "same_robot_and_free_tool_transforms_verified": true,
+  "frames": 150,
+  "fps": 10,
+  "duration_s": 15.0,
+  "render_size": [
+    1280,
+    720
+  ],
+  "table_removed": true,
+  "fixture": "Fixed submerged service frame; not a floating ROV",
+  "scene": "Procedural stern, shaft, bronze propeller, seabed, work lights, blue-green fog and particles"
+}

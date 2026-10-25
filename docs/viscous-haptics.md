@@ -151,6 +151,21 @@ restore paths in the DAgger runner.
   enlarging only the camera view. Keep a table motion view and a distinct
   underwater presentation view; neither is a new Dream result. Brief:
   `scripts/viscous-dream1/BRIEF_PROPELLER_LARGE.md`.
+  *Larger scene result (2026-10-24):* `propeller_large` achieves **960 mm**
+  diameter in both visual and collision geometry, with unchanged arms and
+  52 mm pad. Temporary 320 mm arm risers and a 70 mm inward move of the right
+  base keep the outer left blade reachable and the bottom blade 50 mm above
+  the desk. The final 12 s scripted scrub maintains both jaw holds and actual
+  pad contact at every 1 ms substep (100%), with 34.14 mm radial travel, four
+  strict reversals and no unintended penetration. Left contacts are at
+  453.59–473.70 mm of the 480 mm radius. The initialized pregrasp and left-arm
+  5 Nm saturation remain limitations; no new Dream calls or hardware runs.
+  `runs/propeller_large/underwater/underwater_preview.mp4` replays that exact
+  recorded motion with the desk removed, a submerged service frame, procedural
+  vessel stern/shaft, blue-green water/fog and broad lights. It is a visual
+  preview, not floating-ROV or wet dynamics. Both 15 s videos fully decode;
+  geometry/contact checks pass. See `PROPELLER_LARGE_README.md` and the report
+  in `scripts/viscous-dream1/runs/propeller_large/`; the 320 mm baseline remains.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

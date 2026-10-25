@@ -1,0 +1,216 @@
+{
+  "task": "propeller_large",
+  "inference_calls": 0,
+  "billed_calls": 0,
+  "scripted_not_policy_success": true,
+  "simulation_only": true,
+  "attachment": "none; free tool held by bilateral jaw contact",
+  "start": "pregrasp initialized once; no pickup/approach demonstration",
+  "duration_s": 14.999999999997126,
+  "scrub_s": 12,
+  "diameter_m": 0.96,
+  "center_world_m": [
+    -0.42,
+    -0.12,
+    1.29
+  ],
+  "target": "blade_0, world +X = screen-left from +Y arms/front view",
+  "blade_count": 4,
+  "blade_axes_world": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      -1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      -1
+    ]
+  ],
+  "poses": {
+    "left": {
+      "target": [
+        0.07060755961800004,
+        -0.10593690808804573,
+        1.2943717967736645
+      ],
+      "R": [
+        [
+          0.27301362589864175,
+          0.089623475792484,
+          -0.9578262852211513
+        ],
+        [
+          -0.9100454196621396,
+          -0.29874491930828,
+          -0.2873478855663454
+        ],
+        [
+          -0.31189885255581934,
+          0.9501153118302869,
+          0.0
+        ]
+      ],
+      "q": [
+        -0.056877999157647206,
+        -2.0953557406431176,
+        1.3731288813014415,
+        0.8837029942576377,
+        1.3362175314864437,
+        0.3171909277606506
+      ],
+      "error_m": 2.853182566532137e-12,
+      "error_deg": 5.663568652009985e-09
+    },
+    "right": {
+      "target": [
+        -0.005397781571706638,
+        -0.010037028655028007,
+        1.349072573117497
+      ],
+      "R": [
+        [
+          0.9914199815926397,
+          6.938893903907228e-18,
+          -0.13071503394349868
+        ],
+        [
+          -0.12374129016861568,
+          -0.32226569523040943,
+          -0.938526992038624
+        ],
+        [
+          -0.04212497129086817,
+          0.946649260115731,
+          -0.31950064963327174
+        ]
+      ],
+      "q": [
+        -1.0905914908871894,
+        -2.42726623243908,
+        3.4913861453604396,
+        -1.6909755835606946,
+        1.1034459026057122,
+        -0.6872496629139331
+      ],
+      "error_m": 3.4967674316699086e-12,
+      "error_deg": 2.3310143952400275e-10
+    }
+  },
+  "scrub_contact_fraction": {
+    "pad": 1.0,
+    "left_bilateral": 1.0,
+    "right_bilateral": 1.0,
+    "simultaneous": 1.0
+  },
+  "scrub_reversals": 4,
+  "scrub_tangent_path_continuous_contact_m": 0.13536900463260076,
+  "pad_motion_xyz_range_m": [
+    0.03413518009320703,
+    0.01128794505497109,
+    0.016617588675282846
+  ],
+  "max_intended_penetration_m": 0.000771862127365982,
+  "max_unwanted_penetration_m": 0.0,
+  "intended_pair_max_penetration_m": {
+    "cardinal_blade_0_12_1 / cardinal_pad": 0.0003726450461604416,
+    "cardinal_handle / right_collision_043_22": 0.000771862127365982,
+    "cardinal_handle / right_collision_042_22": 0.0007604338052160768,
+    "cardinal_blade_0_14_1 / left_collision_042_22": 0.0006241395748662511,
+    "cardinal_blade_0_15_1 / left_collision_042_22": 0.00026577046954222343,
+    "cardinal_blade_0_15_0 / left_collision_043_22": 0.0004749598116341245,
+    "cardinal_blade_0_13_1 / cardinal_pad": 0.00033147182568003136,
+    "cardinal_blade_0_11_1 / cardinal_pad": 0.0001603951976974229
+  },
+  "unexpected_contact_pairs": {},
+  "max_pad_normal_N": 4.825015049534484,
+  "max_arm_force_Nm": 5.0,
+  "arm_force_limits_Nm": {
+    "left": [
+      -5.0,
+      5.0
+    ],
+    "right": [
+      -5.0,
+      5.0
+    ]
+  },
+  "max_scrub_ik_error_m": 3.719367416378613e-08,
+  "max_scrub_ik_angle_deg": 2.840097165367108e-05,
+  "versions": {
+    "mujoco": "3.16.0",
+    "numpy": "2.2.6",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.1",
+    "dreamlabs": "1.0.1",
+    "dreamlabs_client": "1.0.3",
+    "imageio": "2.38.1",
+    "Pillow": "13.0.0"
+  },
+  "files_sha256": {
+    "propeller_large_scene.py": "3ced2184975bf147b426a2675828fccf110e28a51c45c37bf6bf39afe9ed54da",
+    "propeller_large_check.py": "7f284648bc686b4d7014b7ffdc324770dd76151a5c9784e749f87a6d690ae641",
+    "propeller_large_demo.py": "58b38f3108282da2cce120a08ff4513485a63f139e2f71012b9f35a7044634ee"
+  },
+  "radial_motion_reversals_10mm": 4,
+  "gripper_force_limits_N": {
+    "left": [
+      -10.0,
+      10.0
+    ],
+    "right": [
+      -40.0,
+      40.0
+    ]
+  },
+  "arm_bases_world_m": {
+    "left": [
+      0.22,
+      0.24,
+      1.092
+    ],
+    "right": [
+      -0.15,
+      0.24,
+      1.092
+    ]
+  },
+  "max_intended_scrub_penetration_m": 0.000771862127365982,
+  "gripper_pad_friction": [
+    0.3,
+    0.003,
+    0.0001
+  ],
+  "ready_contact_substeps": {
+    "pad": 50,
+    "left_bilateral": 50,
+    "right_bilateral": 50,
+    "simultaneous": 50
+  },
+  "left_edge_radial_range_m": [
+    0.4535861243814483,
+    0.4737015591806752
+  ],
+  "arm_force_limit_fraction": {
+    "left": 1.0,
+    "right": 0.0
+  },
+  "peak_arm_force_by_side_Nm": {
+    "left": 5.0,
+    "right": 4.755172320385327
+  },
+  "feasibility_passed": true,
+  "release_tool_drop_m": 0.5595118930163409,
+  "weld_count": 0
+}
