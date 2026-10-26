@@ -531,6 +531,25 @@ restore paths in the DAgger runner.
   images. Cut: `astra_rov_g3_20261026_001/astra_rov_social.mp4` (1:43, 4x).
   Same caveats as above (sim, torque limit lifted, ideal thread, bolt
   pre-inserted, `screw` skill). The ROV is fixed, with no hydrodynamics.
+  *Two-handed, in progress (2026-10-26, overnight).* Gavin: "have the left arm
+  also grab the bolt", as a technician uses a backup wrench. Sol is building
+  `--profile astra_rov_backup` (`BRIEF_ASTRA_BACKUP_HOLD.md`):
+  - The bolt turns in its holes unless the left gripper holds the head.
+  - The thread works on nut-relative-to-bolt rotation.
+  - The video adds the left wrist camera.
+  The first Sol run hit a model-capacity error mid-way (partial probes: head held,
+  nut 5.66 turns with the bolt still; unheld, the bolt co-rotated). It was
+  relaunched with a resume note.
+  **Resume here:** on gavin-linux, `astra_op/overnight_backup.sh` (a copy is in
+  `scripts/viscous-dream1/overnight_astra_backup.sh`) runs unattended:
+  - It waits for Sol, checks for its report, the profile and the held-validation
+    video, then runs Astra episode `astra_rov_backup_g3_20261026_001` with
+    `ASTRA_OPERATOR_PROMPT_BACKUP.md` and `LESSONS.md`.
+  - It then exports the video, the timeline and the audit.
+  - Progress log: `runs/astra_flange/overnight_20261026.log`.
+  Next: review the log, Sol's report and the held-validation video. Audit the
+  Astra session (`audit.txt`), make the social cut (`social_edit_rov.py`
+  pattern, four panes incl. left wrist), commit, and show Gavin.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
