@@ -8,12 +8,12 @@ say "start; waiting for Sol (pid $1)"
 while kill -0 $1 2>/dev/null; do sleep 60; done
 say "Sol finished"
 if [ ! -s $3 ]; then say "ABORT: no Sol report"; exit 1; fi
-if ! grep -q "astra_rov_backup" astra_op/server.py; then say "ABORT: profile astra_rov_backup not in server.py"; exit 1; fi
+if ! grep -q "${PROFILE:-astra_rov_backup}" astra_op/server.py; then say "ABORT: profile astra_rov_backup not in server.py"; exit 1; fi
 if [ ! -f runs/astra_flange/validation/rov_backup_g3/run.mp4 ]; then say "ABORT: no held validation video"; exit 1; fi
 if pgrep -f "astra_op/server.py" >/dev/null; then say "ABORT: a sim server is already running"; exit 1; fi
 EP=$2; OUT=$PWD/runs/astra_flange/$EP; WS=~/dreamtrial/astra_ws/$EP
 say "launch server $EP"
-MUJOCO_GL=egl PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/astra_op/.cache/tmp" nohup setsid /home/gavin/dreamtrial/.venv/bin/python astra_op/server.py --scene rov --profile astra_rov_backup --condition G3 --seed 20261024 --episode $EP --output runs/astra_flange/$EP > ${OUT}_server.log 2>&1 < /dev/null &
+MUJOCO_GL=egl PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/astra_op/.cache/tmp" nohup setsid /home/gavin/dreamtrial/.venv/bin/python astra_op/server.py --scene rov --profile ${PROFILE:-astra_rov_backup} --condition G3 --seed 20261024 --episode $EP --output runs/astra_flange/$EP > ${OUT}_server.log 2>&1 < /dev/null &
 SRV=$!
 for i in $(seq 1 180); do grep -q '"ready"' ${OUT}_server.log && break; sleep 2; done
 if ! grep -q '"ready"' ${OUT}_server.log; then say "ABORT: server not ready"; tail -20 ${OUT}_server.log >> $LOG; kill $SRV; exit 1; fi
