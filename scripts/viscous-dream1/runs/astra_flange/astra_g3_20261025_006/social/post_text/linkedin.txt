@@ -1,0 +1,9 @@
+Astra went NUTS on this. 🔩
+
+Six attempts, three dropped nuts, no resets. It just kept going.
+
+At one point the nut fell under the flange, so Astra found it with the other arm's camera and poked it back out. On attempt six it tried a different wrist angle, the thread caught, and it ran the nut down snug against the flange.
+
+The operator is GPT-6 Astra. It sees only through the robot's own cameras, plus a depth reading at any pixel. It looked at its camera images 352 times. One continuous run took 743 commands and 23 minutes of robot time, with no human input.
+
+#robotics #AI #simulation #automation

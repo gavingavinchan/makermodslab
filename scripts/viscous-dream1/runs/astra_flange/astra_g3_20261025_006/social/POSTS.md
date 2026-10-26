@@ -4,38 +4,39 @@ Video for LinkedIn and X: `../astra_flange_social.mp4` (16:9, 1:56).
 Video for Instagram: `astra_flange_reel_9x16.mp4` (9:16, 1:56). Covers are in this folder.
 
 The facts behind the copy are in `docs/viscous-haptics.md` (B3a, episode 6) and in `../audit.txt`.
-The fine print has to stay in every version. It is what keeps "fully autonomous" true.
+Every version says or shows it is simulation; the video itself is labelled "Simulation | sped up".
 
-## LinkedIn
+## LinkedIn (published by Gavin 2026-10-26, with his edits)
 
-We gave an AI a robot and one job: put a nut on a bolt.
+https://www.linkedin.com/feed/update/urn:li:activity:7520600714138681345/
+As published: `post_text/linkedin_published.txt`. The draft we gave him follows.
 
-It took six attempts. It dropped the nut three times. Once the nut fell under the
-flange, so the AI found it with the other arm's camera and poked it back out. Nobody
-reset anything. On attempt six it tried a different wrist angle, the thread caught,
-and it ran the nut down snug against the flange.
+Astra went NUTS on this. 🔩
+
+Six attempts, three dropped nuts, no resets. It just kept going.
+
+At one point the nut fell under the flange, so Astra found it with the other arm's
+camera and poked it back out. On attempt six it tried a different wrist angle, the
+thread caught, and it ran the nut down snug against the flange.
 
 The operator is GPT-6 Astra. It sees only through the robot's own cameras, plus a
-depth reading at any pixel. It looked at its camera images 352 times. It drives two
-Viscous arms with plain commands: move, turn, grip, and a screw skill that turns,
-lets go and regrips. One continuous run took 743 commands and 23 minutes of robot
-time, with no human input.
-
-The fine print: this is a simulation. The bolt starts through the flange and the nut
-starts in the gripper. The thread is idealised. The arm's torque limit is set higher
-than the real motors allow.
+depth reading at any pixel. It looked at its camera images 352 times. One continuous
+run took 743 commands and 23 minutes of robot time, with no human input.
 
 #robotics #AI #simulation #automation
 
-## X
+(Gavin dropped the fine-print paragraph for LinkedIn: the video itself is labelled
+"Simulation | sped up".)
+
+## X (final; main post went live 2026-10-26 4:17 PM, reply status unclear)
 
 Post:
 
-> We gave an AI a robot and one job: put a nut on a bolt.
+> Astra went NUTS on this. 🔩
 >
-> 6 attempts. 3 dropped nuts (one fell under the flange; it fished it out with the other arm). No resets. No human input.
+> 6 attempts. 3 dropped nuts. No resets, no human input. It just kept going.
 >
-> It got there. 🔩
+> Fully autonomous nut threading (in sim).
 
 Reply (fine print):
 
@@ -45,14 +46,4 @@ Reply (fine print):
 
 ## Instagram (Reel)
 
-We gave an AI a robot and one job: put a nut on a bolt 🔩
-
-6 attempts. 3 dropped nuts. One fell under the flange, so it found it with the other
-arm's camera and poked it back out. No resets, no human input. Attempt 6: seated ✓
-
-GPT-6 Astra sees only through the robot's cameras. 743 commands, one continuous run.
-
-Simulation. The bolt starts in place, the nut starts in the gripper, and the torque
-limit is higher than the real motors allow.
-
-#robotics #robot #AI #simulation #engineering #automation #robotarm
+Caption, matched to Gavin's LinkedIn edits: `post_text/instagram.txt`.

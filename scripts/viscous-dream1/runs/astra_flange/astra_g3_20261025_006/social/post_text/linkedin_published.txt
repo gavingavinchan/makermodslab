@@ -1,0 +1,5 @@
+Astra went NUTS on this. 🔩
+
+Six attempts, three dropped nuts, no resets. It just kept going.
+
+This is done Zeroshot (zero training data), so you can see GPT 6 Astra gradually learning how to move the arm. One single continuous that took 743 commands and 23 minutes of robot time, with no human input.

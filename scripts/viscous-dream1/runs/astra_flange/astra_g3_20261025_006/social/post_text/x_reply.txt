@@ -1,0 +1,3 @@
+GPT-6 Astra, seeing only through the robot's cameras + depth. 743 commands, 23 min robot time, one continuous run.
+
+Simulation: bolt pre-inserted, nut starts in the gripper, idealised thread, torque limit above the real motors.
