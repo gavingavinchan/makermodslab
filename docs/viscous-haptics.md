@@ -373,6 +373,36 @@ restore paths in the DAgger runner.
   input, resets or edits; the agent decides from cameras and depth only (no
   privileged object poses); real-time or labelled speed-up; logs kept. Post it as
   simulation, with the arm torque limit lifted beyond the real motors.
+  *Result (2026-10-25): done in sim, episode 6.* Astra ran G3 alone, in one
+  continuous run (743 commands, 23 min of robot time, ~2.7 h wall clock). It
+  threaded the nut and ran it down snug against the flange (0.12 mm face gap;
+  about 10 physical turns, 11.45 by the thread model, which counts axial play).
+  Its Codex session log shows only `cat README.md`, `./robot` commands and 352
+  views of its own camera images. Postable video:
+  `runs/astra_flange/astra_g3_20261025_006/astra_flange_autonomous_10x.mp4`
+  (16:9, 10x, caption panel). Evidence: Astra log, its final claim and the audit
+  are there too; the full session (122 MB) and `episode.jsonl` stay on gavin-linux.
+  What it took (each a harness bug, fixed by Sol before the next episode):
+  - The trial-2 G3 bolt stuck out 3 mm (2 turns need 7): `--profile astra` seats
+    it 30 mm deeper (33 mm protrusion), uses a real right-hand thread, and starts
+    with a flats grasp.
+  - Ep 1: a stalled move hung and the server died on the client's Ctrl-C. Moves
+    now stop on stall or after 90 s, and the server survives.
+  - Ep 2: a released nut freewheeled 7.6 turns by itself. The thread now has
+    friction.
+  - Ep 3: engage and release chattered at the bolt tip. The gates now have
+    hysteresis.
+  - Ep 4: manual regrasps lost the thread. Added `./robot screw` (turn, release,
+    rewind and regrip as one skill, driven only by joint and jaw sensing).
+  - Ep 5: Codex hit its usage limit (Gavin reset it). The prompt now gives the
+    general steps (align, short fed turn, then `screw`).
+  - Ep 6: `screw` falsely stalled on imperfect grasps (0.15 Nm wrist budget), but
+    Astra regripped until it ran.
+  Caveats for a post: simulation; arm torque limit lifted (25 Nm peaks against the
+  RS00's 14 Nm); ideal thread model; the bolt starts inserted with the nut in the
+  gripper; regrasping is a built-in skill. Open item: Sol's later adaptive-torque
+  `screw` change (`BRIEF_ASTRA_SCREW_EFFORT.md`) did not pass its seated-stall
+  check. Ep 6 ran the earlier version.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

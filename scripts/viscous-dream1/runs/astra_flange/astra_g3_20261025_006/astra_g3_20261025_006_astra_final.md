@@ -1,0 +1,1 @@
+Threaded the nut more than eleven full turns. It appears snug against the flange. Released the gripper, visually checked the assembly, and ran `./robot done`.

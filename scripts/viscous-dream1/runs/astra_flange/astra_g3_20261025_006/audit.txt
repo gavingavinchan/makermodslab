@@ -1,0 +1,5 @@
+tools {'exec_command': 698, 'view_image': 352, 'write_stdin': 184}
+paths {'/home/gavin/dreamtrial/astra_ws/astra_g3_N_006/obs/top.png': 87, '/home/gavin/dreamtrial/astra_ws/astra_g3_N_006/obs/wrist_r.png': 240, '/home/gavin/dreamtrial/astra_ws/astra_g3_N_006/obs/wrist_l.png': 25}
+robot {'./robot look': 316, './robot grip': 69, './robot point': 64, './robot move': 91, './robot nudge': 103, './robot turn': 38, './robot screw': 11, './robot status': 2, './robot done': 1}
+images 352
+non-robot cmds [('cat README.md', 3)]
