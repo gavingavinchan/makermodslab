@@ -18,6 +18,13 @@ validation = json.loads((OUT / 'report.json').read_text())
 assert audit['passed'] and audit['samples'] == 1343 and audit['scene_sha256'] == scene_sha
 assert validation['core_checks_passed'] and validation['final_scene_sha256'] == scene_sha
 assert validation['mask_outside_exported_nominal_union_pixels'] == 0
+visibility=json.loads((OUT/'camera_visibility.json').read_text())
+assert visibility['passed'] and visibility['samples']==expected and visibility['scene_sha256']==scene_sha
+assert visibility['minimum_native_body_bbox_frame_margin']>.02
+if 'invariance_verification' in audit:
+    proof_path=OUT/audit['invariance_verification'];proof=json.loads(proof_path.read_text())
+    assert proof['passed'] and proof['scene_sha256']==scene_sha
+    assert hashlib.sha256(proof_path.read_bytes()).hexdigest()==audit['invariance_verification_sha256']
 render_inputs=json.loads((a.scratch/'render_inputs.json').read_text())
 assert render_inputs['scene_sha256']==scene_sha
 assert render_inputs['motion_sha256']==hashlib.sha256((OUT/'motion.json').read_bytes()).hexdigest()
@@ -73,5 +80,6 @@ report = dict(passed=True, png_frames_verified=expected, full_decode_exit_code=d
               denoising=True, device='NVIDIA RTX 5070 Ti OptiX', fps=24, duration_s=28),
               scope='Frame dimensions/PNG validity, complete H.264 decode, stream duration and count; visual QA remains separate')
 report.update(render_inputs=render_inputs,minimum_frame_luma_mean=min(x[0] for x in visual_stats),minimum_frame_luma_stddev=min(x[1] for x in visual_stats),black_or_uniform_frame_check_passed=True)
+report['camera_visibility_verified_frames']=visibility['samples']
 (OUT / 'media_verification.json').write_text(json.dumps(report, indent=2) + '\n')
 print(json.dumps(report, indent=2))

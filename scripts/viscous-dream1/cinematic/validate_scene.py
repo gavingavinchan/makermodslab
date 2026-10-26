@@ -111,7 +111,8 @@ pixels=np.empty(len(image.pixels),dtype=np.float32);image.pixels.foreach_get(pix
 image_error=float(np.max(abs(pixels.reshape(-1,4)[:,0]*10000-times)))
 clock=bpy.data.materials['Blade 0 | exact high-resolution footprint clock'].node_tree.nodes['Cinematic frame']
 clock_error=0;camera_aim_error=0;camera_up_error=0
-camera_targets={'Camera / establishing stern':(.35,0,.15),'Camera / complete native ROV':(.35,0,.15),'Camera / hands and polisher':(.35,.04,.07),'Camera / result and native vehicle':(.35,0,.15)}
+from camera_sequence import CAMERA_TARGETS
+camera_targets=CAMERA_TARGETS
 for f in range(1,s.frame_end+1):
     s.frame_set(f);clock_error=max(clock_error,abs(clock.outputs[0].default_value-f))
     cam=s.camera;C=np.array(cam.matrix_world);expected=np.array(camera_targets[cam.name])-C[:3,3];expected/=np.linalg.norm(expected)

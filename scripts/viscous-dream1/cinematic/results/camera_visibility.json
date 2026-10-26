@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "samples": 672,
+  "frame_step": 1,
+  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "minimum_visible_facing_surface_fraction": {
+    "left_hand": {
+      "visible_fraction": 0.3125,
+      "frame": 147
+    },
+    "right_hand": {
+      "visible_fraction": 0.25,
+      "frame": 92
+    },
+    "pad": {
+      "visible_fraction": 0.375,
+      "frame": 568
+    },
+    "polisher": {
+      "visible_fraction": 0.125,
+      "frame": 603
+    }
+  },
+  "minimum_sampled_framing_fraction": {
+    "left_hand": 1.0,
+    "right_hand": 1.0,
+    "pad": 1.0,
+    "polisher": 1.0
+  },
+  "minimum_whole_working_blade_frame_margin": 0.21022556632256562,
+  "minimum_mount_origin_frame_margin": 0.31607650621478545,
+  "minimum_native_body_bbox_frame_margin": 0.09730391693542001,
+  "issues": [],
+  "method": "Project entire working blade and native mount origins; ray cast up to48 camera-facing polygon samples per hand, pad and complete polisher against full visible scene at every film frame",
+  "limits": "Finite surface samples support visibility; visual review remains required. Same-group self-occlusion is accepted; no pixel segmentation or physical-contact claim."
+}

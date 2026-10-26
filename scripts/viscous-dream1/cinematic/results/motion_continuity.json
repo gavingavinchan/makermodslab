@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
   "method": "Evaluate actual saved Blender native driver rig every quarter frame (96 Hz) throughout active scrubbing, with independent FK agreement",
   "samples": 2113,
   "active_frame_range": [

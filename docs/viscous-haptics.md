@@ -372,6 +372,39 @@ restore paths in the DAgger runner.
   The compact 83-file manifest covers source CAD, scripts, assets, reports and
   media. Use the same `cleaning_preview.mp4` and editable `final_scene.blend`
   paths under `cinematic/results/`. No Dream calls or hardware access.
+  *Camera readability correction (2026-10-25, Gavin):* the rear ROV view
+  blocks the moving arms, and the tight under-ROV shot shows hands without
+  enough context to understand the task. Change cameras only; retain the approved
+  level vehicle, existing ship CAD, tool, continuous stripes and reveal. Tested
+  side/front compositions in Blender on gavin-linux. The selected film uses one
+  consistent oblique view: a gentle three-second opening move, then a fixed
+  working view through all scrubbing and the result. Both mounting bases, hands,
+  whole working blade and the blue vehicle remain framed. No underbody cut or
+  change of viewing side; deep focus keeps the task context sharp. A tested
+  ending pullback reduced tool visibility, so it was removed.
+  Every film frame passes sampled surface-visibility checks: minimum visible
+  camera-facing sample fractions are 31.25% left hand, 25% right hand, 37.5% pad
+  and 12.5% complete polisher. Both hand groups and tool samples remain entirely
+  framed; the native body bounding boxes retain at least 9.7% screen margin.
+  These finite samples support visibility, not simultaneous visibility of every
+  surface point. Exact geometry and non-camera transforms match the approved
+  7f51c28e scene at all 1,343 prior audited frame/half-frame poses; lights and
+  packed contact clock match too. The prior BVH intersection result is carried
+  forward only after that equivalence proof, recorded explicitly in
+  `cinematic/results/camera_only_verification.json`. Motion and cleaning mask
+  remain byte-identical; no geometry or physical trajectory was changed.
+  The isolated rebuild matches motion/mask bytes and geometry/camera transforms
+  at twelve keyframes. Final 28 s, 720p/24 fps movie: all 672 PNGs validate, all
+  frames pass the raster-variation gate, ffprobe counts 672 frames and full
+  ffmpeg decoding reports zero errors. Parent reviewed the opening, all three
+  reversals, end framing and final contact sheet. All 88 manifest files match
+  independently recalculated hashes on both machines. Final scene SHA256:
+  `0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f`;
+  final movie SHA256:
+  `635a8793857ec1147f83b882c9b960d0240a94e5a6de11e8bf4cc012e4b359c9`.
+  The existing `cinematic/results/cleaning_preview.mp4` and `final_scene.blend`
+  paths now contain this consistent-view revision. Kinematic scope remains;
+  no Dream calls or hardware access.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

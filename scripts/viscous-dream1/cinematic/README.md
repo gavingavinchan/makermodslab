@@ -16,9 +16,11 @@ For the cinematic refinement, the
 [Blender Cinematic Modeling skill](https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill)
 provided the silhouette-first, motivated-lighting, material and visual-verification
 workflow (`assets/production_workflow.json`). CAD analytic normals prevent patch
-shading bands. A restrained f/16 depth of field separates the contact close shot
-from the background while preserving readable fingers and pad. This remains a
-Cycles Blender film, with the same native vehicle and approved tool.
+shading bands. The current film uses a single oblique side view with deep focus:
+a gentle opening move, then a stable camera throughout active scrubbing and the
+result. Both mounted arms, their hands, the whole working blade and the vehicle
+remain in frame. This replaces the rejected rear-body and isolated under-ROV
+close shots. The native vehicle, approved tool and continuous motion are unchanged.
 Open `results/final_scene.blend` or play `results/cleaning_preview.mp4`.
 `results/contact_sheet.jpg` summarizes the film. The three `comparison_*.png`
 images use exactly the same camera to show dirty, partially cleaned and final
@@ -50,6 +52,12 @@ so the vehicle's horizontal frame can also be judged without a tilted camera.
   mutual arms, nonadjacent links, and tool casing. It explicitly lists intended
   grip, pad and native bearing interfaces excluded from intersection rejection.
   This is an intersection audit, not a signed-distance clearance certificate.
+  For the camera-only revision, `camera_only_verification.json` proves identical
+  static evaluated mesh/curve geometry and exact non-camera transforms at all
+  1,343 prior audited poses, with identical lights and packed contact image.
+  Local geometry animation, shape keys and adaptive subdivision are rejected. Only then
+  is the existing BVH result carried forward to the new scene hash. The report
+  records that basis; it does not claim new triangle queries were run.
 - Tool v1.1 is appended from `tool/polisher.blend`, SHA256
   `5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87`.
   The root is mounted **+20 mm along native right_tool0 Z**; its face-contact
@@ -93,9 +101,11 @@ with native mounts unchanged. The level solution uses these choices:
 - The authored continuous scrub lasts 22 seconds, film seconds 3–25.
   The initial three seconds hold an initialized contact pose; the final three
   hold the endpoint. No pickup or approach is demonstrated.
-  The close shot spans seconds 5–26 continuously, then cuts to the full vehicle.
-  No camera pullback travels through the ROV. No lane reset, time reversal,
-  branch jump or hidden repositioning is used.
+  The camera moves gently into an eye-level oblique working view over the
+  initial three seconds, then stays fixed through the scrub and result. There
+  are no cuts, under-ROV close views, ending pullback or changes of viewing side.
+  Deep focus preserves vehicle-to-arm-to-blade context. No lane reset, time
+  reversal, branch jump or hidden repositioning is used.
 - Vehicle pitch and roll are **0°**. The actual saved native rig is checked at
   **96 Hz** throughout active scrubbing
   in `results/motion_continuity.json`: 2,113 samples, **zero dwell intervals below
@@ -161,6 +171,7 @@ From this directory, with `PY` pointing to that interpreter:
 $PY plan_motion.py
 $PY build_scene.py --no-render
 $PY check_continuity.py
+$PY audit_camera_visibility.py
 $PY validate_scene.py
 $PY audit_geometry.py
 $PY render.py --comparison --frames 1 350 672
@@ -189,6 +200,14 @@ scripts follow the repository code notice; vendored helper provenance is retaine
 package, including dependency hashes. `report.json`, `geometry_audit.json`,
 `mask_report.json`, `provenance.json` and `media_verification.json` hold the
 numerical evidence and exact artifact identities.
+
+`camera_sequence.py` owns the camera composition independently of geometry and
+motion. `camera_visibility.json` checks every film frame: both hand groups, pad
+and complete polisher have visible sampled camera-facing surfaces, the whole
+working blade and both native mount origins fit, and the native body bounding
+boxes retain a 9.7% screen margin. The surface rays are finite samples, not a
+claim that every point of both hands is simultaneously visible. Preview and full
+movie review remain necessary. Media packaging requires this report to pass.
 
 The isolated-package rebuild reproduced motion and mask bytes exactly, and all
 scene mesh coordinates and object/camera transforms matched at twelve keyframes

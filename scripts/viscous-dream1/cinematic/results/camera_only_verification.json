@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "baseline_scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "baseline_audit_sha256": "742425b454900880f4ed4c9f7d376ce63da61310a1486c35b884a9c75f54aa8a",
+  "samples": 1343,
+  "mesh_curve_geometry_identical": true,
+  "local_geometry_has_no_animation": true,
+  "lighting_identical": true,
+  "packed_contact_image_identical": true,
+  "non_camera_transform_max_difference": 0.0,
+  "scope": "Static evaluated mesh/curve geometry matches at frame1, with exact non-camera transforms at all1343 audited poses; camera and non-rendering focus-helper edits only"
+}

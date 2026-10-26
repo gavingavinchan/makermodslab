@@ -71,7 +71,7 @@
   "mask_max_radius_m": 0.025999984080065656,
   "mask_scope": "Nominal compliant 52 mm face footprint with \u00b13mm normal tolerance; cinematic visual approximation, not exact bench ellipsoid intersection or material abrasion physics",
   "source_rig_sha256": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
-  "final_blend_bytes": 99580217,
+  "final_blend_bytes": 99606809,
   "external_unpacked_images": [],
   "physics_scope": "Kinematic presentation only; no wet dynamics, thrust, torque, force, autonomy or abrasion simulation",
   "mask_outside_exported_nominal_union_pixels": 0,
@@ -168,7 +168,7 @@
   "vehicle_up_axis_error": 0.0,
   "saved_native_motion_continuity": {
     "passed": true,
-    "scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+    "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
     "method": "Evaluate actual saved Blender native driver rig every quarter frame (96 Hz) throughout active scrubbing, with independent FK agreement",
     "samples": 2113,
     "active_frame_range": [
@@ -223,9 +223,9 @@
     599.0
   ],
   "packed_image_verified": true,
-  "final_scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
-  "max_active_camera_aim_error_deg": 0.021066675538340705,
-  "max_active_camera_up_error_deg": 0.015540261311378891,
+  "final_scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "max_active_camera_aim_error_deg": 0.013963369564535172,
+  "max_active_camera_up_error_deg": 0.013814113694868988,
   "frozen_input_hashes": {
     "assets/coverage_plan.json": "b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db",
     "assets/native_rov.blend": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",

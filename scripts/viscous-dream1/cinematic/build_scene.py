@@ -142,25 +142,9 @@ for i in range(160):
 from stern import mesh
 mesh('Open water / suspended particulate',vv,ff,pm)
 
-def camera(name,shots):
-    d=bpy.data.cameras.new(name);o=bpy.data.objects.new(name,d);scene.collection.objects.link(o);d.clip_start=.01;d.clip_end=100;d.dof.use_dof=False
-    previous=None
-    for f,pos,target,lens in shots:
-        o.location=pos;quat=(Vector(target)-o.location).to_track_quat('-Z','Y')
-        angles=quat.to_euler('XYZ',previous) if previous is not None else quat.to_euler('XYZ')
-        o.rotation_euler=angles;previous=angles.copy()
-        d.lens=lens;o.keyframe_insert('location',frame=f);o.keyframe_insert('rotation_euler',frame=f);d.keyframe_insert('lens',frame=f)
-    return o
-wide=camera('Camera / establishing stern',[(1,(1.0,2.8,-.75),(.35,0,.15),34),(48,(.95,2.7,-.72),(.35,0,.15),34)])
-hero=camera('Camera / complete native ROV',[(49,(1.0,3.0,1.4),(.35,0,.15),36),(120,(.98,2.9,1.35),(.35,0,.15),36)])
-close=camera('Camera / hands and polisher',[(121,(.18,.60,-.05),(.35,.04,.07),48),(600,(.20,.58,-.04),(.35,.04,.07),48)])
-focus=bpy.data.objects.new('Focus / pad and blade contact',None);scene.collection.objects.link(focus);focus.location=(.35,.08,.07)
-close.data.dof.use_dof=True;close.data.dof.focus_object=focus;close.data.dof.aperture_fstop=16
-revealcam=camera('Camera / result and native vehicle',[(625,(1.0,3.0,1.4),(.35,0,.15),36),(672,(.98,2.95,1.38),(.35,0,.15),36)])
-auditcam=camera('Camera / fixed dirty clean comparison',[(1,(.18,.60,-.05),(.35,.04,.07),48)])
-for f,cam in [(1,wide),(49,hero),(121,close),(625,revealcam)]:
-    marker=scene.timeline_markers.new(cam.name,frame=f);marker.camera=cam
-scene.camera=wide
+from camera_sequence import build as build_cameras
+build_cameras(scene)
+
 for action in bpy.data.actions:
     for layer in action.layers:
         for strip in layer.strips:
