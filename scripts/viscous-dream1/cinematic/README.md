@@ -12,15 +12,26 @@ propeller-centre location. The resulting Lpp is 27.95 m. This is an adapted
 presentation hull, retaining the user's approved four-blade rotor in place of
 the benchmark's original five-blade propeller. There is no seabed.
 
-For the cinematic refinement, the
-[Blender Cinematic Modeling skill](https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill)
-provided the silhouette-first, motivated-lighting, material and visual-verification
-workflow (`assets/production_workflow.json`). CAD analytic normals prevent patch
-shading bands. The current film uses a single oblique side view with deep focus:
-a gentle opening move, then a stable camera throughout active scrubbing and the
-result. Both mounted arms, their hands, the whole working blade and the vehicle
-remain in frame. This replaces the rejected rear-body and isolated under-ROV
-close shots. The native vehicle, approved tool and continuous motion are unchanged.
+The scene workflow began with the
+[Blender Cinematic Modeling skill](https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill).
+The current shot design additionally uses the dedicated
+[Camera Cinematography skill](https://github.com/arjun988/blender-skills/tree/main/.claude/skills/camera-cinematography):
+a three-second 36 mm establishing view, then a 48 mm task medium at the start
+of scrubbing. Both use the same viewing side. The working shot is locked off,
+with fixed f/16 focus and more screen space for the blade and hands. It retains
+both arm bases and part of the blue vehicle, rather than fitting the entire ROV
+throughout. There is no underbody macro cut, orbit, moving zoom or focus hunting.
+Sources and applied guidance are in `assets/production_workflow.json`.
+
+At Gavin's request, `native_appearance.py` replaces the transparent acrylic and
+matching battery-canister barrels (`rov_base__rov_base_09` / `CAD_9` and
+`rov_base__rov_base_41` / `CAD_41`) with **satin black anodized aluminium**.
+The material has alpha 1, transmission 0, metallic .95 and roughness .38, with no
+animated shader values. Original source CAD is untouched; only these two rendered
+material assignments change. `appearance_report.json` and the presentation
+invariance check record the override. Silver bands, frame, floats and arm
+geometry remain original.
+
 Open `results/final_scene.blend` or play `results/cleaning_preview.mp4`.
 `results/contact_sheet.jpg` summarizes the film. The three `comparison_*.png`
 images use exactly the same camera to show dirty, partially cleaned and final
@@ -40,7 +51,8 @@ so the vehicle's horizontal frame can also be judged without a tilted camera.
 - All 100 native mesh instances, their mesh coordinates, local transforms and
   parents remain unchanged, including all eight thrusters and camera/brackets.
   Original arm mounts are 493.05 mm apart. Only the whole-vehicle transform and
-  native joint coordinates change. Native rig joint origins match the original
+  native joint coordinates change geometrically; the two approved canister
+  materials are the appearance exception. Native rig joint origins match the original
   URDF to float precision. The desktop's unrelated collision-proxy changes did
   not change any of its 28 joint definitions; neither source repository was edited.
 - The scene imports the exact four approved STLs from
@@ -52,16 +64,17 @@ so the vehicle's horizontal frame can also be judged without a tilted camera.
   mutual arms, nonadjacent links, and tool casing. It explicitly lists intended
   grip, pad and native bearing interfaces excluded from intersection rejection.
   This is an intersection audit, not a signed-distance clearance certificate.
-  For the camera-only revision, `camera_only_verification.json` proves identical
+  For the camera/material presentation revision, `camera_only_verification.json` proves identical
   static evaluated mesh/curve geometry and exact non-camera transforms at all
   1,343 prior audited poses, with identical lights and packed contact image.
   Local geometry animation, shape keys and adaptive subdivision are rejected. Only then
   is the existing BVH result carried forward to the new scene hash. The report
-  records that basis; it does not claim new triangle queries were run.
+  records that basis and checks the two authorized material-slot overrides;
+  it does not claim new triangle queries were run.
 - Tool v1.1 is appended from `tool/polisher.blend`, SHA256
   `5e5f76d54c99232f463a3004f1babd84705d8ff6bac6b4582cc9245306124b87`.
   The root is mounted **+20 mm along native right_tool0 Z**; its face-contact
-  anchor is therefore **101 mm from tool0**. The clear sleeve is D32×70 mm,
+  anchor is therefore **101 mm from tool0**. The unobstructed grip sleeve is D32×70 mm,
   z=−34…+34 mm in tool coordinates; the pad is D52 mm. Native jaw displacement is
   12 mm per right jaw and 0.8 mm per left jaw. The audit reports actual sleeve
   samples against native jaw triangles (both jaws within 0.0095 mm at tool-local
@@ -101,11 +114,11 @@ with native mounts unchanged. The level solution uses these choices:
 - The authored continuous scrub lasts 22 seconds, film seconds 3–25.
   The initial three seconds hold an initialized contact pose; the final three
   hold the endpoint. No pickup or approach is demonstrated.
-  The camera moves gently into an eye-level oblique working view over the
-  initial three seconds, then stays fixed through the scrub and result. There
-  are no cuts, under-ROV close views, ending pullback or changes of viewing side.
-  Deep focus preserves vehicle-to-arm-to-blade context. No lane reset, time
-  reversal, branch jump or hidden repositioning is used.
+  The camera cuts from the establishing view to the task medium at frame 73,
+  exactly when scrubbing begins. It remains fixed through the scrub and result.
+  Both arm bases, hands, pad and whole working blade stay framed; the rear part
+  of the vehicle is intentionally outside the tighter shot. No lane reset,
+  time reversal, branch jump or hidden repositioning is used.
 - Vehicle pitch and roll are **0°**. The actual saved native rig is checked at
   **96 Hz** throughout active scrubbing
   in `results/motion_continuity.json`: 2,113 samples, **zero dwell intervals below
@@ -178,6 +191,7 @@ $PY render.py --comparison --frames 1 350 672
 $PY render.py --frames 1 350 590 672
 $PY render_profile.py
 $PY render.py --scratch /tmp/viscous-cinematic-frames
+python3 check_canister_stability.py --scratch /tmp/viscous-cinematic-frames
 python3 package_media.py --scratch /tmp/viscous-cinematic-frames
 python3 manifest.py
 ```
@@ -201,13 +215,22 @@ package, including dependency hashes. `report.json`, `geometry_audit.json`,
 `mask_report.json`, `provenance.json` and `media_verification.json` hold the
 numerical evidence and exact artifact identities.
 
-`camera_sequence.py` owns the camera composition independently of geometry and
-motion. `camera_visibility.json` checks every film frame: both hand groups, pad
-and complete polisher have visible sampled camera-facing surfaces, the whole
-working blade and both native mount origins fit, and the native body bounding
-boxes retain a 9.7% screen margin. The surface rays are finite samples, not a
-claim that every point of both hands is simultaneously visible. Preview and full
-movie review remain necessary. Media packaging requires this report to pass.
+`camera_sequence.py` owns composition independently of geometry and motion.
+`camera_visibility.json` checks all film frames: both hand groups, pad and
+polisher have sampled visible camera-facing surfaces; the whole working blade,
+both arm bases and native arm bounding boxes fit. The full vehicle must fit in
+the establishing shot; cropping its rear in the task medium is intentional.
+These finite rays supplement actual preview/movie review rather than claiming
+simultaneous visibility of every surface point.
+
+`check_canister_stability.py` measures frame-to-frame luminance changes in two
+visible canister-interior ROIs through the fixed working-camera segment.
+Their centres were ray-probed against the saved scene to identify the two
+canister meshes. `canister_stability.json` and `.jpg` document this localized
+flashing check. It excludes the camera cut, clamps, moving reflections and other
+pixels. ROI positions are specific to this camera revision and must be checked
+again if the camera changes. Media packaging requires the full working-segment
+stability report and all-frame camera visibility report to pass.
 
 The isolated-package rebuild reproduced motion and mask bytes exactly, and all
 scene mesh coordinates and object/camera transforms matched at twelve keyframes

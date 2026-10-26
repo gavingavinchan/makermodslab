@@ -12,5 +12,21 @@
     "Inspect full motion and compatible camera rotations",
     "Render preview before movie; retain reproducible source and packed assets"
   ],
-  "scope": "Scene repair and cinematic Blender animation; no interactive application or new engine"
+  "scope": "Scene repair and cinematic Blender animation; no interactive application or new engine",
+  "camera_skill": {
+    "name": "camera-cinematography",
+    "source": "https://github.com/arjun988/blender-skills/tree/main/.claude/skills/camera-cinematography",
+    "entry": "https://github.com/arjun988/blender-skills/blob/main/.claude/skills/camera-cinematography/SKILL.md",
+    "references": [
+      "references/lens-and-composition.md",
+      "references/camera-move-library.md",
+      "references/dof-guide.md"
+    ],
+    "application": [
+      "Establish the installation, then prioritize blade and hands in a task medium",
+      "Intentional lenses and fixed focus; no animated field-of-view or camera distraction during cleaning",
+      "Avoid overlapping silhouettes and a dominant foreground rudder",
+      "Compare actual Blender renders and a motion pilot before completing the film"
+    ]
+  }
 }

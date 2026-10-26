@@ -4,7 +4,7 @@
 from pathlib import Path
 import argparse,hashlib,json,time,bpy
 HERE=Path(__file__).parent;OUT=HERE/'results'
-p=argparse.ArgumentParser();p.add_argument('--frames',nargs='*',type=int);p.add_argument('--scratch',type=Path,default=Path('/tmp/viscous-cinematic-20261024-frames'));p.add_argument('--comparison',action='store_true');p.add_argument('--samples',type=int,default=32);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--frames',nargs='*',type=int);p.add_argument('--scratch',type=Path,default=Path('/tmp/viscous-cinematic-20261024-frames'));p.add_argument('--comparison',action='store_true');p.add_argument('--samples',type=int,default=32);p.add_argument('--last-frame',type=int);a=p.parse_args()
 bpy.ops.wm.open_mainfile(filepath=str(OUT/'final_scene.blend'));s=bpy.context.scene
 prefs=bpy.context.preferences.addons['cycles'].preferences;prefs.compute_device_type='OPTIX';prefs.get_devices()
 for d in prefs.devices:d.use=d.type=='OPTIX'
@@ -13,7 +13,7 @@ s.cycles.device='GPU';s.cycles.samples=a.samples;s.render.use_persistent_data=Tr
 if a.comparison:
     for m in list(s.timeline_markers):s.timeline_markers.remove(m)
     s.camera=bpy.data.objects['Camera / fixed dirty clean comparison']
-frames=a.frames or range(1,s.frame_end+1);a.scratch.mkdir(exist_ok=True,parents=True)
+frames=a.frames or range(1,min(s.frame_end,a.last_frame or s.frame_end)+1);a.scratch.mkdir(exist_ok=True,parents=True)
 if not a.frames:
     marker=a.scratch/'render_inputs.json'
     inputs=dict(scene_sha256=hashlib.sha256((OUT/'final_scene.blend').read_bytes()).hexdigest(),motion_sha256=hashlib.sha256((OUT/'motion.json').read_bytes()).hexdigest(),samples=a.samples,fps=s.render.fps,frames=s.frame_end,width=s.render.resolution_x,height=s.render.resolution_y)

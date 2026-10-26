@@ -425,7 +425,19 @@ restore paths in the DAgger runner.
   interior ROIs pass the localized temporal check over its 120 working frames:
   maximum frame-mean luminance step .030 levels on the 0–255 scale, worst 95th
   percentile pixel step 1 level. This is a sampled stability check, not a claim
-  about every reflected highlight or pixel. Full film and final QA follow.
+  about every reflected highlight or pixel. Full film is complete: all 672
+  frames validate and decode, and all 600 fixed-working-camera frames pass the
+  canister-region check. Final worst frame-mean step is .0549/255; worst 95th
+  percentile pixel step remains 1 level. The isolated rebuild reproduces both
+  canister shader parameters, motion/mask bytes, geometry and camera transforms.
+  Parent reviewed the shot studies, eight-second pilot evidence and final film
+  contact sheet. The 93-file package is synchronized and independently checked.
+  Final scene SHA256:
+  `597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97`;
+  final movie SHA256:
+  `6c3774a3ce9416dde71cf428a04e7c187aaa404c4a813810afa7a836b1b2741e`.
+  Canonical film and editable scene remain under `cinematic/results/` as
+  `cleaning_preview.mp4` and `final_scene.blend`. No hardware or Dream activity.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

@@ -1,7 +1,7 @@
 {
   "passed": true,
   "max_native_fk_vs_blender_matrix_error": 3.470609500899613e-07,
-  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "scene_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97",
   "samples": 1343,
   "frame_step": 0.5,
   "film_frames": 672,
@@ -72,7 +72,7 @@
       "scope": "D32 mm sleeve surface sampled 41 axial x128 angular points using exact mounted CleaningToolRoot matrix against CAD triangles"
     }
   ],
-  "method": "AABB broad phase then exact visible-mesh BVH triangle intersections; native mesh transforms evaluated at every film frame and half-frame; exact same geometry and 1,343 non-camera poses verified in camera_only_verification.json before carrying the intersection result to this camera revision",
+  "method": "AABB broad phase then exact visible-mesh BVH triangle intersections; native mesh transforms evaluated at every film frame and half-frame; exact same geometry and 1,343 non-camera poses verified in camera_only_verification.json before carrying the intersection result to this camera revision; exact same geometry and 1,343 non-camera poses verified in camera_only_verification.json before carrying the intersection result to this camera revision",
   "excluded": [
     "Native base/yaw-link mounting interfaces vs vehicle and own upper-arm bearing assembly; mounts remain checked against ship, opposite arm, tool and distal links",
     "Same rigid link meshes, adjacent articulated link pairs, nested wrist bearing/roll/finger interfaces",
@@ -81,7 +81,7 @@
     "ToolPad*/ToolAbrasive* vs blade_0 intended scrub contact"
   ],
   "limits": "Triangle intersection test is not a signed-distance clearance certificate; no hydrodynamics, force, joint backlash or soft pad deformation model",
-  "carried_forward_from_scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+  "carried_forward_from_scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
   "invariance_verification": "camera_only_verification.json",
-  "invariance_verification_sha256": "660e2e756fe5f677211ed262f2fd94b4ea4b192bf8e966fee60b2f268878d4a8"
+  "invariance_verification_sha256": "a40d5cb70088f61d84abf0561c785a5e5a157c3a4f6eec818ceea080a1a56047"
 }

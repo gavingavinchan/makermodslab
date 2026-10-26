@@ -1,37 +1,35 @@
 # Copyright 2026 MakerMods. All rights reserved.
 # Licensed under the Apache License, Version 2.0; see repository LICENSE.
-"""A consistent side view keeps the mounted arms and blade readable together."""
+"""Establish the installation, then give the cleaning action the visual priority."""
 import bpy
 from mathutils import Vector
 
-TARGET=(.50,.16,.20)
-WIDE=(-.05,2.60,.42)
-WORK=(-.05,2.00,.35)
-LENSES=(38.,34.)
-CAMERA_TARGETS={'Camera / cleaning overview':TARGET}
+CONTEXT_TARGET=(.50,.16,.15)
+WORK_TARGET=(.50,.12,.10)
+CONTEXT_POSITION=(-.08,2.70,.40)
+WORK_POSITION=(-.05,1.80,.30)
+CONTEXT_LENS=36.
+WORK_LENS=48.
+WORK_START=73
+CAMERA_TARGETS={'CAM_Context_ThreeQuarter':CONTEXT_TARGET,'CAM_Cleaning_TaskMedium':WORK_TARGET}
 
 
-def create_camera(scene,name,poses):
-    data=bpy.data.cameras.new(name);data.clip_start=.01;data.clip_end=100;data.dof.use_dof=False
-    obj=bpy.data.objects.new(name,data);scene.collection.objects.link(obj);previous=None
-    for frame,pos,lens in poses:
-        obj.location=pos;q=(Vector(TARGET)-obj.location).to_track_quat('-Z','Y')
-        angles=q.to_euler('XYZ',previous) if previous is not None else q.to_euler('XYZ');previous=angles.copy()
-        obj.rotation_euler=angles;data.lens=lens
-        obj.keyframe_insert('location',frame=frame);obj.keyframe_insert('rotation_euler',frame=frame);data.keyframe_insert('lens',frame=frame)
+def create_camera(scene,name,position,target,lens,focus=False):
+    data=bpy.data.cameras.new(name);data.clip_start=.01;data.clip_end=100
+    data.sensor_width=36;data.lens=lens;data.show_composition_thirds=True
+    obj=bpy.data.objects.new(name,data);scene.collection.objects.link(obj)
+    obj.location=position;obj.rotation_euler=(Vector(target)-obj.location).to_track_quat('-Z','Y').to_euler()
+    aim=bpy.data.objects.new('Focus / '+name,None);scene.collection.objects.link(aim);aim.location=target
+    data.dof.use_dof=focus
+    if focus:data.dof.focus_object=aim;data.dof.aperture_fstop=16
     return obj
 
 
 def build(scene):
-    poses=[]
-    for f in range(1,scene.frame_end+1):
-        if f<=73:a=(f-1)/72
-        else:a=1.
-        a=a*a*(3-2*a)
-        pos=tuple((1-a)*x+a*y for x,y in zip(WIDE,WORK));lens=(1-a)*LENSES[0]+a*LENSES[1]
-        poses.append((f,pos,lens))
-    cam=create_camera(scene,'Camera / cleaning overview',poses)
-    create_camera(scene,'Camera / fixed dirty clean comparison',[(1,WORK,LENSES[1])])
-    scene.camera=cam
-    marker=scene.timeline_markers.new('Continuous view / full mounted arms and working blade',frame=1);marker.camera=cam
-    scene['camera_intent']='Single above-contact side view; no rear-body or under-ROV cuts. Gentle opening push, stable active scrub view, held ending; full working blade and both arm mounts remain in frame.'
+    context=create_camera(scene,'CAM_Context_ThreeQuarter',CONTEXT_POSITION,CONTEXT_TARGET,CONTEXT_LENS)
+    work=create_camera(scene,'CAM_Cleaning_TaskMedium',WORK_POSITION,WORK_TARGET,WORK_LENS,focus=True)
+    create_camera(scene,'Camera / fixed dirty clean comparison',WORK_POSITION,WORK_TARGET,WORK_LENS,focus=True)
+    for frame,cam in [(1,context),(WORK_START,work)]:
+        marker=scene.timeline_markers.new(cam.name,frame=frame);marker.camera=cam
+    scene.camera=context
+    scene['camera_intent']='Three-second establishing view, then a 48mm task medium with both arm mounts and whole working blade. Same viewing side, no underbody cut, no orbit or zoom during scrubbing. Task scale takes priority over fitting the complete vehicle.'

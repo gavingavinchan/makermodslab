@@ -5,7 +5,7 @@ from pathlib import Path
 import argparse,hashlib,json
 import bpy,numpy as np
 from mathutils import Vector
-from bpy_extras.object_utils import world_to_camera_view
+from camera_sequence import WORK_START
 
 HERE=Path(__file__).parent;OUT=HERE/'results'
 p=argparse.ArgumentParser();p.add_argument('--step',type=int,default=1);a=p.parse_args()
@@ -18,8 +18,9 @@ for objects in groups.values():
   indices=np.linspace(0,len(o.data.polygons)-1,min(96,len(o.data.polygons))).astype(int)
   local[o.name]=[(o.data.polygons[int(i)].center.copy(),o.data.polygons[int(i)].normal.copy()) for i in indices]
 mins={g:dict(visible_fraction=1.,frame=0) for g in groups};framing={g:1. for g in groups};issues=[]
-blade=bpy.data.objects['Propeller / exact corrected blade 0'];blade_points=np.array([tuple(blade.matrix_world@v.co) for v in blade.data.vertices]);min_blade_margin=1;min_mount_margin=1;min_body_margin=1;tested=0
+blade=bpy.data.objects['Propeller / exact corrected blade 0'];blade_points=np.array([tuple(blade.matrix_world@v.co) for v in blade.data.vertices]);min_blade_margin=1;min_mount_margin=1;min_body_margin=1;min_context_body_margin=1;min_arm_margin=1;tested=0
 body=[o for o in s.objects if o.type=='MESH' and o.name.startswith(('left_','right_','rov_base__','thruster_'))]
+arms=[o for o in body if o.name.startswith(('left_','right_'))]
 for f in range(1,s.frame_end+1,a.step):
  s.frame_set(f);bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();cam=s.camera;origin=cam.matrix_world.translation
  viewproj=np.array(cam.calc_matrix_camera(dg,x=1280,y=720))@np.array(cam.matrix_world.inverted())
@@ -50,9 +51,11 @@ for f in range(1,s.frame_end+1,a.step):
  mount_points=[tuple(bpy.data.objects[side+'_mount_origin'].matrix_world.translation) for side in ['left','right']]
  uv,_=projected(mount_points);min_mount_margin=min(min_mount_margin,float(np.minimum(uv,1-uv).min()))
  body_points=[tuple(o.matrix_world@Vector(corner)) for o in body for corner in o.bound_box]
- uv,_=projected(body_points);min_body_margin=min(min_body_margin,float(np.minimum(uv,1-uv).min()))
+ uv,_=projected(body_points);body_margin=float(np.minimum(uv,1-uv).min());min_body_margin=min(min_body_margin,body_margin)
+ if f<WORK_START:min_context_body_margin=min(min_context_body_margin,body_margin)
+ uv,_=projected([tuple(o.matrix_world@Vector(corner)) for o in arms for corner in o.bound_box]);min_arm_margin=min(min_arm_margin,float(np.minimum(uv,1-uv).min()))
  tested+=1
  if tested%48==0:print('CAMERA_VISIBILITY',f,'issues',len(issues),flush=True)
-report=dict(passed=not issues and min_blade_margin>.02 and min_mount_margin>.02 and min_body_margin>.02,samples=tested,frame_step=a.step,scene_sha256=hashlib.sha256((OUT/'final_scene.blend').read_bytes()).hexdigest(),minimum_visible_facing_surface_fraction=mins,minimum_sampled_framing_fraction=framing,minimum_whole_working_blade_frame_margin=min_blade_margin,minimum_mount_origin_frame_margin=min_mount_margin,minimum_native_body_bbox_frame_margin=min_body_margin,issues=issues,method='Project entire working blade and native mount origins; ray cast up to48 camera-facing polygon samples per hand, pad and complete polisher against full visible scene at every film frame',limits='Finite surface samples support visibility; visual review remains required. Same-group self-occlusion is accepted; no pixel segmentation or physical-contact claim.')
+report=dict(passed=not issues and min_blade_margin>.02 and min_mount_margin>.02 and min_context_body_margin>.02 and min_arm_margin>.02,samples=tested,frame_step=a.step,scene_sha256=hashlib.sha256((OUT/'final_scene.blend').read_bytes()).hexdigest(),minimum_visible_facing_surface_fraction=mins,minimum_sampled_framing_fraction=framing,minimum_whole_working_blade_frame_margin=min_blade_margin,minimum_mount_origin_frame_margin=min_mount_margin,minimum_native_body_bbox_frame_margin=min_body_margin,minimum_context_body_bbox_frame_margin=min_context_body_margin,minimum_native_arm_bbox_frame_margin=min_arm_margin,issues=issues,method='Project entire working blade and native mount origins; ray cast up to48 camera-facing polygon samples per hand, pad and complete polisher against full visible scene at every film frame',limits='Finite surface samples support visibility; visual review remains required. Same-group self-occlusion is accepted; no pixel segmentation or physical-contact claim.')
 (OUT/'camera_visibility.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2),flush=True)
 assert report['passed']

@@ -19,11 +19,11 @@
     ],
     "format": {
       "duration": "28.000000",
-      "size": "2543702"
+      "size": "2473446"
     }
   },
-  "video_sha256": "635a8793857ec1147f83b882c9b960d0240a94e5a6de11e8bf4cc012e4b359c9",
-  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "video_sha256": "6c3774a3ce9416dde71cf428a04e7c187aaa404c4a813810afa7a836b1b2741e",
+  "scene_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97",
   "frame_selection": [
     1,
     80,
@@ -45,7 +45,7 @@
   },
   "scope": "Frame dimensions/PNG validity, complete H.264 decode, stream duration and count; visual QA remains separate",
   "render_inputs": {
-    "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+    "scene_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97",
     "motion_sha256": "494deabfa255d90545c404afcf411f578914eabeb0dedf629cce4a41afd1452c",
     "samples": 32,
     "fps": 24,
@@ -53,8 +53,9 @@
     "width": 1280,
     "height": 720
   },
-  "minimum_frame_luma_mean": 55.93793402777778,
-  "minimum_frame_luma_stddev": 26.18147263903639,
+  "minimum_frame_luma_mean": 54.432291666666664,
+  "minimum_frame_luma_stddev": 22.508301794923536,
   "black_or_uniform_frame_check_passed": true,
-  "camera_visibility_verified_frames": 672
+  "camera_visibility_verified_frames": 672,
+  "canister_stability_verified_working_frames": 600
 }

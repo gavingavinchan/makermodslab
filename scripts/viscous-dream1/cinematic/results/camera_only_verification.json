@@ -1,13 +1,33 @@
 {
   "passed": true,
-  "baseline_scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
-  "scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
-  "baseline_audit_sha256": "742425b454900880f4ed4c9f7d376ce63da61310a1486c35b884a9c75f54aa8a",
+  "baseline_scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f",
+  "scene_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97",
+  "baseline_audit_sha256": "5e987ba5b97778aea72ec86e515cb90eeed50e67c5881461d6e6187beb2a8087",
   "samples": 1343,
   "mesh_curve_geometry_identical": true,
   "local_geometry_has_no_animation": true,
+  "authorized_material_overrides": {
+    "rov_base__rov_base_09": {
+      "before": [
+        "CAD_9"
+      ],
+      "after": [
+        "ROV | Satin black anodized aluminium canisters"
+      ]
+    },
+    "rov_base__rov_base_41": {
+      "before": [
+        "CAD_41"
+      ],
+      "after": [
+        "ROV | Satin black anodized aluminium canisters"
+      ]
+    }
+  },
+  "canister_alpha": 1.0,
+  "canister_transmission": 0.0,
   "lighting_identical": true,
   "packed_contact_image_identical": true,
   "non_camera_transform_max_difference": 0.0,
-  "scope": "Static evaluated mesh/curve geometry matches at frame1, with exact non-camera transforms at all1343 audited poses; camera and non-rendering focus-helper edits only"
+  "scope": "Static evaluated mesh/curve geometry matches at frame1, exact non-camera transforms at all1343 audited poses; only cameras, focus helpers and the two authorized canister material assignments change"
 }

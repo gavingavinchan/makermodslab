@@ -21,6 +21,35 @@
   "scene_mesh_geometry_identical": true,
   "scene_object_names_identical": true,
   "scene_all_object_world_transform_and_lens_max_error": 0.0,
+  "canister_materials_identical": true,
+  "canister_materials": {
+    "rov_base__rov_base_09": {
+      "material": "ROV | Satin black anodized aluminium canisters",
+      "base_color": [
+        0.017999999225139618,
+        0.023000000044703484,
+        0.02800000086426735,
+        1.0
+      ],
+      "metallic": 0.949999988079071,
+      "roughness": 0.3799999952316284,
+      "alpha": 1.0,
+      "transmission": 0.0
+    },
+    "rov_base__rov_base_41": {
+      "material": "ROV | Satin black anodized aluminium canisters",
+      "base_color": [
+        0.017999999225139618,
+        0.023000000044703484,
+        0.02800000086426735,
+        1.0
+      ],
+      "metallic": 0.949999988079071,
+      "roughness": 0.3799999952316284,
+      "alpha": 1.0,
+      "transmission": 0.0
+    }
+  },
   "frames_compared": [
     1,
     25,
@@ -35,5 +64,5 @@
     625,
     672
   ],
-  "selected_scene_sha256": "0f5a3abffc2784a18f44dff2a967bae93fae8e671fc62272a682be8befc97f1f"
+  "selected_scene_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97"
 }

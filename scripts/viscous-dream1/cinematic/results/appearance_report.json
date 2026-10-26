@@ -1,0 +1,17 @@
+{
+  "changed_objects": [
+    "rov_base__rov_base_09",
+    "rov_base__rov_base_41"
+  ],
+  "source_materials": {
+    "rov_base__rov_base_09": "CAD_9",
+    "rov_base__rov_base_41": "CAD_41"
+  },
+  "replacement_material": "ROV | Satin black anodized aluminium canisters",
+  "alpha": 1.0,
+  "transmission": 0.0,
+  "metallic": 0.95,
+  "roughness": 0.38,
+  "geometry_unchanged": true,
+  "scope": "Gavin requested replacing acrylic canisters with opaque black anodized aluminium; original source CAD asset remains untouched"
+}
