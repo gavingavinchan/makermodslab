@@ -1,3 +1,37 @@
+<!-- astra-rov-backup-20261026 -->
+## Free-spinning bolt / backup wrench — 2026-10-26
+
+Fresh launch from `/home/gavin/dreamtrial/viscous_sim`:
+
+```bash
+cd /home/gavin/dreamtrial/viscous_sim
+MUJOCO_GL=egl PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/astra_op/.cache/tmp" \
+  /home/gavin/dreamtrial/.venv/bin/python astra_op/server.py \
+  --scene rov --profile astra_rov_backup --bolt-free-spin \
+  --condition G3 --seed 20261024 \
+  --episode astra_rov_backup_g3_20261026_001 \
+  --output runs/astra_flange/astra_rov_backup_g3_20261026_001
+```
+
+Wait for `ready`; operator workspace: `~/dreamtrial/astra_ws/astra_rov_backup_g3_20261026_001`. Hold the head on the vehicle's **left** side across opposite hex flats. `--no-bolt-free-spin` restores fixed-bolt behavior.
+
+**Scripted CLI validation cheats:** hidden poses/quaternions select placement targets and certify only; every actuation uses `robot`, with no physical state setters.
+
+| Check | Result |
+| --- | --- |
+| [Unheld `screw right 720`](validation/rov_backup_unheld/validation.json) | Command deltas: bolt **2.022790 turns**, nut **2.021794 world turns**, relative **−0.000995 turn** / **−0.003484 mm** advance. |
+| [Held G3](validation/rov_backup_g3/validation.json) | **9.626899 relative turns**, seated, **0.028 mm** gap; sensed `stall`. Bolt delta **0.099°**; [maximum **0.180°**](validation/rov_backup_g3/clearance_checks.json). |
+| [Clearance](validation/rov_backup_g3/clearance_checks.json) | Bilateral hex-head contacts; left joint margin **≥30.8°**. Catch/seat clearances: left/fixture **≥22.2 mm**, right/fixture **≥13.2 mm**, arm/arm **≥30 mm**. No arm/fixture contacts. [12,407 native-mesh samples](validation/rov_backup_g3/native_intersections.json): no arm/ROV or arm/arm intersections (50 ms telemetry; fixed mount interfaces excluded). |
+| Existing G3 | [`astra_rov`](validation/backup_rov_regression/validation.json): **9.435016 turns**; [tabletop `astra`](validation/backup_table_regression/adaptive_checks.json): **9.416726 turns**; both seated / `stall`. |
+
+Held actuation: 3240° loose-thread `screw`, then 31 short finishing calls at 5°/s with full opening and flat-aligned placement. The last call began already seated, so its `stall_at_start: true` is truthful. Stop uses relative hand roll and measured torque **baseline + 1.5 Nm / 0.3 s**, without seating-state feedback. [Four-pane exact-capture movie](validation/rov_backup_g3/run.mp4), [6,202-frame decode audit](validation/rov_backup_g3/media_checks.json), [camera sheet](validation/rov_backup_g3/camera_contact_sheet.png).
+
+Bearing resistance is **0.003/0.002 Nm static/sliding + 0.0002 Nm·s/rad**, below thread **0.20/0.15 Nm + 0.002 Nm·s/rad**, making unheld co-rotation cheaper. These are assumed surrogates. [Values, firm grasp impedance and rationale](../../astra_op/README.md), [operator instructions](../../astra_op/README_OPERATOR.md), [physical checks](validation/rov_backup_preflight/physics_checks.json), [sensor checks](validation/rov_backup_preflight/detector_checks.json).
+
+**Legacy caveat:** unchanged default `trial2` seats at **1.712725 turns** but fails its [old two-turn assertion](validation/backup_trial2_regression/validation.json). [All three flag-off profiles match the interrupted thread source bit for bit over 1,000 driven ticks](validation/rov_backup_preflight/profile_parity.json); [fixed/legacy thread units pass](validation/backup_fixed_thread_units/checks.json). [23 protected hashes match](validation/backup_source_checks.json). No Astra/Dream calls, ledger/runner-lock access, hardware or original-source edits. [All harness servers stopped](validation/backup_shutdown.json).
+
+---
+
 <!-- astra-rov-scene-20261026 -->
 ## Native underwater BlueROV scene — validated 2026-10-26; no Astra runs
 

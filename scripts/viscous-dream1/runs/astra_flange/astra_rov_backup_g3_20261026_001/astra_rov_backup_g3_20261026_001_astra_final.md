@@ -1,0 +1,1 @@
+Done. I held the bolt head with the left gripper and threaded the nut well beyond two turns with the right, finishing at a sustained torque-rise stall. After releasing and withdrawing both grippers, the nut remained seated against the flange.
