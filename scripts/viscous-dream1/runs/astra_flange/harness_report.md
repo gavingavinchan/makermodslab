@@ -1,3 +1,33 @@
+<!-- astra-rov-scene-20261026 -->
+## Native underwater BlueROV scene — validated 2026-10-26; no Astra runs
+
+Launch a **fresh** G3 operator episode from `/home/gavin/dreamtrial/viscous_sim`:
+
+```bash
+cd /home/gavin/dreamtrial/viscous_sim
+MUJOCO_GL=egl PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/astra_op/.cache/tmp" \
+  /home/gavin/dreamtrial/.venv/bin/python astra_op/server.py \
+  --scene rov --profile astra_rov --condition G3 --seed 20261024 \
+  --episode astra_rov_g3_20261026_001 \
+  --output runs/astra_flange/astra_rov_g3_20261026_001
+```
+
+Wait for `ready`; the operator workspace is `~/dreamtrial/astra_ws/astra_rov_g3_20261026_001`. No server remains running from these checks.
+
+The level, fixed BlueROV2 Heavy retains native meshes, mounts, kinematics, limits and inertials, with solid convex vehicle contacts. Both arms pass native IK/clearance for start, head-side help, bolt tip and a shared hand-off zone. The seabed catches dropped nuts; low sand footings ground the unchanged supports. The front camera is **inside the native dome**, with the CAD optical window omitted only from its internal optical view; all collision hulls remain solid. Wrist mounts are unchanged.
+
+All six centered / 2 mm offset / 6° tilted G3 checks pass across ROV and tabletop: seated nut, `stall`, and `stall_at_start: false`. The clean ROV run reached **9.4350 turns**, **0.136 mm** face gap and the adaptive snug detector in **146.5 s**. Native triangle audit: **3937 poses, zero arm/ROV intersections**. Body-contact stall, sand recovery reach, released-nut stability, pull-off and empty-gripper checks pass. Six camera depth picks have maximum ray error **0.496 mm**.
+
+The thread has a finite compliant face stop and seating constraint; `screw` still detects seating from encoder motion and wrist torque (baseline + 1.5 Nm for 0.3 s below 1°/s), with ordinary saturation guards retained. Releasing resets the learned arm load bias so it cannot kick the unloaded hand into the pipe. Gains, 25 Nm / 160 N actuator caps, jaw geometry and grasp welds remain unchanged. `astra_rov` uses the existing 180°/s screw rate by default; tabletop remains 90°/s. Video exports on shutdown from exact 10 Hz state captures, outside the command watchdog; wait for export completion.
+
+[Video](validation/rov_g3/run.mp4) · [three-camera start/tip sheet](validation/rov_cameras_final/camera_contact_sheet.png) · [native reach / clearance](validation/rov_preflight/reach_clearance.json) · [all certificates and measurements](validation/rov_final_summary.json). Scripted targets use privileged poses only as an explicitly marked **validation cheat**; no Astra/Dream inference, hardware, ledger or runner lock was used. Native mesh audit uses 50 ms telemetry, not every 1 ms integration tick.
+
+<!-- /astra-rov-scene-20261026 -->
+
+---
+
+### Earlier harness reports (historical)
+
 **Adaptive `screw` effort fix — 2026-10-25; requested seated-stall validation remains unmet (no Astra runs).** Removed the 0.15 Nm clamp and its special anti-windup/saturation handling. Gripped strokes now use `turn` tracking at the unchanged **25 Nm actuator limits**. The snug detector requires **<1°/s roll**, **absolute wrist torque ≥ moving baseline + 1.5 Nm**, sustained **0.3 simulated seconds**, using **100 ms** windows. Baseline: median torque while moving >3°/s through **3–15° of each stroke**; an immediately blocked stroke retains the previous moving baseline. `stall_at_start` is true for a stall before **1° forward progress**. [Patch](validation/adaptive_controller.patch), [sensor/response boundary tests](validation/ad_detector_checks.json), [operator README](../../astra_op/README_OPERATOR.md). Working window, release/reset/reclose, feed, ordinary guards, stop reasons, command counting and 300 s deadline remain unchanged.
 
 Fresh Astra-profile CLI results; hidden poses are **validation cheats for placement/certification only**. Replay 1–155 matches the recorded arm joints **bit for bit**. All replay inputs are exact, including earlier `screw` calls under the updated controller, so later trajectories diverge. All three replays satisfy the allowed truthful-stop alternative, not the three-turn target.
