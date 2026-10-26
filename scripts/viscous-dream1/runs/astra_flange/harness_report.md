@@ -1,3 +1,32 @@
+<!-- astra-rov-room-20261026 -->
+## ROV elbow room / separate wrist–pipe stop — 2026-10-26 (no Astra runs)
+
+**New `astra_rov_backup2`: the complete level ROV moves 20 mm toward ROV-left.** Pipe, flange, seabed, native mounts, meshes, limits, force caps, controllers and thread physics retain their geometry/parameters. The dome camera stays in its native location and aims at the work. Native IK passes start, bolt tip, seat and simultaneous head hold; seat arm/ROV clearance is about **2–3.5 mm** on Astra's elbow branch. [Placement/search and native checks](validation/room_preflight/placement.md). **Old ROV physics XML and initial states are bit-identical**; old profile defaults are unchanged. [Parity](validation/room_preflight/parity.json), [patch](validation/room_placement.patch).
+
+**The two recorded stops differ.** Episode 002 has real upper-arm/chassis contact (native triangles confirm it), but its last working strokes complete; command 161 stops `lost_grasp` at **592.900 s / 1.985 mm**, rather than torque-stalling. Episode 003 hits the pipe with `solid_right_collision_024_12` from **475.550 s**, then torque-stalls at **476.751 s / 2.168 mm**. Pre-stop wrist torque reaches **2.590 Nm**; right joints retain ≥20° margin. The left hold remains attached; its shoulder is heavily loaded but the bolt remains nearly stationary. **This is obstruction, not seated snug.** [Exact joints, torques, contacts and native triangle evidence](validation/room_diagnosis/diagnosis.md).
+
+| Required validation | Result |
+| --- | --- |
+| [Exact episode-003 replay, working commands 1–72](validation/room_replay1/replay_audit.json) | **Final stop persists**: wrist/pipe torque `stall` at **479.338 s**, **2.184 mm** gap; nut engaged, left head held. Parking cannot clear a distal housing at the identical world hand pose. |
+| [Held G3, `astra_rov_backup2`](validation/room_held5/validation.json) | **Seated / `stall`**, **0.029 mm** gap, **9.44727 turns**. Uses approach derived from episode 003's **476.7 s logged joints**, same elbow branch, 40 mm grip depth and safe local roll resets. [Strict audit: zero arm/ROV, arm/arm or arm/fixture contacts](validation/room_held5/room_checks.json); [native meshes, 10,849 sampled poses](validation/room_held5/native_intersections.json). Head rotation ≤**0.078°**. |
+| Existing scripted G3 | [`astra_rov_backup`](validation/room_oldheld1/validation.json): **0.033 mm**; [`astra_rov`](validation/room_rov1/validation.json): **0.070 mm**; [tabletop `astra`](validation/room_table1/adaptive_checks.json): **0.062 mm**. All seated / `stall`. |
+
+[Start/tip/seat camera sheet](validation/room_held5/camera_contact_sheet.png). Scripted targets/certification use hidden poses as an explicit **validation cheat**; all actuation is CLI-only, with no state setters. Earlier head-approach probes touched the chassis/stud and are excluded from acceptance: [retained probe record](validation/room_development_probes.json). Native audit uses 50 ms telemetry, not every 1 ms integration tick. [Full certificate](validation/room_summary.json), [all servers stopped / sockets removed](validation/room_shutdown.json). No Astra/Dream calls, ledger/runner-lock access, hardware or protected-source edits.
+
+Fresh launch (not run here):
+
+```bash
+cd /home/gavin/dreamtrial/viscous_sim
+MUJOCO_GL=egl PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/astra_op/.cache/tmp" \
+  /home/gavin/dreamtrial/.venv/bin/python astra_op/server.py \
+  --scene rov --profile astra_rov_backup2 --bolt-free-spin \
+  --condition G3 --seed 20261024 \
+  --episode astra_rov_backup2_g3_20261026_001 \
+  --output runs/astra_flange/astra_rov_backup2_g3_20261026_001
+```
+
+---
+
 <!-- captive-right-thread-20261026 -->
 ## Captive right-hand thread / mid-thread stall — 2026-10-26
 

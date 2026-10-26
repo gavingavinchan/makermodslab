@@ -563,6 +563,16 @@ restore paths in the DAgger runner.
   Next: `BRIEF_ASTRA_ROV_ROOM.md` re-parks the ROV (`astra_rov_backup2`), with
   Astra episode `astra_rov_backup2_g3_20261026_001` chained after it on gavin-linux
   (log `runs/astra_flange/overnight_astra_rov_backup2_g3_20261026_001.log`).
+  *Two-handed, seated (2026-10-26).* `astra_rov_backup2` moves the whole level ROV
+  20 mm toward ROV-left. Sol found ep 3's stop was the right wrist housing hitting
+  the pipe, and ep 2's was upper-arm contact with the chassis. Astra episode
+  `astra_rov_backup2_g3_20261026_001`:
+  - One try in 103 commands (586 s sim, about 37 min wall), one thread engagement,
+    no drops.
+  - The left hand held the bolt head throughout (0.002 turns during tightening).
+  - Nut seated: 10.25 turns, 0.13 mm gap. Astra claimed "more than eleven turns".
+  - Audit clean: 58 own-camera images.
+  Cut: `astra_rov_backup2_g3_20261026_001/astra_rov_twohand_social.mp4` (1:38, 6x).
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

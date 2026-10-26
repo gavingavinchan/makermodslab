@@ -1,0 +1,1 @@
+Held the bolt head with the left gripper and tightened the nut with the right through more than eleven turns. A slow finishing turn stalled on sustained torque rise. The nut appears snug and stayed in place after both grippers released. Recorded completion with `./robot done`.
