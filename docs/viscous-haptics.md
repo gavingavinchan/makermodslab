@@ -405,6 +405,27 @@ restore paths in the DAgger runner.
   The existing `cinematic/results/cleaning_preview.mp4` and `final_scene.blend`
   paths now contain this consistent-view revision. Kinematic scope remains;
   no Dream calls or hardware access.
+  *Camera direction and black canisters (2026-10-26, Gavin):* the side view is
+  better but still unsatisfactory; find a camera/cinematography-specific Blender
+  skill. Acrylic canisters flicker, so replace them with black anodized aluminium.
+  Read and applied the dedicated `camera-cinematography` skill from arjun988's
+  Blender skill library (entry/reference links retained in
+  `cinematic/assets/production_workflow.json`). New shot design: three-second
+  36 mm context view, then a same-side 48 mm task medium, fixed f/16 focus and
+  no camera movement through scrubbing. Blade and hands take more frame space;
+  both mounted arm bases remain visible while the vehicle's rear is cropped.
+  `native_appearance.py` changes only material assignments on the two canister
+  meshes: original transparent CAD_9 (alpha .2) and matching CAD_41 barrel become
+  satin black metal with alpha 1, transmission 0, metallic .95, roughness .38.
+  Native source blend, all mesh geometry, arm mounts and motion remain intact.
+  The presentation-equivalence check allows exactly these two material changes
+  and verifies all 1,343 prior audited poses remain identical. Both canister
+  shader graphs are constant, with no transparency/refraction animation.
+  An eight-second motion pilot covers the first reversal. Ray-probed canister
+  interior ROIs pass the localized temporal check over its 120 working frames:
+  maximum frame-mean luminance step .030 levels on the 0–255 scale, worst 95th
+  percentile pixel step 1 level. This is a sampled stability check, not a claim
+  about every reflected highlight or pixel. Full film and final QA follow.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to
@@ -477,6 +498,27 @@ restore paths in the DAgger runner.
   gripper; regrasping is a built-in skill. Open item: Sol's later adaptive-torque
   `screw` change (`BRIEF_ASTRA_SCREW_EFFORT.md`) did not pass its seated-stall
   check. Ep 6 ran the earlier version.
+  *Social cut (2026-10-25):* `astra_g3_20261025_006/astra_flange_social.mp4`
+  (1:56, captioned beats, no title cards). Gavin posts it as the funny "six
+  attempts, no environment reset" video. A replay of ep 6 on the BlueROV failed:
+  the native mounts cannot track the tabletop hand poses without clipping through
+  the vehicle. Gavin: "Let's do it properly", so the next run was a real one.
+  *Underwater, first try (2026-10-26).* New harness scene `--scene rov --profile
+  astra_rov` (`BRIEF_ASTRA_UNDERWATER_SCENE.md`):
+  - The BlueROV2 Heavy, level, with the arms on their native mounts and a solid
+    vehicle body.
+  - A sandy seabed, a water look, and the ROV dome camera as Astra's overview.
+  - A thread seat stop, so `screw` detects snug.
+  Astra wrote its own `LESSONS.md` from its ep 6 transcript (`ASTRA_LESSONS_PROMPT.md`,
+  `runs/astra_flange/lessons_from_006/`). It then ran episode
+  `astra_rov_g3_20261026_001` with those lessons:
+  - success on the first try in 102 commands (412 s sim, about 20 min wall);
+  - no nut drops and no vehicle contact;
+  - nut seated after 10.28 turns, 0.08 mm face gap.
+  Its session shows only `cat README.md LESSONS.md`, `./robot` and 61 own-camera
+  images. Cut: `astra_rov_g3_20261026_001/astra_rov_social.mp4` (1:43, 4x).
+  Same caveats as above (sim, torque limit lifted, ideal thread, bolt
+  pre-inserted, `screw` skill). The ROV is fixed, with no hydrodynamics.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

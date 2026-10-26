@@ -1,0 +1,5 @@
+tools {'exec_command': 103, 'view_image': 56, 'write_stdin': 28}
+paths {'obs/N_rov.png': 19, 'obs/N_wrist_r.png': 41, 'obs/N_wrist_l.png': 1}
+robot {'./robot look': 43, './robot point': 16, './robot nudge': 12, './robot turn': 13, './robot move': 11, './robot grip': 2, './robot screw': 4, './robot done': 1}
+images 61
+non-robot cmds [('cat README.md LESSONS.md', 1)]

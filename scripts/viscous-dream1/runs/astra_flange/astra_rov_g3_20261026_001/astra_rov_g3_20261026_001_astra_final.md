@@ -1,0 +1,1 @@
+Threaded the nut well beyond two full turns and tightened until a seating stall. After releasing and withdrawing the gripper, the final images showed the nut remaining seated against the flange. Ran `./robot done`.
