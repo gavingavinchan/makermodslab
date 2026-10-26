@@ -29,7 +29,7 @@ tool=bpy.data.objects['CleaningToolRoot'];tool.parent=bpy.data.objects['right_to
 rotor=bpy.data.objects['ToolRotor']
 for f,angle in [(1,0),(72,0),(90,12),(600,12+510*.8),(640,12+510*.8+14),(672,12+510*.8+14)]:
     rotor.rotation_euler.z=angle;rotor.keyframe_insert('rotation_euler',frame=f)
-# Persistent dirt/copper shader. A vertex receives its first REAL contact time.
+# Persistent dirt/copper shader: first contact-gated nominal footprint frame.
 m=material('Blade | algae removed only beneath accumulated pad',(.06,.085,.025),.10,.86)
 n=m.node_tree.nodes;l=m.node_tree.links;bs=n['Principled BSDF'];tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=48;tex.inputs['Detail'].default_value=4;tex.inputs['Roughness'].default_value=.75
 ramp=n.new('ShaderNodeValToRGB');ramp.color_ramp.elements[0].position=.20;ramp.color_ramp.elements[0].color=(.009,.024,.009,1);ramp.color_ramp.elements[1].position=.79;ramp.color_ramp.elements[1].color=(.115,.16,.038,1);l.new(tex.outputs['Fac'],ramp.inputs[0])
@@ -154,6 +154,8 @@ def camera(name,shots):
 wide=camera('Camera / establishing stern',[(1,(1.0,2.8,-.75),(.35,0,.15),34),(48,(.95,2.7,-.72),(.35,0,.15),34)])
 hero=camera('Camera / complete native ROV',[(49,(1.0,3.0,1.4),(.35,0,.15),36),(120,(.98,2.9,1.35),(.35,0,.15),36)])
 close=camera('Camera / hands and polisher',[(121,(.18,.60,-.05),(.35,.04,.07),48),(600,(.20,.58,-.04),(.35,.04,.07),48)])
+focus=bpy.data.objects.new('Focus / pad and blade contact',None);scene.collection.objects.link(focus);focus.location=(.35,.08,.07)
+close.data.dof.use_dof=True;close.data.dof.focus_object=focus;close.data.dof.aperture_fstop=16
 revealcam=camera('Camera / result and native vehicle',[(625,(1.0,3.0,1.4),(.35,0,.15),36),(672,(.98,2.95,1.38),(.35,0,.15),36)])
 auditcam=camera('Camera / fixed dirty clean comparison',[(1,(.18,.60,-.05),(.35,.04,.07),48)])
 for f,cam in [(1,wide),(49,hero),(121,close),(625,revealcam)]:

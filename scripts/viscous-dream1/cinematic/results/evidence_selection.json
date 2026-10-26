@@ -1,6 +1,6 @@
 {
-  "outermost_native_pad_frame": 481,
-  "largest_source_to_native_deviation_frame": 580,
-  "peak_joint_step_frame": 572,
-  "interpretation": "Outermost contact, maximum numerical surface-projection residual and largest joint step; dense audit found no collision worst frame"
+  "outermost_native_pad_frame": 450,
+  "largest_source_to_native_deviation_frame": 291,
+  "peak_joint_step_frame": 601,
+  "interpretation": "Outermost native contact, maximum deviation from the corresponding source arc-parameter sample, and largest native joint step. The continuous path changes geometry and timing; these are not dynamics measurements."
 }

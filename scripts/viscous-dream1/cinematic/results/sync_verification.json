@@ -1,8 +1,8 @@
 {
   "passed": true,
-  "files_verified": 72,
+  "files_verified": 83,
   "method": "All selected final Linux manifest SHA256 values independently recalculated from Mac files",
-  "manifest_sha256": "a111fcd6da6cf1ecdff19dd456f63ab6133071c66b638caec695e81d500b4ef5",
-  "scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c",
-  "video_sha256": "072b41d2322ca0bdd7c905d978cf30c051923d3239c926130a80dea76c48a2d5"
+  "manifest_sha256": "8cfb4280f09da34c0e435ff1a094bf1463187f746c07ad65f7cb82f635ea2590",
+  "scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+  "video_sha256": "77bc7f064f45bea52b8d72df51450d25f76952a5ed0a90b30a3edd0f7459a700"
 }

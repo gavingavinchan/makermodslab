@@ -4,18 +4,18 @@
   "checks": {
     "motion.json": {
       "identical": true,
-      "selected_sha256": "6d255840c84a771de71e4bed3a895457f1070dd11ad03e9131a4c25b77ff01e3",
-      "rebuilt_sha256": "6d255840c84a771de71e4bed3a895457f1070dd11ad03e9131a4c25b77ff01e3"
+      "selected_sha256": "494deabfa255d90545c404afcf411f578914eabeb0dedf629cce4a41afd1452c",
+      "rebuilt_sha256": "494deabfa255d90545c404afcf411f578914eabeb0dedf629cce4a41afd1452c"
     },
     "texture_mask_evidence.npz": {
       "identical": true,
-      "selected_sha256": "1f6cd869fd4295b0859364c3af0311bd0c12cd0579d3844ec5d4e0f6b1006e88",
-      "rebuilt_sha256": "1f6cd869fd4295b0859364c3af0311bd0c12cd0579d3844ec5d4e0f6b1006e88"
+      "selected_sha256": "533da160a18d139672fe30458bd59b03e1b49f297c898a3846aa456ac705fb2a",
+      "rebuilt_sha256": "533da160a18d139672fe30458bd59b03e1b49f297c898a3846aa456ac705fb2a"
     },
     "mask_report.json": {
       "identical": true,
-      "selected_sha256": "6190639508973f2a831395e587593be5437f779bc890993a7cf0642a34bfacbf",
-      "rebuilt_sha256": "6190639508973f2a831395e587593be5437f779bc890993a7cf0642a34bfacbf"
+      "selected_sha256": "c42d891fa2f062c1dc4a57cd3bf60a68303e0488953c6ed2cec299b5e1b7aafa",
+      "rebuilt_sha256": "c42d891fa2f062c1dc4a57cd3bf60a68303e0488953c6ed2cec299b5e1b7aafa"
     }
   },
   "scene_mesh_geometry_identical": true,
@@ -35,5 +35,5 @@
     625,
     672
   ],
-  "selected_scene_sha256": "0f97ba1c44acbb2122908d9c3eba8d3eac9c2a85761437aabab05958da90d93c"
+  "selected_scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64"
 }

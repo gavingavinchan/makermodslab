@@ -331,6 +331,47 @@ restore paths in the DAgger runner.
   `horizontal_profile.png`; reproduction and source photographs are linked in
   `cinematic/README.md`. This is still a kinematic presentation, not validated
   wet dynamics. Keep the horizontal constraint in later refinements.
+  *Continuous stripes and imported ship CAD (2026-10-25, Gavin):* the hull still
+  needs improvement, so use an existing CAD model; at each stripe reversal,
+  "once it stops then immediately start" the next motion. Gavin also requests
+  existing Blender cinematic skills. The film remains entirely Blender/Cycles
+  on gavin-linux. Applied the external Blender Cinematic Modeling workflow
+  (source and selected guidance in `cinematic/assets/production_workflow.json`).
+  The original illustrative stern is replaced with the official KRISO KCS hull
+  and horn rudder IGES files from SIMMAN2020, uniformly adapted to the existing
+  960 mm rotor. Raw CAD, tessellated surfaces, analytic normals and provenance
+  are self-contained under `cinematic/assets/ship/`; `convert_ship_cad.py` can
+  regenerate the meshes. The approved four-blade rotor replaces the KCS's
+  original five-blade rotor; this is an adapted presentation, not a dimensional
+  reconstruction of a real installation. The vehicle remains at 0° pitch/roll,
+  with its original CAD, mounts and all eight thrusters unchanged.
+  `continuous_path.py` smooths observed surface-coordinate geometry and uses
+  positive arc-length timing through rounded lane changes, eliminating the
+  source run's long reversal slowdowns. The 22 s active scrub preserves
+  143.08 mm radial span and all three alternating reversals. Independent saved
+  Blender-rig checks at 96 Hz (2,113 samples) measure zero dwell intervals below
+  1 mm/s, 6.48 mm/s minimum and 25.97 mm/s median pad speed. Peak joint speed
+  is 0.5802 rad/s; minimum limit margin stays 0.02541 rad. Maximum deviation
+  from the corresponding source arc-parameter sample is 2.87 mm. This new
+  authored path/timing has not been rerun in bench dynamics; original 100%
+  physics-contact figures apply only to the frozen observed bench run.
+  Nominal copper reveal is 135.20 cm², clipped to the frozen permitted nominal
+  union, distinct from the original 57.40 cm² actual bench overlap. The close
+  shot adds restrained f/16 depth of field while preserving readable contact.
+  Final saved-scene audit passes all 1,343 film/half-frame samples over 7,863
+  collision pairs, with zero unintended intersections. The 96 Hz contact-path
+  check stays within 5.71 µm of the interpolated analytic surface. The isolated
+  rebuild reproduces motion/mask bytes and exact geometry/transforms/cameras
+  at twelve keyframes. All 672 frames of the 28 s, 720p/24 fps movie decode;
+  every frame passes the black/uniform-image gate. Parent reviewed the revised
+  stern, level profile, matched contact stills and final contact sheet. The final
+  scene SHA256 is
+  `830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64`;
+  movie SHA256 is
+  `77bc7f064f45bea52b8d72df51450d25f76952a5ed0a90b30a3edd0f7459a700`.
+  The compact 83-file manifest covers source CAD, scripts, assets, reports and
+  media. Use the same `cleaning_preview.mp4` and editable `final_scene.blend`
+  paths under `cinematic/results/`. No Dream calls or hardware access.
 - *B3c. Pipe-flange bolting (Gavin, 2026-10-23).* The propeller result "looks bad";
   instead "two pipes with flanges, and then the task: insert and screw in the nut".
   Read as: two pipe sections end to end with their flanges meeting, a loose bolt to

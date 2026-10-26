@@ -1,0 +1,33 @@
+{
+  "subject": "KRISO Container Ship (KCS) hull and horn rudder",
+  "provider": "SIMMAN2020 / KRISO, source IGES labeled SVA-Potsdam",
+  "source_page": "https://simman2020.kr/contents/KCS.php",
+  "downloads": [
+    "https://simman2020.kr/download/KCS-Hull.zip",
+    "https://simman2020.kr/download/KCS-Rudder.zip"
+  ],
+  "geometry_reference": "https://www.nmri.go.jp/study/research_organization/fluid_performance/cfd/cfdws05/Detail/KCS/kcs_g%26c.htm",
+  "retrieved": "2026-10-25",
+  "source_units": "OpenCascade IGES reader output millimetres; original full-scale hull Lpp 230m",
+  "adaptation": {
+    "uniform_scale": 0.12151898734177215,
+    "rotor_diameter_m": 0.96,
+    "original_propeller_diameter_m": 7.9,
+    "source_propeller_center_mm": [
+      4025,
+      0,
+      4100.1
+    ],
+    "world_mapping": "X=sourceY*s; Y=(4025-sourceX)*s; Z=(sourceZ-4100.1)*s; s=.96/7.9/1000",
+    "mirror_half_hull": true,
+    "approved_four_blade_rotor_retained": true,
+    "native_rov_unchanged": true
+  },
+  "rights": "Publicly supplied benchmark geometry. No explicit asset license was included in the downloaded ZIPs; no public-domain or Creative Commons license is asserted. Original attribution retained; modeled materials and presentation adaptations are separate.",
+  "files": {
+    "KCS_hull_SVA.json": "9800bc3a3d8d0548f497b1a2729090802d66472dc3ab451da3c6dca5ac4aafa5",
+    "KCS_hull_SVA.igs": "6f5556b2b5e58e14e721eaf438fc2f7874e051c1a858d77d7aa837af17db917d",
+    "KCS_full-scale-rudder.json": "0519ca58570c9e876464a1cf82547cf73b8c5cdbef02228dc92fa9f7713b5276",
+    "KCS_full-scale-rudder.igs": "cd984807597abc95f7b4517419d0e34885b7ab0756960e2fffcfe1ff8adcae34"
+  }
+}

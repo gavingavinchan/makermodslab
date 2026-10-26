@@ -2,15 +2,23 @@
 
 An editable 28-second, 1280×720, 24 fps Cycles presentation of the original
 BlueROV2 Heavy with its two natively mounted Viscous arms, working on the approved
-960 mm, four-blade helical propeller. The environment is a generic single-screw
-workboat stern with a shaft boss, hull aperture and aft rudder. There is no seabed.
-The stern was rebuilt from additional [SMH Marine dry-dock photographs](https://smh-marine.com/projects.html)
-and the [Palumbo Malta shipyard photographs](https://www.palumbogroup.it/palumbo-shipyard-malta).
-It now has a closed, fuller hull, broad transom, rising centreline run, shaft boss,
-separate rudder and sacrificial anodes. Source links and modeled structural
-features are in `assets/stern_references.json`. This is original illustrative
-geometry, not a dimensional reconstruction or an imported ship CAD model.
+960 mm, four-blade helical propeller. The environment now uses the **existing KRISO Container Ship (KCS) hull and horn
+rudder IGES geometry** from the [official SIMMAN benchmark downloads](https://simman2020.kr/contents/KCS.php),
+replacing the earlier original photo-informed loft. Both the original IGES and
+tessellated meshes are included under `assets/ship/`, with source links, hashes,
+scale and coordinate mapping in `provenance.json`. The half hull is mirrored;
+its geometry is uniformly scaled by 0.96/7.9 and registered using the published
+propeller-centre location. The resulting Lpp is 27.95 m. This is an adapted
+presentation hull, retaining the user's approved four-blade rotor in place of
+the benchmark's original five-blade propeller. There is no seabed.
 
+For the cinematic refinement, the
+[Blender Cinematic Modeling skill](https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill)
+provided the silhouette-first, motivated-lighting, material and visual-verification
+workflow (`assets/production_workflow.json`). CAD analytic normals prevent patch
+shading bands. A restrained f/16 depth of field separates the contact close shot
+from the background while preserving readable fingers and pad. This remains a
+Cycles Blender film, with the same native vehicle and approved tool.
 Open `results/final_scene.blend` or play `results/cleaning_preview.mp4`.
 `results/contact_sheet.jpg` summarizes the film. The three `comparison_*.png`
 images use exactly the same camera to show dirty, partially cleaned and final
@@ -57,8 +65,9 @@ so the vehicle's horizontal frame can also be judged without a tilted camera.
 
 The frozen observed bench contract is vendored as `assets/coverage_plan.json`,
 SHA256 `b18d8c4e36ad3d784e0d4e498b34cf3c4bfb0410bec9e2fc9d1c628dc98df7db`.
-It has 570 samples at 20 Hz over 28.5 seconds, four offset lanes and a continuous
-shift at every reversal. The selected bench run maintained pad and both holds
+It has 570 samples at 20 Hz over 28.5 seconds and four offset lanes.
+The observed path includes long slowdowns at its reversals; Gavin requested
+continuous motion between stripes. The selected bench run maintained pad and both holds
 through all 25,500 scrub substeps. Its measured radial span was 143.10 mm, with
 1.9006 mm conservative nominal rim margin and 18.6605 mm left-arm clearance
 bound. **Those bench margins are not native-vehicle clearance measurements.**
@@ -68,25 +77,32 @@ angles. Gavin rejected the earlier pitched presentation and requires the BlueROV
 to be horizontal. `selected_pose.json` now fixes **zero vehicle pitch and roll**,
 with native mounts unchanged. The level solution uses these choices:
 
-- `t_native = observed_t`, `u_native = observed_u`: the full **143.10 mm radial
-  span** and four overlapping alternating lanes are retained without the earlier
-  chord narrowing or inboard shift. Contact anchors follow the analytic surface
-  projection of the observed t/u track; this does not reproduce the physics pad's
-  full 3D centre pose, tilt or forces.
+- **143.08 mm radial span** and four overlapping alternating passes are retained.
+  `continuous_path.py` removes sub-millimetre sample jitter, fits a cubic spline
+  through the observed surface-coordinate route and retimes it by arc length.
+  Curvature slows the rounded turns modestly without any intermediate hold.
+  The radial envelope is preserved after smoothing. This is an authored path
+  derived from the observed track, not a replay of observed timing or a new
+  physics validation. Pad tilt and forces are not reproduced.
 - The circular pad's axis follows the same analytic normal. Roll about that axis
   is free in the IK solve, with continuity maintained from the previous joint
   state; the cylindrical tool remains rigidly mounted in the native hand.
 - The left hand holds the same outer-edge surface location at `t=.97,u=0`.
   Its approach turns by 30.19° within the tangent plane, with the closing axis
   aligned to the blade normal. Both actual CAD jaws are checked against the blade.
-- Source scrub time 25.5 seconds is retimed to 22 seconds, film seconds 3–25.
+- The authored continuous scrub lasts 22 seconds, film seconds 3–25.
   The initial three seconds hold an initialized contact pose; the final three
   hold the endpoint. No pickup or approach is demonstrated.
   The close shot spans seconds 5–26 continuously, then cuts to the full vehicle.
   No camera pullback travels through the ROV. No lane reset, time reversal,
   branch jump or hidden repositioning is used.
-- Vehicle pitch and roll are **0°**. Minimum joint-limit margin is **0.02541 rad
-  (1.456°)**. Peak joint speed is **0.4745 rad/s**, peak frame step **0.01977 rad**.
+- Vehicle pitch and roll are **0°**. The actual saved native rig is checked at
+  **96 Hz** throughout active scrubbing
+  in `results/motion_continuity.json`: 2,113 samples, **zero dwell intervals below
+  1 mm/s**, minimum pad speed **6.48 mm/s**, median **25.97 mm/s** and peak joint
+  speed **0.5802 rad/s**. All three radial reversals retain positive motion.
+  The maximum deviation from the corresponding source arc-parameter sample is
+  **2.87 mm**. Minimum joint margin remains **0.02541 rad (1.456°)**.
   Full transform, surface residuals and every joint margin are in `report.json`.
 
 This is a **kinematic Blender presentation**. It does not validate wet dynamics,
@@ -98,7 +114,9 @@ feasibility. No Dream calls or hardware commands are involved.
 Only the accumulated, contact-gated footprint of the **actual native-FK pad path**
 reveals copper. Each texture sample stores its first touch frame; later passes
 retain that copper. Cleaning is gated by the source's simultaneous contact duty
-and scripted scrub stage. Settle and finish do not grow the reveal. The shader
+and the active authored scrub stage. The source contact duty is a presentation
+gate; the new smoothed timing and path have not been rerun in bench dynamics.
+Settle and finish do not grow the reveal. The shader
 transitions over two frames; surface bump and apparent fouling thickness are
 visual effects, not an abrasion or material-removal simulation.
 
@@ -109,7 +127,7 @@ four-nearest surface samples; provenance and source mask hash alongside it).
 No mask sample lies outside the native pad footprint or the frozen source nominal
 union. Backfaces and the three other blades stay green.
 
-The level presentation reveals **135.41 cm²**, about **10.8% of the 1,250.31 cm²
+The level presentation reveals **135.20 cm²**, about **10.8% of the 1,250.31 cm²
 working face**. This is distinct from the source bench's actual geometric
 ellipsoid-touch union **57.40 cm²** (versus 24.22 cm² for the single-strip baseline,
 2.37×), and its broader nominal disk union **137.09 cm²** (versus 97.97 cm²,
@@ -121,6 +139,10 @@ is clipped to the same frozen exported nominal union.
 The original ROV blend, reduced kinematic URDF, observed motion contract, selected
 pose, permitted mask, tool asset and approved propeller STLs are all in this
 repository. No sibling project under `~/Documents` is needed for rebuilding.
+Ship CAD is
+already tessellated with analytic normals, so scene rebuilding requires no CAD
+application. Optional `convert_ship_cad.py` regenerates the JSON from the original
+IGES files using `cadquery-ocp==7.9.3.1.1`.
 `vendor/bimanual_common.py` comes from the original ROV project; only its local
 URDF path and an unused output-directory side effect were changed.
 `assets/source_original.urdf` preserves the original source for provenance;
@@ -138,6 +160,7 @@ From this directory, with `PY` pointing to that interpreter:
 ```sh
 $PY plan_motion.py
 $PY build_scene.py --no-render
+$PY check_continuity.py
 $PY validate_scene.py
 $PY audit_geometry.py
 $PY render.py --comparison --frames 1 350 672

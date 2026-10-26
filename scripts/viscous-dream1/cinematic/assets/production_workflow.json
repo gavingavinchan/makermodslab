@@ -1,0 +1,16 @@
+{
+  "skill": "blender-cinematic-modeling",
+  "source": "https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill",
+  "entry": "https://github.com/Evan1108-Coder/blender-cinematic-modeling-skill/blob/master/SKILL.md",
+  "references": [
+    "references/visual-quality.md",
+    "references/verification.md"
+  ],
+  "application": [
+    "Use existing ship CAD and inspect silhouette before adding detail",
+    "Motivated work lighting, readable warm/cool material separation, restrained water volume",
+    "Inspect full motion and compatible camera rotations",
+    "Render preview before movie; retain reproducible source and packed assets"
+  ],
+  "scope": "Scene repair and cinematic Blender animation; no interactive application or new engine"
+}

@@ -2,8 +2,8 @@
 # Licensed under the Apache License, Version 2.0; see repository LICENSE.
 """Retarget observed tangential path to original mounted ROV, never bench q.
 
-The observed physics pad centre is projected onto the SAME corrected blade;
-its actual t/u trace is adapted as documented in selected_pose.json. The cinematic pad contact
+The observed stripe geometry is smoothed by continuous_path.py and projected
+onto the same corrected blade, using the level pose in selected_pose.json. The cinematic pad contact
 anchor is .101 m from native tool0, with a free pad-axis roll.
 This is kinematics, not a wet dynamics validation.
 """
@@ -14,6 +14,7 @@ HERE=Path(__file__).parent
 sys.path.insert(0,str(HERE/'vendor'))
 from bimanual_common import inverse,fk,NAMES,JD
 from scipy.optimize import least_squares
+from continuous_path import continuous_path
 p=argparse.ArgumentParser();p.add_argument('--draft',action='store_true');a=p.parse_args()
 pose=json.loads((HERE/'selected_pose.json').read_text());B=np.array(pose['B']);base=np.array(pose['base']);M=np.eye(4);M[:3,:3]=B;M[:3,3]=base
 if a.draft:
@@ -24,6 +25,7 @@ else:
     assert source, 'Frozen contract has no scripted scrub stage'
 ts=np.array([x['time_s'] for x in source]);ts-=ts[0]
 FPS=24;END=672;start=3.;finish=25.
+path,path_report=continuous_path(source,finish-start)
 seeds={k:np.array(v) for k,v in pose['seeds'].items()};records=[];errors=[]
 def axis_inverse(side,pos,axis,seed):
     lo=np.array([float(JD[n].find('limit').get('lower'))+.015 for n in NAMES[side]])
@@ -38,7 +40,9 @@ def axis_inverse(side,pos,axis,seed):
 for f in range(1,END+1):
     sec=(f-1)/FPS;u_time=np.clip((sec-start)/(finish-start),0,1)*ts[-1]
     t=float(np.interp(u_time,ts,[x['actual_t'] for x in source]));u=float(np.interp(u_time,ts,[x['actual_u'] for x in source]));i=min(len(source)-1,int(np.searchsorted(ts,u_time)))
-    source_t=t;source_u=u;u=pose.get('chord_pivot',0)+(u-pose.get('chord_pivot',0))*pose.get('chord_scale',1)
+    t,u,i=path(sec-start)
+    source_t=source[i]['actual_t'];source_u=source[i]['actual_u'];u_time=ts[i]
+    u=pose.get('chord_pivot',0)+(u-pose.get('chord_pivot',0))*pose.get('chord_scale',1)
     outer=np.clip((t-.80)/.10,0,1);late=np.clip((u-.18)/.04,0,1)
     t-=pose.get('late_outer_radial_trim_t',0)*(outer*outer*(3-2*outer))*(late*late*(3-2*late))
     t+=pose.get('radial_offset_t',0)
@@ -61,7 +65,12 @@ report=dict(fps=FPS,end=END,frames=records,rov_transform=M.tolist(),max_ik_resid
 report['source_contract_sha256']=hashlib.sha256((HERE/'assets/coverage_plan.json').read_bytes()).hexdigest() if not a.draft else None
 report['original_contract_sha256']=hashlib.sha256((HERE/'assets/coverage_plan.json').read_bytes()).hexdigest() if not a.draft else None
 report.update(free_pad_axis_roll=pose.get('free_pad_roll',False),initial_gap_m=pose.get('initial_gap_m',.018),require_horizontal=pose.get('require_horizontal',False))
+report['continuous_path']=path_report
 if pose.get('free_pad_roll'):
-    report['retarget']='Observed t/u projected to the identical corrected surface; native IK constrains contact position and pad axis while retaining continuous wrist roll. Original native mounts; strict level vehicle. Kinematic presentation only.'
+    report['retarget']='Smoothed observed stripe geometry traversed with positive arc-length speed through rounded lane changes. Native IK constrains surface contact position and pad axis with continuous wrist roll. Original native mounts; strict level vehicle. Authored kinematic path, not revalidated bench physics.'
+active=[r for r in records if r['contact_duty']>=.999999]
+xyz=np.array([r['pad'] for r in active]);speeds=np.linalg.norm(np.diff(xyz,axis=0),axis=1)*FPS
+report['continuous_path'].update(minimum_frame_speed_m_s=float(speeds.min()),median_frame_speed_m_s=float(np.median(speeds)),maximum_frame_speed_m_s=float(speeds.max()),intermediate_dwell_intervals=int(np.count_nonzero(speeds<.001)))
+assert speeds.min()>.004, ('Unexpected intermediate dwell',speeds.min())
 (HERE/'results/motion.json').write_text(json.dumps(report,separators=(',',':')))
 print('MOTION',len(records),'max residual',max(errors),'t',min(x['t'] for x in records),max(x['t'] for x in records),flush=True)

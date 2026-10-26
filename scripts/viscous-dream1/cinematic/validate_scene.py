@@ -94,6 +94,14 @@ pose=json.loads((HERE/'selected_pose.json').read_text())
 report['vehicle_roll_deg']=float(np.degrees(np.arctan2(M[2,1],M[2,2])))
 report['vehicle_up_axis_error']=float(np.linalg.norm(M[:3,2]-[0,0,1]))
 report['retarget_adaptation']=dict(chord_scale=pose.get('chord_scale',1),chord_pivot=pose.get('chord_pivot',0),radial_offset_t=pose.get('radial_offset_t',0),free_pad_axis_roll=pose.get('free_pad_roll',False),left_approach_adjustment_rad=pose.get('left_approach_adjustment_rad',0),initial_gap_m=pose.get('initial_gap_m',.018))
+report['retarget_adaptation']['stripe_motion']=motion.get('continuous_path')
+continuity=json.loads((OUT/'motion_continuity.json').read_text())
+assert continuity['passed'] and continuity['scene_sha256']==hashlib.sha256((OUT/'final_scene.blend').read_bytes()).hexdigest()
+report['saved_native_motion_continuity']=continuity
+ship_provenance=json.loads((HERE/'assets/ship/provenance.json').read_text())
+for filename,expected in ship_provenance['files'].items():
+    assert hashlib.sha256((HERE/'assets/ship'/filename).read_bytes()).hexdigest()==expected
+report['ship_CAD']=dict(source=ship_provenance['source_page'],uniform_scale=ship_provenance['adaptation']['uniform_scale'],meshes=[o.name for o in s.objects if o.name.startswith('Ship / imported')],source_files_verified=True)
 report['core_checks_passed']=not differences and not collisions and mount_delta<1e-9 and urdf_rig_error<2e-7 and limit_excursion<1e-9 and pad_error<1e-7 and max(residual)<1e-5 and blender_fk_error<1e-6 and bad==0 and report['mask_outside_exported_nominal_union_pixels']==0
 if pose.get('require_horizontal'):report['core_checks_passed'] &= report['vehicle_up_axis_error']<1e-12
 # Verify that the saved shader carries the audited first-touch image and a
@@ -121,4 +129,7 @@ assert report['frozen_input_hashes']==expected_hashes
 mask_provenance=json.loads((HERE/'assets/allowed_mask_provenance.json').read_text())
 assert mask_provenance['sha256']=='d42f26c86538f776895291a761205d83b810189db84ee2f10d235e29ff528972'
 report['exported_source_mask_sha256']=mask_provenance['sha256']
+peak_frame=max(zip(motion['frames'],motion['frames'][1:]),key=lambda pair:max(abs(pair[1]['joints'][n]-pair[0]['joints'][n]) for side in NAMES for n in NAMES[side]))[1]['frame']
+selection=dict(outermost_native_pad_frame=contact[int(np.argmax(radial))]['frame'],largest_source_to_native_deviation_frame=contact[int(np.argmax(deviation))]['frame'],peak_joint_step_frame=peak_frame,interpretation='Outermost native contact, maximum deviation from the corresponding source arc-parameter sample, and largest native joint step. The continuous path changes geometry and timing; these are not dynamics measurements.')
+(OUT/'evidence_selection.json').write_text(json.dumps(selection,indent=2)+'\n')
 (OUT/'report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2));assert report['core_checks_passed']

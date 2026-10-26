@@ -21,7 +21,7 @@
       "source_stl_sha256": "07118a89ae49b0fe1399d712e9f13a7bb958ac1cfe42665df250b9b6e5e57f98"
     }
   },
-  "unique_clean_area_m2": 0.013540989908052156,
+  "unique_clean_area_m2": 0.013520327242927831,
   "rule": "First whole-frame simultaneous-contact-gated actual native-FK pad footprint: tangent radius <=26mm, normal distance <3mm, front-facing normal; no back-face/global fade",
   "transition_frames": 2,
   "exported_nominal_footprint_intersection": true

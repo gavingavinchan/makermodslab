@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "scene_sha256": "830c46c197062821a53de54a6f1582414c5a0370286ea994a8708e5755e90e64",
+  "method": "Evaluate actual saved Blender native driver rig every quarter frame (96 Hz) throughout active scrubbing, with independent FK agreement",
+  "samples": 2113,
+  "active_frame_range": [
+    73,
+    601
+  ],
+  "minimum_pad_speed_m_s": 0.006484279776377072,
+  "median_pad_speed_m_s": 0.025970314359010552,
+  "maximum_pad_speed_m_s": 0.026179311113686425,
+  "dwell_intervals_below_1mm_s": 0,
+  "radial_span_m": 0.14308046095265725,
+  "radial_reversals": [
+    {
+      "frame": 148.0,
+      "time_s": 6.125,
+      "minimum_speed_m_s": 0.006484279776377072,
+      "maximum_speed_m_s": 0.02599702933560188
+    },
+    {
+      "frame": 297.0,
+      "time_s": 12.333333333333334,
+      "minimum_speed_m_s": 0.010271046201578652,
+      "maximum_speed_m_s": 0.026031048052730214
+    },
+    {
+      "frame": 450.0,
+      "time_s": 18.708333333333332,
+      "minimum_speed_m_s": 0.00880474133819285,
+      "maximum_speed_m_s": 0.02599714322367383
+    }
+  ],
+  "peak_joint_speed_rad_s": 0.5801668167114258,
+  "max_FK_Blender_matrix_error": 3.470609500899613e-07,
+  "maximum_pad_to_interpolated_analytic_surface_error_m": 5.700991191012408e-06,
+  "maximum_pad_axis_vs_analytic_normal_vector_error": 2.4026369699470555e-06,
+  "scope": "Authored continuous cinematic retarget, not a new observed dynamics run; initial and final presentation holds excluded"
+}
