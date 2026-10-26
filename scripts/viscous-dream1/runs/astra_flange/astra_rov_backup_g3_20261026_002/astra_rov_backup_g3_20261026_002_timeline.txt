@@ -1,0 +1,15 @@
+    1.1 #1 look                                     right holds -> nut  turns=0.00 eng=False
+   63.5   THREAD engage turns=0.00
+  174.2 #54 grip right open                          right holds -> None  turns=2.80 eng=True
+  175.7 #58 grip right close                         right holds -> nut  turns=2.80 eng=True
+  264.3 #63 grip right open                          right holds -> None  turns=5.54 eng=True
+  265.8 #67 grip right close                         right holds -> nut  turns=5.54 eng=True
+  273.5 #73 screw right 1080 --rate-deg-s 30         right holds -> None  turns=5.63 eng=True
+  298.9 #105 grip right close                         right holds -> nut  turns=5.63 eng=True
+  321.3 #109 grip right open                          right holds -> None  turns=6.11 eng=True
+  323.4 #115 grip right close                         right holds -> nut  turns=6.11 eng=True
+  352.5 #120 grip right open                          right holds -> None  turns=6.79 eng=True
+  354.7 #126 grip right close                         right holds -> nut  turns=6.79 eng=True
+  472.4 #137 grip right open                          right holds -> None  turns=9.14 eng=True
+  474.5 #143 grip right close                         right holds -> nut  turns=9.14 eng=True
+  594.0 #163 grip right open                          right holds -> None  turns=9.70 eng=True

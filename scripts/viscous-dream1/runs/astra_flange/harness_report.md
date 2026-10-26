@@ -1,3 +1,24 @@
+<!-- captive-right-thread-20261026 -->
+## Captive right-hand thread / mid-thread stall — 2026-10-26
+
+**Fixed for `astra`, `astra_rov`, and `astra_rov_backup`.** At one full turn, the nut stays on its helix: axial/radial pulls cannot release it, and any retained tip pull offset is cleared. Reverse motion past entry (−0.10 turn) still releases; within the first pitch, the original 3.5 mm tip pull-off remains. The legacy winding model is unchanged. [Patch](validation/captive_thread.patch).
+
+**The stall is real contact:** at **508.50 s**, the right **wrist-roll link hits the nut-side pipe** (`solid_right_collision_024_12` / `pipe_sector_-1_7`); native visual triangles independently confirm the obstruction. Both fingers subsequently contact the **bolt tip**, with brief shank contact. Earlier motion around 505 s still advanced normally with one-sided jaw contact. No early seat stop, nut/flange or nut/stud contact, backup-hold failure, or incorrect pitch feed was found. The old deep pull offset caused the separate impossible retreat/release. [Diagnosis and exact times](validation/captive_diagnosis/stall_note.md).
+
+| Validation | Result |
+| --- | --- |
+| [Fresh exact-input replay](validation/cap_replay1/captive_checks.json), 231 commands starting by original t=520 s | Recorded regrip #226: **8.06758 turns**, **4.750 mm gap**, captive. Subsequent withdrawal stalls; no deep release. |
+| [Axial 30 mm arm pull](validation/cap_axial3/captive_checks.json) / [sideways 30 mm](validation/cap_side1/captive_checks.json) | Reachable targets; torque-saturation / tracking `stall`; retained **3.00398 / 3.00515 turns**. |
+| [Reverse screw from 3 turns](validation/cap_reverse1/captive_checks.json) / [tip pull-off](validation/cap_tip/gate_checks.json) | Releases normally at **-0.10049 turn** / **3.507 mm** tip withdrawal. |
+| [Held backup G3](validation/cap_held1/validation.json) | **9.62689 turns**, **0.033 mm** gap, seated / `stall`; bolt delta **0.100°**. |
+| [ROV G3](validation/cap_rov1/validation.json) / [tabletop Astra G3](validation/cap_table1/adaptive_checks.json) | Both seated / `stall`: **9.43502 / 9.41673 turns**, gaps **0.070 / 0.062 mm**. |
+
+[Independent replay audit](validation/cap_replay1/replay_audit.json): 4,092 physics rows match the recording bit for bit before the first pitch; 6,700 subsequent samples remain coaxial/on the helix. Inputs are exact; changed stalls re-time the replay (regrip ends at fresh t=514.15 s; last input ends at 516.45 s). [All-profile geometric units](validation/captive_units/checks.json), friction and legacy tip/re-entry checks pass. Held run: [no arm/fixture contacts](validation/cap_held1/clearance_checks.json), [no native arm/ROV or arm/arm intersections in 12,407 sampled poses](validation/cap_held1/native_intersections.json), at 50 ms telemetry spacing.
+
+Scripted placements/certification use hidden poses as an explicit **validation cheat**; CLI actuation uses no state setters. No Astra/Dream runs, ledger/runner-lock access, hardware, or protected-source edits. [Certificate, including development-probe limitations](validation/captive_summary.json). **[All servers stopped; validation sockets removed](validation/captive_shutdown.json).** Launch profiles/flags remain as documented below.
+
+---
+
 <!-- astra-rov-backup-20261026 -->
 ## Free-spinning bolt / backup wrench — 2026-10-26
 

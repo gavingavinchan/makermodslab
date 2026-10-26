@@ -1,0 +1,1 @@
+Held the bolt head with the left gripper and threaded the nut approximately nine turns with the right, seating it against the flange. Released both grippers, verified the nut remained seated, and ran `./robot done`.
