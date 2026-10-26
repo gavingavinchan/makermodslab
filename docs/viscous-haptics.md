@@ -550,6 +550,19 @@ restore paths in the DAgger runner.
   Next: review the log, Sol's report and the held-validation video. Audit the
   Astra session (`audit.txt`), make the social cut (`social_edit_rov.py`
   pattern, four panes incl. left wrist), commit, and show Gavin.
+  *Two-handed results (2026-10-26).* All audits are clean (README, LESSONS,
+  `./robot` and own-camera images only).
+  - Backup ep 1: seated, but the nut left the bolt sideways 8 turns deep. That was
+    a harness bug, fixed by a captive thread (`BRIEF_ASTRA_CAPTIVE_NUT.md`).
+  - Ep 2: one try, no drops, the bolt held throughout (0.0003 turns), nut 9.70
+    turns, stopped 2.0 mm short of the flange. The right upper arm pressed into
+    the ROV base. Cut: `astra_rov_backup_g3_20261026_002/astra_rov_twohand_social.mp4`
+    (1:43, 6x, 3x2 grid including the left wrist).
+  - Ep 3: 88 commands, 9.65 turns, 2.2 mm short.
+  Astra's final claims said "seated" both times; the sim says 2 mm short.
+  Next: `BRIEF_ASTRA_ROV_ROOM.md` re-parks the ROV (`astra_rov_backup2`), with
+  Astra episode `astra_rov_backup2_g3_20261026_001` chained after it on gavin-linux
+  (log `runs/astra_flange/overnight_astra_rov_backup2_g3_20261026_001.log`).
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

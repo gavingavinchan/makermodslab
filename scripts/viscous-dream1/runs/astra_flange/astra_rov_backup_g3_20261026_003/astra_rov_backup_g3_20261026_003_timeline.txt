@@ -1,0 +1,3 @@
+    1.1 #1 look                                     right holds -> nut  turns=0.00 eng=False
+   62.1   THREAD engage turns=0.00
+  479.1 #74 grip right open                          right holds -> None  turns=9.65 eng=True
