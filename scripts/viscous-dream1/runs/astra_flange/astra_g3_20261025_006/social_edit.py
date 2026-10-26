@@ -35,7 +35,7 @@ BEATS = [
 
 def panel(i, head, col, body, drops, fails):
     im = Image.new("RGB", (640, 360), BG); d = ImageDraw.Draw(im)
-    d.text((32, 26), "GPT-6 Astra driving. No humans.", font=F("DejaVuSans.ttf", 18), fill=G)
+    d.text((32, 26), "GPT-6 Astra  \u00b7  Fully autonomous", font=F("DejaVuSans.ttf", 18), fill=G)
     d.text((32, 66), head, font=F("DejaVuSans-Bold.ttf", 40), fill=col)
     d.multiline_text((32, 130), body, font=F("DejaVuSans.ttf", 24), fill=W, spacing=8)
     d.line((32, 290, 608, 290), fill=(50, 58, 68), width=2)
@@ -64,9 +64,8 @@ end = card([
     ("*in simulation, with the motor torque limit turned way up", F("DejaVuSans.ttf", 22), G, 34),
 ], f"{TMP}/end.png")
 
-TITLE_S, HOLD_S, END_S = 3.5, 1.5, 6.0
-inputs = ["-i", SRC, "-loop", "1", "-t", str(TITLE_S), "-framerate", "30", "-i", title,
-          "-loop", "1", "-t", str(END_S), "-framerate", "30", "-i", end]
+TITLE_S, HOLD_S, END_S = 0, 2.5, 0
+inputs = ["-i", SRC]
 for _, _, p in beats:
     inputs += ["-loop", "1", "-framerate", "30", "-i", p]
 fc = [
@@ -77,11 +76,10 @@ fc = [
 ]
 last = "m0"
 for k, (t0, t1, _) in enumerate(beats):
-    fc.append(f"[{last}][{k + 3}]overlay=640:360:shortest=0:eof_action=pass:enable='between(t,{t0:.3f},{t1:.3f})'[m{k + 1}]")
+    fc.append(f"[{last}][{k + 1}]overlay=640:360:shortest=0:eof_action=pass:enable='between(t,{t0:.3f},{t1:.3f})'[m{k + 1}]")
     last = f"m{k + 1}"
 dur = out_t(END)
-fc.append(f"[{last}]trim=0:{dur:.3f},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration={HOLD_S},format=yuv420p,setsar=1[body]")
-fc.append("[1]fps=30,format=yuv420p,setsar=1[t];[2]fps=30,format=yuv420p,setsar=1[e];[t][body][e]concat=n=3:v=1[v]")
+fc.append(f"[{last}]trim=0:{dur:.3f},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration={HOLD_S},format=yuv420p,setsar=1[v]")
 cmd = [FF, "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fc), "-map", "[v]",
        "-c:v", "libx264", "-crf", "18", "-preset", "slow", "-profile:v", "high", "-pix_fmt", "yuv420p",
        "-movflags", "+faststart", OUT]
