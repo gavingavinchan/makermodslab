@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "args": {
+    "star_port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "can_port": "/dev/serial/by-id/usb-Openlight_Labs_CANable2_b158aa7_github.com_normaldotcom_canable2.git_207E37A55445-if00",
+    "dry_run": false,
+    "follower_only": false,
+    "duration": 60.0,
+    "hz": 50.0,
+    "calib_s": 6.0,
+    "calib_travel_deg": 20.0,
+    "calib_timeout_s": 40.0,
+    "follower_closed_deg": -33.0,
+    "max_lead_deg": 8.0,
+    "still_deg_s": 40.0,
+    "threshold_nm": null,
+    "min_mw": 100,
+    "max_mw": 600,
+    "mw_per_deg": 60.0,
+    "slew_mw_s": 1500.0,
+    "move_ms": 150,
+    "on_deg": 1.0,
+    "release_deg": 3.0
+  },
+  "scale": -1.778452,
+  "kp_kd": [
+    20.0,
+    0.5
+  ],
+  "f_cmd": [
+    -118.0,
+    -33.0
+  ],
+  "l0": -1.8,
+  "f0": -33.44198994328673,
+  "f0_raw": 326.5580100567133,
+  "turn_offset": -360.0,
+  "baseline_nm": 0.06153846153846132,
+  "p99_nm": 0.39316239316239354,
+  "threshold_nm": 0.6897435897435903,
+  "star_travel": [
+    -1.8,
+    45.1
+  ],
+  "still_ticks": 106,
+  "free_track_err_deg": {
+    "p50": 0.24981470804706873,
+    "p95": 15.167921319358783
+  },
+  "ticks": 3000,
+  "latched_ticks": 599,
+  "max_tau": 7.367521367521366,
+  "max_star_ma": 72
+}

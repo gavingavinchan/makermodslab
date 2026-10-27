@@ -1234,6 +1234,28 @@ follower trails the Star by 60 ms (v1: 260 ms), peaks at 437 deg/s (v1:
 moving falls from 21.8 to 10.1 deg. Free-motion acceleration alone reaches
 3.1 N m, which is why contact only counts while the jaws are still.
 
+**v2, Run B (`evidence/gripper-haptics-v2-20261027T054317Z`, the cube):**
+the oscillation is gone. Each cube contact (3.8, 5.1 and 1.2 s) switched the
+Star's push on once and off once, against 21 switches in 14 s in v1. Gavin:
+"I don't see any oscillations that we had before. And then when I squeeze on
+the cube, it feels good ... acceptable ... not disastrous." The wall is soft:
+he pushed up to 11 deg past it at the 600 mW cap while the Star drew only
+60-72 mA (v1: 660 mA), probably because the 150 ms move time keeps the servo
+following a slow path instead of loading up. Still to fix:
+- false contacts at the closed stop (4, 0.3-0.8 s each) when closing fully on
+  nothing: the jaws hitting their own stop. Ignore contact near the closed stop
+  and require the squeeze to persist ~60 ms.
+- impact spikes of 6-7.4 N m when closing fast onto the cube, before the
+  squeeze cap engages (no lead cap while moving). Keep a moderate cap while
+  moving too.
+- Gavin: the gripper "never fully closes ... and then also never fully opens".
+  Open is the known soft-limit bug (-118.5 reached, -156 measured). Closed
+  reached -32.6, the same as the hand-measured stop, so either that
+  measurement was not at the real stop or the jaws keep a gap there: to check.
+  Owned by the mapping work ([viscous-mapping/README.md](viscous-mapping/README.md));
+  the haptics script will read its committed mapping rather than patch numbers
+  locally.
+
 **Gripper range is wrong on unit 1 (2026-10-27).** Gavin: "the follower arm
 did not move the full range". Measured by hand, torque off
 (`scripts/gripper-range-read.py`, `evidence/gripper-range-20261027T002654.json`):
