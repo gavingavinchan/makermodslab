@@ -1,0 +1,31 @@
+{
+  "name": "viscous_waterproof_01",
+  "mode": "single",
+  "arms": "both",
+  "arm_type": "viscous",
+  "leader_kind": "star",
+  "motor_power": 38,
+  "gripper_current_limit_a": null,
+  "gripper_hold_torque_nm": null,
+  "leader_port": "/dev/cu.wchusbserial1110",
+  "follower_port": "/dev/cu.usbmodem2050389538461",
+  "leader_config": "star_viscous_waterproof_01",
+  "follower_config": "viscous_waterproof_01",
+  "right_leader_port": "",
+  "right_follower_port": "",
+  "right_leader_config": "",
+  "right_follower_config": "",
+  "cameras": [],
+  "port_identities": {
+    "leader_port": {
+      "vid": 6790,
+      "pid": 29987,
+      "serial": ""
+    },
+    "follower_port": {
+      "vid": 5840,
+      "pid": 4478,
+      "serial": "205038953846"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "viscous_01",
+  "mode": "single",
+  "arms": "both",
+  "arm_type": "viscous",
+  "leader_kind": "star",
+  "motor_power": 38,
+  "gripper_current_limit_a": null,
+  "gripper_hold_torque_nm": null,
+  "leader_port": "/dev/cu.wchusbserial110",
+  "follower_port": "/dev/cu.usbmodem2050389538461",
+  "leader_config": "star_viscous",
+  "follower_config": "viscous_01",
+  "right_leader_port": "",
+  "right_follower_port": "",
+  "right_leader_config": "",
+  "right_follower_config": "",
+  "cameras": []
+}

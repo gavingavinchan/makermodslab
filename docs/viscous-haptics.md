@@ -81,6 +81,14 @@ the follower with capped effort (`star_follow.py` draft).
   stopped. Gavin asked for it: "can we do this quickly and do a proof of
   concept with the gripper?"
 
+**A5. One measured mapping per unit (2026-10-27).** Every Viscous unit gets a
+single committed, measured leader-to-follower description that teleop, haptics,
+URDF and sim all use, with drift caught before an arm moves.
+- *Intent:* "this is a recurring problem" ... "solve this once and for all so
+  that our workflow is working properly" (Gavin, 2026-10-27).
+- *Status:* problem written up in [viscous-mapping/README.md](viscous-mapping/README.md)
+  with two independent read-only investigations; nothing changed yet.
+
 **A4. 1:1 posture mapping.** A horizontal leader gives a horizontal follower.
 - *Intent:* pilots expect the follower to mirror their pose. It is also needed to
   judge the rest by eye: "When I hold [the wrist] horizontal, the follower arm is
@@ -1315,6 +1323,12 @@ Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial
 in order. Haptics: steps 1-2 done 2026-10-20, friction term and shoulder
 refit done and confirmed live (v2 fit). Before energizing, show Gavin the
 dry-run plan and say exactly which joints will move.
+
+**Mapping problem, open (2026-10-27):** unit 1's joint mapping (today: the
+gripper's soft limits sit ~35 deg off its real stops) keeps going wrong; Gavin
+wants it solved once, in a fresh session. Start from
+[viscous-mapping/README.md](viscous-mapping/README.md). Gripper haptics Run B
+waits on it.
 
 **Resume haptics here (2026-10-27):** the gripper proof of concept works
 (see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the

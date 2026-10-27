@@ -77,6 +77,8 @@ docs/*
 !docs/drtc/
 # ... and the committed OpenAPI snapshot (see makermodslab/scripts/export_openapi.py)
 !docs/api/
+# ... and the Viscous joint-mapping problem record (see docs/viscous-mapping/README.md)
+!docs/viscous-mapping/
 PHONE_CAMERA_SETUP.md
 HTTPS_SETUP.md
 JETSON_SETUP.md
