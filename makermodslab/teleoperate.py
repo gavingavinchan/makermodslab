@@ -20,7 +20,7 @@ import threading
 import time
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from lerobot.robots import make_robot_from_config
 from lerobot.robots.bi_so_follower import BiSOFollower
@@ -30,7 +30,7 @@ from lerobot.teleoperators.bi_so_leader import BiSOLeader
 from lerobot.teleoperators.so_leader import SO101Leader
 from lerobot.utils.errors import DeviceNotConnectedError
 
-from .api_errors import ErrorCode
+from .api_errors import ApiError, ErrorCode
 from .arm_capabilities import require_known_arm_type
 from .arms import registry as arm_registry
 from .rest_pose import RETURN_CEILING_S
@@ -105,6 +105,11 @@ last_cleanup_error: str | None = None
 # overload on torque disable) ran fine — a warning. Cleared on start.
 last_session_outcome: str | None = None
 last_session_error: str | None = None
+connection_phase: str | None = None
+last_connection_code: str | None = None
+last_connection_details: dict | None = None
+_start_cancel = threading.Event()
+_starting = False
 # Guards the start path; the worker owns disconnect so stop() does not race.
 _state_lock = threading.Lock()
 
@@ -322,6 +327,10 @@ class TeleoperateRequest(BaseModel):
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
     joint_posture_mapping: bool = False
+    allow_unit_override: bool = False
+    # Session wrapper releases this only after identity and lease attribution.
+    _start_gate: Any = PrivateAttr(default=None)
+    _ports_resolved: bool = PrivateAttr(default=False)
 
 
 def get_joint_positions_from_robot(
@@ -676,7 +685,7 @@ def _can_family_label(request) -> str:
     return arm_registry.get(request_arm_type(request)).short_label
 
 
-def _connect_can(request: TeleoperateRequest):
+def _connect_can(request: TeleoperateRequest, wait=None):
     """Connect a CAN follower (Maker or Metal) + Star Arm 102 leader pair.
 
     Deliberately much shorter than the SO-101 path above, because the CAN
@@ -772,11 +781,24 @@ def _connect_can(request: TeleoperateRequest):
 
     recovery_problems: list[str] = []
     try:
+        # Readiness pings precede Star.configure (unlock/reset); Star normal
+        # connect precedes the follower so a late leader never leaves it holding.
+        if wait is not None:
+            from .teleop_connection import robstride_attempt, star_attempt
+
+            wait.until_ready(lambda: star_attempt(teleop_config, wait), "leader")
+            wait.check()
+            teleop_device.connect(calibrate=False)
         logger.info(f"Connecting to {family} follower arm(s)...")
         try:
-            robot.connect(calibrate=False)
+            if wait is None:
+                robot.connect(calibrate=False)
+            else:
+                wait.until_ready(lambda: robstride_attempt(robot, wait), "follower")
         except Exception as e:
             recovery_problems += de_energize_can_device(robot, f"{family} follower arm")
+            if wait is not None:
+                raise
             raise RuntimeError(
                 f"Could not connect to the {family} follower arm on {request.follower_port}. "
                 "Check that the CAN adapter is plugged in, the arm is powered, and the "
@@ -785,7 +807,8 @@ def _connect_can(request: TeleoperateRequest):
 
         logger.info(f"Connecting to {leader_label} arm(s)...")
         try:
-            teleop_device.connect(calibrate=False)
+            if wait is None:
+                teleop_device.connect(calibrate=False)
         except Exception as e:
             # An energized leader (the Metal leader) is a Damiao device like
             # the follower: a handshake that raised partway has energized the
@@ -819,13 +842,14 @@ def _connect_can(request: TeleoperateRequest):
 def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=None) -> dict[str, Any]:
     """Handle start teleoperation request.
 
-    Connects to both arms *synchronously* so that a connection failure (arm
-    unplugged, port busy, power off) is reported back to the caller, rather than
-    dying silently in the worker thread while the API has already claimed
-    success. Only the teleoperation loop runs in the background thread.
+    RobStride discovery/identity warnings return synchronously; the claimed
+    worker then owns connect, bounded waiting, control and cleanup. Other
+    families retain synchronous setup. The sessions wrapper gates the worker
+    until lease attribution, so a start response can be heartbeated/stopped.
     """
     global teleoperation_active, teleoperation_thread, current_robot, current_teleop, last_cleanup_error
-    global releasing, last_session_outcome, last_session_error
+    global releasing, last_session_outcome, last_session_error, _starting
+    global connection_phase, last_connection_code, last_connection_details
 
     from . import (
         auto_calibrate as _auto_calibrate,
@@ -843,6 +867,20 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
     # (400 robot.arm_type.unavailable) before anything is released, claimed
     # or built — build_single_configs would otherwise ask the registry for it.
     require_known_arm_type(request.arm_type, mode=request.mode)
+
+    family = arm_registry.get(request_arm_type(request))
+    if family.teleop_usb_discovery and not request._ports_resolved:
+        from .teleop_connection import resolve_start_ports
+        from .utils.config import robot_port_identities
+
+        resolved = resolve_start_ports(
+            request.model_dump(),
+            family,
+            override=request.allow_unit_override,
+            identities=robot_port_identities(request.robot_name),
+        )
+        for field in ("leader_port", "follower_port", "right_leader_port", "right_follower_port"):
+            setattr(request, field, resolved[field])
 
     # A previous session (teleop or recording) may still be holding torque for
     # its release grace — cut it short so this start doesn't fail on a busy
@@ -939,10 +977,49 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         last_session_error = None
         releasing = False
         _release_now.clear()
+        _start_cancel.clear()
+        _starting = family.teleop_usb_discovery
+        connection_phase = "starting" if _starting else None
+        last_connection_code = None
+        last_connection_details = None
 
     # The claim above is the real state transition — broadcast the hint so
     # every WS client (any page, any remote UI) refetches the status endpoint.
-    notify_session_changed("teleoperation", True)
+    notify_session_changed("teleoperation", True, phase=connection_phase)
+
+    if family.teleop_usb_discovery:
+
+        def start_worker():
+            if request._start_gate is not None:
+                request._start_gate.wait()
+            _finish_start_teleoperation(request, websocket_manager)
+
+        teleoperation_thread = threading.Thread(
+            target=start_worker, name="teleoperation-connect", daemon=True
+        )
+        try:
+            teleoperation_thread.start()
+        except Exception:
+            teleoperation_active = False
+            _starting = False
+            notify_session_changed("teleoperation", False)
+            raise
+        return {"success": True, "message": "Teleoperation is starting"}
+    return _finish_start_teleoperation(request, websocket_manager)
+
+
+def _connection_phase(phase):
+    global connection_phase
+    connection_phase = phase
+    notify_session_changed("teleoperation", True, phase=phase)
+
+
+def _finish_start_teleoperation(request, websocket_manager=None):
+    global teleoperation_active, teleoperation_thread, current_robot, current_teleop, last_cleanup_error
+    global releasing, last_session_outcome, last_session_error, _starting
+    global last_connection_code, last_connection_details
+
+    from .teleop_connection import ConnectionCancelledError, ConnectWait, failure, port_error
 
     robot = None
     teleop_device = None
@@ -959,7 +1036,16 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         if request.speed_limit_deg_s is not None and not family.supports_teleop_speed_limit:
             raise ValueError("This arm does not support the local teleop target speed limit")
         if not family.uses_feetech_bus:
-            robot, teleop_device, identity_warnings = _connect_can(request)
+            wait = (
+                ConnectWait(_start_cancel.is_set, _connection_phase, sleep=_start_cancel.wait)
+                if family.teleop_usb_discovery
+                else None
+            )
+            if wait is not None:
+                wait.check()
+            robot, teleop_device, identity_warnings = _connect_can(request, wait=wait)
+            if wait is not None:
+                wait.check()
         elif request.mode == "bimanual":
             robot, teleop_device, identity_warnings = _connect_bimanual(request)
         else:
@@ -1176,10 +1262,18 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
                 # the ports are free.
                 notify_session_changed("teleoperation", False)
 
-        teleoperation_thread = threading.Thread(
-            target=teleoperation_worker, name="teleoperation-worker", daemon=True
-        )
-        teleoperation_thread.start()
+        if family.teleop_usb_discovery:
+            with _state_lock:
+                if _start_cancel.is_set():
+                    raise ConnectionCancelledError()
+                _starting = False
+            _connection_phase("running")
+            teleoperation_worker()
+        else:
+            teleoperation_thread = threading.Thread(
+                target=teleoperation_worker, name="teleoperation-worker", daemon=True
+            )
+            teleoperation_thread.start()
 
         response = {
             "success": True,
@@ -1211,17 +1305,34 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
         else:
             last_cleanup_error = _cleanup_after_setup_failure(robot, teleop_device)
         teleoperation_active = False
+        _starting = False
         current_robot = None
         current_teleop = None
-        last_session_error = format_exception(e)
-        last_session_outcome = "failed"
+        cancelled = isinstance(e, ConnectionCancelledError) and not last_cleanup_error
+        if family.teleop_usb_discovery and not cancelled:
+            typed = e if isinstance(e, ApiError) else port_error(e, request.follower_port)
+            if last_cleanup_error:
+                typed = failure(
+                    ErrorCode.ROBOT_RELEASE_UNCERTAIN,
+                    cleanup_error=last_cleanup_error,
+                    connection_code=str(typed.code),
+                    connection_details=typed.details,
+                )
+            last_connection_code = str(typed.code)
+            last_connection_details = typed.details
+            last_session_error = typed.detail
+        else:
+            last_session_error = None if cancelled else format_exception(e)
+        last_session_outcome = "ok" if cancelled else "failed"
         # The claim above already broadcast active=True; undo the hint now
         # that the setup failure released everything.
         notify_session_changed("teleoperation", False)
         logger.error(f"Failed to start teleoperation: {e}")
         # str(e) is already a user-facing message for the connection failures
         # raised above; the toast title supplies the "error starting" context.
-        response = {"success": False, "message": str(e)}
+        response = {"success": False, "message": last_session_error or "Teleoperation cancelled"}
+        if last_connection_code:
+            response.update(code=last_connection_code, details=last_connection_details)
         if last_cleanup_error:
             response["warning"] = last_cleanup_error
         return response
@@ -1241,6 +1352,11 @@ def handle_stop_teleoperation() -> dict[str, Any]:
     thread.
     """
     global teleoperation_active, teleoperation_thread
+
+    with _state_lock:
+        if _starting:
+            _start_cancel.set()
+            return {"success": True, "message": "Teleoperation start cancelled"}
 
     worker = teleoperation_thread
     if teleoperation_active:
@@ -1311,6 +1427,16 @@ def handle_teleoperation_status() -> dict[str, Any]:
     )
     return {
         "teleoperation_active": teleoperation_active,
+        "phase": connection_phase if teleoperation_active else None,
+        "code": last_connection_code,
+        "details": last_connection_details,
+        "status_sentence": {
+            "starting": "Connecting the arms...",
+            "waiting_follower": "Waiting for the arm to power up...",
+            "waiting_leader": "Waiting for the small arm to power up...",
+        }.get(connection_phase)
+        if teleoperation_active
+        else None,
         "posture_mapping": getattr(current_teleop, "posture_mapping_status", None),
         "available_controls": {
             "stop_teleoperation": teleoperation_active,

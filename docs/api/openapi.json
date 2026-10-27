@@ -7337,6 +7337,11 @@
       },
       "TeleoperateRequest": {
         "properties": {
+          "allow_unit_override": {
+            "default": false,
+            "title": "Allow Unit Override",
+            "type": "boolean"
+          },
           "arm_type": {
             "default": "so101",
             "title": "Arm Type",
@@ -7430,6 +7435,148 @@
           "follower_config"
         ],
         "title": "TeleoperateRequest",
+        "type": "object"
+      },
+      "TeleoperationStatusResponse": {
+        "description": "Connection progress and terminal typed failures, beside legacy status.",
+        "properties": {
+          "available_controls": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Available Controls",
+            "type": "object"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hint"
+          },
+          "last_cleanup_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Cleanup Error"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "posture_mapping": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Posture Mapping"
+          },
+          "releasing": {
+            "title": "Releasing",
+            "type": "boolean"
+          },
+          "status_sentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Sentence"
+          },
+          "teleoperation_active": {
+            "title": "Teleoperation Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "teleoperation_active",
+          "phase",
+          "code",
+          "details",
+          "status_sentence",
+          "posture_mapping",
+          "available_controls",
+          "releasing",
+          "last_cleanup_error",
+          "outcome",
+          "error",
+          "hint",
+          "message"
+        ],
+        "title": "TeleoperationStatusResponse",
         "type": "object"
       },
       "TrainingMetrics": {
@@ -14263,7 +14410,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/TeleoperationStatusResponse"
+                }
               }
             },
             "description": "Successful Response"
@@ -18211,7 +18360,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/TeleoperationStatusResponse"
+                }
               }
             },
             "description": "Successful Response"

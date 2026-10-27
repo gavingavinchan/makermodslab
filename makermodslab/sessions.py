@@ -518,6 +518,7 @@ def _build_teleoperation_request(record: dict, opts: TeleoperationOptions):
         arm_type=record["arm_type"],
         leader_kind=record["leader_kind"],
         skip_identity_check=opts.skip_identity_check,
+        allow_unit_override=opts.allow_unit_override,
         speed_limit_deg_s=opts.speed_limit_deg_s,
         joint_posture_mapping=opts.joint_posture_mapping,
     )
@@ -951,6 +952,20 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
     # unknown one must not reach the family).
     require_leader_kind(record["arm_type"], record["leader_kind"])
 
+    from .arms import registry as arm_registry
+
+    discover_teleop = kind == "teleoperation" and arm_registry.get(record["arm_type"]).teleop_usb_discovery
+    if discover_teleop:
+        from .teleop_connection import resolve_start_ports
+        from .utils.config import robot_port_identities
+
+        record = resolve_start_ports(
+            record,
+            arm_registry.get(record["arm_type"]),
+            override=body.options.get("allow_unit_override") is True,
+            identities=robot_port_identities(body.robot),
+        )
+
     # The setup kinds skip the record-clean gate (they exist to make records
     # clean); their builders below still refuse a slot with no port.
     if kind not in _SETUP_KINDS:
@@ -1016,6 +1031,9 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
         ) from exc
 
     request = _REQUEST_BUILDERS[kind](record, opts)
+    if discover_teleop:
+        request._ports_resolved = True
+        request._start_gate = threading.Event()
     result = _dispatch_start(kind, request, websocket_manager)
     if not result.get("success", False):
         message = result.get("message", f"Failed to start {kind}")
@@ -1054,31 +1072,43 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
             status_code=result.get("status_code", default_status),
             detail=message,
             code=result.get("code"),
+            details=result.get("details"),
         )
 
     # The claim event fired synchronously inside handle_start_* — the tracker
     # already minted the identity; attach what only this wrapper knows.
-    session = tracker.attribute(kind, robot=body.robot, owner=body.owner)
-    if session is None:
-        logger.error(f"{kind} start reported success but the tracker saw no claim event")
-        raise ApiError(
-            status_code=500,
-            detail=f"The {kind} session started but its identity could not be established.",
-            code=ErrorCode.INTERNAL_UNEXPECTED,
-        )
-    if body.owner is not None:
-        # The ONLY place a lease attaches (module docstring). None here means
-        # the session already ended between attribute and now — nothing left
-        # to guard, so no lease and no watchdog.
-        leased = tracker.attach_lease(kind, owner=body.owner, timeout_s=lease_timeout_s)
-        if leased is not None:
-            session = leased
-            _ensure_watchdog()
+    try:
+        session = tracker.attribute(kind, robot=body.robot, owner=body.owner)
+        if session is None:
+            logger.error(f"{kind} start reported success but the tracker saw no claim event")
+            raise ApiError(
+                status_code=500,
+                detail=f"The {kind} session started but its identity could not be established.",
+                code=ErrorCode.INTERNAL_UNEXPECTED,
+            )
+        if body.owner is not None:
+            # The ONLY place a lease attaches (module docstring). None here means
+            # the session already ended between attribute and now — nothing left
+            # to guard, so no lease and no watchdog.
+            leased = tracker.attach_lease(kind, owner=body.owner, timeout_s=lease_timeout_s)
+            if leased is not None:
+                session = leased
+                _ensure_watchdog()
+    except Exception:
+        if discover_teleop:
+            try:
+                _dispatch_stop(kind)
+            finally:
+                request._start_gate.set()
+        raise
     # Warn-but-allow findings from the feature's start (teleoperation/replay
     # arm-identity checks) ride the 201 so the client can surface them — the
     # legacy start responses carried them and the sessions surface must not
     # drop them. The handlers join their findings into one `warning` string;
     # relay it verbatim as a single entry.
+    if discover_teleop:
+        # No connection can fail/finish before the wrapper attributes its lease.
+        request._start_gate.set()
     warning = result.get("warning")
     return {"session": _public_session(session), "warnings": [warning] if warning else None}
 

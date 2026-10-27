@@ -423,7 +423,6 @@ UNTYPED_V1_ROUTES: frozenset[str] = frozenset(
         "GET /api/v1/replay-status",
         "GET /api/v1/robots",
         "GET /api/v1/robots/{name}",
-        "GET /api/v1/teleoperation-status",
         "POST /api/v1/calibration-configs/{device_type}/upload",
         "POST /api/v1/calibration-configs/{device_type}/{config_name}/rename",
         "POST /api/v1/complete-calibration-step",

@@ -24,6 +24,8 @@ class ViscousFamily(CanArmFamily):
     indefinite_label = "a Viscous arm"
     supports_bimanual = False
     supports_teleop_speed_limit = True
+    teleop_usb_discovery = True
+    teleop_requires_adapter_enrollment = True
     supports_joint_posture_mapping = True
     single_robot_type = "viscous_follower"
     # No bimanual Viscous driver exists. All public starts check the capability;
@@ -44,6 +46,15 @@ class ViscousFamily(CanArmFamily):
         from ..utils.config import CALIBRATION_BASE_PATH_ROBOTS
 
         return os.path.join(CALIBRATION_BASE_PATH_ROBOTS, "viscous_follower")
+
+    def teleop_adapter_units(self) -> dict:
+        """Committed adapter containment, not a physical motor fingerprint."""
+        bundles = Path(__file__).resolve().parents[2] / "configs" / "viscous"
+        return {
+            manifest["arm"]: manifest["adapter_enrollment"]
+            for path in sorted(bundles.glob("*/manifest.json"))
+            if "adapter_enrollment" in (manifest := json.loads(path.read_text()))
+        }
 
     @staticmethod
     def _commissioned_config(config_class, port, config_id, section):

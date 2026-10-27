@@ -94,6 +94,7 @@ class TeleoperationOptions(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    allow_unit_override: bool = False
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
     joint_posture_mapping: bool = False
@@ -859,3 +860,21 @@ class SessionCoachingResponse(BaseModel):
     `coaching_state` websocket event."""
 
     result: dict[str, Any]
+
+
+class TeleoperationStatusResponse(BaseModel):
+    """Connection progress and terminal typed failures, beside legacy status."""
+
+    teleoperation_active: bool
+    phase: str | None
+    code: str | None
+    details: dict[str, Any] | None
+    status_sentence: str | None
+    posture_mapping: dict[str, Any] | None
+    available_controls: dict[str, bool]
+    releasing: bool
+    last_cleanup_error: str | None
+    outcome: str | None
+    error: str | None
+    hint: str | None
+    message: str

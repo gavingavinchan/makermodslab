@@ -46,5 +46,12 @@
     "viscous_profiles/star_viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
     "viscous_profiles/viscous_waterproof_01.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2"
   },
-  "recovery_scope": "All essential runtime calibrations, Lab hardware profiles, robot settings template and available commissioning evidence. The original per-joint raw capture logs (gzip-compressed), per-joint ROM captures and remaining commissioning settings files are in evidence/raw-captures/; their extrema are also summarized in commissioning-progress.json."
+  "recovery_scope": "All essential runtime calibrations, Lab hardware profiles, robot settings template and available commissioning evidence. The original per-joint raw capture logs (gzip-compressed), per-joint ROM captures and remaining commissioning settings files are in evidence/raw-captures/; their extrema are also summarized in commissioning-progress.json.",
+  "adapter_enrollment": {
+    "follower_usb_serial": "205038953846",
+    "follower_calibrations": [
+      "viscous_waterproof_01"
+    ],
+    "identity_kind": "usb_adapter_only"
+  }
 }

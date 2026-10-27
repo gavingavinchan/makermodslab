@@ -115,7 +115,17 @@ def test_missing_can_usb_fails_before_opening_either_arm(monkeypatch, missing_sl
     monkeypatch.setattr(teleop, "teleoperation_active", False)
     monkeypatch.setattr(teleop, "teleoperation_thread", None)
     ports = {"follower": "/dev/missing-viscous-can", "leader": "/dev/missing-star-leader"}
-    monkeypatch.setattr(teleop.os.path, "exists", lambda path: path != ports[missing_slot])
+    from types import SimpleNamespace
+
+    from makermodslab import usb_ports
+    from makermodslab.api_errors import ApiError
+
+    live = [
+        SimpleNamespace(device=ports["follower"], vid=5840, pid=4478, serial_number="207E37A55445"),
+        SimpleNamespace(device=ports["leader"], vid=6790, pid=29987, serial_number=""),
+    ]
+    live = [p for p in live if p.device != ports[missing_slot]]
+    monkeypatch.setattr(usb_ports, "serial_ports", lambda: live)
 
     def must_not_build(*args, **kwargs):
         pytest.fail("Missing USB must be detected before device construction or calibration staging")
@@ -128,16 +138,10 @@ def test_missing_can_usb_fails_before_opening_either_arm(monkeypatch, missing_sl
         leader_config="star_viscous",
         follower_config="viscous_01",
     )
-    result = teleop.handle_start_teleoperation(request)
-    assert result["success"] is False
-    assert ports[missing_slot] in result["message"]
-    assert "USB device is not detected" in result["message"]
-    assert "warning" not in result
-    status = teleop.handle_teleoperation_status()
-    assert status["teleoperation_active"] is False
-    assert status["last_cleanup_error"] is None
-    assert status["outcome"] == "failed"
-    assert ports[missing_slot] in status["error"]
+    with pytest.raises(ApiError) as caught:
+        teleop.handle_start_teleoperation(request)
+    assert caught.value.code == f"robot.{missing_slot}_usb_missing"
+    assert teleop.teleoperation_active is False
 
 
 def test_not_connected_cleanup_closes_partial_resources_without_false_torque_alarm(monkeypatch) -> None:

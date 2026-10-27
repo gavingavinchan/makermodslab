@@ -16,5 +16,12 @@
     "evidence/commissioning/viscous_arm_v1.yaml.prezero": "1c5900d9e44a449a558a652152104a90f42f443791e6e4dd154e88d71ff2c8e3",
     "robot-record-template.json": "93dbec93ba404ae5d779c6a0d7291ace38f283d86965d5c73e96d2b047240c32"
   },
-  "recovery_scope": "Runtime calibrations for the follower and its purple Star leader, the Lab robot-record template (ports blank, camera indices from gavin-linux) and the August 2026 commissioning captures. The gravity identification runs and fit are versioned by git and deliberately not checksummed here, so a refit does not invalidate the restore."
+  "recovery_scope": "Runtime calibrations for the follower and its purple Star leader, the Lab robot-record template (ports blank, camera indices from gavin-linux) and the August 2026 commissioning captures. The gravity identification runs and fit are versioned by git and deliberately not checksummed here, so a refit does not invalidate the restore.",
+  "adapter_enrollment": {
+    "follower_usb_serial": "207E37A55445",
+    "follower_calibrations": [
+      "viscous_01"
+    ],
+    "identity_kind": "usb_adapter_only"
+  }
 }

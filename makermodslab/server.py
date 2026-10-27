@@ -274,6 +274,7 @@ from .schemas.sessions import (
     SessionStartBody,
     SessionStartResponse,
     SessionStopResponse,
+    TeleoperationStatusResponse,
 )
 from .schemas.sfu import SfuTokenResponse
 from .schemas.system import (
@@ -840,7 +841,7 @@ def stop_teleoperation():
     return handle_stop_teleoperation()
 
 
-@router.get("/teleoperation-status")
+@router.get("/teleoperation-status", response_model=TeleoperationStatusResponse)
 def teleoperation_status():
     """Get the current teleoperation status"""
     return handle_teleoperation_status()

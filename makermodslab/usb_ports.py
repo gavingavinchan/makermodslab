@@ -87,3 +87,25 @@ def resolve_ports(record: dict, identities: dict, ports: list) -> dict:
         # never fall back to a saved path that now belongs to another unit.
         result[field] = candidates[0].device if len(candidates) == 1 else ""
     return result
+
+
+def unique_ports(ports: list) -> list:
+    """Collapse pyserial tty/cu and by-id aliases, preserving real duplicates.
+
+    Linux include_links enumerations mark aliases with LINK= in hwid and
+    expose the same USB location; no filesystem access to /dev is needed.
+    """
+    result = {}
+    for port in ports:
+        location = getattr(port, "location", None)
+        hwid = getattr(port, "hwid", "") or ""
+        locator = hwid.split("LINK=", 1)[1].split()[0] if "LINK=" in hwid else port.device
+        key = (port.vid, port.pid, port.serial_number, location or same_port_key(locator))
+        previous = result.get(key)
+        if previous is None or "LINK=" in (getattr(previous, "hwid", "") or ""):
+            result[key] = port
+    return list(result.values())
+
+
+def same_port_key(path: str) -> str:
+    return path.replace("/dev/tty.", "/dev/cu.")

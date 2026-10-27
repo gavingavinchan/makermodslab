@@ -49,6 +49,18 @@ class ErrorCode(StrEnum):
     # (arm still energized, driving back to rest) — retry shortly.
     ROBOT_NOT_FOUND = "robot.not_found"
     ROBOT_NOT_READY = "robot.not_ready"
+    ROBOT_FOLLOWER_USB_MISSING = "robot.follower_usb_missing"
+    ROBOT_LEADER_USB_MISSING = "robot.leader_usb_missing"
+    ROBOT_FOLLOWER_NOT_READY = "robot.follower_not_ready"
+    ROBOT_LEADER_NOT_READY = "robot.leader_not_ready"
+    ROBOT_FEEDBACK_MISSING = "robot.feedback_missing"
+    ROBOT_CONNECTION_AMBIGUOUS = "robot.connection_ambiguous"
+    ROBOT_UNIT_MISMATCH = "robot.unit_mismatch"
+    ROBOT_IDENTITY_UNVERIFIED = "robot.identity_unverified"
+    ROBOT_PORT_BUSY = "robot.port_busy"
+    ROBOT_CONNECTION_FAILED = "robot.connection_failed"
+    ROBOT_MOTOR_FAULT = "robot.motor_fault"
+    ROBOT_RELEASE_UNCERTAIN = "robot.release_uncertain"
     # The record's arm_type names a family this install has not registered
     # (an extension that is not installed, or a hand-edited record). Never
     # normalized to the SO-101: a silent fallback would open a Feetech serial

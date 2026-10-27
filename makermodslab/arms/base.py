@@ -380,10 +380,18 @@ class ArmFamily(ABC):
     # The local teleop target slew cap (can_speed_limit.py): RobStride CAN
     # followers whose bus the limiter knows how to wrap.
     supports_teleop_speed_limit: bool = False
+    # Local Teleop only: descriptor rebinding and non-enabling RobStride wait.
+    teleop_usb_discovery: bool = False
+    teleop_requires_adapter_enrollment: bool = False
+
     # The opt-in 1:1 joint-posture teleop trial (joint_posture_mapping.py).
     supports_joint_posture_mapping: bool = False
     # Opt-in for the local MIT holding / mode-4 gripper adapters.
     supports_gripper_effort_control: bool = False
+
+    def teleop_adapter_units(self) -> dict:
+        """Adapter enrollment seam; future motor UID verification belongs here."""
+        return {}
 
     def leader_options(self) -> tuple[LeaderOption, ...]:
         """The leader arms this family can be driven by, default FIRST.

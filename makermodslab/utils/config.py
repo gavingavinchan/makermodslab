@@ -996,6 +996,18 @@ def get_robot_record(name: str, *, resolve_usb: bool = True) -> dict | None:
     return record
 
 
+def robot_port_identities(name: str) -> dict:
+    """Read descriptor hints without persisting any start-time override."""
+    if not is_valid_robot_name(name):
+        return {}
+    try:
+        data = json.loads(Path(_robot_record_path(name)).read_text())
+        identities = data.get("port_identities")
+        return identities if isinstance(identities, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
 def list_robot_records() -> list[dict]:
     """Return all robot records on disk."""
     if not os.path.exists(ROBOTS_PATH):
