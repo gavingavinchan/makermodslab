@@ -29,15 +29,22 @@ on:
       - "tests/**"
       - ".github/workflows/tests.yml"
       - "pyproject.toml"
+      - "configs/**"
+      - "scripts/**"
+      - "uv.lock"
   push:
     branches:
       - main
       - staging
+      - feat/viscous-arm
     paths:
       - "makermodslab/**"
       - "tests/**"
       - ".github/workflows/tests.yml"
       - "pyproject.toml"
+      - "configs/**"
+      - "scripts/**"
+      - "uv.lock"
 
 env:
   PYTHON_VERSION: "3.12"

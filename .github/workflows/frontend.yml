@@ -29,6 +29,9 @@ permissions:
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feat/viscous-arm
   pull_request:
     branches:
       - main
@@ -88,6 +91,12 @@ jobs:
       - name: Lint (non-blocking)
         run: npm run lint
         continue-on-error: true
+
+      - name: Tests (connection UI and catalogs)
+        run: >-
+          npm test -- src/i18n/catalogs.test.ts src/i18n/keyUsage.test.ts
+          src/components/launchpad/RobotControls.connection.test.tsx
+          src/components/dialogs/TeleopDialog.connection.test.tsx
 
       - name: Build
         run: npm run build

@@ -46,6 +46,7 @@ on:
     branches:
       - main
       - staging
+      - feat/viscous-arm
   pull_request:
     branches:
       - main
