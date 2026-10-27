@@ -1374,6 +1374,19 @@ existing slcan ports, bimanual support and synchronous connect. The frontend
 asks the arms manifest for the discovery capability. Review checks and the
 confirmed pre-existing suite failures are recorded in the stage 1 report.
 
+*Merged into `feat/viscous-arm` (2026-10-27, Claude), pushed, pulled on
+gavin-linux.* Not yet live anywhere: the gavin-linux service still runs its
+2026-10-22 process and the Mac Lab was not running; neither `frontend/dist` was
+rebuilt. To go live (with Gavin's OK, no session running): rebuild the
+frontend locally, then `systemctl --user restart makermodslab-viscous` on
+gavin-linux. Next, in order: (1) first powered try with Gavin at the arm
+(swap USB sockets, start with the arm off then power it, Stop during the
+wait, the Linux `viscous_waterproof_01` record should warn); (2) GitHub
+Actions are not enabled on the `gavingavinchan/makermodslab` fork (no
+workflows registered), so the new CI triggers do nothing until Gavin enables
+Actions in the fork's Actions tab; (3) stage 2, unit 1's measured profile,
+needs Gavin's re-zero vs recapture decision and him at the arm.
+
 **Resume haptics here (2026-10-27):** the gripper proof of concept works
 (see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the
 calibration baseline, the follower's closed-stop clamp and the gate chatter,
