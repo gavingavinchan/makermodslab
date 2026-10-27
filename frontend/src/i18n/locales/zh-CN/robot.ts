@@ -76,6 +76,11 @@ export default {
     confirm: "删除机器人",
   },
   teleop: {
+    identityWarning: "检查已连接的机械臂",
+    connectionDetails: "详情",
+    continueAnyway: "仍然继续",
+    connecting: "正在连接机械臂…",
+    stopWaiting: "停止",
     slowMode: "机械臂 · 15°/秒",
     postureMapping: "1:1 姿态试用",
     postureWarmup: "预热中：接近主臂映射姿态，五秒后进入跟踪，目标速度上限保持不变。",

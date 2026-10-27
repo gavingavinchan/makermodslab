@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Gamepad2, Radio, RadioTower, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TeleopDialog from "@/components/dialogs/TeleopDialog";
 import HostingDialog from "@/components/dialogs/HostingDialog";
 import StationRobotDialog from "@/components/dialogs/StationRobotDialog";
@@ -14,7 +15,7 @@ import { useRobots, type RobotRecord } from "@/hooks/useRobots";
 import { useHostingStatus } from "@/hooks/useHostingStatus";
 import { useStationStatus } from "@/hooks/useStationStatus";
 import { ApiError } from "@/lib/apiClient";
-import { startSession, formatSessionHeld } from "@/lib/sessionApi";
+import { startSession, formatSessionHeld, type TeleoperationSessionOptions } from "@/lib/sessionApi";
 import type { HostingPhase } from "@/lib/remoteApi";
 import { tabOwnerId } from "@/lib/sessionOwner";
 import { formatRobotSetupGap } from "@/lib/robotSetupGap";
@@ -48,6 +49,11 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const usePostureMapping = supportsPostureMapping && postureMapping;
   const [activeSpeedLimit, setActiveSpeedLimit] = useState<number | null>(null);
   const [activePostureMapping, setActivePostureMapping] = useState(false);
+  const [startIssue, setStartIssue] = useState<{
+    robot: RobotRecord;
+    options: TeleoperationSessionOptions;
+    error: ApiError;
+  } | null>(null);
   const [teleopStarting, setTeleopStarting] = useState(false);
   const [teleopOpen, setTeleopOpen] = useState(false);
   const [teleopSessionId, setTeleopSessionId] = useState<string | null>(null);
@@ -63,20 +69,22 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   // robot NAME only — ports, configs, mode, right-arm fields all resolve
   // server-side from the saved record — plus this tab's owner id, which
   // attaches the lease TeleopDialog keeps renewed while it is open.
-  const handleTeleop = async (robot: RobotRecord) => {
+  const handleTeleop = async (robot: RobotRecord, retryOptions?: TeleoperationSessionOptions) => {
+    const options: TeleoperationSessionOptions = retryOptions ?? {
+      ...(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? { speed_limit_deg_s: 15 } : {}),
+      ...(usePostureMapping ? { joint_posture_mapping: true } : {}),
+    };
+    setStartIssue(null);
     setTeleopStarting(true);
     try {
       const { session, warnings } = await startSession(baseUrl, fetchWithHeaders, {
         kind: "teleoperation",
         robot: robot.name,
         owner: tabOwnerId(),
-        options: {
-          ...(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? { speed_limit_deg_s: 15 } : {}),
-          ...(usePostureMapping ? { joint_posture_mapping: true } : {}),
-        },
+        options,
       });
-      setActiveSpeedLimit(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? 15 : null);
-      setActivePostureMapping(usePostureMapping);
+      setActiveSpeedLimit(options.speed_limit_deg_s ?? null);
+      setActivePostureMapping(options.joint_posture_mapping ?? false);
       setTeleopSessionId(session.id);
       if (warnings?.length) {
         // A success can carry a warn-but-allow arm-identity finding (e.g. the
@@ -87,7 +95,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
           description: warnings.join(" "),
           duration: 10000,
         });
-      } else {
+      } else if (!session.phase || session.phase === "running") {
         toast({
           title: t("robot.teleop.startedTitle"),
           description: t("robot.teleop.startedFallback", { name: robot.name }),
@@ -96,17 +104,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
       setTeleopOpen(true);
     } catch (e) {
       if (e instanceof ApiError) {
-        // 409 session.held renders as the shared localized "robot is busy"
-        // line; every other coded refusal (robot.not_ready, hardware.*) shows
-        // the server's own prose.
-        toast({
-          title: t("robot.teleop.failedTitle"),
-          description:
-            formatSessionHeld(t, e) ??
-            e.detail ??
-            t("robot.teleop.failedFallback"),
-          variant: "destructive",
-        });
+        setStartIssue({ robot, options, error: e });
       } else {
         toast({
           title: t("common.connectionError.title"),
@@ -133,7 +131,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
 
   const teleopDisabledReason = !selectedRecord
     ? t("robot.corner.selectFirst")
-    : !selectedRecord.is_clean
+    : !selectedRecord.is_clean && !["viscous", "maker"].includes(selectedRecord.arm_type)
       ? t("robot.teleop.disabledReason", {
           name: selectedRecord.name,
           gap: formatRobotSetupGap(t, selectedRecord),
@@ -278,6 +276,26 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         () => setRemoteOpen(true),
         t("robot.corner.remoteItemSub"),
       )}
+      <Dialog open={startIssue !== null} onOpenChange={(open) => { if (!open) setStartIssue(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t(startIssue?.error.code === "robot.unit_mismatch" || startIssue?.error.code === "robot.identity_unverified"
+              ? "robot.teleop.identityWarning" : "robot.teleop.failedTitle")}</DialogTitle>
+          </DialogHeader>
+          <p role="alert">{startIssue && (formatSessionHeld(t, startIssue.error) ?? startIssue.error.detail ?? t("robot.teleop.failedFallback"))}</p>
+          {startIssue?.error.details != null && (
+            <details>
+              <summary className="cursor-pointer">{t("robot.teleop.connectionDetails")}</summary>
+              <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-all text-xs">{JSON.stringify(startIssue.error.details, null, 2)}</pre>
+            </details>
+          )}
+          {startIssue && (startIssue.error.code === "robot.unit_mismatch" || startIssue.error.code === "robot.identity_unverified") && (
+            <Button onClick={() => void handleTeleop(startIssue.robot, { ...startIssue.options, allow_unit_override: true })}>
+              {t("robot.teleop.continueAnyway")}
+            </Button>
+          )}
+        </DialogContent>
+      </Dialog>
       <TeleopDialog
         open={teleopOpen}
         onOpenChange={setTeleopOpen}

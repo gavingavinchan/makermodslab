@@ -103,6 +103,11 @@ export default {
     confirm: "Delete robot",
   },
   teleop: {
+    identityWarning: "Check the connected arm",
+    connectionDetails: "Details",
+    continueAnyway: "Continue anyway",
+    connecting: "Connecting the arms...",
+    stopWaiting: "Stop",
     slowMode: "Arm · 15°/s",
     postureMapping: "1:1 posture trial",
     postureWarmup: "Warm-up: approaching the mapped leader posture for five seconds, then tracking at the same target speed limit.",

@@ -53,7 +53,11 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
     outcome: "ran_with_warning" | "failed";
     error: string | null;
     hint: string | null;
+    details: unknown;
+    code: string | null;
   } | null>(null);
+  const [connecting, setConnecting] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
   const [mappingStatus, setMappingStatus] = useState<{
     phase: "warming_up" | "tracking" | "catching_up";
     max_error_deg?: number | null;
@@ -70,6 +74,8 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
     if (open) {
       stoppedRef.current = false;
       setFinished(null);
+      setConnecting(true);
+      setConnectionStatus(null);
       setMappingStatus({ phase: "warming_up" });
     }
   }, [open]);
@@ -99,6 +105,8 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
         if (!res.ok) return;
         const status = await res.json();
         if (cancelled || stoppedRef.current) return;
+        setConnecting(false);
+        setConnectionStatus(status.status_sentence ?? null);
         if (status.posture_mapping?.phase) setMappingStatus(status.posture_mapping);
         if (
           !status.teleoperation_active &&
@@ -111,7 +119,9 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
           setFinished({
             outcome: status.outcome,
             error: status.error ?? null,
-            hint: status.hint ?? null,
+            hint: status.code ? status.error : status.hint ?? null,
+            details: status.details ?? null,
+            code: status.code ?? null,
           });
         }
       } catch {
@@ -261,11 +271,12 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
           onClick={handleDone}
           className="ml-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
         >
-          {t("dialogs.teleop.done")}
+          {connecting || connectionStatus ? t("robot.teleop.stopWaiting") : t("dialogs.teleop.done")}
         </Button>
       </div>
 
       <div className="flex flex-col gap-3 p-3">
+        {(connecting || connectionStatus) && !finished && <p role="status" className="text-sm font-semibold">{connectionStatus ?? t("robot.teleop.connecting")}</p>}
         {postureMapping && (
           <p className="text-sm text-muted-foreground">
             {t(mappingStatus.phase === "tracking" ? "robot.teleop.postureTracking" :
@@ -279,6 +290,12 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
               <> {t("robot.teleop.postureLimited", { joints: mappingStatus.limited_joints.map(jointNumber).join(", ") })}</>
             )}
           </p>
+        )}
+        {finished?.details != null && (
+          <details>
+            <summary className="cursor-pointer">{t("robot.teleop.connectionDetails")}</summary>
+            <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-all text-xs">{JSON.stringify(finished.details, null, 2)}</pre>
+          </details>
         )}
         {finished && (
           <div
@@ -311,7 +328,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
                 {finished.hint}
               </p>
             )}
-            {finished.error && (
+            {finished.error && !finished.code && (
               <pre className="mt-3 max-h-40 overflow-auto whitespace-pre-wrap break-words rounded bg-muted p-2 text-xs text-muted-foreground">
                 {finished.error}
               </pre>

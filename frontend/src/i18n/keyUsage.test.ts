@@ -22,6 +22,8 @@ const KEY_RE = new RegExp(
 );
 
 /** i18next plural suffixes — a stem resolves through one of these. */
+// API error codes share the robot namespace but are wire data, never t() keys.
+const API_ERROR_CODES = new Set(["robot.unit_mismatch", "robot.identity_unverified"]);
 const PLURAL_SUFFIXES = ["_one", "_other", "_zero", "_two", "_few", "_many"];
 
 /** Strips // line and block comments so prose can't masquerade as a key. */
@@ -47,6 +49,7 @@ function collectKeys(): Map<string, string[]> {
     const text = stripComments(readFileSync(file, "utf8"));
     for (const m of text.matchAll(KEY_RE)) {
       const key = m[0].slice(1, -1);
+      if (API_ERROR_CODES.has(key)) continue;
       // Skip plural stems — i18next resolves those via `count`.
       if (/_(one|other|zero|two|few|many)$/.test(key)) continue;
       const at = found.get(key) ?? [];

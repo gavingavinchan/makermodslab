@@ -62,6 +62,7 @@ export interface EndedSessionInfo {
 // ignored knob).
 
 export interface TeleoperationSessionOptions {
+  allow_unit_override?: boolean;
   skip_identity_check?: boolean;
   speed_limit_deg_s?: number;
   joint_posture_mapping?: boolean;
