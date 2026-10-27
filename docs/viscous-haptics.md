@@ -626,6 +626,13 @@ restore paths in the DAgger runner.
   motion that is surprising but not dangerous: "it actually was not doing
   anything dangerous, just surprised me." He set the thermal ceiling to 85 °C,
   the driver's own stop, so scripts abort just below it.
+- **Demo reliability comes first (2026-10-27).** Gavin travels to show the arm:
+  "the most important thing is when I deploy it, it works ... Last thing I want
+  is to go there, press teleop and it doesn't work for whatever stupid reason"
+  and have to start an agent debugging in front of a guest. A fix counts only
+  if it holds on the demo machine at the visit. Background and the three
+  reviews: `docs/viscous-mapping/workflow-review-*.md` and
+  `fable-workflow-review-2026-10-27.md`.
 
 ## Objective (haptics detail)
 
