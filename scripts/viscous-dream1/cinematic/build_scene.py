@@ -17,6 +17,8 @@ for o in list(scene.objects):
 for marker in list(scene.timeline_markers):scene.timeline_markers.remove(marker)
 from native_appearance import apply as apply_native_appearance
 apply_native_appearance()
+from add_logo_badges import apply as apply_logo_badges
+apply_logo_badges()
 rov=bpy.data.objects['rov_base'];rov.matrix_world=Matrix(motion['rov_transform'])
 scene.render.fps=motion['fps'];scene.frame_start=1;scene.frame_end=motion['end']
 for r in motion['frames']:

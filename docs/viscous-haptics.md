@@ -573,6 +573,24 @@ restore paths in the DAgger runner.
   - Nut seated: 10.25 turns, 0.13 mm gap. Astra claimed "more than eleven turns".
   - Audit clean: 58 own-camera images.
   Cut: `astra_rov_backup2_g3_20261026_001/astra_rov_twohand_social.mp4` (1:38, 6x).
+  *Logo badges on the video arms (2026-10-26, Gavin).* The real arms carry the
+  printed badges from `~/Documents/viscous-arm-branding/` on gavin-linux (blue
+  VISCOUS ROBOTICS nameplate and V badge on each side of the forearm). The video
+  arms did not. Gavin: "update the CAD assets ... don't render out the video yet":
+  he will set the Blender camera views by hand on gavin-linux before rendering.
+  Added the Oct 6 handed nameplates and the Oct 9 **extended** V (the latest
+  design) to both arms of the propeller film (`cinematic/assets/native_rov.blend`,
+  `cinematic/results/final_scene.blend`, rebuilt by `build_scene.py` via
+  `add_logo_badges.py`) and, as visual-only geoms, to the MuJoCo `astra_rov*`
+  scenes behind the flange video (`astra_op/logo_badges.py`). Placement is
+  registered on the forearm bracket mesh (~0.01 mm RMS); the right arm's mesh is
+  mirrored, so each side gets its own handed part and the text reads correctly
+  everywhere. Cameras, lights, motion and render settings are unchanged (all
+  pre-existing objects identical over 672 film frames); sim physics is unchanged
+  (2,000-row replay bit-identical). One visual clash: the left arm's inner
+  nameplate crosses the ROV at 27.0-29.4 s of `astra_rov_backup2_g3_20261026_001`.
+  No videos re-rendered yet. Evidence: `cinematic/results/logo_check/` and
+  `runs/astra_flange/logo_check/`.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

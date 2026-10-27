@@ -1,0 +1,24 @@
+{
+  "native": {
+    "passed": true,
+    "baseline_sha256": "5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef",
+    "scene_sha256": "c5a131851de77596d0596b6cc673580a62b14392f1ae7553b5cf99136bbbc8a7",
+    "preexisting_objects": 161,
+    "compared_frames": 180,
+    "differing_sections": [],
+    "world_transform_max_difference": 0.0,
+    "camera_bindings_identical_all_frames": true,
+    "cameras_markers_active_camera_render_lights_geometry_material_slots_animation_identical": true
+  },
+  "film": {
+    "passed": true,
+    "baseline_sha256": "597cf16f823f2039140c814498aff0724a90b641d5a017335cb0c98072c00b97",
+    "scene_sha256": "1fc081610a0dc357f443cd5c5a9cfa3a3b0abc25c9319ffea540209f1a9ec118",
+    "preexisting_objects": 226,
+    "compared_frames": 672,
+    "differing_sections": [],
+    "world_transform_max_difference": 0.0,
+    "camera_bindings_identical_all_frames": true,
+    "cameras_markers_active_camera_render_lights_geometry_material_slots_animation_identical": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "source_states_sha256": "6a137530fd29afa6431f283fe54e7dd413246689d8a97234bea421e7937c6b31",
+  "poses": [
+    {
+      "pose": "start",
+      "index": 0,
+      "time_s": 0.10000000000000007
+    },
+    {
+      "pose": "seated",
+      "index": 5438,
+      "time_s": 543.999999994048
+    },
+    {
+      "pose": "interference_27s",
+      "index": 269,
+      "time_s": 27.000000000010015
+    }
+  ],
+  "physics_steps": 0,
+  "temporary_external_cameras": true
+}

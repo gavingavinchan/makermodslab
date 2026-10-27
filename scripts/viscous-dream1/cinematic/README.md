@@ -42,9 +42,14 @@ so the vehicle's horizontal frame can also be judged without a tilted camera.
 ## What is verified
 
 - The source is the original **2026-09-18** bimanual ROV, not the later concept.
-  `assets/native_rov.blend` is byte-identical to the MakerModsBrain handoff:
+  Before the 2026-10-26 badge addition, `assets/native_rov.blend` was byte-identical
+  to the MakerModsBrain handoff:
   SHA256 `5eeb60fba40c2f6fc5e4f6744a9f94274fb8e361310a61aa9e573cf82ad721ef`,
-  97,262,641 bytes. Original project: `viscous-rov-model`. Original user-owned CAD
+  97,262,641 bytes. The local `assets/native_rov.prelogo.blend` preserves that
+  baseline. Current native/final blends add only the four physical brand badges
+  per arm; [logo checks](results/logo_check/README.md) prove original geometry,
+  cameras and motion unchanged. Existing videos remain the earlier unbadged renders.
+  Original project: `viscous-rov-model`. Original user-owned CAD
   archives: `Viscous ROV with Arms-2.step` and `.f3z`, in OneDrive
   `RYGN/viscous robotics/Viscous Robotics Files/CAD/2026-09-18_Bimanual_ROV/`.
   The large archives are deliberately not duplicated here.
@@ -237,3 +242,29 @@ scene mesh coordinates and object/camera transforms matched at twelve keyframes
 (`results/rebuild_verification.json`). Extremal motion screenshots are selected
 in `results/evidence_selection.json`; no collision worst frame exists because
 the dense audit reported zero unintended intersections.
+
+## Physical Viscous badges (2026-10-26)
+
+`add_logo_badges.py` adds the source October 6 handed nameplates and October 9
+extended V badges, blue/white satin PLA, to both forearms. It runs idempotently
+in `build_scene.py`; the vendored geometry needs no branding checkout. The final
+scene and native asset are packed and saved in place. No video was rendered for
+this revision. Use [the still contact sheet](results/logo_check/contact_sheet.jpg)
+and [preservation/registration/interference report](results/logo_check/README.md).
+The prior manifest and video-validation reports describe the pre-logo film;
+`logo_check/unchanged.json` records current blend hashes.
+
+Still-only QA, with the same bpy Python as above:
+
+```sh
+$PY add_logo_badges.py
+$PY reproduce_logo_reference.py
+$PY register_logo_badges.py
+$PY check_logo_badges.py verify
+$PY check_logo_badges.py audit
+$PY check_logo_badges.py stills
+```
+
+The verification baselines are local ignored `*.prelogo.blend` files. Still QA
+uses a disposable scene copy with a private temporary camera and marker list,
+then removes it; it never saves render or camera overrides into either asset.

@@ -1,0 +1,12 @@
+{
+  "frames": 672,
+  "stride": 1,
+  "badges": 16,
+  "other_meshes": 100,
+  "candidate_pairs": 1568,
+  "broadphase_survivors": 10649,
+  "intersections": {},
+  "method": "World-space native mesh triangle BVH surface intersections at every integer film frame. Own carrier link excluded as intentional mounting contact; every other arm link and all native ROV/thruster meshes included.",
+  "limitations": "Triangle intersections report surface crossings, not signed clearance or containment; no motion changed.",
+  "scene_sha256": "1fc081610a0dc357f443cd5c5a9cfa3a3b0abc25c9319ffea540209f1a9ec118"
+}

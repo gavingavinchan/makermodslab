@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "profiles": [
+    {
+      "profile": "astra_rov",
+      "nbody_before": 54,
+      "nbody_after": 54,
+      "ngeom_before": 4700,
+      "ngeom_after": 4716,
+      "added_visual_geoms": 16,
+      "old_xml_identical_after_removing_badge_elements": true,
+      "compiled_mismatches": [],
+      "baseline_xml_sha256": "7df67aefe577ed741aa0cc05e0563e7e18a00011ec22e736206a883186c7baa3",
+      "passed": true
+    },
+    {
+      "profile": "astra_rov_backup",
+      "nbody_before": 54,
+      "nbody_after": 54,
+      "ngeom_before": 4700,
+      "ngeom_after": 4716,
+      "added_visual_geoms": 16,
+      "old_xml_identical_after_removing_badge_elements": true,
+      "compiled_mismatches": [],
+      "baseline_xml_sha256": "ea5b23b5773808595c6eee198f059532fee206fcb270affdc7e3408d6b5cb21f",
+      "passed": true
+    },
+    {
+      "profile": "astra_rov_backup2",
+      "nbody_before": 54,
+      "nbody_after": 54,
+      "ngeom_before": 4700,
+      "ngeom_after": 4716,
+      "added_visual_geoms": 16,
+      "old_xml_identical_after_removing_badge_elements": true,
+      "compiled_mismatches": [],
+      "baseline_xml_sha256": "eae255100406af62d5f67dbcfce67078338b0d319a09644f69cdd93a869897ee",
+      "passed": true
+    }
+  ],
+  "tabletop_astra": {
+    "ngeom_equal": true,
+    "nbody_equal": true,
+    "qpos_equal": true,
+    "ctrl_equal": true,
+    "body_mass_equal": true,
+    "no_badges": true
+  }
+}

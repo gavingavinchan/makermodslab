@@ -1,0 +1,152 @@
+{
+  "captured_poses": 5855,
+  "capture_rate_hz": 10,
+  "physics_steps": 0,
+  "intersections": {
+    "badge_left_nameplate_PosY_output / vehicle": [
+      {
+        "capture": 269,
+        "time_s": 27.000000000010015
+      },
+      {
+        "capture": 270,
+        "time_s": 27.100000000010137
+      },
+      {
+        "capture": 271,
+        "time_s": 27.20000000001026
+      },
+      {
+        "capture": 272,
+        "time_s": 27.30000000001038
+      },
+      {
+        "capture": 273,
+        "time_s": 27.400000000010504
+      },
+      {
+        "capture": 274,
+        "time_s": 27.500000000010626
+      },
+      {
+        "capture": 275,
+        "time_s": 27.60000000001075
+      },
+      {
+        "capture": 276,
+        "time_s": 27.70000000001087
+      },
+      {
+        "capture": 277,
+        "time_s": 27.800000000010993
+      },
+      {
+        "capture": 278,
+        "time_s": 27.900000000011115
+      },
+      {
+        "capture": 279,
+        "time_s": 28.000000000011237
+      },
+      {
+        "capture": 280,
+        "time_s": 28.10000000001136
+      },
+      {
+        "capture": 281,
+        "time_s": 28.20000000001148
+      },
+      {
+        "capture": 282,
+        "time_s": 28.300000000011604
+      },
+      {
+        "capture": 283,
+        "time_s": 28.50000000001185
+      },
+      {
+        "capture": 284,
+        "time_s": 28.60000000001197
+      },
+      {
+        "capture": 285,
+        "time_s": 28.700000000012093
+      },
+      {
+        "capture": 286,
+        "time_s": 28.800000000012215
+      },
+      {
+        "capture": 287,
+        "time_s": 28.900000000012337
+      },
+      {
+        "capture": 288,
+        "time_s": 29.00000000001246
+      },
+      {
+        "capture": 289,
+        "time_s": 29.10000000001258
+      },
+      {
+        "capture": 290,
+        "time_s": 29.200000000012704
+      },
+      {
+        "capture": 291,
+        "time_s": 29.300000000012826
+      },
+      {
+        "capture": 292,
+        "time_s": 29.400000000012948
+      }
+    ]
+  },
+  "registration": {
+    "left": {
+      "body": "left_forearm_link",
+      "geom": "native_left_forearm_link_00",
+      "source_bracket_residuals": {
+        "arm_60": {
+          "rms_mm": 0.018638791159257245,
+          "max_mm": 0.19616542167668669
+        },
+        "arm_61": {
+          "rms_mm": 0.009675385287785495,
+          "max_mm": 0.08069760221264545
+        },
+        "arm_62": {
+          "rms_mm": 0.017146944520905788,
+          "max_mm": 0.1819128565341518
+        },
+        "arm_63": {
+          "rms_mm": 0.009418076467587059,
+          "max_mm": 0.07843661229462193
+        }
+      }
+    },
+    "right": {
+      "body": "right_forearm_link",
+      "geom": "native_right_forearm_link_00",
+      "source_bracket_residuals": {
+        "arm_60": {
+          "rms_mm": 0.019444053797066357,
+          "max_mm": 0.21611615540004628
+        },
+        "arm_61": {
+          "rms_mm": 0.009849067605207254,
+          "max_mm": 0.08115185468155275
+        },
+        "arm_62": {
+          "rms_mm": 0.01750403387153069,
+          "max_mm": 0.19920082607688344
+        },
+        "arm_63": {
+          "rms_mm": 0.010095854241516844,
+          "max_mm": 0.08138055011071052
+        }
+      }
+    }
+  },
+  "method": "FCL triangle BVHs using compiled native visual mesh vertices transformed to each body. Each badge checked against all other arm bodies and ROV/thrusters at every captured episode pose; own mounting body excluded. Surface crossings only; containment and motion between 10 Hz samples are not certified."
+}

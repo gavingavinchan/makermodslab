@@ -1,0 +1,11 @@
+--- astra_op/rov_scene.py
++++ astra_op/rov_scene.py
+@@ -153,6 +153,8 @@
+  if bolt_free_spin:
+   from bolt_spin import constraints
+   constraints(root)
++ from logo_badges import add as add_logo_badges
++ add_logo_badges(root)
+  return E.tostring(root,encoding='unicode')
+ def make_env(bolt_free_spin=False,parking='original'):
+  import sweep_scene

@@ -1,0 +1,269 @@
+{
+  "source_registration": {
+    "method": "Bracket-only signed-axis rigid registration: enumerate axis permutations/signs, match component bounds, minimize vertex-to-triangle distance. No arm pose or badge offsets fitted. Units mm until final conversion to metres.",
+    "arms": {
+      "left": {
+        "source_preview_arm_to_link_mm": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            160.00144038142957
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -7.34858138513272e-07
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            -110.99880414403643
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "determinant": 1.0,
+        "source": "arm_61",
+        "target": "left_forearm_link_00 bracket component",
+        "bracket_vertex_count": 2443,
+        "rms_mm": 0.00966297611496589,
+        "max_mm": 0.05750579238766539,
+        "all_four_plates": {
+          "arm_60": {
+            "rms_mm": 0.010481756904217581,
+            "max_mm": 0.07437148953236816
+          },
+          "arm_61": {
+            "rms_mm": 0.008093579738304069,
+            "max_mm": 0.05532211024117221
+          },
+          "arm_62": {
+            "rms_mm": 0.010896754747816399,
+            "max_mm": 0.07437148953236816
+          },
+          "arm_63": {
+            "rms_mm": 0.008093345767193845,
+            "max_mm": 0.055322385045477256
+          }
+        }
+      },
+      "right": {
+        "source_preview_arm_to_link_mm": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            160.00144038142957
+          ],
+          [
+            -0.0,
+            -1.0,
+            -0.0,
+            7.348580705274498e-07
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            -110.99880414403641
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "determinant": -1.0,
+        "source": "arm_61",
+        "target": "right_forearm_link_00 bracket component",
+        "bracket_vertex_count": 2443,
+        "rms_mm": 0.00966297611496577,
+        "max_mm": 0.05750579238766539,
+        "all_four_plates": {
+          "arm_60": {
+            "rms_mm": 0.010481756622338176,
+            "max_mm": 0.0743714895323811
+          },
+          "arm_61": {
+            "rms_mm": 0.008093579738304005,
+            "max_mm": 0.055322110241182255
+          },
+          "arm_62": {
+            "rms_mm": 0.010896755252617997,
+            "max_mm": 0.0743714895323811
+          },
+          "arm_63": {
+            "rms_mm": 0.00809334576720004,
+            "max_mm": 0.055322385045487296
+          }
+        }
+      }
+    },
+    "parts": {
+      "2026-10-06-print-files/parts/nameplate_PosY_output.stl": "263eb45eb8f810113c3b9b622ffaf241c561f0b6437c32dbd772c080d227045f",
+      "2026-10-06-print-files/parts/nameplate_PosY_output.step": "ee22820e070fd2d4c8422e010cde2eab90c9736a5204eb68242f0a34c95ed98d",
+      "2026-10-06-print-files/parts/nameplate_PosY_output_colored.step": "88e67184158d2037a11e4308f49e06fdc1d0c76f162e83e8280a3b6e4ea21edd",
+      "2026-10-06-print-files/parts/nameplate_NegY_bearing.stl": "5044653751695ac11744b758db359955c90d480224718bc50f467550aef44101",
+      "2026-10-06-print-files/parts/nameplate_NegY_bearing.step": "9fa350ce46254919779c2253edf6b4781e73499551850cac964fa6310cff94b4",
+      "2026-10-06-print-files/parts/nameplate_NegY_bearing_colored.step": "5f2dd804deff271c604cf990f0ac4ccc68b22712efce1db8014c182dbcb4f875",
+      "2026-10-09-v-print-variants/parts/v_extended_PosY_output.stl": "c6f08d56de0bcd210c1d3f255daaaa5275f1fd34b5254a2eb385fcfef9ec7ffb",
+      "2026-10-09-v-print-variants/parts/v_extended_PosY_output.step": "02592d14009d97bd15b4961388ec943b05516a0b9f9aca561acb6c7a9ff9c709",
+      "2026-10-09-v-print-variants/parts/v_extended_PosY_output_colored.step": "c7c646f6a98ef429d4decbeb96661306a8ac035a29cdc7ea2761ef21c01127bd",
+      "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing.stl": "4fabf588a5e4d6075a1f95b66efbe64c196301911469d47812c4104f3c817645",
+      "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing.step": "05be64565aac47b0ec073ff2b18ad8e521ab9cd9b36ffdb5af55b462b017e4e8",
+      "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing_colored.step": "853cd2c3cf14bc4609b3be4fddf13052fb75fe5d3b72d761cfb9b6eb37450366"
+    }
+  },
+  "scene_mesh_checks": {
+    "native": {
+      "left": {
+        "carrier": "left_forearm_link",
+        "matched_mesh": "left_forearm_link__left_forearm_link_00",
+        "mesh_object_determinant": 1.0,
+        "registration_determinant": 1.0,
+        "plates": {
+          "arm_60": {
+            "vertices": 3262,
+            "rms_mm": 0.010479967390783,
+            "max_mm": 0.07435506995534524
+          },
+          "arm_61": {
+            "vertices": 2443,
+            "rms_mm": 0.008094288271765544,
+            "max_mm": 0.05529597183340229
+          },
+          "arm_62": {
+            "vertices": 2852,
+            "rms_mm": 0.010896564350528439,
+            "max_mm": 0.07435506995534524
+          },
+          "arm_63": {
+            "vertices": 2443,
+            "rms_mm": 0.008094038657725539,
+            "max_mm": 0.055297343351412565
+          }
+        }
+      },
+      "right": {
+        "carrier": "right_forearm_link",
+        "matched_mesh": "right_forearm_link__right_forearm_link_00",
+        "mesh_object_determinant": 1.0,
+        "registration_determinant": -1.0,
+        "plates": {
+          "arm_60": {
+            "vertices": 3262,
+            "rms_mm": 0.010479922999014776,
+            "max_mm": 0.07435506995534524
+          },
+          "arm_61": {
+            "vertices": 2443,
+            "rms_mm": 0.008094306067154847,
+            "max_mm": 0.05529597183340229
+          },
+          "arm_62": {
+            "vertices": 2852,
+            "rms_mm": 0.01089651490772708,
+            "max_mm": 0.07435506995534524
+          },
+          "arm_63": {
+            "vertices": 2443,
+            "rms_mm": 0.008094025185182306,
+            "max_mm": 0.055297343351412565
+          }
+        }
+      },
+      "idempotence": {
+        "passed": true,
+        "objects": 16,
+        "materials": [
+          "BADGE | blue PLA",
+          "BADGE | white PLA"
+        ],
+        "minimum_badge_world_determinant": 1.0,
+        "external_unpacked_paths": [],
+        "live_linked_libraries": 0,
+        "inert_append_provenance_weak_paths": []
+      }
+    },
+    "film": {
+      "left": {
+        "carrier": "left_forearm_link",
+        "matched_mesh": "left_forearm_link__left_forearm_link_00",
+        "mesh_object_determinant": 0.9999999403953552,
+        "registration_determinant": 1.0,
+        "plates": {
+          "arm_60": {
+            "vertices": 3262,
+            "rms_mm": 0.01047441761894025,
+            "max_mm": 0.07440197805408388
+          },
+          "arm_61": {
+            "vertices": 2443,
+            "rms_mm": 0.008094606559444687,
+            "max_mm": 0.05533099465537816
+          },
+          "arm_62": {
+            "vertices": 2852,
+            "rms_mm": 0.010901734434316482,
+            "max_mm": 0.07440197805408388
+          },
+          "arm_63": {
+            "vertices": 2443,
+            "rms_mm": 0.008094300715577067,
+            "max_mm": 0.055330991017399356
+          }
+        }
+      },
+      "right": {
+        "carrier": "right_forearm_link",
+        "matched_mesh": "right_forearm_link__right_forearm_link_00",
+        "mesh_object_determinant": 0.9999999403953552,
+        "registration_determinant": -1.0,
+        "plates": {
+          "arm_60": {
+            "vertices": 3262,
+            "rms_mm": 0.010485203199612086,
+            "max_mm": 0.07441550405928865
+          },
+          "arm_61": {
+            "vertices": 2443,
+            "rms_mm": 0.00809332966923969,
+            "max_mm": 0.0553586141904816
+          },
+          "arm_62": {
+            "vertices": 2852,
+            "rms_mm": 0.010897121873208024,
+            "max_mm": 0.07441550405928865
+          },
+          "arm_63": {
+            "vertices": 2443,
+            "rms_mm": 0.008092996293206783,
+            "max_mm": 0.05536061871680431
+          }
+        }
+      },
+      "idempotence": {
+        "passed": true,
+        "objects": 16,
+        "materials": [
+          "BADGE | blue PLA",
+          "BADGE | white PLA"
+        ],
+        "minimum_badge_world_determinant": 1.0,
+        "external_unpacked_paths": [],
+        "live_linked_libraries": 0,
+        "inert_append_provenance_weak_paths": [
+          "/home/gavin/Documents/makermodslab-viscous/scripts/viscous-dream1/cinematic/tool/polisher.blend"
+        ]
+      }
+    }
+  }
+}

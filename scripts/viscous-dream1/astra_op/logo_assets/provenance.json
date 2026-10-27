@@ -1,0 +1,45 @@
+{
+  "source": "User-owned viscous-arm-branding; source paths below are relative to that project, not runtime dependencies.",
+  "files": {
+    "2026-10-06-print-files/build_badges.py": "b5fa0ab34dd167b240f5547ba38a9dd627360be80aa2ae47804b501844dc8b23",
+    "2026-10-06-print-files/render_preview.py": "580bcc436984e021009e273f8bc317e81ed558f9f0b63cd3991d881df85c3134",
+    "2026-10-06-print-files/preview_source/badges.json": "240028befcfc5f383145d650d761c908c210e2cf83c96bd2773abdefe7d822fe",
+    "2026-10-06-print-files/preview_source/arm.json": "e5517ee8221b75f7b796f241b5ae3db0063797f7a8a66889d0278ba2c999e2da",
+    "2026-10-06-print-files/preview_source/nameplate_PosY_output_white_preview.stl": "5d77889765417d19e9442bd12a7b89d9a251e403822b8d8d3ed29a65bee2b005",
+    "2026-10-06-print-files/preview_source/nameplate_PosY_output_blue_preview.stl": "746e6ffdd3b2504be9a0daf01cc58c571d6fd5c41ca559e1b60efcbea5cb7c86",
+    "2026-10-06-print-files/preview_source/nameplate_NegY_bearing_white_preview.stl": "5d77889765417d19e9442bd12a7b89d9a251e403822b8d8d3ed29a65bee2b005",
+    "2026-10-06-print-files/preview_source/nameplate_NegY_bearing_blue_preview.stl": "bc97047cd58a37d0a55aca657b191ef0e3f922dfb1397459aeb55895910478f5",
+    "2026-10-06-print-files/parts/nameplate_NegY_bearing.step": "9fa350ce46254919779c2253edf6b4781e73499551850cac964fa6310cff94b4",
+    "2026-10-06-print-files/parts/nameplate_PosY_output_colored.step": "88e67184158d2037a11e4308f49e06fdc1d0c76f162e83e8280a3b6e4ea21edd",
+    "2026-10-06-print-files/parts/nameplate_NegY_bearing.stl": "5044653751695ac11744b758db359955c90d480224718bc50f467550aef44101",
+    "2026-10-06-print-files/parts/nameplate_NegY_bearing_colored.step": "5f2dd804deff271c604cf990f0ac4ccc68b22712efce1db8014c182dbcb4f875",
+    "2026-10-06-print-files/parts/nameplate_PosY_output.step": "ee22820e070fd2d4c8422e010cde2eab90c9736a5204eb68242f0a34c95ed98d",
+    "2026-10-06-print-files/parts/nameplate_PosY_output.stl": "263eb45eb8f810113c3b9b622ffaf241c561f0b6437c32dbd772c080d227045f",
+    "2026-10-09-v-print-variants/build_v_variants.py": "5e28e9a451d932d35ffcbbc37922a3a181f01a306fe30ac838991d2e6bafc390",
+    "2026-10-09-v-print-variants/render_variants.py": "c9b69c868ac453bf60c7f2231f2bbd41e4589f18ac515bc7ef387bf9392d9fbc",
+    "2026-10-09-v-print-variants/preview_source/v_extended_PosY_output_blue_preview.stl": "895bffcf287c016a971ca60f362738c9cb88fa837af150ef8f8a7b7d033415cb",
+    "2026-10-09-v-print-variants/preview_source/v_extended_PosY_output_white_preview.stl": "be0653cb180aea34a59dea504617f74a6ae0e87c0c4fe5e6e347a069e780e25d",
+    "2026-10-09-v-print-variants/preview_source/badges.json": "64035e356b3f07d463a6f2e81ec751bb7c1b2c9490eaca3bff35bb0de8498d93",
+    "2026-10-09-v-print-variants/preview_source/v_extended_NegY_bearing_blue_preview.stl": "45a4d9cba5095dad5d80c69fee28f06c5ac9d4f872ac3cc0b25ac296655822d7",
+    "2026-10-09-v-print-variants/preview_source/v_extended_NegY_bearing_white_preview.stl": "be0653cb180aea34a59dea504617f74a6ae0e87c0c4fe5e6e347a069e780e25d",
+    "2026-10-09-v-print-variants/parts/v_extended_PosY_output.step": "02592d14009d97bd15b4961388ec943b05516a0b9f9aca561acb6c7a9ff9c709",
+    "2026-10-09-v-print-variants/parts/v_extended_PosY_output_colored.step": "c7c646f6a98ef429d4decbeb96661306a8ac035a29cdc7ea2761ef21c01127bd",
+    "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing.step": "05be64565aac47b0ec073ff2b18ad8e521ab9cd9b36ffdb5af55b462b017e4e8",
+    "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing_colored.step": "853cd2c3cf14bc4609b3be4fddf13052fb75fe5d3b72d761cfb9b6eb37450366",
+    "2026-10-09-v-print-variants/parts/v_extended_NegY_bearing.stl": "4fabf588a5e4d6075a1f95b66efbe64c196301911469d47812c4104f3c817645",
+    "2026-10-09-v-print-variants/parts/v_extended_PosY_output.stl": "c6f08d56de0bcd210c1d3f255daaaa5275f1fd34b5254a2eb385fcfef9ec7ffb"
+  },
+  "asset_units": {
+    "parts_json": "mm",
+    "obj": "metres",
+    "source_brackets_json": "mm"
+  },
+  "color_split": "Unmodified separate blue and white preview triangles exported by source CAD scripts; blue Z=0..4.6 mm, glyphs Z=4.6..5.2 mm. No font reconstruction.",
+  "registration": "Signed-axis candidates identified by bracket component extent; translation surface-ICP on arm_61; independently validated against all four carrier plates and actual Blender/compiled MuJoCo mesh triangles.",
+  "fit_iterations": 30,
+  "source_preview_arm_to_forearm_origin_mm": [
+    -160,
+    0,
+    111
+  ]
+}

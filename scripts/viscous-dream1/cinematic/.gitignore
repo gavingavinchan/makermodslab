@@ -1,2 +1,5 @@
 __pycache__/
 *.blend1
+
+# Local geometry-only revision baselines (large, deliberately outside git).
+*.prelogo.blend
