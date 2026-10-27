@@ -1369,6 +1369,11 @@ needed. No powered test, live-state change, deployment or push was performed;
 this brief explicitly limited work to the dedicated worktree and forbade pushes.
 Unit 1's gripper profile and motor-UID identity remain deferred.
 
+*Review fixes (2026-10-27):* stage 1 opts in Viscous only; Maker retains its
+existing slcan ports, bimanual support and synchronous connect. The frontend
+asks the arms manifest for the discovery capability. Review checks and the
+confirmed pre-existing suite failures are recorded in the stage 1 report.
+
 **Resume haptics here (2026-10-27):** the gripper proof of concept works
 (see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the
 calibration baseline, the follower's closed-stop clamp and the gate chatter,
