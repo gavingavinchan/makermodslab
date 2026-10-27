@@ -1359,6 +1359,16 @@ wants it solved once, in a fresh session. Start from
 [viscous-mapping/README.md](viscous-mapping/README.md). Gripper haptics Run B
 waits on it.
 
+**Plug-and-play stage 1 (2026-10-27, goal P / A3):** offline implementation
+on `feat/viscous-plug-and-play`: live USB descriptor rebinding, committed adapter
+enrollment with a one-start warning override, and a leased/cancellable RobStride
+and Star power-up wait. Gavin's intent: “If I go anywhere, I plug in, it just works.”
+See [the stage 1 report](viscous-mapping/plug-and-play-stage1-report-2026-10-27.md)
+for scope, fork safety evidence, baseline failures and powered acceptance still
+needed. No powered test, live-state change, deployment or push was performed;
+this brief explicitly limited work to the dedicated worktree and forbade pushes.
+Unit 1's gripper profile and motor-UID identity remain deferred.
+
 **Resume haptics here (2026-10-27):** the gripper proof of concept works
 (see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the
 calibration baseline, the follower's closed-stop clamp and the gate chatter,
