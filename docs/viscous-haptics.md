@@ -1198,7 +1198,26 @@ a firm object in the follower's jaws):
   position mapped back, at 150-738 mW (median 625) while Gavin held it 5-11 deg
   past that. Each time he eased off, it returned to about +13 deg.
 - Ticks: 20.0 ms median, 20.3 ms p99.
-- Gavin's feel: (pending).
+- Gavin's feel (2026-10-27): "its very bad. at first, without the cube, it was
+  sluggish. then with the cube, you can see it sometimes oscillates, even
+  though the cube is static, so its a control loop induced oscillation (just
+  like pilot induced oscillations)."
+- *Why sluggish:* the 8 deg lead cap applied in free motion too. With kp 20
+  and the gripper's friction it held the follower near 100 deg/s, so any Star
+  motion faster than ~56 deg/s (scale 1.78) left it behind, ~19 deg at
+  47.0-47.4 s. The cap is only needed in contact.
+- *Why it oscillated:* a relay limit cycle at ~3.5 Hz (gate on ~160 ms, off
+  ~120 ms, 54.2-58.0 s) on top of 0.4 Hz hand-vs-Star swings of 0-13 deg.
+  The torque gate is an on/off switch: pushing the Star back to the wall
+  removes the follower's squeeze, contact falls below the off level, the Star
+  is released, the hand closes in again. And each 20 ms move at up to 700 mW
+  shoves the finger out at near full servo speed instead of resisting
+  penetration, with no damping anywhere.
+- *Planned v2:* render the cube as a wall (power continuous in how far the
+  Star is past the jaw position, no torque on/off level), longer Star move
+  times and a power slew limit as damping, lower starting stiffness, the lead
+  cap only while the jaws are nearly still, baseline only while moving, and
+  the follower clamped at its real closed stop.
 
 **Findings:**
 - *Turn reset at power-up:* the follower gripper read +327.5 deg after power
@@ -1315,6 +1334,11 @@ How Gavin wants the work done. These apply to every agent and tool.
 - **Safe tests: run them, don't wait.** Once Gavin has judged a test safe (for
   example the Star gripper actuation check), run it yourself and report the
   results, rather than handing him commands to run (2026-10-21).
+- **Talk during a run with Gavin at the arm** (2026-10-27): "next time you
+  should not just run a command and not talk back to me". Never launch a
+  powered run as one blocking command: run it in the background, watch its
+  output, and tell him in chat as each phase starts and what you see. He only
+  sees chat, so a silent run leaves him guessing when calibration starts.
 - **Powered hardware runs:** say exactly which joints move before energizing.
   Prove the stop path on the actual launch method first; a process started in the
   background ignores SIGINT unless it installs its own handler. Check liveness
