@@ -168,12 +168,7 @@ def test_saved_serial_selects_among_models_and_unrelated_ports_are_ignored():
     resolved = resolve(rec, live, identities={"follower_port": {"serial": DRY}})
     assert resolved["follower_port"] == "desired"
     assert resolved["leader_port"] == "star"
-    assert (
-        connection.resolve_start_ports(
-            rec, MAKER, identities={"follower_port": {"serial": WET}}, enumerate_ports=lambda: live
-        )["follower_port"]
-        == "other-can"
-    )
+    assert not MAKER.teleop_usb_discovery
     assert (
         connection.resolve_start_ports(
             rec, SO101, enumerate_ports=lambda: pytest.fail("SO-101 must not enumerate")

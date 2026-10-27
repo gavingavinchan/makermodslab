@@ -107,6 +107,46 @@ def test_start_teleoperation_reports_connection_failure(
     assert teleop.teleoperation_active is False
 
 
+@pytest.mark.parametrize("mode", ["single", "bimanual"])
+def test_maker_keeps_saved_ports_and_synchronous_connect(monkeypatch, mode) -> None:
+    """Maker accepts existing slcan paths and two leaders without discovery/wait."""
+    import makermodslab.teleoperate as teleop
+
+    monkeypatch.setattr(teleop, "teleoperation_active", False)
+    monkeypatch.setattr(teleop, "teleoperation_thread", None)
+    monkeypatch.setattr(
+        "makermodslab.usb_ports.serial_ports",
+        lambda: pytest.fail("Maker must not enumerate CANable/Star descriptors"),
+    )
+    monkeypatch.setattr(
+        teleop.threading, "Thread", lambda **kwargs: pytest.fail("Connect must run in the request")
+    )
+    ports = {
+        "leader_port": "COM_STAR_LEFT",
+        "follower_port": "COM_OTHER_SLCAN_LEFT",
+        "right_leader_port": "COM_STAR_RIGHT",
+        "right_follower_port": "COM_OTHER_SLCAN_RIGHT",
+    }
+    request = teleop.TeleoperateRequest(
+        arm_type="maker", mode=mode, leader_config="leader", follower_config="follower", **ports
+    )
+    connected = []
+
+    def fail_connect(req, *, wait):
+        connected.append(req)
+        assert wait is None
+        assert not teleop._starting
+        assert {key: getattr(req, key) for key in ports} == ports
+        raise RuntimeError("Maker connect failed synchronously")
+
+    monkeypatch.setattr(teleop, "_connect_can", fail_connect)
+    result = teleop.handle_start_teleoperation(request)
+    assert connected == [request]
+    assert result["success"] is False
+    assert "Maker connect failed synchronously" in result["message"]
+    assert not teleop.teleoperation_active
+
+
 @pytest.mark.parametrize("missing_slot", ["follower", "leader"])
 def test_missing_can_usb_fails_before_opening_either_arm(monkeypatch, missing_slot) -> None:
     """A missing leader must not energize the follower before failing."""
