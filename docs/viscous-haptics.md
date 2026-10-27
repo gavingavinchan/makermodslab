@@ -75,6 +75,11 @@ the follower with capped effort (`star_follow.py` draft).
 - *Intent:* the "spring between leader and follower" Gavin described, made to feel
   light in free motion and firm on contact. Chosen after checking how others do it.
 - *Status:* not started; needs A1 and A2.
+- *Status (2026-10-27):* one-joint proof of concept on the gripper works on
+  hardware (see "Gripper haptics proof of concept"): free motion stays free,
+  and closing the follower on an object drives the Star back to where the jaws
+  stopped. Gavin asked for it: "can we do this quickly and do a proof of
+  concept with the gripper?"
 
 **A4. 1:1 posture mapping.** A horizontal leader gives a horizontal follower.
 - *Intent:* pilots expect the follower to mirror their pose. It is also needed to
@@ -1160,6 +1165,64 @@ measure them. A one-minute run with Gavin at the arm covers it:
 step 4) can go ahead: put `star_follow.py` on `fashionstar_raw.py` with an
 explicit power on every command and an explicit release for zero effort.
 
+## Gripper haptics proof of concept (2026-10-27, goal A3 on one joint)
+
+*Intent:* Gavin, at the gavin-linux bench: "can we do this quickly and do a
+proof of concept with the gripper?" The gripper is the joint already judged
+safe to drive on the Star, and a grasp is the contact a pilot most wants to
+feel. One joint proves the loop before the arm joints need A1's full model.
+
+`scripts/gripper-haptics-poc.py` energizes exactly two actuators: the follower
+gripper (a CAN bus carrying only that motor, opened without the handshake, at
+its own MIT gains kp 20 / kd 0.5) and the Star gripper (id 6, through
+`fashionstar_raw.py` with an explicit power on every command). The other six
+joints on each arm are never commanded, and all seven Star servos are released
+at start and on every exit. Loop at 50 Hz:
+- The Star drives the follower relative to where both started, through the
+  stock preset's scale (-1.778 follower deg per Star deg). The follower target
+  may lead its actual position by at most 8 deg, so the squeeze is capped at
+  about kp x 8 deg = 2.8 N m.
+- Contact = |follower torque - free-motion median| while the jaws move slower
+  than 40 deg/s. The gripper carries no gravity load to subtract.
+- Gate off: Star released (0x10). Gate on (threshold, off at half of it):
+  the Star is commanded toward where the follower's jaws actually are, at
+  150 mW at the threshold rising to 800 mW at 1.5 N m above it, clamped to the
+  Star travel seen during calibration.
+
+**Run `evidence/gripper-haptics-20261027T050813Z`** (Gavin's hand on the Star,
+a firm object in the follower's jaws):
+- Free open/close over the full range (Star -2..+59 deg, follower -32..-119):
+  the gate never fired, so the Star stayed limp.
+- Closed on the object, the follower stalled at -57 deg with contact up to
+  2.3 N m (the lead cap). The Star was driven toward +13 deg, the jaw
+  position mapped back, at 150-738 mW (median 625) while Gavin held it 5-11 deg
+  past that. Each time he eased off, it returned to about +13 deg.
+- Ticks: 20.0 ms median, 20.3 ms p99.
+- Gavin's feel: (pending).
+
+**Findings:**
+- *Turn reset at power-up:* the follower gripper read +327.5 deg after power
+  on; the script applies the follower driver's own +-360 deg session
+  correction (`MakerFollower._detect_full_turn_offsets`) to get -32.5.
+- *The follower's closed stop is about -32.4 deg*, not the -2.8 soft limit. The
+  Star's closed position maps about 1.4 deg past it, so a closed, idle gripper
+  pushes a steady +0.45 N m into its own stop. In this run the operator only
+  started moving 30 s in, so the calibration window was mostly that hold. The
+  baseline came out 0.45 N m, the threshold 0.98 N m rather than the ~0.25 the
+  0.027 N m still noise allows. Fix: baseline only while the jaws move, and
+  clamp the follower at its real closed stop.
+- *Chatter:* 21 gate-on events in about 14 s of contact. Some is the squeeze
+  and release; some is the loop: the Star reaches the wall, contact drops below
+  the off level, the Star is released, the hand squeezes again. Ramp power
+  down instead of cutting to release.
+- *The power field is not a current bound when back-driven:* the Star drew up
+  to 660 mA while gated (136 mA stalled into its own stop at 800 mW on
+  10-21). mW is a setting, not a calibrated force.
+- Runs 050418Z and 050446Z are aborts: nobody moved the Star during
+  calibration, the script refused to drive a Star whose travel it had not
+  seen, and released everything. They double as stop-path proof on the real
+  launch method (foreground ssh).
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -1204,6 +1267,12 @@ Dream-1 drives the Viscous sim so badly: work the checklist under "Dream-1 trial
 in order. Haptics: steps 1-2 done 2026-10-20, friction term and shoulder
 refit done and confirmed live (v2 fit). Before energizing, show Gavin the
 dry-run plan and say exactly which joints will move.
+
+**Resume haptics here (2026-10-27):** the gripper proof of concept works
+(see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the
+calibration baseline, the follower's closed-stop clamp and the gate chatter,
+then move the loop off the script and into Lab teleop for the gripper before
+any arm joint. Unit 1 was folded by hand on 10-27 and both arms were powered.
 
 **Resume haptics here (2026-10-21):** goal A2. The Star gripper has been
 characterised as an actuator without a hand on it (see "Star actuation check").
