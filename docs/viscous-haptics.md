@@ -1219,6 +1219,35 @@ a firm object in the follower's jaws):
   cap only while the jaws are nearly still, baseline only while moving, and
   the follower clamped at its real closed stop.
 
+**v2, Run A (`evidence/gripper-haptics-v2-20261027T051940Z-follower`, the Star
+never energized):** with the lead cap only while the jaws are still, the
+follower trails the Star by 60 ms (v1: 260 ms), peaks at 437 deg/s (v1:
+116, capped) against the hand's 425, and the median tracking error while
+moving falls from 21.8 to 10.1 deg. Free-motion acceleration alone reaches
+3.1 N m, which is why contact only counts while the jaws are still.
+
+**Gripper range is wrong on unit 1 (2026-10-27).** Gavin: "the follower arm
+did not move the full range". Measured by hand, torque off
+(`scripts/gripper-range-read.py`, `evidence/gripper-range-20261027T002654.json`):
+
+| | measured | configured |
+|---|---|---|
+| follower closed stop | -32.6 | soft limit -2.8 |
+| follower open stop | -156 | soft limit -120 |
+| follower width | 123 | 117 + 2 x 2.9 back-off = 123 |
+| Star travel | -3.1..+60.6 | preset assumes -16.9..+48.9 |
+
+The soft-limit window has the right width but sits ~35 deg off, so the
+follower's gripper zero has moved since the limits were captured (2026-08-28).
+Closing is reachable (the preset's -33 offset matches the closed stop); the
+last 36 deg of OPENING is cut off by the -120 soft limit. The preset scale
+(-1.778) also maps the Star's 64 deg onto 113 deg, not 123 (fit: -1.936 x Star
+- 38.6). A follower powered up fully open would sit 36 deg outside its limits,
+past MakerFollower's 20 deg wrap grace, and be refused as a stale zero.
+Gavin called this a recurring problem and asked for a fix that stays fixed; a
+Claude subagent and Codex (gpt-6.1-sol) are each investigating independently,
+read-only, to be discussed before any change.
+
 **Findings:**
 - *Turn reset at power-up:* the follower gripper read +327.5 deg after power
   on; the script applies the follower driver's own +-360 deg session
