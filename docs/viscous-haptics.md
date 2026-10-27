@@ -8,6 +8,10 @@ objective, **Gavin's intent** (why it matters, in his framing), what it unblocks
 and where it stands. Quotes are Gavin's words from the working sessions. When a
 subtask changes direction, add a dated line rather than rewriting the old one.
 
+**Resuming? Read the To-do list first:** "Handoff: state and how to resume" →
+"To-do". The top item (2026-10-27) is making teleop plug-and-play so fixes
+stay fixed.
+
 ## Goal tree
 
 **Mission: make the Viscous arm something ROV operators want.** Two branches:
@@ -1313,6 +1317,47 @@ read-only, to be discussed before any change.
 This section is the source of truth for picking the work back up. Nothing about
 this project should live only in one assistant's private memory: update this
 file instead.
+
+### To-do (open items, in priority order; tick and date them, don't delete)
+
+**Top priority: "fixes stay fixed" / plug-and-play teleop (Gavin, 2026-10-27).**
+"If we don't fix this we're gonna encounter issues again." Gavin travels to
+demo the arm and must never debug in front of a guest: plug into any USB
+socket, press Teleop, it works, with no rehearsal. Background, the three
+reviews (Claude, Codex, Fable), Codex's design and the stage 1 report are in
+[viscous-mapping/](viscous-mapping/) (start with
+`plug-and-play-design-2026-10-27.md` and `plug-and-play-stage1-report-2026-10-27.md`).
+
+- [x] Stage 1 built and merged (2026-10-27): USB rediscovery on every Teleop
+  press, adapter enrollment with a one-start "Continue anyway" warning,
+  bounded wait for arm power, plain error sentences, fake-hardware tests, CI
+  triggers for this branch. Viscous only; Maker unchanged. Offline only.
+- [ ] **Go live** (ask Gavin first, no session running): rebuild
+  `frontend/dist` locally on each machine (never commit it), then
+  `systemctl --user restart makermodslab-viscous` on gavin-linux; the Mac Lab
+  just needs a normal start.
+- [ ] **First powered try, Gavin at the arm (~10 min):** swap USB sockets;
+  press Teleop with the arm off, then power it on (should connect in the same
+  click); Stop during the wait; on gavin-linux the `viscous_waterproof_01`
+  record must show the wrong-arm warning. Agents run it and talk through each
+  phase (Working rules).
+- [ ] **GitHub Actions on the fork:** `gavingavinchan/makermodslab` has no
+  workflows registered (Actions never enabled on the fork), so CI does not run.
+  Gavin enables it in the fork's Actions tab (his account; don't do it for him).
+- [ ] **Stage 2, unit 1's measured profile:** ask Gavin re-zero vs keep the
+  zero and re-measure the limits (Codex recommends keep). Measure all seven
+  joints' stops and matched leader poses with him at the arm, commit
+  `configs/viscous/viscous_01/viscous_profiles/viscous_01.json`, remove the
+  preset fallback in `arms/viscous.py`, route `scripts/gripper-haptics-poc.py`
+  through the same loader. Fixes the gripper not opening fully.
+- [ ] **Reconcile the Mac's waterproof profile:** the live copy (Oct 13) is
+  newer than the committed bundle (Oct 9); commit the live one before anything
+  enforces the committed copy.
+- [ ] **Linux `viscous_waterproof_01` record** points at unit 1's ports: stage 1
+  now warns, but ask Gavin whether to delete it or blank its ports.
+- [ ] Later stages (design doc §8): motor-ID arm identity, pre-torque
+  stale-zero check, record/replay/inference using the same checks, a small
+  deploy script + running-version label, a one-line-per-bug log.
 
 **Machines** (Gavin's):
 - **MacBook Air** (this repo at `~/Documents/makermodslab-viscous`). The

@@ -5,6 +5,11 @@ then `docs/viscous-haptics.md` (goal tree; "Gripper haptics proof of concept"),
 then the two investigation reports below. Nothing in this note has been changed
 in code or config yet: Gavin wants it solved properly, once, in a new session.
 
+**Status update (2026-10-27, later):** this grew into the plug-and-play work.
+Stage 1 is merged (not yet live); the open items, in order, are the "To-do"
+list under "Handoff" in `docs/viscous-haptics.md`. Unit 1's profile below is
+stage 2 there.
+
 ## LIVE HAZARD: deal with this first
 
 On gavin-linux the `viscous_waterproof_01` robot record points at **unit 1's**
