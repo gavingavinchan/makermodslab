@@ -156,6 +156,11 @@
             "title": "Supports Teleop Speed Limit",
             "type": "boolean"
           },
+          "teleop_usb_discovery": {
+            "default": false,
+            "title": "Teleop Usb Discovery",
+            "type": "boolean"
+          },
           "uses_feetech_bus": {
             "title": "Uses Feetech Bus",
             "type": "boolean"

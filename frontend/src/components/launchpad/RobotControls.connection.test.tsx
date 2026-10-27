@@ -19,14 +19,18 @@ import { ApiError } from "@/lib/apiClient";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import RobotControls from "./RobotControls";
 
-const mocks = vi.hoisted(() => ({ start: vi.fn(), toast: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  start: vi.fn(), toast: vi.fn(), armType: "viscous", discovery: true as boolean | undefined,
+}));
 vi.mock("@/contexts/ApiContext", () => ({ useApi: () => ({ baseUrl: "http://test", fetchWithHeaders: vi.fn() }) }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
 vi.mock("@/hooks/useRobots", () => ({ useRobots: () => ({ selectedRecord: {
-  name: "bench", arm_type: "viscous", mode: "single", arms: "both", is_clean: false,
+  name: "bench", arm_type: mocks.armType, mode: "single", arms: "both", is_clean: false,
   follower_config: "viscous_01", leader_config: "star_viscous", leader_ready: true,
 } }) }));
-vi.mock("@/hooks/useArms", () => ({ useArms: () => ({ byId: () => ({ capabilities: { supports_teleop_speed_limit: true } }) }) }));
+vi.mock("@/hooks/useArms", () => ({ useArms: () => ({ byId: () => ({ capabilities: {
+  supports_teleop_speed_limit: true, teleop_usb_discovery: mocks.discovery,
+} }) }) }));
 vi.mock("@/hooks/useHostingStatus", () => ({ useHostingStatus: () => ({ status: null, refresh: vi.fn() }) }));
 vi.mock("@/hooks/useStationStatus", () => ({ useStationStatus: () => ({ status: null }) }));
 vi.mock("@/lib/sessionApi", () => ({ startSession: mocks.start, formatSessionHeld: () => null }));
@@ -36,12 +40,30 @@ vi.mock("@/components/dialogs/StationRobotDialog", () => ({ default: () => null 
 vi.mock("@/components/dialogs/RemoteTeleopDialog", () => ({ default: () => null }));
 vi.mock("@/components/dialogs/RemoteExtraInstallDialog", () => ({ default: () => null }));
 
-beforeEach(() => { mocks.start.mockReset(); mocks.toast.mockReset(); });
+beforeEach(() => {
+  mocks.start.mockReset(); mocks.toast.mockReset();
+  mocks.armType = "viscous"; mocks.discovery = true;
+});
 afterEach(cleanup);
 
 function mount() {
   render(<TooltipProvider><RobotControls onOpenSettings={() => {}} onCreateRobot={() => {}} /></TooltipProvider>);
 }
+
+it.each([
+  ["extension-arm", true, false],
+  ["maker", false, true],
+  ["viscous", false, true],
+  ["extension-arm", undefined, true],
+] as const)("%s with discovery=%s gates Teleop from the manifest", (armType, discovery, disabled) => {
+  mocks.armType = armType;
+  mocks.discovery = discovery;
+  mount();
+  const button = screen.getByRole("button", { name: "Teleop" });
+  if (disabled) expect(button).toBeDisabled();
+  else expect(button).toBeEnabled();
+  expect(mocks.start).not.toHaveBeenCalled();
+});
 
 it.each(["robot.unit_mismatch", "robot.identity_unverified"])("%s requires one explicit retry and never remembers it", async (code) => {
   const sentence = "Adapter 207E37A55445 belongs to viscous_01; continuing uses viscous_waterproof_01 settings.";

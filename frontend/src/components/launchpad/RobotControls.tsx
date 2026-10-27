@@ -41,7 +41,9 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const { toast } = useToast();
   const { selectedRecord } = useRobots();
   const { byId } = useArms();
-  const supportsSlowTeleop = !!byId(selectedRecord?.arm_type)?.capabilities.supports_teleop_speed_limit;
+  const family = byId(selectedRecord?.arm_type);
+  const supportsSlowTeleop = !!family?.capabilities.supports_teleop_speed_limit;
+  const discoversTeleopUsb = !!family?.capabilities.teleop_usb_discovery;
   const [slowTeleop, setSlowTeleop] = useState(true);
   const [postureMapping, setPostureMapping] = useState(true);
   const supportsPostureMapping = selectedRecord?.arm_type === "viscous" &&
@@ -131,7 +133,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
 
   const teleopDisabledReason = !selectedRecord
     ? t("robot.corner.selectFirst")
-    : !selectedRecord.is_clean && !["viscous", "maker"].includes(selectedRecord.arm_type)
+    : !selectedRecord.is_clean && !discoversTeleopUsb
       ? t("robot.teleop.disabledReason", {
           name: selectedRecord.name,
           gap: formatRobotSetupGap(t, selectedRecord),

@@ -619,6 +619,7 @@ SO101_ENTRY = {
         "motion_identify_energizes_follower": False,
         "supports_gripper_wiggle": False,
         "supports_teleop_speed_limit": False,
+        "teleop_usb_discovery": False,
     },
     "robot_types": ["so101_follower", "bi_so_follower"],
     "robot_type_markers": ["so100", "so101", "so-100", "so-101", "so_follower", "so_leader"],
@@ -674,6 +675,7 @@ METAL_ENTRY = {
         "motion_identify_energizes_follower": True,
         "supports_gripper_wiggle": True,
         "supports_teleop_speed_limit": False,
+        "teleop_usb_discovery": False,
     },
     "robot_types": ["metal_follower", "bi_metal_follower"],
     "robot_type_markers": ["metal"],
@@ -736,6 +738,9 @@ def test_manifest_lists_the_built_ins_in_registry_order_with_the_documented_shap
     by_id = {a["id"]: a for a in arms}
     assert by_id["so101"] == SO101_ENTRY
     assert by_id["metal"] == METAL_ENTRY
+    assert {arm_id for arm_id, entry in by_id.items() if entry["capabilities"]["teleop_usb_discovery"]} == {
+        "viscous"
+    }
 
 
 def test_manifest_calibration_summary_is_the_families_own(client) -> None:
@@ -825,15 +830,14 @@ def test_manifest_serves_a_panel_family_with_its_url_and_a_served_image(
     from makermodslab.schemas.system import ArmFamilyInfo
 
     scratch_registry(monkeypatch)
-    registry.register(
-        make_arm_family(
-            "paneled",
-            calibration_kind="panel",
-            calibration_panel_url="/api/v1/ext/p/static/calibrate.html",
-            image_url="/api/v1/ext/p/static/arm.png",
-        ),
-        provided_by="p",
+    family = make_arm_family(
+        "paneled",
+        calibration_kind="panel",
+        calibration_panel_url="/api/v1/ext/p/static/calibrate.html",
+        image_url="/api/v1/ext/p/static/arm.png",
     )
+    family.teleop_usb_discovery = True
+    registry.register(family, provided_by="p")
 
     entry = {a["id"]: a for a in client.get("/api/v1/arms").json()["arms"]}["paneled"]
     assert entry["calibration"] == {
@@ -843,6 +847,7 @@ def test_manifest_serves_a_panel_family_with_its_url_and_a_served_image(
     }
     assert entry["image_url"] == "/api/v1/ext/p/static/arm.png"
     assert entry["provided_by"] == "p"
+    assert entry["capabilities"]["teleop_usb_discovery"] is True
     built = describe_family(registry.get("paneled"))
     assert ArmFamilyInfo.model_validate(built).model_dump() == built == entry
 

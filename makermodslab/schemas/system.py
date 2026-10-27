@@ -303,6 +303,8 @@ class ArmCapabilities(BaseModel):
     # when neither the probe nor the gesture can tell two arms apart.
     supports_gripper_wiggle: bool
     supports_teleop_speed_limit: bool = False
+    # Local Teleop can resolve USB ports before checking record readiness.
+    teleop_usb_discovery: bool = False
 
 
 class LeaderOptionInfo(BaseModel):

@@ -43,6 +43,9 @@ export interface ArmCapabilities {
    * when neither the probe nor the gesture can tell two arms apart. */
   supports_gripper_wiggle: boolean;
   supports_teleop_speed_limit?: boolean;
+  /** Local Teleop resolves USB ports before checking record readiness.
+   * Absent on older servers; defaults to false. */
+  teleop_usb_discovery?: boolean;
 }
 
 /**
