@@ -121,7 +121,7 @@ def test_calibration_waits_for_travel_and_measures_a_threshold():
         rig.tick(10.0)
     assert rig.haptics.phase == "calibrating"  # no travel yet
     rig.calibrate()
-    assert rig.haptics.threshold >= 0.3
+    assert 0.5 <= rig.haptics.threshold <= 1.5
     assert rig.raw.guard is not None
     assert not any(c[0] == "angle" for c in rig.raw.commands)
 

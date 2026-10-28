@@ -80,6 +80,8 @@ CALIB_S = 8.0
 CALIB_TRAVEL_DEG = 20.0
 CALIB_STILL_TICKS = 25
 BASELINE_ERR_DEG = 3.0
+THRESHOLD_MIN_NM = 0.5
+THRESHOLD_MAX_NM = 1.5
 # Run B fixes.
 CONTACT_PERSIST_S = 0.06
 CLOSED_STOP_IGNORE_DEG = 4.0
@@ -425,18 +427,20 @@ class GripperHaptics:
             return
         self.baseline = statistics.median(self._still_tau)
         dev = sorted(abs(x - self.baseline) for x in self._still_tau)
-        p99 = dev[min(len(dev) - 1, int(0.99 * len(dev)))]
-        self.threshold = max(0.3, 1.5 * p99 + 0.1)
+        # p95, bounded: on 2026-10-28 three ticks of a squeeze being let go
+        # (out of 59) set p99 and a 5.7 N m threshold no grasp reached.
+        p95 = dev[min(len(dev) - 1, int(0.95 * len(dev)))]
+        self.threshold = _clamp(1.5 * p95 + 0.1, THRESHOLD_MIN_NM, THRESHOLD_MAX_NM)
         self.travel = Travel(low, high, margin=1.0)
         self.leader.bus.raw.guard = Guard(self.star_id, (low + high) / 2, (high - low) / 2)
         self.phase = "on"
         logger.info(
-            "Gripper haptics ON at %.1f s: still torque %+.3f N m over %d ticks (p99 dev %.3f), "
+            "Gripper haptics ON at %.1f s: still torque %+.3f N m over %d ticks (p95 dev %.3f), "
             "threshold %.2f N m, Star travel %+.1f..%+.1f deg",
             t,
             self.baseline,
             len(self._still_tau),
-            p99,
+            p95,
             self.threshold,
             low,
             high,
