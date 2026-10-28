@@ -1,0 +1,22 @@
+{
+ "cap": 2,
+ "requests": [
+  {
+   "id": 1,
+   "episode": "B0/flange/stop/ep_00",
+   "call": 1,
+   "status": "billed",
+   "utc": "2026-10-28T05:49:29Z"
+  },
+  {
+   "id": 2,
+   "episode": "B0/flange/stop/ep_00",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-28T05:49:30Z"
+  }
+ ],
+ "confirmed_billed": 2,
+ "uncertain": 0,
+ "budget_used": 2
+}

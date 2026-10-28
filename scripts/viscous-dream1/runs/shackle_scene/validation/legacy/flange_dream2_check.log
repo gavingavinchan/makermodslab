@@ -1,0 +1,7 @@
+B0/flange/stop/ep_00: call 1/30, success=False, lift=0.000, budget=1/2
+B0/flange/stop/ep_00: call 2/30, success=True, lift=0.000, budget=2/2
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+PASS: force isolation, fixture-held G3, torque aggregation, two-endpoint success and exact replay; fake client only

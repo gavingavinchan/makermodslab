@@ -67,7 +67,7 @@ class BoxYamEnv(yam_env.YamEnv):
 def viscous_xml(task="apple", wrist="maker"):
     # Start with the actual Dream scene so all object builders, transforms, lighting,
     # contact defaults, and calibrated top-camera parameters are retained exactly.
-    if task not in ("apple", "box", "cube", "propeller", "flange") or wrist not in ("maker", "legacy"):
+    if task not in ("apple", "box", "cube", "propeller", "flange", "shackle") or wrist not in ("maker", "legacy"):
         raise ValueError("Unknown Viscous task or wrist mount")
     root = ET.fromstring(cube_xml(task) if task in ("box", "cube") else yam_env.build_xml())
     if task == 'propeller':
@@ -75,6 +75,9 @@ def viscous_xml(task="apple", wrist="maker"):
         root = add_scene(root)
     if task == 'flange':
         from flange_scene import add_scene
+        root = add_scene(root)
+    if task == 'shackle':
+        from shackle_scene import add_scene
         root = add_scene(root)
     source = ET.parse(SCENE).getroot()
     root.find("option").set("timestep", ".001")
@@ -135,6 +138,9 @@ def viscous_xml(task="apple", wrist="maker"):
                 root.find(section).append(renamed(element))
     if task == 'flange':
         from flange_holding import configure
+        configure(root)
+    if task == 'shackle':
+        from shackle_scene import configure
         configure(root)
     return ET.tostring(root, encoding="unicode")
 

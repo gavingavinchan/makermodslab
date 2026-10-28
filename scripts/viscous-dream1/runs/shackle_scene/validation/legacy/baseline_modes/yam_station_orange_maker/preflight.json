@@ -1,0 +1,58 @@
+{
+  "queued_keys": [
+    "image_window.left",
+    "image_window.right",
+    "image_window.top",
+    "prompt",
+    "robot.arm",
+    "robot.exec_head",
+    "robot.gripper_open",
+    "robot.max_joint_vel_rad_s",
+    "state.arm_l.gripper_pos",
+    "state.arm_l.joint_pos",
+    "state.arm_r.gripper_pos",
+    "state.arm_r.joint_pos"
+  ],
+  "prepared_keys": [
+    "image_window.left",
+    "image_window.right",
+    "image_window.top",
+    "prompt",
+    "robot.arm",
+    "robot.exec_head",
+    "robot.gripper_open",
+    "robot.max_joint_vel_rad_s",
+    "state.arm_l.gripper_pos",
+    "state.arm_l.joint_pos",
+    "state.arm_r.gripper_pos",
+    "state.arm_r.joint_pos"
+  ],
+  "resolved_robot": null,
+  "queued_camera_lengths": {},
+  "prepared_arm_state": {
+    "state.arm_l.joint_pos": [
+      -2.9727726020956824e-23,
+      -3.392948448702654e-21,
+      9.717437699796755e-17,
+      4.848125584150088e-17,
+      5.201621419718977e-24,
+      3.549091689485815e-20
+    ],
+    "state.arm_l.gripper_pos": [
+      1.0
+    ],
+    "state.arm_r.joint_pos": [
+      -2.9727726020956824e-23,
+      -3.392948448702654e-21,
+      9.717437699796755e-17,
+      4.848125584150088e-17,
+      5.201621419718977e-24,
+      3.549091689485815e-20
+    ],
+    "state.arm_r.gripper_pos": [
+      1.0
+    ]
+  },
+  "input_conversion_passed": true,
+  "inference_calls": 0
+}

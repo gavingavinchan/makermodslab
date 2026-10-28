@@ -1,0 +1,33 @@
+{
+  "original_top_crop": true,
+  "objects": {
+    "pin": {
+      "visible_pixels": 338,
+      "bbox_raw_640x360": [
+        189,
+        212,
+        211,
+        240
+      ]
+    },
+    "shackle": {
+      "visible_pixels": 1374,
+      "bbox_raw_640x360": [
+        192,
+        294,
+        259,
+        325
+      ]
+    },
+    "shackle_holder": {
+      "visible_pixels": 95,
+      "bbox_raw_640x360": [
+        246,
+        316,
+        257,
+        327
+      ]
+    }
+  },
+  "passed": true
+}

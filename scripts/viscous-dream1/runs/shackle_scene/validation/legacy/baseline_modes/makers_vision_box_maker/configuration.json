@@ -1,0 +1,122 @@
+{
+  "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+      "state": {
+        "right_arm": [
+          0,
+          6
+        ],
+        "right_gripper": [
+          6,
+          7
+        ],
+        "left_arm": [
+          7,
+          13
+        ],
+        "left_gripper": [
+          13,
+          14
+        ]
+      },
+      "action": {
+        "right_arm": [
+          0,
+          6
+        ],
+        "right_gripper": [
+          6,
+          7
+        ],
+        "left_arm": [
+          7,
+          13
+        ],
+        "left_gripper": [
+          13,
+          14
+        ]
+      },
+      "video": {
+        "overhead": "observation.images.overhead",
+        "wrist_l": "observation.images.wrist_l",
+        "wrist_r": "observation.images.wrist_r"
+      }
+    },
+    "ik": {
+      "arm": "makers",
+      "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+  },
+  "frames_per_camera": 9,
+  "camera_hz": 5,
+  "row_hz": 20,
+  "rows_per_chunk": 48,
+  "own_speed_clipping": false,
+  "initial_joints": [
+    0.0,
+    -1.2,
+    0.81,
+    -0.1,
+    0.0,
+    0.0
+  ],
+  "initial_grippers": "open",
+  "sim_held_during_request": true,
+  "task": "box",
+  "prompt": "pick up the black and white box and put it on the black square",
+  "wrist_cameras": {
+    "left": {
+      "link": "left_link_007",
+      "position_m": [
+        0.07934769,
+        0.0,
+        -0.08214495000000001
+      ],
+      "quaternion_wxyz": [
+        -0.6963642403200189,
+        0.1227878039689728,
+        -0.1227878039689728,
+        0.6963642403200189
+      ],
+      "vfov_deg": 77.2,
+      "render_size": [
+        640,
+        360
+      ],
+      "model_size": [
+        320,
+        176
+      ]
+    },
+    "right": {
+      "link": "right_link_007",
+      "position_m": [
+        0.07934769,
+        0.0,
+        -0.08214495000000001
+      ],
+      "quaternion_wxyz": [
+        -0.6963642403200189,
+        0.1227878039689728,
+        -0.1227878039689728,
+        0.6963642403200189
+      ],
+      "vfov_deg": 77.2,
+      "render_size": [
+        640,
+        360
+      ],
+      "model_size": [
+        320,
+        176
+      ]
+    }
+  },
+  "viscous_wrist": null
+}

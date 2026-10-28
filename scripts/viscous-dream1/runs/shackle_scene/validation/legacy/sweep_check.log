@@ -1,0 +1,89 @@
+/home/gavin/dreamtrial/viscous_sim/sweep_check.py:43: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  client.policy(policy(c, env)); ik = client._policy._ik
+2026-10-28 00:47:13.993 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:14.040 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:14.051 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:14.056 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:14.066 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:15.608 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:15.623 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:47:15.650 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:15.665 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:15.672 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:47:15.683 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:15.689 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:47:15.698 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:47:15.711 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:47:19.529 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:19.537 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:19.546 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:19.550 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:19.568 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:19.574 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:19.973 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:19.984 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:19.988 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:19.992 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:19.995 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:20.162 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:20.169 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:20.178 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:20.182 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:20.193 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:20.195 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:23.134 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 662 terms and 96 variables: 662 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:23.139 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:47:23.146 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:47:23.151 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:47:23.164 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:23.176 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:23.180 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:47:23.184 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:23.187 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:47:23.197 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:23.207 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+/home/gavin/dreamtrial/viscous_sim/sweep_check.py:43: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  client.policy(policy(c, env)); ik = client._policy._ik
+2026-10-28 00:47:27.215 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:27.221 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:27.230 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:27.234 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:27.236 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:28.450 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:28.459 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:47:28.464 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:28.479 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:28.506 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:28.509 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:47:28.517 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:47:28.522 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:47:28.527 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:47:32.156 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:32.175 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:32.180 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:32.184 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:32.193 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:32.199 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:32.692 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:32.698 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:32.708 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:32.713 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:32.715 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:32.886 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:32.900 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:32.904 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:47:32.914 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:32.917 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:32.919 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:47:35.767 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 662 terms and 96 variables: 662 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:47:35.780 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:35.793 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:47:35.799 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:47:35.802 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:47:35.805 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:47:35.810 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:47:35.819 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:36.083 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:47:36.087 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:47:36.092 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+PASS: 32 scene/task variants, 4 client FK/clamp variants, durable budget and deterministic replay; zero inference calls

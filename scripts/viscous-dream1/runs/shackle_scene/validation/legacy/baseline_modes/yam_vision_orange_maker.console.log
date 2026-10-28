@@ -1,0 +1,36 @@
+2026-10-28 00:49:56.578 | INFO     | pyroki._robot_urdf_parser:_topologically_sort_joints:199 - Joints were not in topological order; they will be internally sorted.
+2026-10-28 00:49:56.773 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:56.805 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:49:56.814 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:49:56.834 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:56.840 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:49:56.849 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:49:57.379 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:57.386 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:49:57.390 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:49:57.399 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:57.404 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:49:57.656 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 5 terms and 1 variables: 5 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:57.674 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _collision_cost
+2026-10-28 00:49:57.677 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:49:57.686 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:57.690 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:49:57.692 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+vision: task='put orange into the bowl' start {'orange_xyz': [0.0, 0.13, 0.79], 'orange_to_bowl_xy_m': 0.170003, 'object_height_above_table_m': 0.0298, 'object_robot_contacts': [], 'left_hand_z': 0.936, 'right_hand_z': 0.936, 'left_tcp_xyz': [0.305, -0.005, 0.936], 'right_tcp_xyz': [-0.305, -0.005, 0.936], 'left_gripper': 1.0, 'right_gripper': 1.0}
+observation keys: ['prompt', 'state.left_arm', 'state.left_gripper', 'state.right_arm', 'state.right_gripper', 'video.overhead', 'video.wrist_l', 'video.wrist_r']
+policy opened; config accepted (no action requested yet)
+dry run: observation and policy checked, zero inference calls
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+2026-10-28 00:49:59.148 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 662 terms and 96 variables: 662 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:59.159 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:49:59.185 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:49:59.205 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _collision_cost
+2026-10-28 00:49:59.215 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:59.226 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:59.231 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:49:59.246 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:49:59.262 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:49:59.272 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:49:59.284 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+0 calls (none); closest orange_to_bowl_xy_m 0.170003 m; log in /home/gavin/dreamtrial/viscous_sim/runs/shackle_scene/validation/legacy/baseline_modes/yam_vision_orange_maker

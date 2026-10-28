@@ -1,0 +1,19 @@
+PASS yam_station_apple_maker
+PASS yam_station_orange_maker
+PASS yam_station_cube_maker
+PASS yam_station_box_maker
+PASS yam_vision_apple_maker
+PASS yam_vision_orange_maker
+PASS yam_vision_cube_maker
+PASS yam_vision_box_maker
+PASS viscous_vision_apple_maker
+PASS viscous_vision_apple_legacy
+PASS viscous_vision_cube_maker
+PASS viscous_vision_cube_legacy
+PASS viscous_vision_box_maker
+PASS viscous_vision_box_legacy
+PASS makers_vision_apple_maker
+PASS makers_vision_box_maker
+PASS metal_vision_apple_maker
+PASS metal_vision_box_maker
+PASS all 18 existing variants; zero inference

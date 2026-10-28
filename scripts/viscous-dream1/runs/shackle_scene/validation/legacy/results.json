@@ -1,0 +1,54 @@
+[
+  {
+    "check": "flange_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_holding_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_ik_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_clearance_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_pregrasp_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_runner_check",
+    "exit_code": 0
+  },
+  {
+    "check": "sweep_check",
+    "exit_code": 0
+  },
+  {
+    "check": "sweep_runner_check",
+    "exit_code": 0
+  },
+  {
+    "check": "onearm_check",
+    "exit_code": 0
+  },
+  {
+    "check": "onearm_isolate_check",
+    "exit_code": 0
+  },
+  {
+    "check": "propeller_ik_check",
+    "exit_code": 0
+  },
+  {
+    "check": "flange_dream2_check",
+    "exit_code": 0
+  },
+  {
+    "check": "sweep_baseline_check",
+    "exit_code": 0
+  }
+]

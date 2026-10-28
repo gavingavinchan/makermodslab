@@ -1,0 +1,7 @@
+station: task='pick up the white cube and place into black square' start {'cube_xyz': [0.15, 0.105, 0.77], 'cube_to_square_xy_m': 0.208626, 'object_height_above_table_m': 0.0099, 'object_robot_contacts': [], 'left_hand_z': 0.936, 'right_hand_z': 0.936, 'left_tcp_xyz': [0.305, -0.005, 0.936], 'right_tcp_xyz': [-0.305, -0.005, 0.936], 'left_gripper': 1.0, 'right_gripper': 1.0}
+observation keys: ['image_window.left', 'image_window.right', 'image_window.top', 'prompt', 'robot.arm', 'robot.exec_head', 'robot.gripper_open', 'robot.max_joint_vel_rad_s', 'state.arm_l.gripper_pos', 'state.arm_l.joint_pos', 'state.arm_r.gripper_pos', 'state.arm_r.joint_pos']
+policy opened; config accepted (no action requested yet)
+dry run: observation and policy checked, zero inference calls
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+0 calls (none); closest cube_to_square_xy_m 0.208626 m; log in /home/gavin/dreamtrial/viscous_sim/runs/shackle_scene/validation/legacy/baseline_modes/yam_station_cube_maker

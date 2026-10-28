@@ -1,0 +1,115 @@
+{
+ "seed": 20271020,
+ "jitter_xy_m": [
+  -0.00048200066592984925,
+  0.012389507208718665
+ ],
+ "task": "box",
+ "configuration": {
+  "tcp": "pad",
+  "arms": "both",
+  "rows": 48,
+  "region": "off",
+  "wrist_r": "normal"
+ },
+ "config_name": "B0",
+ "episode": 0,
+ "calls_used": 2,
+ "success": true,
+ "first_success_call": 1,
+ "confirmed_success_call": 2,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.0,
+  "right": 0.0
+ },
+ "object_to_target_min_m": 5.976451610293462e-08,
+ "grasped": false,
+ "max_lift_m": 1.1102230246251565e-16,
+ "finger_table_contact_rows": 0,
+ "executed_rows": 96,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    6.818772865170033e-09,
+    -0.039999940625391285,
+    0.7749387984319837
+   ],
+   "notices": []
+  },
+  {
+   "call": 2,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    6.818588562400904e-09,
+    -0.03999994062514344,
+    0.7749387984319837
+   ],
+   "notices": []
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  6.8190010599633715e-09,
+  -0.03999994062559861,
+  0.7749387984319835
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "termination": "success_two_calls"
+}

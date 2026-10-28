@@ -1,0 +1,115 @@
+{
+  "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+      "state": {
+        "right_arm": [
+          0,
+          6
+        ],
+        "right_gripper": [
+          6,
+          7
+        ],
+        "left_arm": [
+          7,
+          13
+        ],
+        "left_gripper": [
+          13,
+          14
+        ]
+      },
+      "action": {
+        "right_arm": [
+          0,
+          6
+        ],
+        "right_gripper": [
+          6,
+          7
+        ],
+        "left_arm": [
+          7,
+          13
+        ],
+        "left_gripper": [
+          13,
+          14
+        ]
+      },
+      "video": {
+        "overhead": "observation.images.overhead",
+        "wrist_l": "observation.images.wrist_l",
+        "wrist_r": "observation.images.wrist_r"
+      }
+    },
+    "ik": {
+      "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+      "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+  },
+  "frames_per_camera": 9,
+  "camera_hz": 5,
+  "row_hz": 20,
+  "rows_per_chunk": 48,
+  "own_speed_clipping": false,
+  "initial_joints": "zeros",
+  "initial_grippers": "open",
+  "sim_held_during_request": true,
+  "task": "box",
+  "prompt": "pick up the black and white box and put it on the black square",
+  "wrist_cameras": {
+    "left": {
+      "link": "left_tool0",
+      "position_m": [
+        0.0,
+        0.055,
+        -0.09
+      ],
+      "quaternion_wxyz": [
+        -0.08722511445123816,
+        0.9961886264202019,
+        0.0,
+        0.0
+      ],
+      "vfov_deg": 90.0,
+      "render_size": [
+        640,
+        480
+      ],
+      "model_size": [
+        320,
+        176
+      ]
+    },
+    "right": {
+      "link": "right_tool0",
+      "position_m": [
+        0.0,
+        0.055,
+        -0.09
+      ],
+      "quaternion_wxyz": [
+        -0.08722511445123816,
+        0.9961886264202019,
+        0.0,
+        0.0
+      ],
+      "vfov_deg": 90.0,
+      "render_size": [
+        640,
+        480
+      ],
+      "model_size": [
+        320,
+        176
+      ]
+    }
+  },
+  "viscous_wrist": "legacy"
+}

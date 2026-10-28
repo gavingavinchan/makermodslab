@@ -1,0 +1,90 @@
+{
+ "inference_calls": 0,
+ "forces_N": {
+  "apple": [
+   -10.0,
+   10.0
+  ],
+  "box": [
+   -10.0,
+   10.0
+  ],
+  "cube": [
+   -10.0,
+   10.0
+  ],
+  "propeller": [
+   -10.0,
+   10.0
+  ],
+  "flange": [
+   -160.0,
+   160.0
+  ]
+ },
+ "no_contact_no_attach": true,
+ "single_jaw_no_attach": true,
+ "contact_gated_attach": true,
+ "opening_threshold": 0.65,
+ "release_passed": true,
+ "hold_seconds": 5,
+ "pregrasp_clear_of_fixture": true,
+ "maximum_arm_force_Nm": 4.959006045778352,
+ "maximum_weld_translation_residual_m": 0.001806814569725246,
+ "start_tcp_displacement_m": {
+  "left": 0.01566094196408952,
+  "right": 0.003791737183154789
+ },
+ "events": [
+  {
+   "time": 0.003,
+   "event": "attach",
+   "side": "left",
+   "part": "bolt",
+   "relative_xyz": [
+    0.16994505535231905,
+    -2.242655307937992e-05,
+    -0.02768039860933994
+   ],
+   "relative_quat": [
+    0.3239481630369853,
+    0.6597157656124394,
+    0.3809934383917731,
+    0.5609605121305511
+   ],
+   "bilateral_contact": true
+  },
+  {
+   "time": 0.003,
+   "event": "attach",
+   "side": "right",
+   "part": "nut",
+   "relative_xyz": [
+    0.16007512531618878,
+    -2.155840790370624e-05,
+    -0.02607585491741142
+   ],
+   "relative_quat": [
+    0.32394470287312954,
+    0.6597206160760839,
+    0.38099708888249806,
+    0.5609543265433421
+   ],
+   "bilateral_contact": true
+  },
+  {
+   "time": 5.000000000000004,
+   "event": "release",
+   "side": "left",
+   "part": "bolt",
+   "command": 0.8
+  },
+  {
+   "time": 5.000000000000004,
+   "event": "release",
+   "side": "right",
+   "part": "nut",
+   "command": 0.8
+  }
+ ]
+}

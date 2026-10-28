@@ -1,0 +1,49 @@
+<robot name="viscous_arm_dry_cad_v1"><link name="base_link" /><link name="yaw_link" /><link name="upper_arm_link" /><link name="forearm_link" /><link name="wrist_pitch_link" /><link name="wrist_yaw_link" /><link name="wrist_roll_link" /><joint name="shoulder_pan" type="revolute">
+    <parent link="base_link" />
+    <child link="yaw_link" />
+    <origin xyz="0 0 0.0574" rpy="0 0 0" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-3.235" upper="2.227" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="shoulder_lift" type="revolute">
+    <parent link="yaw_link" />
+    <child link="upper_arm_link" />
+    <origin xyz="9.115024117e-10 0 0.0536" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-3.078" upper="0" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="elbow_flex" type="revolute">
+    <parent link="upper_arm_link" />
+    <child link="forearm_link" />
+    <origin xyz="-0.1599999985 0 1.411534427e-09" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="0" upper="4.383" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_flex" type="revolute">
+    <parent link="forearm_link" />
+    <child link="wrist_pitch_link" />
+    <origin xyz="0.1379999958 0 0.05878775653" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.109" upper="1.606" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_yaw" type="revolute">
+    <parent link="wrist_pitch_link" />
+    <child link="wrist_yaw_link" />
+    <origin xyz="0.08036869072 -3.015010629e-15 0.03310941788" rpy="0 0 0" />
+    <axis xyz="-0.1607753136 2.880465013e-14 -0.9869910327" />
+    <limit lower="-1.556" upper="1.505" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_roll" type="revolute">
+    <parent link="wrist_yaw_link" />
+    <child link="wrist_roll_link" />
+    <origin xyz="0.03155609239 1.996725876e-15 -0.05134133844" rpy="0 0 0" />
+    <axis xyz="-0.9869910327 -3.073678032e-15 0.1607753136" />
+    <limit lower="-2.641" upper="2.68" effort="5.0" velocity="2.0" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  </robot>

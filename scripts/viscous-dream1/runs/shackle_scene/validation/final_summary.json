@@ -1,0 +1,39 @@
+{
+  "success": true,
+  "final_seated": true,
+  "final_engaged": true,
+  "final_gap_m": 1.2816850136765368e-08,
+  "final_turns": 8.000176172795959,
+  "max_phase_residual_m": 1.1102230246251565e-16,
+  "simulation_seconds": 263.9500000006703,
+  "grasp_attaches": 25,
+  "grasp_releases": 25,
+  "native_max_error_m": 0.0009517223696171595,
+  "native_max_angle_deg": 0.27662119485935,
+  "peak_active_torques_Nm": [
+    5.869045781781267,
+    9.262517298703017,
+    11.749715164361447,
+    1.958367841137381,
+    3.752695935570528,
+    4.80587000766954
+  ],
+  "time_above_5_Nm_s": [
+    0.12800000000000009,
+    7.394000000000804,
+    2.1559999999998736,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "time_above_14_Nm_s": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "legacy_check_groups": 13,
+  "inference_calls": 0
+}

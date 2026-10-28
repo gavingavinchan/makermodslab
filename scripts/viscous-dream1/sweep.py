@@ -530,15 +530,30 @@ def stages(live, ledger):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
-    p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller', 'flange'], default='both')
+    p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller', 'flange', 'shackle'], default='both')
     p.add_argument('--episodes', type=int, default=6)
     p.add_argument('--start', choices=['table','pregrasp'], default='table', help='Flange-only pregrasp start')
     p.add_argument('--prompt-id', choices=['P1','P2','P3','P4'], default='P1', help='Propeller prompt')
+    p.add_argument('--max-calls',type=int,default=None,help='Shackle per-episode call ceiling (default 30)')
     p.add_argument('--live', action='store_true')
     p.add_argument('--stages', action='store_true')
     p.add_argument('--check', action='store_true')
     args = p.parse_args()
     if args.start != 'table' and args.task != 'flange': p.error('--start pregrasp requires --task flange')
+    if args.task == 'shackle':
+        from shackle_sweep import episode as shackle_episode
+        cap=30 if args.max_calls is None else args.max_calls
+        if cap<1 or cap>30:p.error('shackle --max-calls must be in 1..30')
+        if args.episodes<1:p.error('positive episode count required')
+        # Shared durable ledger/lock only for a later explicitly reviewed live launch.
+        if args.live:
+            with (ROOT/'runner.lock').open('a') as lock:
+                fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                for index in range(args.episodes):shackle_episode(index,True,Ledger(),cap)
+        else:
+            for index in range(args.episodes):shackle_episode(index,False,None,cap)
+        return
+    if args.max_calls is not None:p.error('--max-calls is currently shackle-only')
     ROOT.mkdir(parents=True, exist_ok=True)
     ensure_tip()
     with (ROOT / 'runner.lock').open('a') as lock:

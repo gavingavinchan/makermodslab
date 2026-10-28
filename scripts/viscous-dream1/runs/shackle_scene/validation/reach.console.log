@@ -1,0 +1,38 @@
+/home/gavin/dreamtrial/viscous_sim/flange_ik_check.py:23: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  self.ik=ClientIK({'arm':str(HERE/'viscous_arm.json'),'head':'eef'},20,sweep.y.YAM_EMBODIMENT,model)
+2026-10-28 00:57:18.951 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:57:18.963 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:57:19.010 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:57:19.016 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:57:19.026 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:57:19.876 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:57:19.883 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:57:19.905 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:57:19.918 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:57:19.933 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:57:19.949 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:57:19.967 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:57:19.980 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:57:19.986 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+pin_shank_grasp 0.0009517223696171595 0.27662119485935
+above_clear_ear_pin_vertical 0.0005998271717034031 0.12817893035509526
+tapped_mouth_head_grasp 0.0004973731984458957 0.11856707756685658
+seated_head_grasp 0.00041524730438068623 0.11464137781645525
+head_roll_-120_tip_0.788676 0.0003861262268657352 0.08911673551213765
+head_roll_-105_tip_0.788676 0.0003449932749571386 0.06958085209984703
+head_roll_-90_tip_0.788676 0.00031823113705105354 0.05333263435133421
+head_roll_-75_tip_0.788676 0.0003085301097434866 0.04412234189483248
+head_roll_-60_tip_0.788676 0.00031949705921633764 0.04661715844833231
+head_roll_-45_tip_0.788676 0.0003465945574867149 0.05901441695983203
+head_roll_-30_tip_0.788676 0.0003853847521343964 0.07656151967134085
+head_roll_-15_tip_0.788676 0.0004400121527281473 0.09718885818469948
+head_roll_0_tip_0.788676 0.0004973731984458957 0.11856707756685658
+head_roll_-120_tip_0.769325 0.00027310702714502416 0.08409262176005182
+head_roll_-105_tip_0.769325 0.00021325281321197363 0.06339140664581386
+head_roll_-90_tip_0.769325 0.00016682396225685357 0.045058204416012576
+head_roll_-75_tip_0.769325 0.00014828687822520103 0.03373813183488199
+head_roll_-60_tip_0.769325 0.00016814006982685068 0.036667417452799916
+head_roll_-45_tip_0.769325 0.0002154954505256375 0.05150958729314556
+head_roll_-30_tip_0.769325 0.00027700673928285623 0.07116374810718902
+head_roll_-15_tip_0.769325 0.0003437565021505953 0.09236711774539706
+head_roll_0_tip_0.769325 0.00041524730438068623 0.11464137781645525

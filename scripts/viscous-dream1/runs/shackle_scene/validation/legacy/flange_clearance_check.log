@@ -1,0 +1,7 @@
+PASS left bolt_pick waypoints 2 samples 247
+PASS left left_rest waypoints 2 samples 247
+PASS right nut_pick waypoints 2 samples 231
+PASS right right_rest waypoints 2 samples 231
+PASS left hole_entrance_bolt_axis_minus_x waypoints 2 samples 179
+PASS left bolt_through_both_grip_axis_minus_x waypoints 2 samples 73
+PASS right far_side_nut waypoints 2 samples 194

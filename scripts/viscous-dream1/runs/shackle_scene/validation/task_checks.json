@@ -1,0 +1,23 @@
+{
+  "legacy_xml_byte_identical": {
+    "apple": "9cc4746e871152ae521dcd8c02c8fb4f9d5a987a9a1c4e7224cec1e8674ecc21",
+    "box": "e3b0d5d01a16e109c97cca87e1cfd8e2f506ce1c185ae757fa3531026c1803e5",
+    "cube": "b0300af0466e1df1552fc6d953445c2b1bbf1564a8e2ae680945be9b126f030c",
+    "propeller": "c7fb57956bcf33ca98a871722085c76df79b1208d3e46b24e3110fa8da3dbb2c",
+    "flange": "e3c63f61367952537bdb9de85481645599493495aa7412f2f418db877e70e2ef"
+  },
+  "legacy_server_ast_identical": true,
+  "pin_stainless_mass_kg": 0.24073158,
+  "fixed_fixture": true,
+  "clear_ear_real_contact": true,
+  "continuous_phase_entry": true,
+  "right_hand_pitch": true,
+  "passive_thread_no_coasting": true,
+  "pull_release": true,
+  "off_axis_rejected": true,
+  "right_actions_ignored": true,
+  "astra_parser_only": true,
+  "astra_episode_instantiated": false,
+  "inference_calls": 0,
+  "ledger_access": false
+}

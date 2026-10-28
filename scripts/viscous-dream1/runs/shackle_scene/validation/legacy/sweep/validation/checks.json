@@ -1,0 +1,522 @@
+{
+ "inference_calls": 0,
+ "scene_variants": [
+  {
+   "config": "B0",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "B0",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "table",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "table",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "r24",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "r24",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "r24_table",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "r24_table",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "single",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_table",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_table",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_r24",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_r24",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_r24_table",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "single_r24_table",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_table",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_table",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_r24",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_r24",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_r24_table",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_r24_table",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": false,
+   "black_right": false
+  },
+  {
+   "config": "tip_single",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_table",
+   "task": "apple",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_table",
+   "task": "box",
+   "rows_executed": 48,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_r24",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_r24",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_r24_table",
+   "task": "apple",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  },
+  {
+   "config": "tip_single_r24_table",
+   "task": "box",
+   "rows_executed": 24,
+   "single_absent": true,
+   "black_right": true
+  }
+ ],
+ "client_checks": [
+  {
+   "tcp": "pad",
+   "region": "off",
+   "fk_samples": 10,
+   "clamp_active": false,
+   "input_conversion_passed": true,
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   }
+  },
+  {
+   "tcp": "pad",
+   "region": "table",
+   "fk_samples": 10,
+   "clamp_active": true,
+   "input_conversion_passed": true,
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm.json",
+     "head": "eef",
+     "region": {
+      "left": {
+       "lo": [
+        0.08,
+        -0.3850000000000001,
+        0.013000000000000015
+       ],
+       "hi": [
+        0.5600000000000002,
+        0.09500000000000006,
+        0.2880000000000001
+       ]
+      }
+     }
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   }
+  },
+  {
+   "tcp": "fingertip",
+   "region": "off",
+   "fk_samples": 10,
+   "clamp_active": false,
+   "input_conversion_passed": true,
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+     "head": "eef"
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   }
+  },
+  {
+   "tcp": "fingertip",
+   "region": "table",
+   "fk_samples": 10,
+   "clamp_active": true,
+   "input_conversion_passed": true,
+   "policy": {
+    "checkpoint": "dreamlabs/dream-1-beta",
+    "embodiment": {
+     "state": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "action": {
+      "right_arm": [
+       0,
+       6
+      ],
+      "right_gripper": [
+       6,
+       7
+      ],
+      "left_arm": [
+       7,
+       13
+      ],
+      "left_gripper": [
+       13,
+       14
+      ]
+     },
+     "video": {
+      "overhead": "observation.images.overhead",
+      "wrist_l": "observation.images.wrist_l",
+      "wrist_r": "observation.images.wrist_r"
+     }
+    },
+    "ik": {
+     "arm": "/home/gavin/dreamtrial/viscous_sim/viscous_arm_fingertip.json",
+     "head": "eef",
+     "region": {
+      "left": {
+       "lo": [
+        0.08,
+        -0.3850000000000001,
+        0.013000000000000015
+       ],
+       "hi": [
+        0.5600000000000002,
+        0.09500000000000006,
+        0.2880000000000001
+       ]
+      }
+     }
+    },
+    "timeout_ms": 45000,
+    "strict": false,
+    "action_hz": 20,
+    "_record": false
+   }
+  }
+ ],
+ "tip_faces_flange_m": [
+  [
+   0.166308001159292,
+   0.0011320490076695835,
+   -0.027090638922260886
+  ],
+  [
+   0.16630800107469518,
+   -0.0011320491692323744,
+   -0.027090638801315133
+  ]
+ ],
+ "new_tcp_flange_m": [
+  0.1663080011169936,
+  -8.078139546174867e-11,
+  -0.02709063886178801
+ ],
+ "budget_crash_cap_passed": true,
+ "deterministic_replay_passed": true
+}

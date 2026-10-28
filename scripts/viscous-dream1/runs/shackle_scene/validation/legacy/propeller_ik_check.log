@@ -1,0 +1,85 @@
+/home/gavin/dreamtrial/viscous_sim/propeller_ik_check.py:16: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  ik=ClientIK({'arm':str(sweep.HERE/'viscous_arm.json'),'head':'eef'},20,sweep.y.YAM_EMBODIMENT,model)
+2026-10-28 00:49:20.709 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:20.719 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:49:20.765 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:20.771 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:49:20.780 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:49:21.572 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:49:21.593 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 00:49:21.617 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:21.632 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:49:21.640 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:49:21.654 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:49:21.666 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:49:21.673 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:49:21.680 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+multistart residual [ 3.01147995e-15  5.30131494e-15 -3.17523785e-14  2.84745775e-14
+  1.82583846e-14 -1.88057977e-15] joints [-2.41006594 -0.43494178  3.91221763 -0.70347762  0.56740268  1.04483752]
+{
+ "inference_calls": 0,
+ "blade": 0,
+ "approach_world": [
+  -0.08631094855562366,
+  -0.9006982393225877,
+  0.4257852766837044
+ ],
+ "scrub_path_length_m": 0.03,
+ "targets": [
+  {
+   "target_world_m": [
+    0.07631690592851953,
+    -0.15439720704270965,
+    0.9607179886568542
+   ],
+   "position_error_m": 0.0003050101019451475,
+   "orientation_error_deg": 0.14329867678922223,
+   "joints": [
+    -2.4094293117523193,
+    -0.42975911498069763,
+    3.9043006896972656,
+    -0.7036042213439941,
+    0.5684999227523804,
+    1.0420897006988525
+   ],
+   "robot_contacts": []
+  },
+  {
+   "target_world_m": [
+    0.09101790459613815,
+    -0.15439720704270965,
+    0.9636980286187802
+   ],
+   "position_error_m": 0.0003478410707888798,
+   "orientation_error_deg": 0.1564027982940118,
+   "joints": [
+    -2.444608211517334,
+    -0.49455904960632324,
+    4.0208420753479,
+    -0.7445042133331299,
+    0.5381472706794739,
+    1.0628117322921753
+   ],
+   "robot_contacts": []
+  },
+  {
+   "target_world_m": [
+    0.10571890326375677,
+    -0.15439720704270965,
+    0.9666780685807062
+   ],
+   "position_error_m": 0.00038129678613166247,
+   "orientation_error_deg": 0.1529963484309418,
+   "joints": [
+    -2.4820029735565186,
+    -0.5540284514427185,
+    4.124566078186035,
+    -0.77817702293396,
+    0.5056502223014832,
+    1.084060549736023
+   ],
+   "robot_contacts": []
+  }
+ ],
+ "passed": true
+}

@@ -1,0 +1,36 @@
+{
+ "cap": 3,
+ "requests": [
+  {
+   "id": 1,
+   "episode": "episode",
+   "call": 1,
+   "status": "reserved",
+   "utc": "2026-10-28T05:47:38Z"
+  },
+  {
+   "id": 2,
+   "episode": "episode",
+   "call": 2,
+   "status": "pool_warming",
+   "utc": "2026-10-28T05:47:38Z"
+  },
+  {
+   "id": 3,
+   "episode": "episode",
+   "call": 2,
+   "status": "billed",
+   "utc": "2026-10-28T05:47:38Z"
+  },
+  {
+   "id": 4,
+   "episode": "episode",
+   "call": 3,
+   "status": "reserved",
+   "utc": "2026-10-28T05:47:38Z"
+  }
+ ],
+ "confirmed_billed": 1,
+ "uncertain": 2,
+ "budget_used": 3
+}

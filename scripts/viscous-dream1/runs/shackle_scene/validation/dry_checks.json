@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "stub_calls": 2,
+  "rows": 96,
+  "inference_calls": 0,
+  "client_construction_forbidden": true,
+  "accounting_access_forbidden": true,
+  "remote_network_forbidden": true
+}

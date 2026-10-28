@@ -1,0 +1,47 @@
+{
+ "inference_calls": 0,
+ "ledger_access_forbidden": true,
+ "rows": 192,
+ "chunks": 4,
+ "deterministic_replay_passed": true,
+ "finished_skip_passed": true,
+ "grasp_events_logged": [
+  {
+   "time": 0.003,
+   "event": "attach",
+   "side": "left",
+   "part": "bolt",
+   "relative_xyz": [
+    0.16994505535231905,
+    -2.242655307937992e-05,
+    -0.02768039860933994
+   ],
+   "relative_quat": [
+    0.3239481630369853,
+    0.6597157656124394,
+    0.3809934383917731,
+    0.5609605121305511
+   ],
+   "bilateral_contact": true
+  },
+  {
+   "time": 0.003,
+   "event": "attach",
+   "side": "right",
+   "part": "nut",
+   "relative_xyz": [
+    0.16007512531618878,
+    -2.155840790370624e-05,
+    -0.02607585491741142
+   ],
+   "relative_quat": [
+    0.32394470287312954,
+    0.6597206160760839,
+    0.38099708888249806,
+    0.5609543265433421
+   ],
+   "bilateral_contact": true
+  }
+ ],
+ "bolt_tip_requested_distances_logged": true
+}

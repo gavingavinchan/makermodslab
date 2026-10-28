@@ -1,0 +1,92 @@
+{
+  "queued_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_gripper",
+    "state.right_arm",
+    "state.right_gripper",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "prepared_keys": [
+    "prompt",
+    "state.left_arm",
+    "state.left_eef_rot6",
+    "state.left_eef_xyz",
+    "state.left_grip",
+    "state.left_gripper",
+    "state.right_arm",
+    "state.right_eef_rot6",
+    "state.right_eef_xyz",
+    "state.right_grip",
+    "state.right_gripper",
+    "video.overhead",
+    "video.wrist_l",
+    "video.wrist_r"
+  ],
+  "resolved_robot": "other_embodiment",
+  "queued_camera_lengths": {
+    "video.overhead": 9,
+    "video.wrist_l": 9,
+    "video.wrist_r": 9
+  },
+  "prepared_arm_state": {
+    "state.left_arm": [
+      -2.7597092375773866e-23,
+      3.906261872131256e-20,
+      9.718806875081347e-17,
+      4.849297835734989e-17,
+      1.198844550987374e-23,
+      3.54875876078232e-20
+    ],
+    "state.left_gripper": [
+      1.0
+    ],
+    "state.right_arm": [
+      -2.7597092375773866e-23,
+      3.906261872131256e-20,
+      9.718806875081347e-17,
+      4.849297835734989e-17,
+      1.198844550987374e-23,
+      3.54875876078232e-20
+    ],
+    "state.right_gripper": [
+      1.0
+    ],
+    "state.right_eef_xyz": [
+      0.24499693512916565,
+      2.029983534157509e-06,
+      0.1640017181634903
+    ],
+    "state.right_eef_rot6": [
+      -3.684216608235147e-06,
+      0.9999999403953552,
+      -6.3371844589710236e-06,
+      -7.3197793426516e-06,
+      6.3591660364181735e-06,
+      0.9999999403953552
+    ],
+    "state.right_grip": [
+      1.0
+    ],
+    "state.left_eef_xyz": [
+      0.24499693512916565,
+      2.029983534157509e-06,
+      0.1640017181634903
+    ],
+    "state.left_eef_rot6": [
+      -3.684216608235147e-06,
+      0.9999999403953552,
+      -6.3371844589710236e-06,
+      -7.3197793426516e-06,
+      6.3591660364181735e-06,
+      0.9999999403953552
+    ],
+    "state.left_grip": [
+      1.0
+    ]
+  },
+  "input_conversion_passed": true,
+  "inference_calls": 0
+}

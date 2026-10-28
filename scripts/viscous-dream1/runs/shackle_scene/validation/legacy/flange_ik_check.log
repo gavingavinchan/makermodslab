@@ -1,0 +1,169 @@
+/home/gavin/dreamtrial/viscous_sim/flange_ik_check.py:23: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  self.ik=ClientIK({'arm':str(HERE/'viscous_arm.json'),'head':'eef'},20,sweep.y.YAM_EMBODIMENT,model)
+2026-10-28 00:45:34.038 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:45:34.049 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 00:45:34.094 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:45:34.100 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 00:45:34.109 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 00:45:35.586 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 00:45:35.608 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 00:45:35.622 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+2026-10-28 00:45:35.630 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 00:45:35.641 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:45:35.655 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 00:45:35.662 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 00:45:35.673 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 00:45:35.685 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+bolt_pick 0.0005181037555293 0.21542218368800825 0
+hole_entrance_bolt_axis_minus_x 0.0008187694475961422 0.3900200461180346 0
+bolt_through_both_grip_axis_minus_x 0.0006520107295487471 0.31256633698137964 0
+nut_pick 0.00042700806150624334 0.23154605733986622 0
+far_side_nut 0.0007320396785095108 0.5165233709648386 0
+{
+ "inference_calls": 0,
+ "pad_tcp": true,
+ "maximum_jaw_opening_m": 0.104825,
+ "hex_across_flats_m": 0.046,
+ "targets": [
+  {
+   "name": "bolt_pick",
+   "side": "left",
+   "tool_target_world_m": [
+    0.07044276639609806,
+    -0.01822313751930814,
+    0.8139853987552894
+   ],
+   "approach_world": [
+    0.0,
+    -0.7071067811865475,
+    -0.7071067811865476
+   ],
+   "position_error_m": 0.0005181037555293,
+   "orientation_error_deg": 0.21542218368800825,
+   "joints": [
+    1.0450016260147095,
+    -2.160066843032837,
+    1.6749645471572876,
+    -0.4619479477405548,
+    -0.6560764312744141,
+    2.453950881958008
+   ],
+   "contacts": []
+  },
+  {
+   "name": "hole_entrance_bolt_axis_minus_x",
+   "side": "left",
+   "tool_target_world_m": [
+    0.17,
+    -0.09746913529999524,
+    0.9244115042172344
+   ],
+   "approach_world": [
+    0.0,
+    -0.9659258262890683,
+    -0.25881904510252074
+   ],
+   "position_error_m": 0.0008187694475961422,
+   "orientation_error_deg": 0.3900200461180346,
+   "joints": [
+    0.6708430051803589,
+    -1.6046679019927979,
+    0.881732165813446,
+    0.546577513217926,
+    -0.6434475183486938,
+    1.7767261266708374
+   ],
+   "contacts": [],
+   "held_bolt_axis_world": [
+    -0.9999984637874896,
+    -0.0002705528781956623,
+    -0.0017318267238067286
+   ],
+   "bolt_axis_error_deg": 0.10042997038127317,
+   "held_bolt_fixture_contacts": []
+  },
+  {
+   "name": "bolt_through_both_grip_axis_minus_x",
+   "side": "left",
+   "tool_target_world_m": [
+    0.06,
+    -0.09746913529999524,
+    0.9244115042172344
+   ],
+   "approach_world": [
+    0.0,
+    -0.9659258262890683,
+    -0.25881904510252074
+   ],
+   "position_error_m": 0.0006520107295487471,
+   "orientation_error_deg": 0.31256633698137964,
+   "joints": [
+    0.964224100112915,
+    -2.1165997982025146,
+    1.6001957654953003,
+    0.2300480157136917,
+    -0.9161219000816345,
+    1.9327938556671143
+   ],
+   "contacts": [],
+   "held_bolt_axis_world": [
+    -0.9999977116244526,
+    -0.0007476912034546368,
+    -0.002004421044301652
+   ],
+   "bolt_axis_error_deg": 0.12257484769182177,
+   "held_bolt_fixture_contacts": []
+  },
+  {
+   "name": "nut_pick",
+   "side": "right",
+   "tool_target_world_m": [
+    -0.05199619949916217,
+    -0.016231946190953743,
+    0.8041114177513247
+   ],
+   "approach_world": [
+    0.0,
+    -0.7071067811865475,
+    -0.7071067811865476
+   ],
+   "position_error_m": 0.00042700806150624334,
+   "orientation_error_deg": 0.23154605733986622,
+   "joints": [
+    -1.0856937170028687,
+    -2.296434164047241,
+    1.8405115604400635,
+    -0.5221631526947021,
+    0.6753321290016174,
+    0.636827290058136
+   ],
+   "contacts": []
+  },
+  {
+   "name": "far_side_nut",
+   "side": "right",
+   "tool_target_world_m": [
+    -0.096,
+    -0.09746913529999524,
+    0.9244115042172344
+   ],
+   "approach_world": [
+    0.0,
+    -0.9659258262890683,
+    -0.25881904510252074
+   ],
+   "position_error_m": 0.0007320396785095108,
+   "orientation_error_deg": 0.5165233709648386,
+   "joints": [
+    -0.8892205357551575,
+    -1.9284398555755615,
+    1.3130626678466797,
+    0.36120083928108215,
+    0.8484498262405396,
+    1.2507036924362183
+   ],
+   "contacts": []
+  }
+ ],
+ "pose_reach_passed": true
+}

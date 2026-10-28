@@ -1,0 +1,26 @@
+START flange_check
+DONE flange_check 0
+START flange_holding_check
+DONE flange_holding_check 0
+START flange_ik_check
+DONE flange_ik_check 0
+START flange_clearance_check
+DONE flange_clearance_check 0
+START flange_pregrasp_check
+DONE flange_pregrasp_check 0
+START flange_runner_check
+DONE flange_runner_check 0
+START sweep_check
+DONE sweep_check 0
+START sweep_runner_check
+DONE sweep_runner_check 0
+START onearm_check
+DONE onearm_check 0
+START onearm_isolate_check
+DONE onearm_isolate_check 0
+START propeller_ik_check
+DONE propeller_ik_check 0
+START flange_dream2_check
+DONE flange_dream2_check 0
+START sweep_baseline_check
+DONE sweep_baseline_check 0

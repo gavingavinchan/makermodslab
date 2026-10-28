@@ -1,0 +1,12 @@
+{
+ "mode": "vision",
+ "rig": "viscous",
+ "task": "pick up the white cube and place into black square",
+ "successful_billed_calls": 0,
+ "closest_cube_to_square_xy_m": 0.208626,
+ "executed_rows": 0,
+ "completed_chunks": 0,
+ "termination_reason": null,
+ "ever_success": false,
+ "final_success": false
+}
