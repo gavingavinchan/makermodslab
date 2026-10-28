@@ -1362,8 +1362,10 @@ file instead.
 **Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
-list in [shackle-sim2real.md](shackle-sim2real.md). Blocked on Gavin's photo
-and measurements of the part.
+list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,
+threads, printable holder, sim scene done; Dream-1 0/3; Astra seated the pin in
+sim on attempt 2 using its own notes from attempt 1 (n=1). Open: Gavin's
+measurements, repeat runs, real-arm torque.
 
 **Top priority: "fixes stay fixed" / plug-and-play teleop (Gavin, 2026-10-27).**
 "If we don't fix this we're gonna encounter issues again." Gavin travels to
