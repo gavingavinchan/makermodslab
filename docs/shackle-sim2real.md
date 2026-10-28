@@ -55,6 +55,19 @@ the real arm (sim to real).
     diameter, pitch, pin lengths and ear gap.
 - [ ] **2. Holder.** A small printable stand that keeps the U-shape vertical on
   the table (and a bolt stand if the bolt won't stand on its own head).
+  - 2026-10-28: Gavin's design, drawn on the 1:1 side view
+    (`scripts/viscous-dream1/shackle/holder_sketch_gavin.png`): a triangular
+    block under the lower outside of the bow, flat bottom on the table, the
+    sloped face a cradle that hugs the bow's curve. He will hot-glue the shackle
+    to it and glue or tape it to the table. The pin stands on its own threaded
+    end, so it needs no stand. Codex is building it from
+    [BRIEF_SHACKLE_HOLDER.md](../scripts/viscous-dream1/BRIEF_SHACKLE_HOLDER.md)
+    (STL/3MF in mm for printing, plus a sim mesh), with a check of whether it
+    tips when the arm pushes and twists the pin.
+- 2026-10-28: Gavin wants the threads visible in the sim video ("it has to look
+  nice"); how the physics models them doesn't matter. Codex is adding visual
+  helical threads to the pin and the tapped ear, checked in MuJoCo's renderer
+  ([BRIEF_SHACKLE_THREADS.md](../scripts/viscous-dream1/BRIEF_SHACKLE_THREADS.md)).
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).
