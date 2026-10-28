@@ -1,0 +1,49 @@
+{
+  "shackle_body": {
+    "watertight": true,
+    "consistent_winding": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -98.67500305175781,
+        -20.03499984741211,
+        -49.24987030029297
+      ],
+      [
+        20.03499984741211,
+        20.03499984741211,
+        49.24987030029297
+      ]
+    ],
+    "volume_mm3": 87830.35188911461,
+    "vertices": 31411,
+    "triangles": 62826
+  },
+  "shackle_pin": {
+    "watertight": true,
+    "consistent_winding": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -13.84000015258789,
+        -13.84000015258789,
+        0.0
+      ],
+      [
+        13.84000015258789,
+        13.84000015258789,
+        107.9000015258789
+      ]
+    ],
+    "volume_mm3": 30472.35162433198,
+    "vertices": 22497,
+    "triangles": 44994
+  },
+  "collision": {
+    "count": 212,
+    "unchanged": true,
+    "minimum_axis_clear_radius_mm": 10.299999999999999,
+    "diametral_clearance_over_thread_major_mm": 0.5999999999999979,
+    "warning": "Collision clearance is frozen; review separately if diameter changes beyond the existing passage."
+  }
+}

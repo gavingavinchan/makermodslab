@@ -1,0 +1,1922 @@
+[
+  {
+    "frame": 0,
+    "time_s": 0.0,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 1,
+    "time_s": 0.03333333333333333,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 2,
+    "time_s": 0.06666666666666667,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 3,
+    "time_s": 0.1,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 4,
+    "time_s": 0.13333333333333333,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 5,
+    "time_s": 0.16666666666666666,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 6,
+    "time_s": 0.2,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 7,
+    "time_s": 0.23333333333333334,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 8,
+    "time_s": 0.26666666666666666,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 9,
+    "time_s": 0.3,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 10,
+    "time_s": 0.3333333333333333,
+    "stage": "approach",
+    "remaining_m": 0.09184999999999999,
+    "tip_z_m": 0.05192499999999999,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 11,
+    "time_s": 0.36666666666666664,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.09183167273313264,
+    "tip_z_m": 0.051906672733132646,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 12,
+    "time_s": 0.4,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.09168710360939643,
+    "tip_z_m": 0.05176210360939643,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 13,
+    "time_s": 0.43333333333333335,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.09140320172388608,
+    "tip_z_m": 0.051478201723886084,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 14,
+    "time_s": 0.4666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.09098543110647513,
+    "tip_z_m": 0.05106043110647513,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 15,
+    "time_s": 0.5,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.09043925578703703,
+    "tip_z_m": 0.050514255787037034,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 16,
+    "time_s": 0.5333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08977013979544529,
+    "tip_z_m": 0.0498451397954453,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 17,
+    "time_s": 0.5666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08898354716157343,
+    "tip_z_m": 0.049058547161573436,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 18,
+    "time_s": 0.6,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08808494191529492,
+    "tip_z_m": 0.04815994191529493,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 19,
+    "time_s": 0.6333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08707978808648326,
+    "tip_z_m": 0.04715478808648326,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 20,
+    "time_s": 0.6666666666666666,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08597354970501193,
+    "tip_z_m": 0.04604854970501194,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 21,
+    "time_s": 0.7,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08477169080075445,
+    "tip_z_m": 0.04484669080075445,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 22,
+    "time_s": 0.7333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08347967540358431,
+    "tip_z_m": 0.04355467540358431,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 23,
+    "time_s": 0.7666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08210296754337498,
+    "tip_z_m": 0.04217796754337499,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 24,
+    "time_s": 0.8,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.08064703125,
+    "tip_z_m": 0.040722031250000006,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 25,
+    "time_s": 0.8333333333333334,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.07911733055333281,
+    "tip_z_m": 0.039192330553332815,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 26,
+    "time_s": 0.8666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.07751932948324697,
+    "tip_z_m": 0.03759432948324697,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 27,
+    "time_s": 0.9,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.0758584920696159,
+    "tip_z_m": 0.0359334920696159,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 28,
+    "time_s": 0.9333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.07414028234231315,
+    "tip_z_m": 0.03421528234231316,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 29,
+    "time_s": 0.9666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.07237016433121221,
+    "tip_z_m": 0.032445164331212216,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 30,
+    "time_s": 1.0,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.07055360206618655,
+    "tip_z_m": 0.030628602066186554,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 31,
+    "time_s": 1.0333333333333334,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.06869605957710967,
+    "tip_z_m": 0.028771059577109674,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 32,
+    "time_s": 1.0666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.0668030008938551,
+    "tip_z_m": 0.026878000893855107,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 33,
+    "time_s": 1.1,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.06487989004629628,
+    "tip_z_m": 0.024954890046296287,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 34,
+    "time_s": 1.1333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.06293219106430675,
+    "tip_z_m": 0.023007191064306758,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 35,
+    "time_s": 1.1666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.06096536797775999,
+    "tip_z_m": 0.021040367977759995,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 36,
+    "time_s": 1.2,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.05898488481652949,
+    "tip_z_m": 0.019059884816529496,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 37,
+    "time_s": 1.2333333333333334,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.05699620561048874,
+    "tip_z_m": 0.017071205610488742,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 38,
+    "time_s": 1.2666666666666666,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.055004794389511245,
+    "tip_z_m": 0.01507979438951125,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 39,
+    "time_s": 1.3,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.053016115183470505,
+    "tip_z_m": 0.01309111518347051,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 40,
+    "time_s": 1.3333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.05103563202224,
+    "tip_z_m": 0.011110632022240004,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 41,
+    "time_s": 1.3666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.04906880893569324,
+    "tip_z_m": 0.009143808935693241,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 42,
+    "time_s": 1.4,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.04712110995370371,
+    "tip_z_m": 0.007196109953703712,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 43,
+    "time_s": 1.4333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.04519799910614487,
+    "tip_z_m": 0.005272999106144878,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 44,
+    "time_s": 1.4666666666666666,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.0433049404228903,
+    "tip_z_m": 0.003379940422890304,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 45,
+    "time_s": 1.5,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.04144739793381344,
+    "tip_z_m": 0.001522397933813445,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 46,
+    "time_s": 1.5333333333333334,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.03963083566878777,
+    "tip_z_m": -0.00029416433121222385,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 47,
+    "time_s": 1.5666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.03786071765768683,
+    "tip_z_m": -0.0020642823423131645,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 48,
+    "time_s": 1.6,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.03614250793038409,
+    "tip_z_m": -0.0037824920696159087,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 49,
+    "time_s": 1.6333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.034481670516753035,
+    "tip_z_m": -0.00544332948324696,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 50,
+    "time_s": 1.6666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.03288366944666716,
+    "tip_z_m": -0.007041330553332836,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 51,
+    "time_s": 1.7,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.031353968749999996,
+    "tip_z_m": -0.00857103125,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 52,
+    "time_s": 1.7333333333333334,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.029898032456625,
+    "tip_z_m": -0.010026967543374996,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 53,
+    "time_s": 1.7666666666666666,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02852132459641569,
+    "tip_z_m": -0.011403675403584307,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 54,
+    "time_s": 1.8,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.027229309199245537,
+    "tip_z_m": -0.012695690800754458,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 55,
+    "time_s": 1.8333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.026027450294988062,
+    "tip_z_m": -0.013897549705011933,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 56,
+    "time_s": 1.8666666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02492121191351674,
+    "tip_z_m": -0.015003788086483255,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 57,
+    "time_s": 1.9,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.023916058084705073,
+    "tip_z_m": -0.016008941915294922,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 58,
+    "time_s": 1.9333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02301745283842655,
+    "tip_z_m": -0.016907547161573444,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 59,
+    "time_s": 1.9666666666666666,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02223086020455469,
+    "tip_z_m": -0.017694139795445304,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 60,
+    "time_s": 2.0,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.021561744212962954,
+    "tip_z_m": -0.01836325578703704,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 61,
+    "time_s": 2.033333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02101556889352487,
+    "tip_z_m": -0.018909431106475125,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 62,
+    "time_s": 2.066666666666667,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.020597798276113903,
+    "tip_z_m": -0.019327201723886092,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 63,
+    "time_s": 2.1,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02031389639060357,
+    "tip_z_m": -0.019611103609396427,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 64,
+    "time_s": 2.1333333333333333,
+    "stage": "pass through clear ear",
+    "remaining_m": 0.02016932726686734,
+    "tip_z_m": -0.019755672733132654,
+    "spin_about_plus_z_rad": 50.64498684999031
+  },
+  {
+    "frame": 65,
+    "time_s": 2.1666666666666665,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.020088805555555547,
+    "tip_z_m": -0.019836194444444448,
+    "spin_about_plus_z_rad": 50.48867516218171
+  },
+  {
+    "frame": 66,
+    "time_s": 2.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.019964416666666658,
+    "tip_z_m": -0.019960583333333337,
+    "spin_about_plus_z_rad": 50.17605178656448
+  },
+  {
+    "frame": 67,
+    "time_s": 2.2333333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01984002777777777,
+    "tip_z_m": -0.020084972222222226,
+    "spin_about_plus_z_rad": 49.86342841094725
+  },
+  {
+    "frame": 68,
+    "time_s": 2.2666666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01971563888888888,
+    "tip_z_m": -0.020209361111111115,
+    "spin_about_plus_z_rad": 49.55080503533003
+  },
+  {
+    "frame": 69,
+    "time_s": 2.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01959124999999999,
+    "tip_z_m": -0.020333750000000005,
+    "spin_about_plus_z_rad": 49.2381816597128
+  },
+  {
+    "frame": 70,
+    "time_s": 2.3333333333333335,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0194668611111111,
+    "tip_z_m": -0.020458138888888894,
+    "spin_about_plus_z_rad": 48.92555828409558
+  },
+  {
+    "frame": 71,
+    "time_s": 2.3666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.019342472222222212,
+    "tip_z_m": -0.020582527777777783,
+    "spin_about_plus_z_rad": 48.61293490847835
+  },
+  {
+    "frame": 72,
+    "time_s": 2.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.019218083333333327,
+    "tip_z_m": -0.02070691666666667,
+    "spin_about_plus_z_rad": 48.30031153286114
+  },
+  {
+    "frame": 73,
+    "time_s": 2.433333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.019093694444444437,
+    "tip_z_m": -0.020831305555555558,
+    "spin_about_plus_z_rad": 47.98768815724391
+  },
+  {
+    "frame": 74,
+    "time_s": 2.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01896930555555555,
+    "tip_z_m": -0.020955694444444447,
+    "spin_about_plus_z_rad": 47.67506478162669
+  },
+  {
+    "frame": 75,
+    "time_s": 2.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01884491666666666,
+    "tip_z_m": -0.021080083333333336,
+    "spin_about_plus_z_rad": 47.36244140600947
+  },
+  {
+    "frame": 76,
+    "time_s": 2.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01872052777777777,
+    "tip_z_m": -0.021204472222222225,
+    "spin_about_plus_z_rad": 47.04981803039224
+  },
+  {
+    "frame": 77,
+    "time_s": 2.566666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01859613888888888,
+    "tip_z_m": -0.021328861111111114,
+    "spin_about_plus_z_rad": 46.73719465477501
+  },
+  {
+    "frame": 78,
+    "time_s": 2.6,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01847174999999999,
+    "tip_z_m": -0.021453250000000004,
+    "spin_about_plus_z_rad": 46.42457127915779
+  },
+  {
+    "frame": 79,
+    "time_s": 2.6333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.018347361111111106,
+    "tip_z_m": -0.02157763888888889,
+    "spin_about_plus_z_rad": 46.111947903540575
+  },
+  {
+    "frame": 80,
+    "time_s": 2.6666666666666665,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.018222972222222217,
+    "tip_z_m": -0.02170202777777778,
+    "spin_about_plus_z_rad": 45.799324527923346
+  },
+  {
+    "frame": 81,
+    "time_s": 2.7,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.018098583333333324,
+    "tip_z_m": -0.02182641666666667,
+    "spin_about_plus_z_rad": 45.48670115230611
+  },
+  {
+    "frame": 82,
+    "time_s": 2.7333333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.017974194444444435,
+    "tip_z_m": -0.02195080555555556,
+    "spin_about_plus_z_rad": 45.17407777668888
+  },
+  {
+    "frame": 83,
+    "time_s": 2.7666666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01784980555555555,
+    "tip_z_m": -0.022075194444444446,
+    "spin_about_plus_z_rad": 44.86145440107167
+  },
+  {
+    "frame": 84,
+    "time_s": 2.8,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01772541666666666,
+    "tip_z_m": -0.022199583333333335,
+    "spin_about_plus_z_rad": 44.54883102545444
+  },
+  {
+    "frame": 85,
+    "time_s": 2.8333333333333335,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01760102777777777,
+    "tip_z_m": -0.022323972222222224,
+    "spin_about_plus_z_rad": 44.23620764983722
+  },
+  {
+    "frame": 86,
+    "time_s": 2.8666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.017476638888888882,
+    "tip_z_m": -0.022448361111111113,
+    "spin_about_plus_z_rad": 43.92358427422
+  },
+  {
+    "frame": 87,
+    "time_s": 2.9,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.017352249999999993,
+    "tip_z_m": -0.022572750000000003,
+    "spin_about_plus_z_rad": 43.61096089860278
+  },
+  {
+    "frame": 88,
+    "time_s": 2.933333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.017227861111111104,
+    "tip_z_m": -0.02269713888888889,
+    "spin_about_plus_z_rad": 43.29833752298555
+  },
+  {
+    "frame": 89,
+    "time_s": 2.966666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.017103472222222214,
+    "tip_z_m": -0.02282152777777778,
+    "spin_about_plus_z_rad": 42.98571414736832
+  },
+  {
+    "frame": 90,
+    "time_s": 3.0,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016979083333333325,
+    "tip_z_m": -0.02294591666666667,
+    "spin_about_plus_z_rad": 42.6730907717511
+  },
+  {
+    "frame": 91,
+    "time_s": 3.033333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01685469444444444,
+    "tip_z_m": -0.023070305555555556,
+    "spin_about_plus_z_rad": 42.360467396133885
+  },
+  {
+    "frame": 92,
+    "time_s": 3.066666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016730305555555547,
+    "tip_z_m": -0.02319469444444445,
+    "spin_about_plus_z_rad": 42.04784402051664
+  },
+  {
+    "frame": 93,
+    "time_s": 3.1,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01660591666666666,
+    "tip_z_m": -0.023319083333333334,
+    "spin_about_plus_z_rad": 41.73522064489943
+  },
+  {
+    "frame": 94,
+    "time_s": 3.1333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016481527777777772,
+    "tip_z_m": -0.023443472222222223,
+    "spin_about_plus_z_rad": 41.42259726928221
+  },
+  {
+    "frame": 95,
+    "time_s": 3.1666666666666665,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016357138888888883,
+    "tip_z_m": -0.023567861111111112,
+    "spin_about_plus_z_rad": 41.10997389366498
+  },
+  {
+    "frame": 96,
+    "time_s": 3.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016232749999999994,
+    "tip_z_m": -0.02369225,
+    "spin_about_plus_z_rad": 40.79735051804775
+  },
+  {
+    "frame": 97,
+    "time_s": 3.2333333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.016108361111111105,
+    "tip_z_m": -0.02381663888888889,
+    "spin_about_plus_z_rad": 40.48472714243053
+  },
+  {
+    "frame": 98,
+    "time_s": 3.2666666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015983972222222215,
+    "tip_z_m": -0.02394102777777778,
+    "spin_about_plus_z_rad": 40.17210376681331
+  },
+  {
+    "frame": 99,
+    "time_s": 3.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01585958333333333,
+    "tip_z_m": -0.024065416666666666,
+    "spin_about_plus_z_rad": 39.85948039119609
+  },
+  {
+    "frame": 100,
+    "time_s": 3.3333333333333335,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015735194444444437,
+    "tip_z_m": -0.024189805555555558,
+    "spin_about_plus_z_rad": 39.54685701557886
+  },
+  {
+    "frame": 101,
+    "time_s": 3.3666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01561080555555555,
+    "tip_z_m": -0.024314194444444444,
+    "spin_about_plus_z_rad": 39.23423363996164
+  },
+  {
+    "frame": 102,
+    "time_s": 3.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015486416666666662,
+    "tip_z_m": -0.024438583333333333,
+    "spin_about_plus_z_rad": 38.921610264344416
+  },
+  {
+    "frame": 103,
+    "time_s": 3.433333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015362027777777773,
+    "tip_z_m": -0.024562972222222222,
+    "spin_about_plus_z_rad": 38.60898688872719
+  },
+  {
+    "frame": 104,
+    "time_s": 3.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015237638888888884,
+    "tip_z_m": -0.02468736111111111,
+    "spin_about_plus_z_rad": 38.29636351310997
+  },
+  {
+    "frame": 105,
+    "time_s": 3.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.015113249999999995,
+    "tip_z_m": -0.02481175,
+    "spin_about_plus_z_rad": 37.98374013749274
+  },
+  {
+    "frame": 106,
+    "time_s": 3.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014988861111111104,
+    "tip_z_m": -0.02493613888888889,
+    "spin_about_plus_z_rad": 37.67111676187551
+  },
+  {
+    "frame": 107,
+    "time_s": 3.566666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014864472222222215,
+    "tip_z_m": -0.02506052777777778,
+    "spin_about_plus_z_rad": 37.35849338625828
+  },
+  {
+    "frame": 108,
+    "time_s": 3.6,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014740083333333326,
+    "tip_z_m": -0.025184916666666668,
+    "spin_about_plus_z_rad": 37.04587001064106
+  },
+  {
+    "frame": 109,
+    "time_s": 3.6333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014615694444444438,
+    "tip_z_m": -0.025309305555555557,
+    "spin_about_plus_z_rad": 36.73324663502384
+  },
+  {
+    "frame": 110,
+    "time_s": 3.6666666666666665,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01449130555555555,
+    "tip_z_m": -0.025433694444444446,
+    "spin_about_plus_z_rad": 36.42062325940662
+  },
+  {
+    "frame": 111,
+    "time_s": 3.7,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01436691666666666,
+    "tip_z_m": -0.025558083333333335,
+    "spin_about_plus_z_rad": 36.10799988378939
+  },
+  {
+    "frame": 112,
+    "time_s": 3.7333333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014242527777777772,
+    "tip_z_m": -0.025682472222222225,
+    "spin_about_plus_z_rad": 35.79537650817217
+  },
+  {
+    "frame": 113,
+    "time_s": 3.7666666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.014118138888888883,
+    "tip_z_m": -0.025806861111111114,
+    "spin_about_plus_z_rad": 35.48275313255495
+  },
+  {
+    "frame": 114,
+    "time_s": 3.8,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013993749999999994,
+    "tip_z_m": -0.025931250000000003,
+    "spin_about_plus_z_rad": 35.17012975693772
+  },
+  {
+    "frame": 115,
+    "time_s": 3.8333333333333335,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013869361111111105,
+    "tip_z_m": -0.026055638888888892,
+    "spin_about_plus_z_rad": 34.8575063813205
+  },
+  {
+    "frame": 116,
+    "time_s": 3.8666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013744972222222216,
+    "tip_z_m": -0.02618002777777778,
+    "spin_about_plus_z_rad": 34.54488300570327
+  },
+  {
+    "frame": 117,
+    "time_s": 3.9,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013620583333333328,
+    "tip_z_m": -0.026304416666666667,
+    "spin_about_plus_z_rad": 34.23225963008605
+  },
+  {
+    "frame": 118,
+    "time_s": 3.933333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013496194444444441,
+    "tip_z_m": -0.026428805555555553,
+    "spin_about_plus_z_rad": 33.91963625446883
+  },
+  {
+    "frame": 119,
+    "time_s": 3.966666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013371805555555552,
+    "tip_z_m": -0.026553194444444442,
+    "spin_about_plus_z_rad": 33.607012878851606
+  },
+  {
+    "frame": 120,
+    "time_s": 4.0,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013247416666666663,
+    "tip_z_m": -0.02667758333333333,
+    "spin_about_plus_z_rad": 33.29438950323438
+  },
+  {
+    "frame": 121,
+    "time_s": 4.033333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.013123027777777773,
+    "tip_z_m": -0.02680197222222222,
+    "spin_about_plus_z_rad": 32.98176612761715
+  },
+  {
+    "frame": 122,
+    "time_s": 4.066666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012998638888888882,
+    "tip_z_m": -0.026926361111111113,
+    "spin_about_plus_z_rad": 32.66914275199992
+  },
+  {
+    "frame": 123,
+    "time_s": 4.1,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012874249999999997,
+    "tip_z_m": -0.02705075,
+    "spin_about_plus_z_rad": 32.35651937638271
+  },
+  {
+    "frame": 124,
+    "time_s": 4.133333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012749861111111104,
+    "tip_z_m": -0.02717513888888889,
+    "spin_about_plus_z_rad": 32.04389600076548
+  },
+  {
+    "frame": 125,
+    "time_s": 4.166666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012625472222222215,
+    "tip_z_m": -0.02729952777777778,
+    "spin_about_plus_z_rad": 31.73127262514825
+  },
+  {
+    "frame": 126,
+    "time_s": 4.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012501083333333328,
+    "tip_z_m": -0.027423916666666666,
+    "spin_about_plus_z_rad": 31.418649249531025
+  },
+  {
+    "frame": 127,
+    "time_s": 4.233333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01237669444444444,
+    "tip_z_m": -0.027548305555555555,
+    "spin_about_plus_z_rad": 31.106025873913804
+  },
+  {
+    "frame": 128,
+    "time_s": 4.266666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012252305555555551,
+    "tip_z_m": -0.027672694444444444,
+    "spin_about_plus_z_rad": 30.793402498296583
+  },
+  {
+    "frame": 129,
+    "time_s": 4.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012127916666666662,
+    "tip_z_m": -0.027797083333333333,
+    "spin_about_plus_z_rad": 30.48077912267936
+  },
+  {
+    "frame": 130,
+    "time_s": 4.333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.012003527777777774,
+    "tip_z_m": -0.027921472222222223,
+    "spin_about_plus_z_rad": 30.168155747062137
+  },
+  {
+    "frame": 131,
+    "time_s": 4.366666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011879138888888885,
+    "tip_z_m": -0.02804586111111111,
+    "spin_about_plus_z_rad": 29.85553237144491
+  },
+  {
+    "frame": 132,
+    "time_s": 4.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011754749999999994,
+    "tip_z_m": -0.02817025,
+    "spin_about_plus_z_rad": 29.54290899582768
+  },
+  {
+    "frame": 133,
+    "time_s": 4.433333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011630361111111105,
+    "tip_z_m": -0.02829463888888889,
+    "spin_about_plus_z_rad": 29.230285620210456
+  },
+  {
+    "frame": 134,
+    "time_s": 4.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011505972222222218,
+    "tip_z_m": -0.02841902777777778,
+    "spin_about_plus_z_rad": 28.917662244593235
+  },
+  {
+    "frame": 135,
+    "time_s": 4.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01138158333333333,
+    "tip_z_m": -0.028543416666666665,
+    "spin_about_plus_z_rad": 28.605038868976017
+  },
+  {
+    "frame": 136,
+    "time_s": 4.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011257194444444441,
+    "tip_z_m": -0.028667805555555554,
+    "spin_about_plus_z_rad": 28.292415493358792
+  },
+  {
+    "frame": 137,
+    "time_s": 4.566666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011132805555555552,
+    "tip_z_m": -0.028792194444444443,
+    "spin_about_plus_z_rad": 27.979792117741564
+  },
+  {
+    "frame": 138,
+    "time_s": 4.6,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.011008416666666665,
+    "tip_z_m": -0.02891658333333333,
+    "spin_about_plus_z_rad": 27.667168742124343
+  },
+  {
+    "frame": 139,
+    "time_s": 4.633333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010884027777777772,
+    "tip_z_m": -0.029040972222222225,
+    "spin_about_plus_z_rad": 27.35454536650711
+  },
+  {
+    "frame": 140,
+    "time_s": 4.666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010759638888888883,
+    "tip_z_m": -0.029165361111111114,
+    "spin_about_plus_z_rad": 27.04192199088989
+  },
+  {
+    "frame": 141,
+    "time_s": 4.7,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010635249999999994,
+    "tip_z_m": -0.029289750000000003,
+    "spin_about_plus_z_rad": 26.72929861527266
+  },
+  {
+    "frame": 142,
+    "time_s": 4.733333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010510861111111106,
+    "tip_z_m": -0.02941413888888889,
+    "spin_about_plus_z_rad": 26.41667523965544
+  },
+  {
+    "frame": 143,
+    "time_s": 4.766666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010386472222222219,
+    "tip_z_m": -0.029538527777777775,
+    "spin_about_plus_z_rad": 26.10405186403822
+  },
+  {
+    "frame": 144,
+    "time_s": 4.8,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01026208333333333,
+    "tip_z_m": -0.029662916666666664,
+    "spin_about_plus_z_rad": 25.791428488420998
+  },
+  {
+    "frame": 145,
+    "time_s": 4.833333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.01013769444444444,
+    "tip_z_m": -0.029787305555555553,
+    "spin_about_plus_z_rad": 25.47880511280377
+  },
+  {
+    "frame": 146,
+    "time_s": 4.866666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.010013305555555553,
+    "tip_z_m": -0.029911694444444442,
+    "spin_about_plus_z_rad": 25.166181737186548
+  },
+  {
+    "frame": 147,
+    "time_s": 4.9,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009888916666666662,
+    "tip_z_m": -0.03003608333333333,
+    "spin_about_plus_z_rad": 24.85355836156932
+  },
+  {
+    "frame": 148,
+    "time_s": 4.933333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009764527777777773,
+    "tip_z_m": -0.03016047222222222,
+    "spin_about_plus_z_rad": 24.540934985952095
+  },
+  {
+    "frame": 149,
+    "time_s": 4.966666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009640138888888886,
+    "tip_z_m": -0.03028486111111111,
+    "spin_about_plus_z_rad": 24.228311610334874
+  },
+  {
+    "frame": 150,
+    "time_s": 5.0,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009515749999999996,
+    "tip_z_m": -0.03040925,
+    "spin_about_plus_z_rad": 23.91568823471765
+  },
+  {
+    "frame": 151,
+    "time_s": 5.033333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009391361111111109,
+    "tip_z_m": -0.030533638888888888,
+    "spin_about_plus_z_rad": 23.603064859100428
+  },
+  {
+    "frame": 152,
+    "time_s": 5.066666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00926697222222222,
+    "tip_z_m": -0.030658027777777777,
+    "spin_about_plus_z_rad": 23.290441483483203
+  },
+  {
+    "frame": 153,
+    "time_s": 5.1,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.009142583333333332,
+    "tip_z_m": -0.030782416666666663,
+    "spin_about_plus_z_rad": 22.977818107865982
+  },
+  {
+    "frame": 154,
+    "time_s": 5.133333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00901819444444444,
+    "tip_z_m": -0.030906805555555555,
+    "spin_about_plus_z_rad": 22.66519473224875
+  },
+  {
+    "frame": 155,
+    "time_s": 5.166666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00889380555555555,
+    "tip_z_m": -0.031031194444444445,
+    "spin_about_plus_z_rad": 22.352571356631525
+  },
+  {
+    "frame": 156,
+    "time_s": 5.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008769416666666661,
+    "tip_z_m": -0.031155583333333334,
+    "spin_about_plus_z_rad": 22.039947981014297
+  },
+  {
+    "frame": 157,
+    "time_s": 5.233333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008645027777777774,
+    "tip_z_m": -0.03127997222222222,
+    "spin_about_plus_z_rad": 21.72732460539708
+  },
+  {
+    "frame": 158,
+    "time_s": 5.266666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008520638888888885,
+    "tip_z_m": -0.03140436111111111,
+    "spin_about_plus_z_rad": 21.41470122977985
+  },
+  {
+    "frame": 159,
+    "time_s": 5.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008396249999999997,
+    "tip_z_m": -0.031528749999999994,
+    "spin_about_plus_z_rad": 21.102077854162633
+  },
+  {
+    "frame": 160,
+    "time_s": 5.333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008271861111111108,
+    "tip_z_m": -0.03165313888888889,
+    "spin_about_plus_z_rad": 20.78945447854541
+  },
+  {
+    "frame": 161,
+    "time_s": 5.366666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.008147472222222221,
+    "tip_z_m": -0.03177752777777777,
+    "spin_about_plus_z_rad": 20.476831102928188
+  },
+  {
+    "frame": 162,
+    "time_s": 5.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00802308333333333,
+    "tip_z_m": -0.03190191666666667,
+    "spin_about_plus_z_rad": 20.16420772731096
+  },
+  {
+    "frame": 163,
+    "time_s": 5.433333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00789869444444444,
+    "tip_z_m": -0.03202630555555555,
+    "spin_about_plus_z_rad": 19.851584351693734
+  },
+  {
+    "frame": 164,
+    "time_s": 5.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007774305555555553,
+    "tip_z_m": -0.03215069444444444,
+    "spin_about_plus_z_rad": 19.538960976076513
+  },
+  {
+    "frame": 165,
+    "time_s": 5.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007649916666666664,
+    "tip_z_m": -0.03227508333333333,
+    "spin_about_plus_z_rad": 19.22633760045929
+  },
+  {
+    "frame": 166,
+    "time_s": 5.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007525527777777774,
+    "tip_z_m": -0.03239947222222222,
+    "spin_about_plus_z_rad": 18.913714224842064
+  },
+  {
+    "frame": 167,
+    "time_s": 5.566666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007401138888888888,
+    "tip_z_m": -0.03252386111111111,
+    "spin_about_plus_z_rad": 18.601090849224843
+  },
+  {
+    "frame": 168,
+    "time_s": 5.6,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007276749999999998,
+    "tip_z_m": -0.03264825,
+    "spin_about_plus_z_rad": 18.288467473607618
+  },
+  {
+    "frame": 169,
+    "time_s": 5.633333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007152361111111107,
+    "tip_z_m": -0.032772638888888886,
+    "spin_about_plus_z_rad": 17.975844097990386
+  },
+  {
+    "frame": 170,
+    "time_s": 5.666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.007027972222222219,
+    "tip_z_m": -0.032897027777777775,
+    "spin_about_plus_z_rad": 17.663220722373165
+  },
+  {
+    "frame": 171,
+    "time_s": 5.7,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00690358333333333,
+    "tip_z_m": -0.033021416666666664,
+    "spin_about_plus_z_rad": 17.35059734675594
+  },
+  {
+    "frame": 172,
+    "time_s": 5.733333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006779194444444443,
+    "tip_z_m": -0.03314580555555555,
+    "spin_about_plus_z_rad": 17.03797397113872
+  },
+  {
+    "frame": 173,
+    "time_s": 5.766666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0066548055555555536,
+    "tip_z_m": -0.03327019444444444,
+    "spin_about_plus_z_rad": 16.725350595521494
+  },
+  {
+    "frame": 174,
+    "time_s": 5.8,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006530416666666666,
+    "tip_z_m": -0.03339458333333333,
+    "spin_about_plus_z_rad": 16.412727219904273
+  },
+  {
+    "frame": 175,
+    "time_s": 5.833333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006406027777777777,
+    "tip_z_m": -0.03351897222222222,
+    "spin_about_plus_z_rad": 16.10010384428705
+  },
+  {
+    "frame": 176,
+    "time_s": 5.866666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006281638888888888,
+    "tip_z_m": -0.03364336111111111,
+    "spin_about_plus_z_rad": 15.787480468669823
+  },
+  {
+    "frame": 177,
+    "time_s": 5.9,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006157249999999996,
+    "tip_z_m": -0.03376775,
+    "spin_about_plus_z_rad": 15.474857093052593
+  },
+  {
+    "frame": 178,
+    "time_s": 5.933333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.006032861111111109,
+    "tip_z_m": -0.03389213888888889,
+    "spin_about_plus_z_rad": 15.162233717435372
+  },
+  {
+    "frame": 179,
+    "time_s": 5.966666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0059084722222222195,
+    "tip_z_m": -0.03401652777777778,
+    "spin_about_plus_z_rad": 14.849610341818147
+  },
+  {
+    "frame": 180,
+    "time_s": 6.0,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.005784083333333332,
+    "tip_z_m": -0.03414091666666666,
+    "spin_about_plus_z_rad": 14.536986966200926
+  },
+  {
+    "frame": 181,
+    "time_s": 6.033333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.005659694444444443,
+    "tip_z_m": -0.034265305555555556,
+    "spin_about_plus_z_rad": 14.224363590583701
+  },
+  {
+    "frame": 182,
+    "time_s": 6.066666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0055353055555555555,
+    "tip_z_m": -0.03438969444444444,
+    "spin_about_plus_z_rad": 13.91174021496648
+  },
+  {
+    "frame": 183,
+    "time_s": 6.1,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.005410916666666666,
+    "tip_z_m": -0.03451408333333333,
+    "spin_about_plus_z_rad": 13.599116839349257
+  },
+  {
+    "frame": 184,
+    "time_s": 6.133333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0052865277777777745,
+    "tip_z_m": -0.03463847222222222,
+    "spin_about_plus_z_rad": 13.286493463732024
+  },
+  {
+    "frame": 185,
+    "time_s": 6.166666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.005162138888888885,
+    "tip_z_m": -0.03476286111111111,
+    "spin_about_plus_z_rad": 12.9738700881148
+  },
+  {
+    "frame": 186,
+    "time_s": 6.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.005037749999999995,
+    "tip_z_m": -0.03488725,
+    "spin_about_plus_z_rad": 12.661246712497572
+  },
+  {
+    "frame": 187,
+    "time_s": 6.233333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.004913361111111109,
+    "tip_z_m": -0.035011638888888884,
+    "spin_about_plus_z_rad": 12.348623336880355
+  },
+  {
+    "frame": 188,
+    "time_s": 6.266666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.004788972222222219,
+    "tip_z_m": -0.03513602777777777,
+    "spin_about_plus_z_rad": 12.035999961263126
+  },
+  {
+    "frame": 189,
+    "time_s": 6.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.004664583333333332,
+    "tip_z_m": -0.03526041666666666,
+    "spin_about_plus_z_rad": 11.723376585645909
+  },
+  {
+    "frame": 190,
+    "time_s": 6.333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.004540194444444443,
+    "tip_z_m": -0.03538480555555555,
+    "spin_about_plus_z_rad": 11.410753210028682
+  },
+  {
+    "frame": 191,
+    "time_s": 6.366666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.004415805555555553,
+    "tip_z_m": -0.03550919444444444,
+    "spin_about_plus_z_rad": 11.098129834411456
+  },
+  {
+    "frame": 192,
+    "time_s": 6.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0042914166666666665,
+    "tip_z_m": -0.03563358333333333,
+    "spin_about_plus_z_rad": 10.785506458794238
+  },
+  {
+    "frame": 193,
+    "time_s": 6.433333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0041670277777777764,
+    "tip_z_m": -0.03575797222222222,
+    "spin_about_plus_z_rad": 10.47288308317701
+  },
+  {
+    "frame": 194,
+    "time_s": 6.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00404263888888889,
+    "tip_z_m": -0.03588236111111111,
+    "spin_about_plus_z_rad": 10.160259707559792
+  },
+  {
+    "frame": 195,
+    "time_s": 6.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00391825,
+    "tip_z_m": -0.03600675,
+    "spin_about_plus_z_rad": 9.847636331942565
+  },
+  {
+    "frame": 196,
+    "time_s": 6.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.003793861111111113,
+    "tip_z_m": -0.03613113888888888,
+    "spin_about_plus_z_rad": 9.535012956325344
+  },
+  {
+    "frame": 197,
+    "time_s": 6.566666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0036694722222222237,
+    "tip_z_m": -0.03625552777777777,
+    "spin_about_plus_z_rad": 9.222389580708121
+  },
+  {
+    "frame": 198,
+    "time_s": 6.6,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0035450833333333363,
+    "tip_z_m": -0.03637991666666666,
+    "spin_about_plus_z_rad": 8.909766205090898
+  },
+  {
+    "frame": 199,
+    "time_s": 6.633333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00342069444444444,
+    "tip_z_m": -0.036504305555555554,
+    "spin_about_plus_z_rad": 8.597142829473658
+  },
+  {
+    "frame": 200,
+    "time_s": 6.666666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.003296305555555553,
+    "tip_z_m": -0.03662869444444444,
+    "spin_about_plus_z_rad": 8.284519453856438
+  },
+  {
+    "frame": 201,
+    "time_s": 6.7,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0031719166666666636,
+    "tip_z_m": -0.03675308333333333,
+    "spin_about_plus_z_rad": 7.971896078239212
+  },
+  {
+    "frame": 202,
+    "time_s": 6.733333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0030475277777777744,
+    "tip_z_m": -0.03687747222222222,
+    "spin_about_plus_z_rad": 7.659272702621987
+  },
+  {
+    "frame": 203,
+    "time_s": 6.766666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0029231388888888874,
+    "tip_z_m": -0.03700186111111111,
+    "spin_about_plus_z_rad": 7.3466493270047675
+  },
+  {
+    "frame": 204,
+    "time_s": 6.8,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.002798749999999998,
+    "tip_z_m": -0.03712625,
+    "spin_about_plus_z_rad": 7.034025951387542
+  },
+  {
+    "frame": 205,
+    "time_s": 6.833333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.002674361111111111,
+    "tip_z_m": -0.03725063888888888,
+    "spin_about_plus_z_rad": 6.7214025757703215
+  },
+  {
+    "frame": 206,
+    "time_s": 6.866666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0025499722222222213,
+    "tip_z_m": -0.03737502777777777,
+    "spin_about_plus_z_rad": 6.408779200153096
+  },
+  {
+    "frame": 207,
+    "time_s": 6.9,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0024255833333333343,
+    "tip_z_m": -0.03749941666666666,
+    "spin_about_plus_z_rad": 6.096155824535876
+  },
+  {
+    "frame": 208,
+    "time_s": 6.933333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0023011944444444447,
+    "tip_z_m": -0.03762380555555555,
+    "spin_about_plus_z_rad": 5.78353244891865
+  },
+  {
+    "frame": 209,
+    "time_s": 6.966666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0021768055555555577,
+    "tip_z_m": -0.03774819444444444,
+    "spin_about_plus_z_rad": 5.4709090733014305
+  },
+  {
+    "frame": 210,
+    "time_s": 7.0,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.002052416666666668,
+    "tip_z_m": -0.03787258333333333,
+    "spin_about_plus_z_rad": 5.158285697684205
+  },
+  {
+    "frame": 211,
+    "time_s": 7.033333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.001928027777777779,
+    "tip_z_m": -0.03799697222222222,
+    "spin_about_plus_z_rad": 4.84566232206698
+  },
+  {
+    "frame": 212,
+    "time_s": 7.066666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0018036388888888917,
+    "tip_z_m": -0.038121361111111106,
+    "spin_about_plus_z_rad": 4.533038946449759
+  },
+  {
+    "frame": 213,
+    "time_s": 7.1,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0016792500000000024,
+    "tip_z_m": -0.038245749999999995,
+    "spin_about_plus_z_rad": 4.220415570832534
+  },
+  {
+    "frame": 214,
+    "time_s": 7.133333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0015548611111111084,
+    "tip_z_m": -0.038370138888888884,
+    "spin_about_plus_z_rad": 3.907792195215297
+  },
+  {
+    "frame": 215,
+    "time_s": 7.166666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.001430472222222219,
+    "tip_z_m": -0.03849452777777777,
+    "spin_about_plus_z_rad": 3.5951688195980713
+  },
+  {
+    "frame": 216,
+    "time_s": 7.2,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0013060833333333318,
+    "tip_z_m": -0.03861891666666666,
+    "spin_about_plus_z_rad": 3.282545443980851
+  },
+  {
+    "frame": 217,
+    "time_s": 7.233333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0011816944444444425,
+    "tip_z_m": -0.03874330555555555,
+    "spin_about_plus_z_rad": 2.969922068363626
+  },
+  {
+    "frame": 218,
+    "time_s": 7.266666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0010573055555555553,
+    "tip_z_m": -0.03886769444444444,
+    "spin_about_plus_z_rad": 2.6572986927464055
+  },
+  {
+    "frame": 219,
+    "time_s": 7.3,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.000932916666666666,
+    "tip_z_m": -0.03899208333333333,
+    "spin_about_plus_z_rad": 2.3446753171291803
+  },
+  {
+    "frame": 220,
+    "time_s": 7.333333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0008085277777777788,
+    "tip_z_m": -0.03911647222222222,
+    "spin_about_plus_z_rad": 2.0320519415119604
+  },
+  {
+    "frame": 221,
+    "time_s": 7.366666666666666,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0006841388888888894,
+    "tip_z_m": -0.03924086111111111,
+    "spin_about_plus_z_rad": 1.7194285658947348
+  },
+  {
+    "frame": 222,
+    "time_s": 7.4,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00055975,
+    "tip_z_m": -0.03936525,
+    "spin_about_plus_z_rad": 1.4068051902775094
+  },
+  {
+    "frame": 223,
+    "time_s": 7.433333333333334,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00043536111111111287,
+    "tip_z_m": -0.03948963888888888,
+    "spin_about_plus_z_rad": 1.0941818146602895
+  },
+  {
+    "frame": 224,
+    "time_s": 7.466666666666667,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.0003109722222222235,
+    "tip_z_m": -0.03961402777777777,
+    "spin_about_plus_z_rad": 0.781558439043064
+  },
+  {
+    "frame": 225,
+    "time_s": 7.5,
+    "stage": "screw into tapped ear",
+    "remaining_m": 0.00018658333333333631,
+    "tip_z_m": -0.03973841666666666,
+    "spin_about_plus_z_rad": 0.4689350634258439
+  },
+  {
+    "frame": 226,
+    "time_s": 7.533333333333333,
+    "stage": "screw into tapped ear",
+    "remaining_m": 6.219444444444694e-05,
+    "tip_z_m": -0.03986280555555555,
+    "spin_about_plus_z_rad": 0.1563116878086184
+  },
+  {
+    "frame": 227,
+    "time_s": 7.566666666666666,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 228,
+    "time_s": 7.6,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 229,
+    "time_s": 7.633333333333334,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 230,
+    "time_s": 7.666666666666667,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 231,
+    "time_s": 7.7,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 232,
+    "time_s": 7.733333333333333,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 233,
+    "time_s": 7.766666666666667,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 234,
+    "time_s": 7.8,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 235,
+    "time_s": 7.833333333333333,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 236,
+    "time_s": 7.866666666666666,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 237,
+    "time_s": 7.9,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 238,
+    "time_s": 7.933333333333334,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  },
+  {
+    "frame": 239,
+    "time_s": 7.966666666666667,
+    "stage": "seated",
+    "remaining_m": 0.0,
+    "tip_z_m": -0.039924999999999995,
+    "spin_about_plus_z_rad": 0.0
+  }
+]

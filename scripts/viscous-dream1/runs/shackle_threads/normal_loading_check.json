@@ -1,0 +1,16 @@
+{
+  "obj": {
+    "vertices": 22497,
+    "faces": 44994,
+    "normals": 134982,
+    "vertices_with_independent_corner_normal_indices": 22497,
+    "corner_normal_index_matches_obj": true
+  },
+  "stl": {
+    "vertices": 22497,
+    "faces": 44994,
+    "normals": 22497,
+    "vertices_with_independent_corner_normal_indices": 0,
+    "corner_normal_index_matches_obj": false
+  }
+}

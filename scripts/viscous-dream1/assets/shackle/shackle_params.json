@@ -72,6 +72,30 @@
       "source": "ESTIMATE basic metric internal minor diameter; plain visual bore.",
       "status": "ESTIMATE"
     },
+    "THREAD_START_ANGLE": {
+      "value": 0.0,
+      "unit": "rad",
+      "source": "Thread crest angle at pin-local z=0, radians about +Z; seated pin has zero spin.",
+      "status": "MESH_SETTING"
+    },
+    "THREAD_RADIAL_CLEARANCE": {
+      "value": 0.1,
+      "unit": "mm",
+      "source": "ESTIMATE visual radial flank clearance; female surface is outside male.",
+      "status": "ESTIMATE"
+    },
+    "THREAD_ANGULAR_SECTIONS": {
+      "value": 192,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless, segments per revolution.",
+      "status": "MESH_SETTING"
+    },
+    "THREAD_RUNOUT_PITCHES": {
+      "value": 0.9,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless; last fraction of a turn fades into shank.",
+      "status": "MESH_SETTING"
+    },
     "BORE_MOUTH_CHAMFER": {
       "value": 0.6,
       "unit": "mm",
@@ -275,10 +299,26 @@
     "suncor": "https://suncorstainless.com/wp-content/uploads/2022/02/Forged-Shackles-1-17-22-1.pdf",
     "crosby": "https://kitocrosby.com/wp-content/uploads/2026/04/01_Shackles_IMP_24.pdf"
   },
+  "thread": {
+    "hand": "right",
+    "starts": 1,
+    "major_diameter_m": 0.02,
+    "pitch_m": 0.0025,
+    "start_angle_rad": 0.0,
+    "radial_visual_clearance_m": 0.0001,
+    "phase_field": "q = (z_body - z_seated)/pitch - (azimuth - start_angle)/(2*pi); crests at integer q",
+    "seated_pin_spin_rad": 0.0,
+    "advance_relation": "pin turned by theta advances by theta/(2*pi)*pitch",
+    "sign_convention": "theta positive clockwise looking down from head toward tip; advances toward body -Z",
+    "kinematics": "z_tip = z_seated + advance_remaining; R_pin = Rz(+2*pi*advance_remaining/pitch); equivalently delta_z = pitch*delta_spin_about_+Z/(2*pi)",
+    "engaged_constraint": "z_tip - z_seated - pitch*spin_about_+Z/(2*pi) = 0 (unwrapped angle, metres)",
+    "profile": "ISO 60 degree axial flanks; external P/8 flat crests and truncated roots; internal basic minor plus radial clearance"
+  },
   "notes": [
-    "Provisional 19\u201320 mm stainless pattern, manufacturer not identified.",
-    "STL is faceted geometry with outward face normals; smooth split-normal OBJ companions supplied.",
-    "Plain major-cylinder thread overlaps visual minor bore when seated; collision tapped bore has positive clearance.",
-    "No simulation or billed inference calls."
+    "Provisional 20 mm diameter / 2.5 mm pitch; manufacturer and thread standard not identified.",
+    "Use OBJ in MuJoCo: explicit independent per-corner normals keep 60-degree thread edges crisp. STL is geometry-only fallback.",
+    "Default visuals are helical; original plain visual meshes retained as *_plain.*.",
+    "Collision meshes and manifest are frozen byte-for-byte; only visual geometry was changed.",
+    "No billed inference calls, hardware or simulation-server operations."
   ]
 }
