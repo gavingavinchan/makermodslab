@@ -85,7 +85,19 @@ the real arm (sim to real).
     1986/2212 before them), then Astra. The Astra lessons A/B
     (`astra_learn/ab.sh`) was running on gavin-linux at the time; the shackle
     Astra episode waits for it, because only one sim server may run.
+  - 2026-10-28, scene done (`scripts/viscous-dream1/runs/shackle_scene/`):
+    left Viscous arm with the Maker-style wrist camera, right arm parked,
+    holder and shackle welded to the table, pin upright 18 cm away. The
+    scripted (privileged, no-AI) demo picks the pin, inserts it and screws it
+    8 turns to seated with 120 deg wrist strokes, so the task is doable in sim.
+    Peak joint torque 11.75 Nm (J3) against the real arm's 5 Nm, so the same
+    motion does not transfer to hardware as is. Open: blotchy white shading
+    on the stainless (`BRIEF_SHACKLE_LOOK.md`, Codex fixing), and the parts
+    are only a few pixels in Dream-1's 320x176 top view.
 - [ ] **3b. Dream-1, three attempts** (zero-shot, before Astra).
+  - 2026-10-28: launched `sweep.py --task shackle --episodes 3 --live
+    --max-calls 30`, instruction "pick up the pin and screw it into the
+    shackle"; outputs `runs/shackle_scene/dream/ep_00..02`.
 - [ ] **4. Astra does it in sim.** Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - [ ] **5. In-context learning check.** Do later episodes improve from the
