@@ -77,7 +77,14 @@ MW_PER_DEG = 60.0
 # "when I ... close it very quickly onto the cube, I don't feel any haptic
 # feedback"). 4000 reaches full power in ~0.12 s.
 SLEW_MW_S = 4000.0
-MOVE_MS = 150
+# PoC v2 used 150 and re-sent it every tick: each re-send restarted the move
+# from where the finger had pushed the servo, so its setpoint never got ahead
+# of the finger and it drew 40-77 mA (30 idle) at "600 mW" (Run B and
+# 2026-10-28). Now a command is only re-sent when it changes by RESEND_DEG /
+# RESEND_MW, so each move finishes and the servo loads up to its cap.
+MOVE_MS = 60
+RESEND_DEG = 0.5
+RESEND_MW = 25
 ON_DEG = 1.0
 RELEASE_DEG = 3.0
 SQUEEZE_GONE_S = 0.3
@@ -266,6 +273,7 @@ class GripperHaptics:
         self._squeeze_t = 0.0
         self.power = 0.0
         self.star_on = False
+        self._sent = None
         self._publish()
         logger.info(
             "Gripper haptics: calibrating. Follower command %.1f..%.1f deg (closed stop %.1f), "
@@ -389,7 +397,14 @@ class GripperHaptics:
                 want = _clamp(MIN_MW + MW_PER_DEG * pen, MIN_MW, MAX_MW)
             if want > 0:
                 self.power = min(want, max(self.power, MIN_MW) + SLEW_MW_S * dt)
-                self.leader.bus.raw.angle(self.star_id, wall_l, MOVE_MS, round(self.power), self.travel)
+                sent = self._sent
+                if (
+                    sent is None
+                    or abs(wall_l - sent[0]) >= RESEND_DEG
+                    or abs(self.power - sent[1]) >= RESEND_MW
+                ):
+                    self.leader.bus.raw.angle(self.star_id, wall_l, MOVE_MS, round(self.power), self.travel)
+                    self._sent = (wall_l, self.power)
                 self.star_on = True
             else:
                 self._release_star()
@@ -444,7 +459,7 @@ class GripperHaptics:
 
     def _release_star(self):
         if self.star_on:
-            self.star_on, self.power = False, 0.0
+            self.star_on, self.power, self._sent = False, 0.0, None
             self.leader.bus.raw.stop(self.star_id, RELEASE)
 
     def _turn_off(self, reason):

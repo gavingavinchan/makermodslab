@@ -288,3 +288,17 @@ def test_a_stalled_start_is_not_measured_as_free_motion():
     assert rig.haptics._still_tau == []
     rig.calibrate()
     assert rig.haptics.baseline < 0.5
+
+
+def test_an_unchanged_push_is_not_re_sent_so_the_servo_loads_up():
+    """Re-sending a timed move every tick restarted it from the finger's
+    position, and the Star never pushed (2026-10-28, 40-77 mA at 600 mW)."""
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+    rig.tick(20.0, follower=wall, torque=3.0)
+    for _ in range(40):
+        rig.tick(12.0, follower=wall, torque=3.0)  # 8 deg past the wall, held
+    angles = [c for c in rig.raw.commands if c[0] == "angle"]
+    assert angles[-1][4] == 580  # MIN_MW + 60 * 8, reached
+    assert len(angles) < 10  # the ramp, then nothing until something changes
