@@ -1,0 +1,44 @@
+{
+  "episode": "shackle_L006_20261028_001",
+  "profile": "shackle",
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T08:40:54.022970+00:00"
+  },
+  "lessons": "/home/gavin/dreamtrial/viscous_sim/astra_learn/lessons/v006.md",
+  "prompt": "/home/gavin/dreamtrial/viscous_sim/ASTRA_OPERATOR_PROMPT_SHACKLE_LESSONS.md",
+  "test_operator": false,
+  "wall_cap_min": 240.0,
+  "server_pid": 1559324,
+  "workspace_initial_files": [
+    "LESSONS.md",
+    "README.md",
+    "obs",
+    "robot"
+  ],
+  "workspace_initial_inventory": {
+    "LESSONS.md": {
+      "bytes": 8006,
+      "sha256": "ef565edf9aa5ac27c629a96f67b24a0a9992ad3f39eacc4f083fe5a28522cb75"
+    },
+    "README.md": {
+      "bytes": 4792,
+      "sha256": "022346cabce8ab406c5d0532c2e1babdce07ae20eadea2da5fa50111a81dd57c"
+    },
+    "obs": {
+      "directory": true
+    },
+    "robot": {
+      "bytes": 1292,
+      "sha256": "b41b1d5615ba2e77be7347c55fdb01c5bd99c6d5dad37b04543c7a29a0d9dc16"
+    }
+  },
+  "operator_started_at": "2026-10-28T08:41:00.025402+00:00",
+  "operator_wall_s": 1881.4408068780322,
+  "operator_exit_code": 0,
+  "server_exit_code": 0,
+  "video_export_finished_at": "2026-10-28T09:13:05.468989+00:00"
+}

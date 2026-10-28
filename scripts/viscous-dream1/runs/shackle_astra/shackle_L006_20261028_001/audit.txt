@@ -1,0 +1,11 @@
+tools {'exec_command': 244, 'view_image': 121}
+paths {'obs/N_top.png': 13, 'obs/N_wrist_l.png': 21, 'obs/N_wrist_r.png': 1}
+robot {'./robot look': 93, './robot status': 1, './robot point': 60, './robot move': 51, './robot grip': 8, './robot nudge': 23, './robot turn': 6, './robot done': 1}
+images 140
+non-robot cmds [('cat README.md LESSONS.md', 1)]
+
+session /home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T03-41-00-01a181ab-75e7-7ca1-8674-2947b28c181b.jsonl
+Test command: None
+Initial workspace: ["LESSONS.md", "README.md", "obs", "robot"]
+Workspace inventory and hashes: workspace_audit.json
+This inventory/tool audit is heuristic, not an OS sandbox.

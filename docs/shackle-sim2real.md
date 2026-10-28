@@ -127,9 +127,21 @@ the real arm (sim to real).
     Launcher smoke-tested beside the A/B (its guard never saw the shackle
     server). Launched episode `shackle_L006_20261028_001` (lessons v006, 240
     min wall cap); outputs `runs/shackle_astra/` on gavin-linux.
+  - Episode 1 result: **failed**, 31 min, 263 commands. Astra grasped and
+    carried the pin, dropped it twice during regrasps (the second time off the
+    table) and ended honestly with "incomplete". Its claim that the pin
+    "entered the upper ear" is not confirmed by the sim (never inserted, never
+    engaged, 0 turns).
+- [ ] **5. In-context learning loop** (started 2026-10-28 ~04:20 CDT, Gavin
+  asleep): Astra consolidates its own notes after each attempt (flange v006 +
+  episode 1 -> shackle `s001`, then s002, ...), from its transcript and what the
+  sim measured, and tries again with them. Up to 3 more episodes, stop on the
+  first seated success, no new episode after 10:30 CDT
+  ([BRIEF_SHACKLE_LEARN_CHAIN.md](../scripts/viscous-dream1/BRIEF_SHACKLE_LEARN_CHAIN.md);
+  progress `runs/shackle_astra/chain.log`, table `summary.md`).
 - (4, continued) Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
-- [ ] **5. In-context learning check.** Do later episodes improve from the
+- (5, original line) **In-context learning check.** Do later episodes improve from the
   lessons alone (no weight updates)? Compare episode 1 to episode N.
 - [ ] **6. Real world.** Print the holder, set up the real part, run Astra with
   its sim lessons on the real arm. Powered-run safety rules in

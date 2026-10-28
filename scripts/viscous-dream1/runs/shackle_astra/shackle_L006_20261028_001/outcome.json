@@ -1,0 +1,45 @@
+{
+  "episode": "shackle_L006_20261028_001",
+  "success": false,
+  "seated": false,
+  "inserted": false,
+  "engaged": false,
+  "ever_inserted": false,
+  "ever_engaged": false,
+  "turns": 0.0,
+  "seat_gap_mm": -835.506535471204,
+  "commands": 263,
+  "sim_s": 397.24999999751816,
+  "wall_s": 1881.4408068780322,
+  "wall_s_source": "runner monotonic: operator start to process exit",
+  "pin_drops": 2,
+  "drop_events": [
+    {
+      "start_sim_s": 97.60000000010197,
+      "detected_sim_s": 104.20000000013349,
+      "fall_mm": 79.41665551397425
+    },
+    {
+      "start_sim_s": 338.09999999891687,
+      "detected_sim_s": 347.69999999868986,
+      "fall_mm": 20.90986238941117
+    }
+  ],
+  "thread_engagements": 0,
+  "engagement_sim_s": [],
+  "ended_by": "done",
+  "final_claim": "Incomplete: pin entered the upper ear but was lost during regrasp recovery; final views show empty ears. Left arm parked, right arm unchanged.",
+  "claim_vs_truth": "No disagreement detected in the final claim (wording heuristic). Simulator: pin not seated, inserted=False, engaged=False, turns=0.000.",
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T08:40:54.022970+00:00"
+  },
+  "operator_exit_code": 0,
+  "session": "/home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T03-41-00-01a181ab-75e7-7ca1-8674-2947b28c181b.jsonl",
+  "malformed_log_lines": 0,
+  "video_export_finished_at": "2026-10-28T09:13:05.468989+00:00",
+  "runner_error": null
+}
