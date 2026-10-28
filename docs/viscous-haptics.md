@@ -608,6 +608,31 @@ restore paths in the DAgger runner.
   nameplate crosses the ROV at 27.0-29.4 s of `astra_rov_backup2_g3_20261026_001`.
   No videos re-rendered yet. Evidence: `cinematic/results/logo_check/` and
   `runs/astra_flange/logo_check/`.
+  *Saving Astra's learning across sessions (Gavin, 2026-10-27).* Gavin noticed
+  ep 6 started "completely stupid" and later controlled the arm well. He asked
+  whether that is in-context learning and whether it can be saved "so that we
+  don't have to redo in-context learning from scratch every single time" in a
+  new session. Answer: yes, it is in-context learning. Ep 6 was one session with
+  six approaches, and each was planned with the earlier failures in view
+  (episodes 1-5 failed mostly on harness bugs, so the cross-episode gain was not
+  all Astra). It was already saved once, in `LESSONS.md`, which ep 6's Astra
+  wrote from its own transcript. Every later episode read that file (ROV ep 1:
+  first try, 102 commands vs 743). There are two gaps. The file never grows: all
+  five later episodes used ep 6's version. And there is no controlled
+  comparison. Gavin said "sure" to both fixes, briefed to Sol in
+  `scripts/viscous-dream1/BRIEF_ASTRA_LESSONS_AB.md` (tooling in
+  `astra_learn/` on gavin-linux):
+  - **Running lessons:** a versioned store (`lessons/v001` = ep 6's file). After
+    each episode Astra revises the lessons from its transcript plus the sim's
+    measured outcome, which corrects its overclaims ("seated" when 2 mm short).
+    The catch-up on the five later episodes gives v002..v006.
+  - **A/B on `astra_rov_backup2`:** three runs with lessons v001 against three
+    without, alternated, with a 4 h wall cap each. v001 stays fixed so the test
+    isolates "notes from the 23-minute session in the video". Codex's own
+    cross-session memory store on gavin-linux is empty and is asserted empty
+    before each run, so the lessons file is the only carry-over.
+  This feeds B4 ([shackle-sim2real.md](shackle-sim2real.md)), which asks whether
+  the lessons carry to the real arm.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF
