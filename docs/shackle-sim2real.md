@@ -42,6 +42,17 @@ the real arm (sim to real).
     on gavin-linux (log `shackle_model_codex.log`, outputs
     `runs/shackle_model/`). Still unmeasured: the inside gap between the ears,
     the pin's total length and the thread pitch.
+  - 2026-10-27, first model done (Codex, reviewed by Claude): parametric
+    `scripts/viscous-dream1/shackle_assets.py`, meshes in `assets/shackle/`,
+    report and photo comparisons in `runs/shackle_model/`
+    (`review_contact_sheet.png`). Shape matches the photos. Codex reads m287
+    (22.23) as the **thread length** and m293 (19.69) as the **pin shank
+    diameter**, so its best guess is a ~20 mm pin, M20x2.5. Borrowed or
+    estimated (marked `ESTIMATE` in `shackle_params.json`): ear inside gap
+    41.15 mm (Suncor stainless table), pin length 107.9 mm, pitch 2.5 mm. Grip
+    check: the Viscous gripper opens ~105 mm, so the pin shank, collar and tab
+    and the bow stock all fit. Waiting on Gavin's measurements of the pin
+    diameter, pitch, pin lengths and ear gap.
 - [ ] **2. Holder.** A small printable stand that keeps the U-shape vertical on
   the table (and a bolt stand if the bolt won't stand on its own head).
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo

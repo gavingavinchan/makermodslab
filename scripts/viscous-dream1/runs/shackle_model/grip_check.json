@@ -1,0 +1,30 @@
+{
+  "source_mjcf": "assets/propeller_cardinal/arm/source.xml",
+  "source_config": "viscous_arm.json",
+  "joint_ranges_m": {
+    "gripper_left_joint": [
+      0.0,
+      0.0524125
+    ],
+    "gripper_right_joint": [
+      0.0,
+      0.0524125
+    ]
+  },
+  "nominal_maximum_opening_mm": 104.825,
+  "pad_closed_gap_at_tcp_mm": 0.2640983002493158,
+  "pad_maximum_opening_at_tcp_mm": 105.08909830024932,
+  "method": "read XML prismatic limits; section original CAD pad meshes 042/043 at JSON TCP x; no simulation",
+  "features_mm": {
+    "pin_shank": 19.690001383423805,
+    "thread_major": 20.0,
+    "collar": 27.68,
+    "tab_thickness": 9.19,
+    "tab_width": 27.68,
+    "bow_stock": 19.41,
+    "ear_boss": 40.07,
+    "ear_thickness": 19.350999999999996,
+    "body_maximum_bow_width": 98.49973767995834,
+    "body_overall_length": 118.71000565588474
+  }
+}

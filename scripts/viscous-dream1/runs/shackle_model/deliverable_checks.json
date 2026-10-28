@@ -1,0 +1,20 @@
+{
+  "required_files_present": true,
+  "render_images_nonempty": true,
+  "collision_file_count": 212,
+  "parameter_count": 43,
+  "sha256": {
+    "shackle_assets.py": "446b30d32b35025c019132af52197a7f18dcc23ed1f5abcd7d22799a43a834bf",
+    "assets/shackle/shackle_body.stl": "531c56a4fa1aaba6d7ddda647d043b93621dc42fac9fed32ef8592607494be90",
+    "assets/shackle/shackle_pin.stl": "8a0449a39ddbfbd7b4430671e34095f2818ec7facd0ec4cfa389eb8ac078cc95",
+    "assets/shackle/shackle_params.json": "af195a390f440950ad24ae2a1383041e85ffb492d52ee263805de9a910808f95",
+    "runs/shackle_model/compare_m289.png": "e8107f0d5e25615c059e3555d0db53937c6a0a4e76c4bc375e3d7413fff43d3d",
+    "runs/shackle_model/compare_m296.png": "e69d8a7442a5129eef53ebe869c1a92148af4e7935c3b6a58de7d04f3bf700f4",
+    "runs/shackle_model/compare_m288.png": "befd27963682751622bc9e64a54edf00268243c07a2934144ed810dcbda3ddb6",
+    "runs/shackle_model/assembled.png": "14ed4db40b4ef961e6f88980d7417ac73cea505d81624054df621324073e4d09",
+    "runs/shackle_model/exploded.png": "87da9541151fcd94d29d54ecee552912a867f6a2f4e8d427b938e413d69da616",
+    "runs/shackle_model/dimension_check.md": "835d76d833185e6ac071ce85a74683c7bd6578f37eb64921a3ef3614396d288b",
+    "runs/shackle_model/shackle_model_report.md": "6314c54cf4871338078c8e298fb563a0a6ee399655f285a168ecff20193cd119",
+    "runs/shackle_model/grip_check.json": "ecb3dd3582a611fa7fbf2bc15468a37ab2e94ac8ca2f31cae6039ca0b193ca97"
+  }
+}

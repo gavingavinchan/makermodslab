@@ -1,0 +1,284 @@
+{
+  "dimensions": {
+    "BOW_ROD_DIAMETER": {
+      "value": 19.41,
+      "unit": "mm",
+      "source": "MEASURED m291, outside jaws across bow stock.",
+      "status": "MEASURED"
+    },
+    "BODY_OUTER_LENGTH": {
+      "value": 118.71,
+      "unit": "mm",
+      "source": "MEASURED m294, crown to forward edge of ear.",
+      "status": "MEASURED"
+    },
+    "BOW_OUTER_WIDTH": {
+      "value": 98.5,
+      "unit": "mm",
+      "source": "MEASURED m295, rotated display reads 98.50.",
+      "status": "MEASURED"
+    },
+    "EAR_OUTER_DIAMETER": {
+      "value": 40.07,
+      "unit": "mm",
+      "source": "MEASURED m292, ear boss viewed along pin axis.",
+      "status": "MEASURED"
+    },
+    "EAR_OUTER_SPAN": {
+      "value": 79.85,
+      "unit": "mm",
+      "source": "PROVISIONAL m290, outside ear faces; collar contact obscured.",
+      "status": "PROVISIONAL_MEASURED"
+    },
+    "EAR_INNER_GAP": {
+      "value": 41.148,
+      "unit": "mm",
+      "source": "ESTIMATE Suncor S0119-0020 dimension C; remeasure.",
+      "status": "ESTIMATE"
+    },
+    "EAR_THICKNESS": {
+      "value": 19.350999999999996,
+      "unit": "mm",
+      "source": "ESTIMATE derived symmetric ears; not m293.",
+      "status": "ESTIMATE"
+    },
+    "EAR_EDGE_ROUND": {
+      "value": 5.0,
+      "unit": "mm",
+      "source": "ESTIMATE radial roll-in from boss OD to flat face; elliptical barrel profile, m289/m296.",
+      "status": "ESTIMATE"
+    },
+    "CLEAR_BORE_DIAMETER": {
+      "value": 20.6,
+      "unit": "mm",
+      "source": "ESTIMATE fit allowance for nominal 20 mm stainless pin; no inside reading.",
+      "status": "ESTIMATE"
+    },
+    "THREAD_MAJOR_DIAMETER": {
+      "value": 20.0,
+      "unit": "mm",
+      "source": "ESTIMATE nominal M20 from m293 19.69 shank, Suncor matching diameters.",
+      "status": "ESTIMATE"
+    },
+    "THREAD_PITCH": {
+      "value": 2.5,
+      "unit": "mm",
+      "source": "ESTIMATE m286/m287/m288 crest counting; M20x2.5 favored, not identified.",
+      "status": "ESTIMATE"
+    },
+    "TAPPED_BORE_DIAMETER": {
+      "value": 17.29367,
+      "unit": "mm",
+      "source": "ESTIMATE basic metric internal minor diameter; plain visual bore.",
+      "status": "ESTIMATE"
+    },
+    "BORE_MOUTH_CHAMFER": {
+      "value": 0.6,
+      "unit": "mm",
+      "source": "ESTIMATE m289 bore lips; radial and axial extent.",
+      "status": "ESTIMATE"
+    },
+    "PIN_SHANK_DIAMETER": {
+      "value": 19.69,
+      "unit": "mm",
+      "source": "PROVISIONAL MEASURED m293, jaws straddle exposed pin shank.",
+      "status": "PROVISIONAL_MEASURED"
+    },
+    "PIN_UNDERHEAD_LENGTH": {
+      "value": 79.85,
+      "unit": "mm",
+      "source": "ESTIMATE flush seated tip, m293; m290 span assumption.",
+      "status": "ESTIMATE"
+    },
+    "PIN_THREAD_LENGTH": {
+      "value": 22.23,
+      "unit": "mm",
+      "source": "MEASURED m287, outside jaws along thread from tip to runout.",
+      "status": "MEASURED"
+    },
+    "PIN_TIP_CHAMFER": {
+      "value": 0.7,
+      "unit": "mm",
+      "source": "ESTIMATE m286/m288 lead-in, leaves flat standing end.",
+      "status": "ESTIMATE"
+    },
+    "COLLAR_DIAMETER": {
+      "value": 27.68,
+      "unit": "mm",
+      "source": "PROVISIONAL MEASURED m284, jaws span collar; tab width similar.",
+      "status": "PROVISIONAL_MEASURED"
+    },
+    "COLLAR_THICKNESS": {
+      "value": 4.0,
+      "unit": "mm",
+      "source": "ESTIMATE m288 silhouette, not independently measured.",
+      "status": "ESTIMATE"
+    },
+    "COLLAR_EDGE_ROUND": {
+      "value": 0.8,
+      "unit": "mm",
+      "source": "ESTIMATE m286/m288 rounded turned/forged edge.",
+      "status": "ESTIMATE"
+    },
+    "TAB_HEIGHT": {
+      "value": 24.05,
+      "unit": "mm",
+      "source": "PROVISIONAL MEASURED m286, collar top to tab tip; contact partly hidden.",
+      "status": "PROVISIONAL_MEASURED"
+    },
+    "TAB_WIDTH": {
+      "value": 27.68,
+      "unit": "mm",
+      "source": "ESTIMATE m284/m288 tab roughly as wide as collar; no separate reading.",
+      "status": "ESTIMATE"
+    },
+    "TAB_THICKNESS": {
+      "value": 9.19,
+      "unit": "mm",
+      "source": "MEASURED m285, outside jaws across narrow tab edge.",
+      "status": "MEASURED"
+    },
+    "TAB_CROSS_HOLE_DIAMETER": {
+      "value": 7.92,
+      "unit": "mm",
+      "source": "MEASURED m283, inside jaws in cross hole; upside-down display.",
+      "status": "MEASURED"
+    },
+    "TAB_HOLE_HEIGHT": {
+      "value": 13.0,
+      "unit": "mm",
+      "source": "ESTIMATE m286/m288 cross-hole center above collar top.",
+      "status": "ESTIMATE"
+    },
+    "TAB_BASE_WIDTH_FRACTION": {
+      "value": 0.68,
+      "unit": "dimensionless",
+      "source": "ESTIMATE m288 forged tab taper relative to maximum width.",
+      "status": "ESTIMATE"
+    },
+    "TAB_SHOULDER_HEIGHT_FRACTION": {
+      "value": 0.75,
+      "unit": "dimensionless",
+      "source": "ESTIMATE m288 transition from tapered sides to round crown.",
+      "status": "ESTIMATE"
+    },
+    "BOW_NECK_LENGTH": {
+      "value": 22.0,
+      "unit": "mm",
+      "source": "ESTIMATE m289/m296 ear-to-curve transition, from pin axis along -X.",
+      "status": "ESTIMATE"
+    },
+    "BOW_BLEND_CONTROL_LENGTH": {
+      "value": 13.0,
+      "unit": "mm",
+      "source": "ESTIMATE m289/m296 planform spline handles; shape only.",
+      "status": "ESTIMATE"
+    },
+    "COLLISION_DIAMETRAL_CLEARANCE": {
+      "value": 0.6,
+      "unit": "mm",
+      "source": "ESTIMATE deliberate proxy clearance over thread major, both bores.",
+      "status": "ESTIMATE"
+    },
+    "COLLISION_NECK_END_X": {
+      "value": -11.0,
+      "unit": "mm",
+      "source": "ESTIMATE conservative cutback avoids pin-axis obstruction.",
+      "status": "ESTIMATE"
+    },
+    "PIN_PLAIN_SHANK_LENGTH": {
+      "value": 57.61999999999999,
+      "unit": "mm",
+      "source": "ESTIMATE derived plain axial length, m287 plus provisional seating span.",
+      "status": "ESTIMATE"
+    },
+    "PIN_TOTAL_LENGTH": {
+      "value": 107.89999999999999,
+      "unit": "mm",
+      "source": "ESTIMATE derived tip to tab tip.",
+      "status": "ESTIMATE"
+    },
+    "BODY_INNER_LENGTH": {
+      "value": 69.42,
+      "unit": "mm",
+      "source": "ESTIMATE derived crown-inner to pin tangent, m294/m292/m291/m293.",
+      "status": "ESTIMATE"
+    },
+    "BOW_INNER_WIDTH": {
+      "value": 59.68,
+      "unit": "mm",
+      "source": "ESTIMATE derived maximum inside bow width, m295/m291.",
+      "status": "ESTIMATE"
+    },
+    "EAR_CENTER_OFFSET": {
+      "value": 30.249499999999998,
+      "unit": "mm",
+      "source": "ESTIMATE derived ear center offset from pin midpoint.",
+      "status": "ESTIMATE"
+    },
+    "BOW_CROWN_RADIUS": {
+      "value": 39.545,
+      "unit": "mm",
+      "source": "ESTIMATE circular centerline crown radius from m295/m291.",
+      "status": "ESTIMATE"
+    },
+    "BOW_CROWN_CENTER_X": {
+      "value": -49.425,
+      "unit": "mm",
+      "source": "ESTIMATE derived circular crown center along X.",
+      "status": "ESTIMATE"
+    },
+    "VISUAL_SECTIONS": {
+      "value": 128,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless.",
+      "status": "MESH_SETTING"
+    },
+    "TUBE_SECTIONS": {
+      "value": 40,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless.",
+      "status": "MESH_SETTING"
+    },
+    "CROWN_SEGMENTS": {
+      "value": 64,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless (even: includes maximum width).",
+      "status": "MESH_SETTING"
+    },
+    "BLEND_SEGMENTS": {
+      "value": 20,
+      "unit": "dimensionless",
+      "source": "Meshing resolution, dimensionless.",
+      "status": "MESH_SETTING"
+    },
+    "COLLISION_EAR_SECTORS": {
+      "value": 48,
+      "unit": "dimensionless",
+      "source": "Convex-cell resolution; tangent inner faces preserve circular clearance.",
+      "status": "MESH_SETTING"
+    }
+  },
+  "frame": {
+    "parameter_units": "mm",
+    "mesh_units": "m",
+    "body": "origin pin-axis midpoint; clear +Z, tapped -Z, bow -X; bow plane XZ",
+    "pin": "origin threaded tip; +Z toward head; tab broad face XZ, cross-hole axis Y",
+    "seated_pin_translation_m": [
+      0,
+      0,
+      -0.039924999999999995
+    ]
+  },
+  "sources": {
+    "photos": "../../shackle/photos; all 14 photos m283\u2013m296 inspected",
+    "suncor": "https://suncorstainless.com/wp-content/uploads/2022/02/Forged-Shackles-1-17-22-1.pdf",
+    "crosby": "https://kitocrosby.com/wp-content/uploads/2026/04/01_Shackles_IMP_24.pdf"
+  },
+  "notes": [
+    "Provisional 19\u201320 mm stainless pattern, manufacturer not identified.",
+    "STL is faceted geometry with outward face normals; smooth split-normal OBJ companions supplied.",
+    "Plain major-cylinder thread overlaps visual minor bore when seated; collision tapped bore has positive clearance.",
+    "No simulation or billed inference calls."
+  ]
+}

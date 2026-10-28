@@ -1,0 +1,86 @@
+{
+  "reloaded_exported_meshes_valid": true,
+  "convex_parts": 212,
+  "minimum_collision_axis_distance_mm_after_stl_reload": 10.299999837037237,
+  "guaranteed_collision_passage_diameter_mm": 20.599999674074475,
+  "measured_shank_section_mm": 19.690001383423805,
+  "measurements": [
+    {
+      "photo": "m283",
+      "photo_mm": 7.92,
+      "model_mm": 7.919999770820141,
+      "difference_mm": -2.2917985909032268e-07,
+      "method": "Cross hole: X extent of inner closed loop in pin mesh section Y=0."
+    },
+    {
+      "photo": "m284",
+      "photo_mm": 27.68,
+      "model_mm": 27.68000029027462,
+      "difference_mm": 2.9027462034036944e-07,
+      "method": "Collar OD: X extent of mesh section halfway through collar thickness."
+    },
+    {
+      "photo": "m285",
+      "photo_mm": 9.19,
+      "model_mm": 9.189999662339687,
+      "difference_mm": -3.37660312155208e-07,
+      "method": "Flat tab thickness: Y extent of mesh vertices above the collar."
+    },
+    {
+      "photo": "m286",
+      "photo_mm": 24.05,
+      "model_mm": 24.0500011086464,
+      "difference_mm": 1.1086463977960648e-06,
+      "method": "Tab height above collar top; underside-to-tip alternative is 28.05 mm."
+    },
+    {
+      "photo": "m287",
+      "photo_mm": 22.23,
+      "model_mm": 22.22999930381775,
+      "difference_mm": -6.961822514028881e-07,
+      "method": "Maximum Z of full-major-radius thread vertices below mid-shank, measured from tip Z=0."
+    },
+    {
+      "photo": "m290",
+      "photo_mm": 79.85,
+      "model_mm": 79.84999567270279,
+      "difference_mm": -4.3272972050090175e-06,
+      "method": "Z extent of forward annular seating-face mesh vertices, excluding bow."
+    },
+    {
+      "photo": "m291",
+      "photo_mm": 19.41,
+      "model_mm": 19.40999925136566,
+      "difference_mm": -7.486343385210148e-07,
+      "method": "Y extent of mesh section at the leftmost crown centerline station."
+    },
+    {
+      "photo": "m292",
+      "photo_mm": 40.07,
+      "model_mm": 40.070001035928726,
+      "difference_mm": 1.035928725912072e-06,
+      "method": "Boss OD: body Y extent; axis Z."
+    },
+    {
+      "photo": "m293",
+      "photo_mm": 19.69,
+      "model_mm": 19.690001383423805,
+      "difference_mm": 1.3834238039578395e-06,
+      "method": "Exposed shank diameter from mesh section Z halfway along plain shank, X extent."
+    },
+    {
+      "photo": "m294",
+      "photo_mm": 118.71,
+      "model_mm": 118.71000565588474,
+      "difference_mm": 5.6558847489895925e-06,
+      "method": "Full body X bounding box: crown to forward ear edge."
+    },
+    {
+      "photo": "m295",
+      "photo_mm": 98.5,
+      "model_mm": 98.49973767995834,
+      "difference_mm": -0.00026232004165649414,
+      "method": "Maximum body Z bounding box across bow, not assembled pin/head."
+    }
+  ]
+}

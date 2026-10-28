@@ -1,0 +1,47 @@
+{
+  "289": {
+    "photo_crop": [
+      20,
+      325,
+      815,
+      945
+    ],
+    "model_crop": [
+      35,
+      140,
+      970,
+      925
+    ],
+    "note": "Body only; near clear ear, far tapped ear. Visual tapped hole is a plain minor bore."
+  },
+  "296": {
+    "photo_crop": [
+      25,
+      290,
+      850,
+      1030
+    ],
+    "model_crop": [
+      20,
+      65,
+      970,
+      945
+    ],
+    "note": "Pin seated; head rotated 90 deg about its axis to show the narrow tab edge as in the photo."
+  },
+  "288": {
+    "photo_crop": [
+      350,
+      250,
+      610,
+      895
+    ],
+    "model_crop": [
+      330,
+      75,
+      700,
+      915
+    ],
+    "note": "Pin standing on its threaded tip. Thread geometry is intentionally a plain major cylinder."
+  }
+}

@@ -1,0 +1,1067 @@
+{
+  "units": "metres",
+  "frame": "body frame; preserve mesh vertices and offsets; one geom per file",
+  "purpose": "both bores enlarged for plain-major-cylinder pin insertion; tapped thread contact intentionally omitted",
+  "parts": [
+    {
+      "file": "collision/bow_000.stl",
+      "convex": true,
+      "min_axis_distance_mm": 11.0
+    },
+    {
+      "file": "collision/bow_001.stl",
+      "convex": true,
+      "min_axis_distance_mm": 12.833333333333334
+    },
+    {
+      "file": "collision/bow_002.stl",
+      "convex": true,
+      "min_axis_distance_mm": 14.666666666666666
+    },
+    {
+      "file": "collision/bow_003.stl",
+      "convex": true,
+      "min_axis_distance_mm": 16.5
+    },
+    {
+      "file": "collision/bow_004.stl",
+      "convex": true,
+      "min_axis_distance_mm": 18.333333333333332
+    },
+    {
+      "file": "collision/bow_005.stl",
+      "convex": true,
+      "min_axis_distance_mm": 20.166666666666664
+    },
+    {
+      "file": "collision/bow_006.stl",
+      "convex": true,
+      "min_axis_distance_mm": 21.823232977504404
+    },
+    {
+      "file": "collision/bow_007.stl",
+      "convex": true,
+      "min_axis_distance_mm": 23.16156079424008
+    },
+    {
+      "file": "collision/bow_008.stl",
+      "convex": true,
+      "min_axis_distance_mm": 24.121387456282346
+    },
+    {
+      "file": "collision/bow_009.stl",
+      "convex": true,
+      "min_axis_distance_mm": 24.936448015269765
+    },
+    {
+      "file": "collision/bow_010.stl",
+      "convex": true,
+      "min_axis_distance_mm": 25.65801699458744
+    },
+    {
+      "file": "collision/bow_011.stl",
+      "convex": true,
+      "min_axis_distance_mm": 26.338086149620295
+    },
+    {
+      "file": "collision/bow_012.stl",
+      "convex": true,
+      "min_axis_distance_mm": 27.02383292159023
+    },
+    {
+      "file": "collision/bow_013.stl",
+      "convex": true,
+      "min_axis_distance_mm": 27.754006427658283
+    },
+    {
+      "file": "collision/bow_014.stl",
+      "convex": true,
+      "min_axis_distance_mm": 28.558422610518363
+    },
+    {
+      "file": "collision/bow_015.stl",
+      "convex": true,
+      "min_axis_distance_mm": 29.46001497662304
+    },
+    {
+      "file": "collision/bow_016.stl",
+      "convex": true,
+      "min_axis_distance_mm": 30.47784903789641
+    },
+    {
+      "file": "collision/bow_017.stl",
+      "convex": true,
+      "min_axis_distance_mm": 31.62955247662302
+    },
+    {
+      "file": "collision/bow_018.stl",
+      "convex": true,
+      "min_axis_distance_mm": 32.932222610518366
+    },
+    {
+      "file": "collision/bow_019.stl",
+      "convex": true,
+      "min_axis_distance_mm": 34.4015189276583
+    },
+    {
+      "file": "collision/bow_020.stl",
+      "convex": true,
+      "min_axis_distance_mm": 36.04923292159022
+    },
+    {
+      "file": "collision/bow_021.stl",
+      "convex": true,
+      "min_axis_distance_mm": 37.88027364962028
+    },
+    {
+      "file": "collision/bow_022.stl",
+      "convex": true,
+      "min_axis_distance_mm": 39.890616994587454
+    },
+    {
+      "file": "collision/bow_023.stl",
+      "convex": true,
+      "min_axis_distance_mm": 42.06781051526977
+    },
+    {
+      "file": "collision/bow_024.stl",
+      "convex": true,
+      "min_axis_distance_mm": 44.39458745628232
+    },
+    {
+      "file": "collision/bow_025.stl",
+      "convex": true,
+      "min_axis_distance_mm": 46.854398294240106
+    },
+    {
+      "file": "collision/bow_026.stl",
+      "convex": true,
+      "min_axis_distance_mm": 49.37462369583799
+    },
+    {
+      "file": "collision/bow_027.stl",
+      "convex": true,
+      "min_axis_distance_mm": 50.88917940193016
+    },
+    {
+      "file": "collision/bow_028.stl",
+      "convex": true,
+      "min_axis_distance_mm": 52.34983146743409
+    },
+    {
+      "file": "collision/bow_029.stl",
+      "convex": true,
+      "min_axis_distance_mm": 53.803437357747974
+    },
+    {
+      "file": "collision/bow_030.stl",
+      "convex": true,
+      "min_axis_distance_mm": 55.24649520896127
+    },
+    {
+      "file": "collision/bow_031.stl",
+      "convex": true,
+      "min_axis_distance_mm": 56.6755285683134
+    },
+    {
+      "file": "collision/bow_032.stl",
+      "convex": true,
+      "min_axis_distance_mm": 58.087094769273136
+    },
+    {
+      "file": "collision/bow_033.stl",
+      "convex": true,
+      "min_axis_distance_mm": 59.47779322522382
+    },
+    {
+      "file": "collision/bow_034.stl",
+      "convex": true,
+      "min_axis_distance_mm": 60.84427362177428
+    },
+    {
+      "file": "collision/bow_035.stl",
+      "convex": true,
+      "min_axis_distance_mm": 62.18324398795963
+    },
+    {
+      "file": "collision/bow_036.stl",
+      "convex": true,
+      "min_axis_distance_mm": 63.49147862688776
+    },
+    {
+      "file": "collision/bow_037.stl",
+      "convex": true,
+      "min_axis_distance_mm": 64.76582588672575
+    },
+    {
+      "file": "collision/bow_038.stl",
+      "convex": true,
+      "min_axis_distance_mm": 66.00321575330491
+    },
+    {
+      "file": "collision/bow_039.stl",
+      "convex": true,
+      "min_axis_distance_mm": 67.2006672460542
+    },
+    {
+      "file": "collision/bow_040.stl",
+      "convex": true,
+      "min_axis_distance_mm": 68.35529559944318
+    },
+    {
+      "file": "collision/bow_041.stl",
+      "convex": true,
+      "min_axis_distance_mm": 69.46431921263505
+    },
+    {
+      "file": "collision/bow_042.stl",
+      "convex": true,
+      "min_axis_distance_mm": 70.52506635060658
+    },
+    {
+      "file": "collision/bow_043.stl",
+      "convex": true,
+      "min_axis_distance_mm": 71.53498158059195
+    },
+    {
+      "file": "collision/bow_044.stl",
+      "convex": true,
+      "min_axis_distance_mm": 72.49163192834406
+    },
+    {
+      "file": "collision/bow_045.stl",
+      "convex": true,
+      "min_axis_distance_mm": 73.39271273938246
+    },
+    {
+      "file": "collision/bow_046.stl",
+      "convex": true,
+      "min_axis_distance_mm": 74.23605323110796
+    },
+    {
+      "file": "collision/bow_047.stl",
+      "convex": true,
+      "min_axis_distance_mm": 75.0196217224081
+    },
+    {
+      "file": "collision/bow_048.stl",
+      "convex": true,
+      "min_axis_distance_mm": 75.74153052815491
+    },
+    {
+      "file": "collision/bow_049.stl",
+      "convex": true,
+      "min_axis_distance_mm": 76.40004050680355
+    },
+    {
+      "file": "collision/bow_050.stl",
+      "convex": true,
+      "min_axis_distance_mm": 76.99356525013678
+    },
+    {
+      "file": "collision/bow_051.stl",
+      "convex": true,
+      "min_axis_distance_mm": 77.52067490506133
+    },
+    {
+      "file": "collision/bow_052.stl",
+      "convex": true,
+      "min_axis_distance_mm": 77.98009961824911
+    },
+    {
+      "file": "collision/bow_053.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.37073259532521
+    },
+    {
+      "file": "collision/bow_054.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.69163276723239
+    },
+    {
+      "file": "collision/bow_055.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.94202705734907
+    },
+    {
+      "file": "collision/bow_056.stl",
+      "convex": true,
+      "min_axis_distance_mm": 79.12131224389836
+    },
+    {
+      "file": "collision/bow_057.stl",
+      "convex": true,
+      "min_axis_distance_mm": 79.22905641316234
+    },
+    {
+      "file": "collision/bow_058.stl",
+      "convex": true,
+      "min_axis_distance_mm": 79.22905641316234
+    },
+    {
+      "file": "collision/bow_059.stl",
+      "convex": true,
+      "min_axis_distance_mm": 79.12131224389836
+    },
+    {
+      "file": "collision/bow_060.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.94202705734907
+    },
+    {
+      "file": "collision/bow_061.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.69163276723239
+    },
+    {
+      "file": "collision/bow_062.stl",
+      "convex": true,
+      "min_axis_distance_mm": 78.3707325953252
+    },
+    {
+      "file": "collision/bow_063.stl",
+      "convex": true,
+      "min_axis_distance_mm": 77.98009961824911
+    },
+    {
+      "file": "collision/bow_064.stl",
+      "convex": true,
+      "min_axis_distance_mm": 77.52067490506134
+    },
+    {
+      "file": "collision/bow_065.stl",
+      "convex": true,
+      "min_axis_distance_mm": 76.9935652501368
+    },
+    {
+      "file": "collision/bow_066.stl",
+      "convex": true,
+      "min_axis_distance_mm": 76.40004050680356
+    },
+    {
+      "file": "collision/bow_067.stl",
+      "convex": true,
+      "min_axis_distance_mm": 75.74153052815491
+    },
+    {
+      "file": "collision/bow_068.stl",
+      "convex": true,
+      "min_axis_distance_mm": 75.0196217224081
+    },
+    {
+      "file": "collision/bow_069.stl",
+      "convex": true,
+      "min_axis_distance_mm": 74.23605323110796
+    },
+    {
+      "file": "collision/bow_070.stl",
+      "convex": true,
+      "min_axis_distance_mm": 73.39271273938245
+    },
+    {
+      "file": "collision/bow_071.stl",
+      "convex": true,
+      "min_axis_distance_mm": 72.49163192834406
+    },
+    {
+      "file": "collision/bow_072.stl",
+      "convex": true,
+      "min_axis_distance_mm": 71.53498158059197
+    },
+    {
+      "file": "collision/bow_073.stl",
+      "convex": true,
+      "min_axis_distance_mm": 70.5250663506066
+    },
+    {
+      "file": "collision/bow_074.stl",
+      "convex": true,
+      "min_axis_distance_mm": 69.46431921263503
+    },
+    {
+      "file": "collision/bow_075.stl",
+      "convex": true,
+      "min_axis_distance_mm": 68.35529559944317
+    },
+    {
+      "file": "collision/bow_076.stl",
+      "convex": true,
+      "min_axis_distance_mm": 67.20066724605422
+    },
+    {
+      "file": "collision/bow_077.stl",
+      "convex": true,
+      "min_axis_distance_mm": 66.00321575330493
+    },
+    {
+      "file": "collision/bow_078.stl",
+      "convex": true,
+      "min_axis_distance_mm": 64.76582588672574
+    },
+    {
+      "file": "collision/bow_079.stl",
+      "convex": true,
+      "min_axis_distance_mm": 63.49147862688776
+    },
+    {
+      "file": "collision/bow_080.stl",
+      "convex": true,
+      "min_axis_distance_mm": 62.18324398795963
+    },
+    {
+      "file": "collision/bow_081.stl",
+      "convex": true,
+      "min_axis_distance_mm": 60.8442736217743
+    },
+    {
+      "file": "collision/bow_082.stl",
+      "convex": true,
+      "min_axis_distance_mm": 59.47779322522387
+    },
+    {
+      "file": "collision/bow_083.stl",
+      "convex": true,
+      "min_axis_distance_mm": 58.08709476927313
+    },
+    {
+      "file": "collision/bow_084.stl",
+      "convex": true,
+      "min_axis_distance_mm": 56.6755285683134
+    },
+    {
+      "file": "collision/bow_085.stl",
+      "convex": true,
+      "min_axis_distance_mm": 55.2464952089613
+    },
+    {
+      "file": "collision/bow_086.stl",
+      "convex": true,
+      "min_axis_distance_mm": 53.80343735774796
+    },
+    {
+      "file": "collision/bow_087.stl",
+      "convex": true,
+      "min_axis_distance_mm": 52.34983146743407
+    },
+    {
+      "file": "collision/bow_088.stl",
+      "convex": true,
+      "min_axis_distance_mm": 50.88917940193015
+    },
+    {
+      "file": "collision/bow_089.stl",
+      "convex": true,
+      "min_axis_distance_mm": 49.374623695838
+    },
+    {
+      "file": "collision/bow_090.stl",
+      "convex": true,
+      "min_axis_distance_mm": 46.854398294240106
+    },
+    {
+      "file": "collision/bow_091.stl",
+      "convex": true,
+      "min_axis_distance_mm": 44.39458745628232
+    },
+    {
+      "file": "collision/bow_092.stl",
+      "convex": true,
+      "min_axis_distance_mm": 42.06781051526977
+    },
+    {
+      "file": "collision/bow_093.stl",
+      "convex": true,
+      "min_axis_distance_mm": 39.890616994587454
+    },
+    {
+      "file": "collision/bow_094.stl",
+      "convex": true,
+      "min_axis_distance_mm": 37.88027364962028
+    },
+    {
+      "file": "collision/bow_095.stl",
+      "convex": true,
+      "min_axis_distance_mm": 36.04923292159022
+    },
+    {
+      "file": "collision/bow_096.stl",
+      "convex": true,
+      "min_axis_distance_mm": 34.4015189276583
+    },
+    {
+      "file": "collision/bow_097.stl",
+      "convex": true,
+      "min_axis_distance_mm": 32.932222610518366
+    },
+    {
+      "file": "collision/bow_098.stl",
+      "convex": true,
+      "min_axis_distance_mm": 31.62955247662302
+    },
+    {
+      "file": "collision/bow_099.stl",
+      "convex": true,
+      "min_axis_distance_mm": 30.47784903789641
+    },
+    {
+      "file": "collision/bow_100.stl",
+      "convex": true,
+      "min_axis_distance_mm": 29.46001497662304
+    },
+    {
+      "file": "collision/bow_101.stl",
+      "convex": true,
+      "min_axis_distance_mm": 28.558422610518363
+    },
+    {
+      "file": "collision/bow_102.stl",
+      "convex": true,
+      "min_axis_distance_mm": 27.754006427658283
+    },
+    {
+      "file": "collision/bow_103.stl",
+      "convex": true,
+      "min_axis_distance_mm": 27.02383292159023
+    },
+    {
+      "file": "collision/bow_104.stl",
+      "convex": true,
+      "min_axis_distance_mm": 26.338086149620295
+    },
+    {
+      "file": "collision/bow_105.stl",
+      "convex": true,
+      "min_axis_distance_mm": 25.65801699458744
+    },
+    {
+      "file": "collision/bow_106.stl",
+      "convex": true,
+      "min_axis_distance_mm": 24.936448015269765
+    },
+    {
+      "file": "collision/bow_107.stl",
+      "convex": true,
+      "min_axis_distance_mm": 24.121387456282346
+    },
+    {
+      "file": "collision/bow_108.stl",
+      "convex": true,
+      "min_axis_distance_mm": 23.16156079424008
+    },
+    {
+      "file": "collision/bow_109.stl",
+      "convex": true,
+      "min_axis_distance_mm": 21.823232977504404
+    },
+    {
+      "file": "collision/bow_110.stl",
+      "convex": true,
+      "min_axis_distance_mm": 20.166666666666664
+    },
+    {
+      "file": "collision/bow_111.stl",
+      "convex": true,
+      "min_axis_distance_mm": 18.333333333333332
+    },
+    {
+      "file": "collision/bow_112.stl",
+      "convex": true,
+      "min_axis_distance_mm": 16.5
+    },
+    {
+      "file": "collision/bow_113.stl",
+      "convex": true,
+      "min_axis_distance_mm": 14.666666666666666
+    },
+    {
+      "file": "collision/bow_114.stl",
+      "convex": true,
+      "min_axis_distance_mm": 12.833333333333334
+    },
+    {
+      "file": "collision/bow_115.stl",
+      "convex": true,
+      "min_axis_distance_mm": 11.0
+    },
+    {
+      "file": "collision/ear_clear_000.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_001.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_002.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_clear_003.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_004.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_005.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_006.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_007.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_008.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_009.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_010.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_011.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_012.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_013.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_014.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_015.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_clear_016.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_017.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_018.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_019.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_020.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_021.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_022.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_023.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_024.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_025.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_026.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000004
+    },
+    {
+      "file": "collision/ear_clear_027.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_028.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_029.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_030.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_031.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_clear_032.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_033.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_034.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_035.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_036.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_037.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_038.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_039.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_040.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_clear_041.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_042.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_043.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_clear_044.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_045.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_clear_046.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_clear_047.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_000.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_001.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_002.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_tapped_003.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_004.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_005.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_006.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_007.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_008.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_009.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_010.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_011.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_012.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_013.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_014.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_015.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_tapped_016.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_017.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_018.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_019.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_020.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_021.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_022.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_023.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_024.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_025.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_026.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000004
+    },
+    {
+      "file": "collision/ear_tapped_027.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_028.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_029.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_030.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_031.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_tapped_032.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_033.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_034.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_035.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_036.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_037.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_038.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_039.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_040.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.300000000000002
+    },
+    {
+      "file": "collision/ear_tapped_041.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_042.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_043.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_tapped_044.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_045.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    },
+    {
+      "file": "collision/ear_tapped_046.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.299999999999999
+    },
+    {
+      "file": "collision/ear_tapped_047.stl",
+      "convex": true,
+      "min_axis_distance_mm": 10.3
+    }
+  ]
+}
