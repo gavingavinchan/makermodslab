@@ -98,6 +98,13 @@ the real arm (sim to real).
   - 2026-10-28: launched `sweep.py --task shackle --episodes 3 --live
     --max-calls 30`, instruction "pick up the pin and screw it into the
     shackle"; outputs `runs/shackle_scene/dream/ep_00..02`.
+  - Result: **0/3**, 90 calls (ledger 2076/2212). Dream-1 moved the gripper
+    around the shackle but never grasped the pin; nothing inserted or turned.
+  - 2026-10-28, Gavin changed the layout: "the bolt should be right in front of
+    the arm, so when it starts the arm is already facing it. The holes should
+    be closer to the arm, and the C-shaped part should be facing away from the
+    arm." `BRIEF_SHACKLE_LAYOUT.md` (Codex, after the shading fix). The 0/3
+    above is on the old layout (`layout_v1`).
 - [ ] **4. Astra does it in sim.** Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - [ ] **5. In-context learning check.** Do later episodes improve from the

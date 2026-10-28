@@ -1,0 +1,24 @@
+/home/gavin/dreamtrial/viscous_sim/shackle_sweep.py:59: UserWarning: arm file /home/gavin/dreamtrial/viscous_sim/viscous_arm.json: no tcp_calibration record says a person set its tool center point (it was written by hand), so the hand poses may land off target. Run `dreamcli tcp`, set the tool center point on the real gripper, and put the arm file it writes in config key 'ik'
+  client=dream.DreamClient(api_key=sw.y.settings().get('DREAM_API_KEY',''));client.policy(sw.policy(CONFIG,e));trace=IKTrace(client._policy._ik,'shackle')
+2026-10-28 01:04:52.969 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 4 terms and 1 variables: 4 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 01:04:52.979 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _limit_cost
+2026-10-28 01:04:53.023 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 1 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 01:04:53.029 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 1 variables each: rest_residual
+2026-10-28 01:04:53.038 | INFO     | jaxls._problem:analyze:451 - Variable elimination: variable IDs are traced; solves will not use elimination
+2026-10-28 01:04:53.816 | INFO     | jaxls._problem:analyze:237 - Building optimization problem with 566 terms and 96 variables: 566 costs, 0 eq_zero, 0 leq_zero, 0 geq_zero
+2026-10-28 01:04:53.846 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 01:04:53.862 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 48 costs, 1 variables each: _pose_cost_analytical_jac
+2026-10-28 01:04:53.870 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 94 costs, 2 variables each: _step_cost
+2026-10-28 01:04:53.884 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 90 costs, 4 variables each: _jerk_cost
+2026-10-28 01:04:53.899 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 92 costs, 3 variables each: _accel_cost
+2026-10-28 01:04:53.911 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 2 costs, 3 variables each: _history_cost
+2026-10-28 01:04:53.918 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: _limit_cost
+2026-10-28 01:04:53.925 | INFO     | jaxls._problem:analyze:364 - Vectorizing group with 96 costs, 1 variables each: rest_residual
+/home/gavin/dreamtrial/viscous_sim/shackle_sweep.py:66: DreamSlowNetworkWarning: The model is responding slowly: get_action round trips are about 1280 ms (the model and our servers 1200 ms, network 60 ms); the robot's motion may be less smooth. See client.last_timing.
+  try:reply=client.get_action(commanded=commanded)
+/home/gavin/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1885: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
+  self.pid = _fork_exec(
+/home/gavin/dreamtrial/viscous_sim/shackle_sweep.py:66: DreamSlowNetworkWarning: The model is responding slowly: get_action round trips are about 1210 ms (the model and our servers 1140 ms, network 70 ms); the robot's motion may be less smooth. See client.last_timing.
+  try:reply=client.get_action(commanded=commanded)
+/home/gavin/dreamtrial/viscous_sim/shackle_sweep.py:66: DreamSlowNetworkWarning: The model is responding slowly: get_action round trips are about 1700 ms (the model and our servers 1600 ms, network 100 ms); the robot's motion may be less smooth. See client.last_timing.
+  try:reply=client.get_action(commanded=commanded)
