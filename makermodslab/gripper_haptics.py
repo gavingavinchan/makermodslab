@@ -11,39 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Gripper haptics in Lab teleop: the Star gripper pushes back on a grasp.
+"""Unilateral gripper wall with a dissipative brake ahead of delayed contact.
 
-Opt-in per teleop session (the Teleop "Gripper haptics" checkbox), Viscous
-only. The loop is ``scripts/gripper-haptics-poc.py`` v2, the version Gavin
-called acceptable on 2026-10-27 (docs/viscous-haptics.md, "Gripper haptics
-proof of concept"), moved into the teleop loop:
+Only the Star gripper is energized, through the exclusive raw transport.
+Free slow motion is released. Fast closure that outruns the follower gets
+bounded damping (0x12), not a speculative position wall. Confirmed contact
+anchors a wall at the jaw position; a short capped position command supplies
+effort immediately. Depth increases effort, opening velocity reduces it.
+There is no slow trajectory or power ramp delaying an impact.
 
-- The follower gripper follows the Star through the session's normal leader
-  mapping. Its target may lead the jaws by at most MAX_LEAD_DEG while the
-  jaws are nearly still (on an object: caps the squeeze at about kp x 8 deg),
-  and never closes past the real closed stop (the leader's gripper offset).
-- Calibration first: the operator opens and closes the gripper freely; the
-  follower's still-jaw torque gives the free-motion baseline and contact
-  threshold, the Star's travel bounds every later command.
-- Contact latches a wall at the jaw position. The Star's power then rises
-  with how far the hand closes the Star past that wall, only RISES at
-  SLEW_MW_S and every move is planned over MOVE_MS (damping). At or outside
-  the wall the Star is released, so it never pulls the finger in.
-
-One fix from Run B's list is included: no contact is detected within
-CLOSED_STOP_IGNORE_DEG of the closed stop (the jaws closing on their own stop
-read as a squeeze). A 60 ms persistence rule was tried and removed: with the
-slew it left a fast close onto an object with no felt push (2026-10-28).
-
-Only the Star GRIPPER servo is ever energized. motorbridge 0.0.4 cannot send
-a capped-power move (its power 0 is the protection ceiling,
-docs/star-servo-protocol.md), so a haptic session opens the Star through
-``fashionstar_raw`` instead of motorbridge, never both: ``HapticStarLeader``
-is the stock leader on a ``RawStarBus`` that answers the calls it makes.
-Every haptics fault releases the Star gripper and turns haptics off; teleop
-itself carries on. Disconnect releases all seven Star servos twice. A
-SIGKILL leaves the last command active: the Star's power switch is the hard
-stop.
+The mW setting is NOT calibrated torque or a current bound. The 800 mW cap
+was exercised on 2026-10-21 (136 mA stalled, 29-31 C); 10-27 backdrive reached
+660 mA below that setting. See docs/viscous-haptics.md for evidence and risks.
+Faults disable haptics and release without stopping follower teleop. Close
+releases before return to rest; bus disconnect releases all seven twice,
+without RawBus.close() or worker-thread signal handlers. Bus loss/SIGKILL
+can leave effort active: the Star power switch remains the hard stop.
 """
 
 from __future__ import annotations
@@ -60,32 +43,34 @@ from datetime import UTC, datetime
 from lerobot.teleoperators.rebot_102_leader.rebot_102_leader import RebotArm102Leader
 from lerobot.utils.decorators import check_if_already_connected
 
-from .fashionstar_raw import IDS, MONITOR, PING, RELEASE, Guard, RawBus, SafetyError, Travel
+from .fashionstar_raw import DAMPING, IDS, MONITOR, PING, RELEASE, Guard, RawBus, SafetyError, Travel
 
 logger = logging.getLogger(__name__)
 
 GRIPPER = "gripper"
 
-# PoC v2 values (Run B, "acceptable").
+# A3: effort must arrive during impact, not 0.1-0.3 s afterwards.
 MAX_LEAD_DEG = 8.0
+MOVING_LEAD_DEG = 12.0  # closing only; bounds the formerly unlimited impact command
 STILL_DEG_S = 40.0
-MIN_MW = 100
-MAX_MW = 600
-MW_PER_DEG = 60.0
-# PoC v2 used 1500: from MIN_MW that takes ~0.35 s to full power, and a hand
-# slamming the Star shut is already at its stop by then (2026-10-28, Gavin:
-# "when I ... close it very quickly onto the cube, I don't feel any haptic
-# feedback"). 4000 reaches full power in ~0.12 s.
-SLEW_MW_S = 4000.0
-# PoC v2 used 150 and re-sent it every tick: each re-send restarted the move
-# from where the finger had pushed the servo, so its setpoint never got ahead
-# of the finger and it drew 40-77 mA (30 idle) at "600 mW" (Run B and
-# 2026-10-28). Now a command is only re-sent when it changes by RESEND_DEG /
-# RESEND_MW, so each move finishes and the servo loads up to its cap.
-MOVE_MS = 60
-RESEND_DEG = 0.5
+MIN_MW = 200
+MAX_MW = 800  # 10-21 actuation evidence: 800 mW -> 136 mA stalled, 29-31 C
+MW_PER_DEG = 100.0
+MW_PER_DEG_S = 3.0  # closing adds effort; recoil subtracts it
+MOVE_MS = 1  # request an immediate setpoint; actual motion remains servo/effort limited
 RESEND_MW = 25
-ON_DEG = 1.0
+ON_DEG = 0.5
+# A brake, not contact inference: lead/lag alone also occurs in empty fast closes.
+BRAKE_ON_LAG_DEG = 6.0  # Star degrees (about 10.7 follower degrees)
+BRAKE_OFF_LAG_DEG = 4.0
+BRAKE_CLOSE_DEG_S = 100.0
+BRAKE_MIN_MW = 200
+BRAKE_MAX_MW = 400
+BRAKE_MW_PER_DEG = 40.0
+# Empty-motion torque reached 3.1 N m on 10-27. Require both a larger load
+# and a sudden deceleration for a moving-jaw impact, not just acceleration.
+IMPACT_NM = 3.5
+IMPACT_DROP_DEG_S = 80.0
 RELEASE_DEG = 3.0
 SQUEEZE_GONE_S = 0.3
 CALIB_S = 8.0
@@ -241,15 +226,23 @@ class GripperHaptics:
     ``after_send`` once the follower has been commanded, ``close`` when the
     loop ends (before any return to rest)."""
 
-    def __init__(self, robot, leader, *, clock=time.monotonic, log_dir=None):
+    def __init__(self, robot, leader, *, clock=time.monotonic, wall_clock=time.time, log_dir=None):
         cfg = leader.config
         self.leader = leader
         self.robot = robot
         self.bus = _innermost_bus(robot)
         self.clock = clock
+        self.wall_clock = wall_clock
         self.star_id = cfg.joint_ids[GRIPPER]
         self.scale = float(cfg.joint_directions[GRIPPER])
         self.offset = float(cfg.joint_offsets.get(GRIPPER, 0.0))
+        if (
+            self.star_id != 6
+            or not math.isfinite(self.scale)
+            or self.scale == 0
+            or not math.isfinite(self.offset)
+        ):
+            raise ValueError("Haptics requires Star gripper id 6 and a finite nonzero mapping")
         self.f_close = STAR_CLOSE * math.copysign(1.0, self.scale)
         lo, hi = robot.config.joint_limits[GRIPPER]
         # The leader maps the Star's closed reading (0) onto the follower's
@@ -264,6 +257,7 @@ class GripperHaptics:
         self.phase = "calibrating"
         self.reason = None
         self._last_t = None
+        self._last_lead = self._last_fv = None
         self._cmd = None
         self._still_tau = []
         self._star_seen = None
@@ -290,31 +284,38 @@ class GripperHaptics:
     def _follower(self):
         """Latest follower gripper state in joint degrees, or None when stale."""
         sent = (self.bus.last_feedback_time or {}).get(GRIPPER)
-        if sent is None or time.time() - sent > FEEDBACK_FRESH_S:
+        if sent is None or not 0 <= self.wall_clock() - sent <= FEEDBACK_FRESH_S:
             return None
         state = self.bus._last_known_states[GRIPPER]
         turn = getattr(self.robot, "_turn_offset", {}).get(GRIPPER, 0.0)
-        return (
+        values = (
             float(state["position"]) + turn,
             float(state["velocity"]),
             float(state["torque"]),
             float(state["temp_mos"]),
         )
+        if not all(math.isfinite(x) for x in values):
+            raise SafetyError("Non-finite follower gripper feedback")
+        return values
 
     def before_send(self, action):
-        """Clamp the follower gripper target: closed stop always, squeeze cap while the jaws are still."""
+        """Clamp the closed stop and closing lead; leave opening free."""
         key = f"{GRIPPER}.pos"
         if key not in action:
             return action
         target = _clamp(float(action[key]), self.f_lo, self.f_hi)
-        state = self._follower()
-        # Only once haptics is on. During calibration the jaws are empty, and
-        # Lab's absolute mapping can start them far from the Star's pose (the
-        # PoC's relative mapping never did): the cap then stalled them on
-        # friction and the stall was measured as free-motion torque
-        # (2026-10-28, baseline 2.75 N m).
-        if self.phase == "on" and state is not None and abs(state[1]) < STILL_DEG_S:
-            target = _clamp(target, state[0] - MAX_LEAD_DEG, state[0] + MAX_LEAD_DEG)
+        try:
+            state = self._follower()
+            # Calibration must catch up freely, or startup error becomes its
+            # torque baseline. Afterwards cap only CLOSING lead, even at speed.
+            # Opening must escape an object freely.
+            if self.phase == "on" and state is not None:
+                cap = MAX_LEAD_DEG if abs(state[1]) < STILL_DEG_S else MOVING_LEAD_DEG
+                if (target - state[0]) * self.f_close > cap:
+                    target = state[0] + self.f_close * cap
+                target = _clamp(target, self.f_lo, self.f_hi)
+        except Exception as exc:
+            self._turn_off(f"error: {exc}")
         self._cmd = target
         return {**action, key: target}
 
@@ -340,10 +341,15 @@ class GripperHaptics:
         state = self._follower()
         star = self.leader.bus.monitors.get(self.star_id) if self.leader.bus.fresh.get(self.star_id) else None
         if state is None or star is None:
-            # Never push on stale data; resume when both are fresh again.
-            self._release_star()
-            self._publish()
+            self._turn_off("stale gripper feedback")
             return
+        if not 0 <= dt <= FEEDBACK_FRESH_S:
+            self._turn_off("haptic loop timing gap")
+            return
+        if not all(math.isfinite(x) for x in (star.angle_deg, star.temperature_c)):
+            raise SafetyError("Non-finite Star gripper feedback")
+        if not -180 <= star.angle_deg <= 180:
+            raise SafetyError("Star gripper outside the single-turn frame")
         f, fv, tau, f_temp = state
         if star.temperature_c >= STAR_TEMP_LIMIT_C:
             self._turn_off(f"Star gripper at {star.temperature_c:.1f} C")
@@ -352,6 +358,9 @@ class GripperHaptics:
             self._turn_off(f"follower gripper at {f_temp:.1f} C")
             return
         lead = star.angle_deg
+        closing_speed = 0.0 if self._last_lead is None or dt <= 0 else (self._last_lead - lead) / dt
+        previous_fv = self._last_fv
+        self._last_lead, self._last_fv = lead, fv
         still = abs(fv) < STILL_DEG_S
         cmd = self._cmd
         at_limit = cmd is None or not self.f_lo + 0.5 < cmd < self.f_hi - 0.5
@@ -370,12 +379,24 @@ class GripperHaptics:
         else:
             squeeze = (tau - self.baseline) * self.f_close
             near_closed = (self.closed_f - f) * self.f_close < CLOSED_STOP_IGNORE_DEG
-            if not self.latched and still and squeeze >= self.threshold and not near_closed:
+            jaw_pen = (f - self.offset) / self.scale - lead
+            impact = (
+                squeeze >= max(IMPACT_NM, 2 * self.threshold)
+                and previous_fv is not None
+                and (previous_fv - fv) * self.f_close >= IMPACT_DROP_DEG_S
+                and jaw_pen > ON_DEG
+            )
+            if not self.latched and not near_closed and ((still and squeeze >= self.threshold) or impact):
                 self.latched, self.wall_f, self._squeeze_t = True, f, t
-                logger.info("Gripper haptics: contact at follower %+.1f deg (squeeze %.2f N m)", f, squeeze)
+                logger.info(
+                    "Gripper haptics: %s at follower %+.1f deg (squeeze %.2f N m)",
+                    "impact" if impact else "contact",
+                    f,
+                    squeeze,
+                )
             if self.latched:
-                if still and squeeze >= 0.3 * self.threshold:
-                    self.wall_f = 0.8 * self.wall_f + 0.2 * f
+                # Freeze the wall. Following a compliant/stalled jaw lets the
+                # wall creep closed precisely while the user is pushing it.
                 wall_l = round(
                     _clamp(
                         (self.wall_f - self.offset) / self.scale,
@@ -389,23 +410,28 @@ class GripperHaptics:
                     self._squeeze_t = t
                 if pen < -RELEASE_DEG or t - self._squeeze_t > SQUEEZE_GONE_S:
                     self.latched = False
-                    logger.info(
-                        "Gripper haptics: contact off (penetration %+.1f deg, squeeze %.2f N m)", pen, squeeze
+                    logger.info("Gripper haptics: contact off (penetration %+.1f deg)", pen)
+
+            mode, target, want = None, None, 0
+            if self.latched and pen > (0.0 if self._sent and self._sent[0] == "wall" else ON_DEG):
+                # A unilateral spring + velocity term. Opening subtracts
+                # effort; power zero must RELEASE, never encode ceiling.
+                want = round(_clamp(MIN_MW + MW_PER_DEG * pen + MW_PER_DEG_S * closing_speed, 0, MAX_MW))
+                mode, target = "wall", wall_l
+            elif not self.latched and not near_closed:
+                braking = self._sent is not None and self._sent[0] == "brake"
+                lag_gate = BRAKE_OFF_LAG_DEG if braking else BRAKE_ON_LAG_DEG
+                if closing_speed >= BRAKE_CLOSE_DEG_S and jaw_pen > lag_gate:
+                    mode = "brake"
+                    want = round(
+                        _clamp(
+                            BRAKE_MIN_MW + BRAKE_MW_PER_DEG * (jaw_pen - BRAKE_ON_LAG_DEG),
+                            BRAKE_MIN_MW,
+                            BRAKE_MAX_MW,
+                        )
                     )
-            want = 0.0
-            if self.latched and pen > (0.0 if self.star_on else ON_DEG):
-                want = _clamp(MIN_MW + MW_PER_DEG * pen, MIN_MW, MAX_MW)
             if want > 0:
-                self.power = min(want, max(self.power, MIN_MW) + SLEW_MW_S * dt)
-                sent = self._sent
-                if (
-                    sent is None
-                    or abs(wall_l - sent[0]) >= RESEND_DEG
-                    or abs(self.power - sent[1]) >= RESEND_MW
-                ):
-                    self.leader.bus.raw.angle(self.star_id, wall_l, MOVE_MS, round(self.power), self.travel)
-                    self._sent = (wall_l, self.power)
-                self.star_on = True
+                self._drive(mode, target, want)
             else:
                 self._release_star()
 
@@ -424,6 +450,8 @@ class GripperHaptics:
                 wall_l,
                 round(self.power) if self.star_on else 0,
                 star.current_ma,
+                None if self._sent is None else self._sent[0],
+                round(closing_speed, 2),
             ]
         )
         self._publish()
@@ -457,10 +485,24 @@ class GripperHaptics:
             high,
         )
 
+    def _drive(self, mode, target, power):
+        command = (mode, target, power)
+        # Mark pending effort BEFORE writing: a partial/failed write may have
+        # energized the servo, so the exception path must attempt a release.
+        self.star_on = True
+        if self._sent is None or command[:2] != self._sent[:2] or abs(power - self._sent[2]) >= RESEND_MW:
+            if mode == "brake":
+                self.leader.bus.raw.stop(self.star_id, DAMPING, power)
+            else:
+                self.leader.bus.raw.angle(self.star_id, target, MOVE_MS, power, self.travel)
+            self._sent = command
+        self.power = self._sent[2]
+
     def _release_star(self):
         if self.star_on:
-            self.star_on, self.power, self._sent = False, 0.0, None
+            # Keep pending state if this fails, so close/disconnect can retry.
             self.leader.bus.raw.stop(self.star_id, RELEASE)
+        self.star_on, self.power, self._sent = False, 0.0, None
 
     def _turn_off(self, reason):
         self.reason = reason
@@ -487,9 +529,8 @@ class GripperHaptics:
             self._release_star()
         except Exception:
             logger.exception("Could not release the Star gripper; disconnect will retry")
-        if self.phase != "off":
-            self.phase, self.latched = "off", False
-            self._publish()
+        self.phase, self.latched = "off", False
+        self._publish()
         if self.rows and self.log_dir:
             try:
                 self._write_log()
@@ -517,6 +558,8 @@ class GripperHaptics:
                     "wall_deg",
                     "mw",
                     "star_ma",
+                    "mode",
+                    "star_close_deg_s",
                 ]
             )
             writer.writerows(self.rows)

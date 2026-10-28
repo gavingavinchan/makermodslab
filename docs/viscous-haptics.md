@@ -1432,6 +1432,32 @@ Logs: `~/.makermods/makermodslab-viscous/gripper_haptics/` on gavin-linux.
   1227 ticks, up to the 600 mW cap at 15 deg past the wall. Gavin's feel:
   not yet recorded.
 
+### Independent fast-close controller attempt (2026-10-28, goal A3, offline)
+
+Gavin needs to demo gripper feedback ASAP: fast closes feel like no wall,
+and the shorter/reduced-resend moves feel only slightly better. Independent
+implementation and full diagnosis/constants/handoff:
+[gripper-haptics-independent-2026-10-28.md](gripper-haptics-independent-2026-10-28.md).
+
+Newest 234727Z corrects the earlier current interpretation: at >=590 mW,
+82 mA median / 279 mA maximum, versus 46.5 / 82 in 234213Z. Still, fast
+contact latches 12-14 Star degrees through the wall and spends another
+~107 ms reaching 600 mW. The replacement uses 200-400 mW damping when a fast
+hand outruns the follower, then a fixed contact wall with a 1 ms requested
+setpoint and depth/velocity effort, **800 mW maximum**
+(previously exercised at 136 mA stalled, 29-31 C on 10-21; not a force bound).
+An impact path detects high squeeze plus sharp deceleration before the jaw
+stops. Closing follower lead is bounded at 8 deg still / 12 deg moving.
+The full newest trace replays through fake buses without fault; for one
+grasp braking starts 106 ms before observed impact and full wall effort is
+requested at impact, 129 ms before the old command reaches 600 mW.
+This predicts command timing only, not hardware feel. All 27 focused tests
+pass. No hardware access, deployment, restart or push; implementation is on
+the independent worktree branch. Next: Claude deploys for Gavin to judge
+earlier resistance, fast empty-close drag, opening shove and chatter.
+Thermal/fault/worker release paths remain; partial writes and failed-release
+cleanup are hardened. Read the linked handoff before the first live trial.
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about

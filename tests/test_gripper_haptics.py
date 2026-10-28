@@ -14,17 +14,22 @@
 """Gripper haptics: the pure loop with fake buses and an injected clock, and
 the raw Star bus's release-on-close from a worker thread."""
 
+import csv
+import gzip
 import struct
 import threading
-import time
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from makermodslab.fashionstar_raw import MONITOR, PING, RELEASE, STOP, Monitor
+from makermodslab.fashionstar_raw import DAMPING, MONITOR, PING, RELEASE, STOP, Monitor, Travel
 from makermodslab.gripper_haptics import (
     CALIB_S,
     MAX_LEAD_DEG,
+    MAX_MW,
+    MOVE_MS,
+    MOVING_LEAD_DEG,
     GripperHaptics,
     RawStarBus,
 )
@@ -43,7 +48,9 @@ class FakeRaw:
         self.commands.append(("angle", motor_id, target, duration_ms, power_mw))
 
     def stop(self, motor_id, mode, power_mw=0):
-        self.commands.append(("stop", motor_id, mode))
+        self.commands.append(
+            ("stop", motor_id, mode) if mode == RELEASE else ("stop", motor_id, mode, power_mw)
+        )
 
 
 class Rig:
@@ -53,7 +60,7 @@ class Rig:
         self.t = 0.0
         self.state = {"position": OFFSET - 30.0, "velocity": 0.0, "torque": 0.1, "temp_mos": 30.0}
         bus = SimpleNamespace(
-            last_feedback_time={"gripper": time.time()}, _last_known_states={"gripper": self.state}
+            last_feedback_time={"gripper": self.t}, _last_known_states={"gripper": self.state}
         )
         self.robot = SimpleNamespace(
             bus=bus, config=SimpleNamespace(joint_limits={"gripper": LIMITS}), _turn_offset={"gripper": 0.0}
@@ -69,7 +76,9 @@ class Rig:
             ),
         )
         self.star(10.0)
-        self.haptics = GripperHaptics(self.robot, self.leader, clock=lambda: self.t)
+        self.haptics = GripperHaptics(
+            self.robot, self.leader, clock=lambda: self.t, wall_clock=lambda: self.t
+        )
 
     def star(self, angle, temp=30.0, fresh=True):
         self.leader.bus.monitors[6] = Monitor(6, 12000, 40, 400, 2000, 0, angle, 0, temp)
@@ -83,7 +92,7 @@ class Rig:
         self.state.update(
             position=action["gripper.pos"] if follower is None else follower, velocity=velocity, torque=torque
         )
-        self.robot.bus.last_feedback_time["gripper"] = time.time()
+        self.robot.bus.last_feedback_time["gripper"] = self.t
         self.haptics.after_send()
         return action
 
@@ -103,16 +112,18 @@ def test_only_the_gripper_target_changes_and_never_past_the_closed_stop():
     assert action["wrist_roll.pos"] == 1.0
 
 
-def test_squeeze_cap_applies_only_while_the_jaws_are_still():
+def test_closing_lead_is_bounded_at_speed_and_opening_is_free():
     rig = Rig()
     rig.haptics.phase = "on"
     rig.state.update(position=-80.0, velocity=0.0)
-    rig.robot.bus.last_feedback_time["gripper"] = time.time()
+    rig.robot.bus.last_feedback_time["gripper"] = rig.t
     still = rig.haptics.before_send({"gripper.pos": -40.0})
     assert still["gripper.pos"] == pytest.approx(-80.0 + MAX_LEAD_DEG)
     rig.state.update(velocity=200.0)
     moving = rig.haptics.before_send({"gripper.pos": -40.0})
-    assert moving["gripper.pos"] == -40.0
+    assert moving["gripper.pos"] == -80.0 + MOVING_LEAD_DEG
+    opening = rig.haptics.before_send({"gripper.pos": -115.0})
+    assert opening["gripper.pos"] == -115.0
 
 
 def test_calibration_waits_for_travel_and_measures_a_threshold():
@@ -140,9 +151,9 @@ def test_contact_renders_a_wall_and_releases_when_the_hand_opens():
     angles = [c for c in rig.raw.commands if c[0] == "angle"]
     assert angles and all(c[1] == 6 for c in angles)
     assert angles[-1][2] == pytest.approx(20.0, abs=0.2)
-    assert all(100 <= c[4] <= 600 for c in angles)
-    powers = [c[4] for c in angles]
-    assert powers == sorted(powers)  # power only rises while pressed
+    assert all(1 <= c[4] <= MAX_MW for c in angles)
+    assert all(c[3] == MOVE_MS for c in angles)
+    assert angles[0][4] == MAX_MW  # impact effort arrives on the first tick
     # The hand opens past the wall: released at once, contact ends.
     rig.tick(24.0, follower=wall, torque=3.0)
     assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
@@ -163,7 +174,7 @@ def test_no_contact_at_the_closed_stop():
     assert not rig.haptics.latched
 
 
-def test_stale_star_reading_releases_and_a_hot_servo_turns_haptics_off():
+def test_stale_star_reading_releases_and_turns_haptics_off():
     rig = Rig()
     rig.calibrate()
     wall = 20.0 * SCALE + OFFSET
@@ -174,10 +185,26 @@ def test_stale_star_reading_releases_and_a_hot_servo_turns_haptics_off():
     rig.star(15.0, fresh=False)
     rig.haptics.after_send()
     assert not rig.haptics.star_on and rig.raw.commands[-1] == ("stop", 6, RELEASE)
-    rig.star(15.0, temp=56.0)
+    assert rig.haptics.phase == "off"
+    assert rig.leader.gripper_haptics_status["reason"] == "stale gripper feedback"
+    rig.tick(15.0, follower=wall, torque=3.0)
+    assert not rig.haptics.star_on  # faults require a new session
+
+
+@pytest.mark.parametrize("side", ["star", "follower"])
+def test_thermal_stop_releases(side):
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+    rig.tick(15.0, follower=wall, torque=3.0)
+    if side == "star":
+        rig.star(15.0, temp=55.0)
+    else:
+        rig.state["temp_mos"] = 82.0
     rig.haptics.after_send()
     assert rig.haptics.phase == "off"
-    assert "Star gripper at 56.0 C" in rig.leader.gripper_haptics_status["reason"]
+    assert "gripper at" in rig.leader.gripper_haptics_status["reason"]
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
 
 
 def test_a_fault_turns_haptics_off_without_raising():
@@ -280,7 +307,7 @@ def test_a_stalled_start_is_not_measured_as_free_motion():
     nor counts a jaw straining toward a far target."""
     rig = Rig()
     rig.state.update(position=-60.0)
-    rig.robot.bus.last_feedback_time["gripper"] = time.time()
+    rig.robot.bus.last_feedback_time["gripper"] = rig.t
     action = rig.haptics.before_send({"gripper.pos": -33.0})
     assert action["gripper.pos"] == -33.0  # no squeeze cap while calibrating
     for _ in range(100):
@@ -291,8 +318,7 @@ def test_a_stalled_start_is_not_measured_as_free_motion():
 
 
 def test_an_unchanged_push_is_not_re_sent_so_the_servo_loads_up():
-    """Re-sending a timed move every tick restarted it from the finger's
-    position, and the Star never pushed (2026-10-28, 40-77 mA at 600 mW)."""
+    """An unchanged spring load needs no new position trajectory."""
     rig = Rig()
     rig.calibrate()
     wall = 20.0 * SCALE + OFFSET
@@ -300,5 +326,164 @@ def test_an_unchanged_push_is_not_re_sent_so_the_servo_loads_up():
     for _ in range(40):
         rig.tick(12.0, follower=wall, torque=3.0)  # 8 deg past the wall, held
     angles = [c for c in rig.raw.commands if c[0] == "angle"]
-    assert angles[-1][4] == 580  # MIN_MW + 60 * 8, reached
-    assert len(angles) < 10  # the ramp, then nothing until something changes
+    assert angles[-1][4] == MAX_MW
+    assert len(angles) == 1
+
+
+def test_brake_precedes_contact_when_a_fast_hand_outruns_the_follower():
+    rig = Rig()
+    rig.calibrate()
+    rig.tick(30.0, follower=32.0 * SCALE + OFFSET, velocity=100.0)
+    rig.raw.commands.clear()
+    rig.tick(24.0, follower=32.0 * SCALE + OFFSET, velocity=150.0)
+    assert rig.raw.commands == [("stop", 6, DAMPING, 280)]
+    assert not rig.haptics.latched  # free tracking lag is not object contact
+    assert rig.leader.gripper_haptics_status["power_mw"] == 280
+    # Even inside that lag envelope, opening gets an immediate release.
+    rig.tick(26.0, follower=32.0 * SCALE + OFFSET, velocity=100.0)
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+
+
+def test_latest_log_fast_impact_gets_full_wall_effort_before_the_jaws_stop():
+    """234727Z at 9.8973 -> 9.9187: >5 N m and sharp deceleration,
+    but still 295 deg/s. The old controller waited another tick."""
+    rig = Rig()
+    rig.calibrate()
+    rig.haptics.travel = Travel(-6.0, 40.0, margin=1.0)
+    rig.raw.guard.start, rig.raw.guard.move_deg = 17.0, 23.0
+    rig.tick(2.1, follower=-64.3889, velocity=627.4832, torque=0.3111, dt=0.0214)
+    assert not rig.haptics.latched
+    rig.tick(-3.8, follower=-52.6080, velocity=295.0418, torque=5.7402, dt=0.0214)
+    assert rig.haptics.latched
+    assert rig.raw.commands[-1] == ("angle", 6, 11.0, 1, 800)
+    assert rig.leader.gripper_haptics_status["power_mw"] == 800
+
+
+def test_high_acceleration_torque_does_not_invent_a_wall():
+    rig = Rig()
+    rig.calibrate()
+    rig.tick(30.0, follower=-90.0, velocity=100.0)
+    rig.tick(26.0, follower=-85.0, velocity=250.0, torque=4.0)
+    assert not rig.haptics.latched
+    assert not any(c[0] == "angle" for c in rig.raw.commands)
+
+
+def test_wall_stays_anchored_as_the_jaws_compress_and_opening_reduces_effort():
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+    rig.tick(19.0, follower=wall, torque=3.0)
+    rig.tick(17.0, follower=wall + 2.0, torque=3.0)
+    assert rig.haptics.wall_f == wall
+    assert rig.raw.commands[-1][2] == 20.0
+    rig.tick(17.0, follower=wall + 2.0, torque=3.0)
+    held_power = rig.haptics.power
+    rig.tick(18.0, follower=wall + 2.0, torque=3.0)
+    assert 0 < rig.haptics.power < held_power
+    rig.tick(19.8, follower=wall + 2.0, torque=3.0)
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+    assert rig.haptics.latched  # opening damping does not chatter the contact latch
+
+
+def test_lost_squeeze_eventually_releases_the_wall():
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+    rig.tick(15.0, follower=wall, torque=3.0)
+    for _ in range(16):
+        rig.tick(15.0, follower=wall)
+    assert not rig.haptics.latched
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+
+
+@pytest.mark.parametrize("failure", ["stale", "gap", "nan_star", "nan_follower"])
+def test_bad_feedback_or_timing_releases_without_stopping_teleop(failure):
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+    rig.tick(15.0, follower=wall, torque=3.0)
+    if failure == "stale":
+        rig.robot.bus.last_feedback_time["gripper"] = rig.t - 0.101
+    elif failure == "gap":
+        rig.t += 0.101
+        rig.robot.bus.last_feedback_time["gripper"] = rig.t
+    elif failure == "nan_star":
+        rig.star(float("nan"))
+    else:
+        rig.state["torque"] = float("nan")
+        # before_send must catch haptics feedback faults too.
+        assert rig.haptics.before_send({"gripper.pos": -60.0})["gripper.pos"] == -60.0
+    rig.haptics.after_send()
+    assert rig.haptics.phase == "off"
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+
+
+def test_partial_energizing_write_is_followed_by_release_and_failed_release_is_retried():
+    rig = Rig()
+    rig.calibrate()
+    wall = 20.0 * SCALE + OFFSET
+
+    def partial_write(*_args):
+        raise OSError("partial write")
+
+    rig.raw.angle = partial_write
+    rig.tick(15.0, follower=wall, torque=3.0)
+    assert rig.haptics.phase == "off"
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+
+    rig = Rig()
+    rig.calibrate()
+    rig.tick(15.0, follower=wall, torque=3.0)
+    original_stop = rig.raw.stop
+    rig.raw.stop = partial_write
+    rig.star(15.0, fresh=False)
+    rig.haptics.after_send()
+    assert rig.haptics.star_on  # cleanup still owes a release
+    rig.raw.stop = original_stop
+    rig.haptics.close()
+    assert not rig.haptics.star_on
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+
+
+def test_damping_uses_only_the_guarded_gripper_and_close_releases_it():
+    rig = Rig()
+    rig.calibrate()
+    rig.tick(30.0, follower=32.0 * SCALE + OFFSET, velocity=100.0)
+    rig.tick(24.0, follower=32.0 * SCALE + OFFSET, velocity=150.0)
+    assert rig.haptics.star_on
+    rig.haptics.close()
+    assert rig.raw.commands[-1] == ("stop", 6, RELEASE)
+    assert all(c[1] == 6 for c in rig.raw.commands)
+    assert rig.leader.gripper_haptics_status == {
+        "phase": "off",
+        "contact": False,
+        "power_mw": 0,
+        "reason": None,
+    }
+
+
+def test_newest_recording_replays_without_fault_and_brakes_before_impact():
+    """Open-loop replay checks decisions only: new effort would change the
+    physical trace, so this cannot predict the resulting hand force."""
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "configs/viscous/viscous_01/evidence/gripper-haptics-20261028T234727Z.csv.gz"
+    )
+    rig = Rig()
+    decisions = {}
+    with gzip.open(path, "rt") as fh:
+        for row in csv.DictReader(fh):
+            rig.t = float(row["t"])
+            rig.star(float(row["star_deg"]))
+            rig.state.update(
+                position=float(row["f_deg"]), velocity=float(row["f_vel"]), torque=float(row["tau_nm"])
+            )
+            rig.robot.bus.last_feedback_time["gripper"] = rig.t
+            rig.haptics.before_send({"gripper.pos": float(row["star_deg"]) * SCALE + OFFSET})
+            rig.haptics.after_send()
+            assert rig.haptics.phase != "off"
+            assert 0 <= rig.haptics.power <= MAX_MW
+            decisions[rig.t] = rig.haptics._sent
+    assert decisions[9.8123][0] == "brake"
+    assert decisions[9.9187] == ("wall", 11.0, 800)
+    assert all(c[1] == 6 for c in rig.raw.commands)
