@@ -1320,6 +1320,12 @@ file instead.
 
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
+**Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
+Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
+then test whether its in-context lessons carry to the real arm. Plan and task
+list in [shackle-sim2real.md](shackle-sim2real.md). Blocked on Gavin's photo
+and measurements of the part.
+
 **Top priority: "fixes stay fixed" / plug-and-play teleop (Gavin, 2026-10-27).**
 "If we don't fix this we're gonna encounter issues again." Gavin travels to
 demo the arm and must never debug in front of a guest: plug into any USB
