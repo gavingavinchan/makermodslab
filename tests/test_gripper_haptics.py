@@ -105,6 +105,7 @@ def test_only_the_gripper_target_changes_and_never_past_the_closed_stop():
 
 def test_squeeze_cap_applies_only_while_the_jaws_are_still():
     rig = Rig()
+    rig.haptics.phase = "on"
     rig.state.update(position=-80.0, velocity=0.0)
     rig.robot.bus.last_feedback_time["gripper"] = time.time()
     still = rig.haptics.before_send({"gripper.pos": -40.0})
@@ -273,3 +274,19 @@ def test_haptic_star_leader_reads_all_seven_joints_and_releases_on_disconnect(tm
     released = [p[4] for p in serial.writes if p[2] == STOP and p[5] == RELEASE]
     assert released.count(6) >= 3  # configure, disconnect, then the bus's two-pass close
     assert serial.closed and leader.bus is None
+
+
+def test_a_stalled_start_is_not_measured_as_free_motion():
+    """2026-10-28: the follower started 27 deg from the Star's pose, stalled, and
+    the stall's 2.75 N m became the baseline. Calibration neither caps the jaws
+    nor counts a jaw straining toward a far target."""
+    rig = Rig()
+    rig.state.update(position=-60.0)
+    rig.robot.bus.last_feedback_time["gripper"] = time.time()
+    action = rig.haptics.before_send({"gripper.pos": -33.0})
+    assert action["gripper.pos"] == -33.0  # no squeeze cap while calibrating
+    for _ in range(100):
+        rig.tick(0.5, follower=-54.0, torque=2.75)  # stuck far from its command
+    assert rig.haptics._still_tau == []
+    rig.calibrate()
+    assert rig.haptics.baseline < 0.5

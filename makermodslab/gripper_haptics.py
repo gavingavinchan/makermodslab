@@ -79,6 +79,7 @@ SQUEEZE_GONE_S = 0.3
 CALIB_S = 8.0
 CALIB_TRAVEL_DEG = 20.0
 CALIB_STILL_TICKS = 25
+BASELINE_ERR_DEG = 3.0
 # Run B fixes.
 CONTACT_PERSIST_S = 0.06
 CLOSED_STOP_IGNORE_DEG = 4.0
@@ -294,7 +295,12 @@ class GripperHaptics:
             return action
         target = _clamp(float(action[key]), self.f_lo, self.f_hi)
         state = self._follower()
-        if state is not None and abs(state[1]) < STILL_DEG_S:
+        # Only once haptics is on. During calibration the jaws are empty, and
+        # Lab's absolute mapping can start them far from the Star's pose (the
+        # PoC's relative mapping never did): the cap then stalled them on
+        # friction and the stall was measured as free-motion torque
+        # (2026-10-28, baseline 2.75 N m).
+        if self.phase == "on" and state is not None and abs(state[1]) < STILL_DEG_S:
             target = _clamp(target, state[0] - MAX_LEAD_DEG, state[0] + MAX_LEAD_DEG)
         self._cmd = target
         return {**action, key: target}
@@ -341,7 +347,9 @@ class GripperHaptics:
         if self.phase == "calibrating":
             seen = self._star_seen or (lead, lead)
             self._star_seen = (min(seen[0], lead), max(seen[1], lead))
-            if still and not at_limit:
+            # Still AND near the command: a jaw straining toward a far target
+            # is not free motion.
+            if still and not at_limit and abs(cmd - f) < BASELINE_ERR_DEG:
                 self._still_tau.append(tau)
             travel = self._star_seen[1] - self._star_seen[0]
             if t >= CALIB_S and travel >= CALIB_TRAVEL_DEG and len(self._still_tau) >= CALIB_STILL_TICKS:
