@@ -1,0 +1,295 @@
+{
+  "design": {
+    "TRIANGLE_LEFT_X": -89.0,
+    "TRIANGLE_TOE_X": -60.5,
+    "TRIANGLE_TOP_Z": -28.0,
+    "TABLE_Z_OVERRIDE": null,
+    "GLUE_GAP": 0.5,
+    "DEPTH_Y": 40.0,
+    "SADDLE_WRAP_HALF_ANGLE_DEG": 35.0,
+    "TOP_TIP_TRUNCATION": 5.5,
+    "TOE_TRUNCATION": 7.5,
+    "MIN_WALL": 2.5,
+    "CORNER_RADIUS": 1.0,
+    "EDGE_CHAMFER": 0.5,
+    "BOTTOM_CHAMFER": 0.5,
+    "EDGE_ROUND_SECTIONS": 48,
+    "BOTTOM_EDGE_ZONE": 1.5,
+    "PRINT_LAYER_HEIGHT": 0.2,
+    "EDGE_AUDIT_MIN_FEATURE": 0.1,
+    "EDGE_AUDIT_SHARP_ANGLE_DEG": 20.0,
+    "EDGE_AUDIT_DISTANCE_TOLERANCE": 0.005,
+    "OFFSET_SPHERE_SECTIONS": 48,
+    "BOOLEAN_CLEANUP_TOLERANCE": 0.001,
+    "EXPORT_VERTEX_GRID": 0.0001,
+    "EXPORT_VERTEX_GRID_MAX": 0.001,
+    "PROFILE_CIRCLE_SECTIONS": 256,
+    "STEEL_DENSITY_G_CM3": 7.9,
+    "GRAVITY": 9.81,
+    "DOWNWARD_PIN_FORCE_N": 20.0,
+    "SCREW_TORQUE_NM": 2.0,
+    "FIT_SAMPLE_COUNT": 12000,
+    "RANDOM_SEED": 291294295
+  },
+  "derived": {
+    "offset_sphere_inradius": 0.9942517903627401,
+    "offset_bound_mm": [
+      0.5,
+      0.5059165027331926
+    ],
+    "wrap_cap_radius_mm": 47.90444661196916,
+    "tip_top_z_mm": -33.5,
+    "toe_x_mm": -68.0,
+    "edge_treatment": {
+      "method": "R0.5 rolling-ball morphological opening of all convex edges; R1 outline rounds retained; lower strip retains 0.5 mm 45-degree chamfer.",
+      "nominal_edge_round_radius_mm": 0.5,
+      "export_vertex_grid_mm": 0.0001,
+      "round_kernel_radius_bounds_mm": [
+        0.5,
+        0.5028907212906113
+      ],
+      "bottom_chamfer_mm": 0.5,
+      "bottom_face_insets_mm": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "upper_original_feature_segments": 106,
+      "original_feature_samples": 530,
+      "original_feature_samples_left_unbroken": 0,
+      "minimum_old_feature_clearance_mm": 0.01781466072900204,
+      "remaining_sharp_upper_feature_segments": 0,
+      "maximum_resolved_upper_normal_turn_deg": 9.028578948305936,
+      "maximum_resolved_chamfer_normal_turn_deg": 45.00178539331554,
+      "feature_detection_angle_deg": 20.0,
+      "feature_resolution_mm": 0.1,
+      "cradle_core_samples": 7941,
+      "cradle_core_exclusion_distance_from_rim_mm": 1.0,
+      "cradle_core_max_surface_deviation_mm": 0.0009842452048458798,
+      "cradle_core_original_gap_range_mm": [
+        0.5009458326783269,
+        0.503833190760717
+      ],
+      "cradle_core_final_gap_range_mm": [
+        0.5004589758738611,
+        0.5038331907607113
+      ],
+      "note": "New chamfer boundaries are 135-degree included transitions; small facets approximate rounds. There are no untreated original handling creases. No chamfer is applied across the functional cradle core."
+    }
+  },
+  "table_z_body_frame_mm": -49.24986883997917,
+  "checks": {
+    "edge_treatment": {
+      "method": "R0.5 rolling-ball morphological opening of all convex edges; R1 outline rounds retained; lower strip retains 0.5 mm 45-degree chamfer.",
+      "nominal_edge_round_radius_mm": 0.5,
+      "export_vertex_grid_mm": 0.0001,
+      "round_kernel_radius_bounds_mm": [
+        0.5,
+        0.5028907212906113
+      ],
+      "bottom_chamfer_mm": 0.5,
+      "bottom_face_insets_mm": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "upper_original_feature_segments": 106,
+      "original_feature_samples": 530,
+      "original_feature_samples_left_unbroken": 0,
+      "minimum_old_feature_clearance_mm": 0.01781466072900204,
+      "remaining_sharp_upper_feature_segments": 0,
+      "maximum_resolved_upper_normal_turn_deg": 9.028578948305936,
+      "maximum_resolved_chamfer_normal_turn_deg": 45.00178539331554,
+      "feature_detection_angle_deg": 20.0,
+      "feature_resolution_mm": 0.1,
+      "cradle_core_samples": 7941,
+      "cradle_core_exclusion_distance_from_rim_mm": 1.0,
+      "cradle_core_max_surface_deviation_mm": 0.0009842452048458798,
+      "cradle_core_original_gap_range_mm": [
+        0.5009458326783269,
+        0.503833190760717
+      ],
+      "cradle_core_final_gap_range_mm": [
+        0.5004589758738611,
+        0.5038331907607113
+      ],
+      "note": "New chamfer boundaries are 135-degree included transitions; small facets approximate rounds. There are no untreated original handling creases. No chamfer is applied across the functional cradle core."
+    },
+    "geometry": {
+      "bounds_body_frame_mm": [
+        [
+          -89.0,
+          -20.0,
+          -49.24986883997917
+        ],
+        [
+          -68.0,
+          20.0,
+          -33.5
+        ]
+      ],
+      "dimensions_mm": [
+        21.0,
+        40.0,
+        15.749868839979172
+      ],
+      "volume_mm3": 9090.256730391708,
+      "triangles": 4370,
+      "watertight": true,
+      "single_solid": true,
+      "minimum_seat_floor_mm": 3.0171813974675694,
+      "minimum_rear_wall_mm": 2.7376359447004526,
+      "minimum_lateral_rail_mm": 13.707564569181264,
+      "max_non_bed_overhang_deg_from_vertical": 45.00178539331553,
+      "bed_face_area_mm2": 779.7831571508485
+    },
+    "fit": {
+      "exact_mesh_minimum_gap_mm": 0.5003864359638281,
+      "contact_sample_gap_range_mm": [
+        0.5005252167042573,
+        0.50590784889424
+      ],
+      "contact_samples": 12655,
+      "contact_area_mm2": 252.99769172810173,
+      "contact_center_mm": [
+        -77.17654507259958,
+        6.437185576791317e-05,
+        -40.12223162447125
+      ],
+      "contact_bounds_mm": [
+        [
+          -86.09020000000001,
+          -5.7628,
+          -46.031200000000005
+        ],
+        [
+          -68.2868,
+          5.761800000000001,
+          -33.6255
+        ]
+      ],
+      "intersection_volume_mm3": 0.0,
+      "vertical_insertion_intersection_volumes_mm3": {
+        "0.25": 0.0,
+        "0.5": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "5": 0.0,
+        "10": 0.0,
+        "20": 0.0,
+        "50": 0.0,
+        "100": 0.0
+      },
+      "bore_keepout_intersection_mm3": 0.0,
+      "minimum_axis_radius_mm": 68.0,
+      "bore_circle_radial_margin_mm": 57.7,
+      "offset_conservative_bound_mm": [
+        0.5,
+        0.5059165027331926
+      ]
+    },
+    "statics": {
+      "density_g_cm3": 7.9,
+      "body_mass_kg": 0.6938597658142749,
+      "pin_mass_kg": 0.24073158043470916,
+      "pin_center_of_mass_seated_mm": [
+        0.0011329649339182424,
+        -0.00021261228244788517,
+        12.670720211130462
+      ],
+      "bow_contact_vertices_mm": [
+        [
+          -49.374621361494064,
+          -1.782779774433994e-15,
+          -49.24986883997917
+        ]
+      ],
+      "bow_contact_center_mm": [
+        -49.374621361494064,
+        -1.782779774433994e-15,
+        -49.24986883997917
+      ],
+      "forward_support_edge_x_mm": -49.374621361494064,
+      "holder_table_contact_center_mm": [
+        -78.5,
+        0,
+        -49.24986883997917
+      ],
+      "body_cases": {
+        "body_only": {
+          "mass_kg": 0.6938597658142749,
+          "center_of_mass_mm": [
+            -38.74878844169527,
+            0.0006952365387609932,
+            -0.3529244384468643
+          ],
+          "weight_N": 6.806764302638037,
+          "gravity_overturning_moment_Nm": 0.07232754020428254,
+          "with_20N_overturning_moment_Nm": 1.0598199674341637,
+          "with_20N_resultant_x_mm": -9.839078933873747,
+          "shackle_holder_vertical_tie_N": 38.120382547874456,
+          "holder_table_vertical_tie_N": 36.388195346343146,
+          "shackle_holder_average_tie_stress_MPa": 0.1506748235033017,
+          "table_average_tie_stress_MPa": 0.0466645053982666
+        },
+        "pin_seated": {
+          "mass_kg": 0.9345913462489841,
+          "center_of_mass_mm": [
+            -28.767602697382312,
+            0.0004613932848056139,
+            3.0016995606903434
+          ],
+          "weight_N": 9.168341106702535,
+          "gravity_overturning_moment_Nm": 0.1889321763047621,
+          "with_20N_overturning_moment_Nm": 1.1764246035346435,
+          "with_20N_resultant_x_mm": -9.042378974753904,
+          "shackle_holder_vertical_tie_N": 42.314503692588694,
+          "holder_table_vertical_tie_N": 40.39173595426917,
+          "shackle_holder_average_tie_stress_MPa": 0.16725252868340146,
+          "table_average_tie_stress_MPa": 0.051798677085885585
+        }
+      },
+      "saddle_torsion_Jz_mm4": 8985.363641392049,
+      "base_torsion_Jz_mm4": 124132.70222750337,
+      "saddle_torsion_peak_shear_estimate_MPa": 2.356528267487592,
+      "table_torsion_peak_shear_estimate_MPa": 0.3502986145567714,
+      "saddle_20mm_force_couple_N": 100.0,
+      "table_40mm_force_couple_N": 50.0,
+      "torsion_notes": "T*r/J about bond centroid, uniformly thick elastic adhesive approximation; curved saddle uses projected X,Y lever arms and actual surface area. No allowance for peel, voids, creep or stress concentration."
+    },
+    "exports": {
+      "roundtrip_watertight_single_solid": true,
+      "stl_3mf_numeric_units": "mm",
+      "3mf_embedded_unit": "millimeter",
+      "sim_obj_numeric_units": "m",
+      "body_mm_to_print_mm_translation": [
+        89.0,
+        20.0,
+        49.24986883997917
+      ]
+    },
+    "side_view": {
+      "page_mm": [
+        220.0,
+        220.0
+      ],
+      "extents_xz_mm": [
+        -140.0,
+        80.0,
+        -120.0,
+        100.0
+      ]
+    },
+    "source_hashes_sha256": {
+      "assets/shackle/shackle_body.stl": "408a6cba10f4e5ae24d7c73adc82c9b924d7179faee400748f681d14bba2b0ef",
+      "assets/shackle/shackle_pin.stl": "a304fc613476662e2b16b38b29bb22ca845532168118e466cdcd37680b87c508",
+      "assets/shackle/shackle_params.json": "cae1e63b74ba6a56e1836b4ddfee16a793fc9e136b6cd70cf66741f7cc3ed8dd",
+      "shackle_side_view.py": "17b5af05653281b65f37d2b84e61d3e353845393a3ca9176113cfa8d4cf743e5",
+      "shackle/holder_sketch_gavin.png": "cd63c230141d7a9c6f911293bc01e35e75318f2f522b903b1eac95309020bb57",
+      "runs/shackle_side_view/shackle_side_view.png": "e59ac3e7aa098c4e6bca0341f6061c6bc86226870ab3222b2cc0d43d0ebc5eba"
+    },
+    "source_files_changed_during_build": []
+  }
+}
