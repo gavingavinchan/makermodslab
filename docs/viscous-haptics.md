@@ -1414,6 +1414,24 @@ the PoC script; this moves its v2 loop into Lab teleop behind a checkbox.
   PoC's columns.
 - Tests: `tests/test_gripper_haptics.py` (fakes and an injected clock).
 
+**First powered runs (2026-10-28, unit 1, Gavin at the arm, demo prep).**
+Logs: `~/.makermods/makermodslab-viscous/gripper_haptics/` on gavin-linux.
+- Loop rate with the raw Star transport: 21.4 ms median tick, 22-24 ms p95
+  (about 47 Hz), so the one-at-a-time servo reads are fine.
+- Run 1 (`223401Z`): Gavin, "did not work". The follower started 27 deg from
+  the Star's pose (Lab maps absolutely, the PoC relatively), the squeeze cap
+  stalled it on friction for 4 s, and that 2.75 N m became the baseline
+  (threshold 4.4 N m). Fix: no cap while calibrating, and the baseline counts
+  only ticks within 3 deg of their command.
+- Run 3 (`223652Z`): three ticks of a squeeze being released (of 59) set
+  p99, giving a 5.7 N m threshold while 60 squeezed ticks sat above 1 N m. Fix: p95,
+  threshold clamped to 0.5..1.5 N m.
+- Run 4 (`225901Z`): works. Baseline 0.25 N m, threshold 0.5 N m. Three grasps
+  on the cube at -53..-56 deg (squeeze 2.9-3.2 N m), each latched once and
+  released once when the Star opened past the wall. The Star pushed back for
+  1227 ticks, up to the 600 mW cap at 15 deg past the wall. Gavin's feel:
+  not yet recorded.
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -1541,6 +1559,8 @@ Actions are not enabled on the `gavingavinchan/makermodslab` fork (no
 workflows registered), so the new CI triggers do nothing until Gavin enables
 Actions in the fork's Actions tab; (3) stage 2, unit 1's measured profile,
 needs Gavin's re-zero vs recapture decision and him at the arm.
+
+**Resume haptics here (2026-10-28, later):** gripper haptics works in Lab teleop (run 4, see "First powered runs"). Next: Gavin's feel, the moving lead cap for impact spikes.
 
 **Resume haptics here (2026-10-28):** gripper haptics is in Lab teleop behind
 a checkbox (see "Gripper haptics in Lab teleop"), offline only. Next, with
