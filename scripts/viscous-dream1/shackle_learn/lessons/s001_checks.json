@@ -1,0 +1,20 @@
+{
+  "workspace": "/home/gavin/dreamtrial/astra_ws/consolidate_shackle_s001_shackle_L006_20261028_001_f4a3f52fff76",
+  "memory_check": {
+    "rows": 0,
+    "checked_at": "2026-10-28T09:16:56.773568+00:00"
+  },
+  "input_hashes": {
+    "LESSONS.md": "ef565edf9aa5ac27c629a96f67b24a0a9992ad3f39eacc4f083fe5a28522cb75",
+    "outcome.txt": "3e91fbda46ea7d7b4aef8807a4c0c9226932e3dbd9dc3f0ebb9c6631c838d772",
+    "previous_attempt.log": "a6daf7007344c14bb859f0c033b08ea8f181145aff01ea18e82135d37edc0bef"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 0,
+      "lines": 89,
+      "errors": []
+    }
+  ]
+}

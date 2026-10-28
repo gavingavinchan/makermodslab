@@ -1,0 +1,11 @@
+tools {'exec_command': 366, 'view_image': 169, 'write_stdin': 15}
+paths {'/home/gavin/dreamtrial/astra_ws/shackle_S001_N_001/obs/N_top.png': 8, '/home/gavin/dreamtrial/astra_ws/shackle_S001_N_001/obs/N_wrist_l.png': 20, '/home/gavin/dreamtrial/astra_ws/shackle_S001_N_001/': 141}
+robot {'./robot look': 137, './robot status': 2, './robot point': 91, './robot move': 56, './robot grip': 21, './robot nudge': 41, './robot turn': 7, './robot screw': 8, './robot done': 1}
+images 167
+non-robot cmds [('cat README.md LESSONS.md', 1), ('cat README.md', 1)]
+
+session /home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T04-22-04-01a181d1-0f79-70d2-adca-d8edd101c09e.jsonl
+Test command: None
+Initial workspace: ["LESSONS.md", "README.md", "obs", "robot"]
+Workspace inventory and hashes: workspace_audit.json
+This inventory/tool audit is heuristic, not an OS sandbox.

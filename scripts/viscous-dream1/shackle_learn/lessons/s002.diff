@@ -1,0 +1,156 @@
+--- /home/gavin/dreamtrial/viscous_sim/shackle_learn/lessons/s001.md
++++ /home/gavin/dreamtrial/viscous_sim/shackle_learn/lessons/s002.md
+@@ -2,88 +2,89 @@
+ 
+ These notes are advisory; the next workspace's README governs commands, sensing, limits, and capabilities.
+ 
+-## Shackle tabletop — Objective and evidence from this attempt
++## Shackle tabletop — Objective and outcome evidence
+ 
+ - Use only the left arm; the right is parked and disabled. The shackle and holder are fixed to the table.
+-- Pass the threaded tip through the clear upper ear, engage the tapped lower ear, then tighten until
+-  the collar rests on the upper ear. Passing, engagement, relative thread advance, and seating are distinct.
+-- Ground truth: unsuccessful; final inserted, engaged, and seated were false. Both ever_inserted and
+-  ever_engaged were false, with zero thread engagements, zero thread turns, and two detected drops.
+-- Retract the transcript's claim that the pin entered the upper ear: no insertion was ever measured.
+-  Apparent descent, projected overlap, small TCP residuals, and resistance did not establish passage.
+-- `claim_vs_truth` said “No disagreement detected” only by a wording heuristic, not semantic validation;
+-  its explicit limitation and the never-inserted result override the operator's insertion claim.
+-- The negative signed collar-to-ear gap did not mean seating: a loose pin elsewhere can produce it.
+-  Scorer measurements are retrospective evidence, not live sensors or commands available to the operator.
+-- This episode validates no complete insertion, threading, seating, or supported ear-to-head regrasp procedure.
++- Pass the threaded end through the upper ear, engage the lower thread, and tighten until the collar rests on the upper ear.
++  Upper-ear passage, lower-thread engagement, relative advance, and seating are distinct.
++- This supplied attempt succeeded: final inserted, engaged, and seated were true; ever_inserted and
++  ever_engaged were also true. The scorer recorded one engagement, about 8.038 thread turns, and two drops.
++- The supplied outcome supersedes the older failure account. The final completion claim agrees with
++  measured task state; `claim_vs_truth` says “No disagreement detected in the final claim (wording heuristic).”
++  That heuristic is not semantic proof of every assertion, the visual verification, or intermediate claims.
++- Scorer data are retrospective evidence, not live operator sensors. A signed collar-to-ear gap alone
++  establishes neither insertion nor seating: a loose pin elsewhere can produce a misleading gap.
++- Eventual success supports the achieved result, not the reliability of every maneuver or inferred cause.
+ 
+ ## General — Observe and plan before moving
+ 
+-- Look before decisions and after motions. Refresh depth observations after movement; queries may advance time.
+-- Identify the actual part surfaces, tip, collar underside, receiving surfaces, and support separately.
+-  Cross-check views: a depth pick can hit a finger, bevel, near cylinder surface, or background through a hole.
+-- Infer a hole center from multiple visible rim points and its plane, not one point in the opening.
+-  Estimate the pin axis from its geometry; neither the TCP nor one cylindrical surface point is its centerline.
+-- Plan the whole grasp, transfer, descent, turn, opening, reset, and withdrawal before committing.
+-  Include distal fingertips beyond the TCP, gripper body, camera, forearm, fixture, table, and parked arm.
+-- Motions are not necessarily collision planned. Orient in clear space with wrist margin; check reach and tip clearance together.
++- Look before decisions and after motions; refresh depth observations after movement. Queries may advance time.
++- Identify the pin, tip, collar underside, ear bearing surfaces, bore edges, and support separately.
++  Cross-check views: depth picks can hit fingers, bevels, near cylinder surfaces, or background through a hole.
++- Estimate the bore axis from multiple boundary points and depth transitions, not one point in the opening.
++  Estimate the pin centerline from its geometry; neither the TCP nor a single surface point is its axis.
++- Plan grasp, lift, transfer, descent, head access, turning, jaw opening/reset, and withdrawal together.
++  Include fingertips beyond the TCP, gripper body, camera, forearm, fixture, table, and parked arm.
++- Motion is not necessarily collision planned. Orient in clear space and preserve wrist travel for turning.
++  Check reach and pin/finger clearance throughout the route, not just at the pickup and destination.
+ 
+ ## Shackle tabletop — Grip for a reliable first attempt
+ 
+-- Measure pin-to-tool offset and tip protrusion after grasping; remeasure after any slip or regrasp.
+-  A vertical tool does not establish a vertical, centered pin or a suitable screw axis.
+-- Choose opposing contact surfaces with enough pad overlap. Verify both loads, actual opening, visible
+-  part identity, and part motion during a small lift before a long transfer.
+-- The initial grasp's attempted lift exceeded reach; joint-limit warnings and tilted transfers followed.
+-  A lower shank grasp improved reachable staging in this attempt, but did not produce verified insertion.
+-- Balance that reach benefit against fingers reaching the ear before the tip reaches the lower thread.
+-  Plan a supported change to the head before clearance runs out; do not improvise it while loaded at the ear.
+-- An initial head grasp needs suitable overlap, alignment, reach, and sweep clearance; this episode did not validate it.
+-- Regrasp on stable table support if clearance is inadequate; standing on the tip alone does not guarantee stability.
++- Choose opposing surfaces with adequate pad overlap; verify opening, both loads, part identity, and pin motion in a test lift.
++- Measure pin-to-tool offset, tilt, and tip protrusion after grasping, slip, or regrasping; a vertical tool need not mean a vertical pin.
++- The low initial grasp met resistance, attributed by the operator to fingers reaching the ear too early.
++  The higher grasp passed a lift test but its transfer lift hit reach limits; a head grasp is not a universal fix.
++- A revised intermediate grasp eventually allowed passage. Select height by reachable tip clearance above
++  the rim and remaining finger clearance during descent; these observations do not supply a fixed grasp recipe.
++- Plan a supported head regrasp before clearance runs out; otherwise return to stable table support and revise the grasp.
++- Standing on the threaded tip alone is not reliable support: an adjustment tipped the pin onto the table.
+ 
+ ## Shackle tabletop — Align and establish passage
+ 
+-- Align the actual pin axis with both ears before descent. Clear the upper rim before translating over it.
+-- Use small, inspected final nudges, typically 1–2 mm; use smaller directed corrections near contact.
+-  Aim for submillimetre centering where observations support it, without treating that as guaranteed accuracy.
+-- At resistance, stop and inspect reached motion, pin tilt, tip location, and finger/fixture clearance.
++- Align the actual pin axis with both ears. Lift clear of the rim before translating over it.
++- Use inspected final nudges around 1–2 mm, reducing increments near contact; correct only a measured offset.
++- At resistance, inspect reached motion, tilt, tip position, grip, and finger/fixture clearance.
+   Unload or retract along a clear path before lateral correction; do not drag a constrained tip sideways.
+-- Remeasure rim center and pin offset instead of pushing or searching blindly; this attempt never established insertion.
+-- Verify that the tip actually passes the upper ear from complementary views and depth geometry.
+-  Overlap in one view or a lower tool position is insufficient; passing the upper ear does not engage the lower one.
++- Repeated rim contact prompted moving the pin aside and resampling the exposed bore. The operator revised
++  its estimated center by about 2.3 mm; subsequent descent progressed. Miscentering is a supported hypothesis,
++  not proof that every earlier stop had the same cause. Remeasure rather than repeat blind searches.
++- Check tip passage below the upper ear in complementary views; descent, overlap, good TCP residuals, or resistance are insufficient.
++- Passage through the upper ear may guide the pin but does not prove lower-thread engagement or axial support.
+ 
+ ## Shackle tabletop — Support before release or regrasp
+ 
+-- Establish support that prevents falling and tipping before opening. Mere contact with an ear is insufficient;
+-  do not test uncertain insertion or engagement by unsupported release. The right arm cannot provide backup.
+-- If ear support cannot be established, retain the grip and return to a stable, reachable table placement.
+-  Keep recovery away from edges and leave room for the next grasp and its withdrawal.
+-- Open only as needed under the current README, inspecting actual opening and both jaw loads as it settles.
+-  A release command or `empty` label does not mean the fingers are unloaded or clear.
+-- Here, opening was followed by large jaw loads; even `empty` coincided with roughly 330 N on one pad.
+-  Withdrawal then had large tracking error and the pin was lost. These are warning signs, not a safe release recipe.
+-- If opening remains loaded, retain or restore support and reassess contact before resetting or withdrawing.
+-  Hooking, collision, and stored load are possible explanations; the exact ejection mechanism is unproven.
+-- Verify regrasp by observed pin motion and remeasure its axis; closure, wrist motion, or a stall alone proves nothing.
++- Establish support against falling and tipping before opening; mere ear contact is insufficient.
++  Do not test uncertain insertion or engagement by unsupported release. The right arm cannot provide backup.
++- During the first ear-to-head transition, opening coincided with a roughly 25 mm detected drop; the scorer
++  recorded engagement immediately afterward, before the first commanded tightening turn. This successful
++  continuation does not validate a controlled, supported handoff or deliberate drop-to-engage procedure.
++- If support is uncertain, retain the grip and return to stable, reachable table support when safely possible.
++- Inspect opening, both loads, and withdrawal clearance. Earlier table placement showed roughly 140 N on one jaw despite `empty`.
++- Later threading stopped with `loaded_on_open`. Jaw/shackle contact was the operator's explanation,
++  not independently established by the outcome. Inspect and unload contact before resetting or withdrawing.
++- After established threading, clearing and regrasping higher on the head was followed by further advance
++  and eventual seating. Verify renewed pad contact and actual pin motion; closure or wrist motion alone is no proof.
+ 
+-## Shackle tabletop — Threading and seating criteria
++## Shackle tabletop — Thread advance and seating
+ 
+-- The README recorded in the transcript specifies a right-hand 2.5 mm pitch and clockwise tightening viewed from the head.
+-  Recheck the next README's signs; nominal axial feed is relative degrees × pitch / 360 along the pin axis.
+-- Once passage and lower-thread alignment are established, inspect a short starting turn for pin rotation
+-  and matching axial advance relative to the fixed shackle. TCP feed and wrist roll alone prove neither.
+-- Use screw/reset cycles only after thread-start evidence, bilateral grip, and support; inspect stop reasons and short batches.
+-- Task success is collar seating on the upper ear, not a turn-count threshold. Shorten strokes near contact.
+-  Cross-check the collar underside against the upper bearing surface with the pin still aligned and engaged.
+-- A stall, torque rise, retention after release, or signed gap alone cannot certify seating. Report uncertainty
+-  if occlusion prevents verification. No tightening rate or finishing sequence was validated by this attempt.
++- The recorded README specifies a right-hand 2.5 mm pitch, clockwise viewed from the head. Recheck signs
++  in the next README; nominal feed is relative degrees × pitch / 360 along the pin axis.
++- After passage and lower-thread alignment, use a short starting turn and inspect pin rotation plus axial
++  advance relative to the fixed shackle. Wrist roll, commanded feed, and TCP descent alone prove neither.
++- This successful episode used initial 30° and 60° turns with pitch-matched feed at 15°/s, then screw cycles.
++  These are examples after alignment, not a guarantee of thread start or a requirement to repeat the sequence.
++- Use automatic release/reset/regrasp only with thread-start evidence, bilateral contact, and support.
++  Read stop reason and phase; inspect short batches. Reported wrist degrees are not measured relative thread turns.
++- Shorten batches near the collar; half-turns at 10°/s were used here. The final stall and changed jaw contact did not prove seating.
++- Success means the collar underside rests on the upper ear with the pin correctly inserted and engaged,
++  not a turn-count threshold. Inspect from complementary views with the gripper clear only after safe release.
++  Account for collar thickness; its top is not the seating surface. Retention, torque rise, or gap alone is insufficient.
+ 
+ ## General — Diagnose and recover without compounding errors
+ 
+-- Read actual residuals, orientation error, limits, saturation, and settling even when `ok` is true.
+-  A good IK solution does not prove reached motion, clearance, or useful contact; change staging after repeated stops.
+-- `holding` reflects contact, not part identity or secure alignment; `empty` may mean only one pad unloaded.
+-  Repeated closing or more torque is not a substitute for inspecting pad overlap, obstruction, and support.
++- Read residuals, orientation error, limits, saturation, and settling despite `ok`; good IK does not prove clearance or reached motion.
++- `holding` indicates contact, not secure alignment or part identity; `empty` need not mean both jaws are unloaded.
++- After a drop, locate the settled pin and replan in clear space. Staged recovery helped; repeated unreachable rotations did not.
+ - If genuinely threaded and backing out, match reverse relative roll with reverse pitch feed; do not pull straight out.
+-  After a drop, locate and observe the settled pin before recovery; replan its grasp and orientation from scratch.
+-- Wait for active commands; recover lost results via README. `done` is a claim: report verified progress and uncertainty honestly.
++- Wait for active commands and recover lost results via the README. Report verified progress and uncertainty;
++  `done` records a claim, not independent certification. If views cannot establish seating, say so.

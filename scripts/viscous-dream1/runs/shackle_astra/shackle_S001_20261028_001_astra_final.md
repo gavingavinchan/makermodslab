@@ -1,0 +1,1 @@
+Completed with the left arm. The pin is threaded into the lower ear, with its collar seated on the upper ear. I released the gripper, visually checked the seating, and ran `./robot done`.

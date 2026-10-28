@@ -1,0 +1,8 @@
+2026-10-28T04:21:57-05:00 chain_start model=gpt-6-astra effort=high max_episodes=3 initial_lessons=s001.md
+2026-10-28T04:21:57-05:00 episode_start episode=shackle_S001_20261028_001 lessons=s001.md wall_cap_min=240.000
+2026-10-28T04:21:57-05:00 episode_process_started pid=1574926 log=runs/shackle_astra/launcher_shackle_S001_20261028_001.log
+2026-10-28T05:17:59-05:00 episode_done episode=shackle_S001_20261028_001 exit=0 success=True seated=True drops=2 commands=494
+2026-10-28T05:17:59-05:00 consolidation_start parent=s001.md episode=shackle_S001_20261028_001 out=s002.md
+2026-10-28T05:17:59-05:00 consolidation_process_started pid=1589859 log=runs/shackle_astra/chain_consolidate_s002.log
+2026-10-28T05:21:17-05:00 consolidation_done out=s002.md lines=90
+2026-10-28T05:21:17-05:00 chain_stop first seated success episode=shackle_S001_20261028_001

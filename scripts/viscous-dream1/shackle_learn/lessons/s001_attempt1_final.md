@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in place to 89 lines. Removed flange-only material, retracted the unsupported insertion claim, clarified the scorer’s wording-heuristic limitation, and prioritized grip planning, clearance, and support before release. Distinguished upper-ear passage, thread engagement, advance, and collar seating without presenting the failed attempt as a validated procedure.

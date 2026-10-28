@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in place to 90 lines. Corrected the outcome to verified success, clarified the wording heuristic’s limits, prioritized grip reach and clearance, and preserved support-before-release guidance—including the drop during regrasp. Distinguished insertion, engagement, thread advance, and seating without treating stalls or wrist motion as proof.

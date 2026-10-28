@@ -1,0 +1,47 @@
+{
+  "episode": "shackle_S001_20261028_001",
+  "success": true,
+  "seated": true,
+  "inserted": true,
+  "engaged": true,
+  "ever_inserted": true,
+  "ever_engaged": true,
+  "turns": 8.038018934060842,
+  "seat_gap_mm": 0.00044064647841679516,
+  "commands": 494,
+  "sim_s": 946.8499999845219,
+  "wall_s": 3290.6136191299884,
+  "wall_s_source": "runner monotonic: operator start to process exit",
+  "pin_drops": 2,
+  "drop_events": [
+    {
+      "start_sim_s": 60.149999999950516,
+      "detected_sim_s": 65.44999999994846,
+      "fall_mm": 10.002504184190242
+    },
+    {
+      "start_sim_s": 393.84999999759856,
+      "detected_sim_s": 393.8999999975974,
+      "fall_mm": 24.91870897037074
+    }
+  ],
+  "thread_engagements": 1,
+  "engagement_sim_s": [
+    393.90599999759723
+  ],
+  "ended_by": "done",
+  "final_claim": "Used the left arm to insert the pin through the upper ear, screw it clockwise into the lower ear, and seat its collar on the upper ear; released the pin and visually verified seating with the gripper clear.",
+  "claim_vs_truth": "No disagreement detected in the final claim (wording heuristic). Simulator: pin seated, inserted=True, engaged=True, turns=8.038.",
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T09:21:57.135130+00:00"
+  },
+  "operator_exit_code": 0,
+  "session": "/home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T04-22-04-01a181d1-0f79-70d2-adca-d8edd101c09e.jsonl",
+  "malformed_log_lines": 0,
+  "video_export_finished_at": "2026-10-28T10:17:58.756044+00:00",
+  "runner_error": null
+}
