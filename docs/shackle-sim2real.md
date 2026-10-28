@@ -32,6 +32,16 @@ the real arm (sim to real).
 - [ ] **1. 3D model of the part.** Codex (`gpt-6.1-sol`) builds a parametric
   CAD model from Gavin's photo and measurements. Blocked on the photo and
   measurements (2026-10-27).
+  - 2026-10-27: the part is a stainless bow (anchor) shackle with an eye-head
+    screw pin, roughly 3/4" (19 mm bow, ~22 mm pin). Gavin sent 14 caliper
+    photos to @ViscousRobotics_bot (OneDrive "Viscous Robotics Files",
+    `2026-10-27_2310*_m283..m296.jpg`; copies on gavin-linux in
+    `~/dreamtrial/viscous_sim/shackle/photos/`). The pin stands upright on its
+    threaded end (m288). Codex is running
+    [BRIEF_SHACKLE_MODEL.md](../scripts/viscous-dream1/BRIEF_SHACKLE_MODEL.md)
+    on gavin-linux (log `shackle_model_codex.log`, outputs
+    `runs/shackle_model/`). Still unmeasured: the inside gap between the ears,
+    the pin's total length and the thread pitch.
 - [ ] **2. Holder.** A small printable stand that keeps the U-shape vertical on
   the table (and a bolt stand if the bolt won't stand on its own head).
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
