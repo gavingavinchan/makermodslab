@@ -68,9 +68,24 @@ the real arm (sim to real).
   nice"); how the physics models them doesn't matter. Codex is adding visual
   helical threads to the pin and the tapped ear, checked in MuJoCo's renderer
   ([BRIEF_SHACKLE_THREADS.md](../scripts/viscous-dream1/BRIEF_SHACKLE_THREADS.md)).
+- 2026-10-28: Gavin asked for a 0.5 mm chamfer on every edge of the print ("I
+  don't like the feeling of handling sharp edges of 3D prints") and accepted the
+  loads: the shackle is hot-glued to the holder and the holder to the desk, so
+  no redesign (`BRIEF_SHACKLE_HOLDER_FOLLOWUP.md`, resumed in the same Codex
+  session).
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).
+  - 2026-10-28, Gavin: "throw it into a MuJoCo table, like a proper setup ...
+    ask Astra to do it. But before that, ask Dream-1 to do it, three
+    attempts." Codex builds the scene, a scripted feasibility demo, the
+    Dream-1 task and the Astra profile with no billed calls
+    ([BRIEF_SHACKLE_SCENE.md](../scripts/viscous-dream1/BRIEF_SHACKLE_SCENE.md));
+    Claude reviews it, then launches three live Dream-1 attempts (ledger
+    1986/2212 before them), then Astra. The Astra lessons A/B
+    (`astra_learn/ab.sh`) was running on gavin-linux at the time; the shackle
+    Astra episode waits for it, because only one sim server may run.
+- [ ] **3b. Dream-1, three attempts** (zero-shot, before Astra).
 - [ ] **4. Astra does it in sim.** Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - [ ] **5. In-context learning check.** Do later episodes improve from the
