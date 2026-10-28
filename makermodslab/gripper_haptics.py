@@ -30,9 +30,10 @@ proof of concept"), moved into the teleop loop:
   SLEW_MW_S and every move is planned over MOVE_MS (damping). At or outside
   the wall the Star is released, so it never pulls the finger in.
 
-Two fixes from Run B's list are included: contact must persist
-CONTACT_PERSIST_S, and none is detected within CLOSED_STOP_IGNORE_DEG of the
-closed stop (the jaws closing on their own stop read as a squeeze).
+One fix from Run B's list is included: no contact is detected within
+CLOSED_STOP_IGNORE_DEG of the closed stop (the jaws closing on their own stop
+read as a squeeze). A 60 ms persistence rule was tried and removed: with the
+slew it left a fast close onto an object with no felt push (2026-10-28).
 
 Only the Star GRIPPER servo is ever energized. motorbridge 0.0.4 cannot send
 a capped-power move (its power 0 is the protection ceiling,
@@ -71,7 +72,11 @@ STILL_DEG_S = 40.0
 MIN_MW = 100
 MAX_MW = 600
 MW_PER_DEG = 60.0
-SLEW_MW_S = 1500.0
+# PoC v2 used 1500: from MIN_MW that takes ~0.35 s to full power, and a hand
+# slamming the Star shut is already at its stop by then (2026-10-28, Gavin:
+# "when I ... close it very quickly onto the cube, I don't feel any haptic
+# feedback"). 4000 reaches full power in ~0.12 s.
+SLEW_MW_S = 4000.0
 MOVE_MS = 150
 ON_DEG = 1.0
 RELEASE_DEG = 3.0
@@ -82,8 +87,7 @@ CALIB_STILL_TICKS = 25
 BASELINE_ERR_DEG = 3.0
 THRESHOLD_MIN_NM = 0.5
 THRESHOLD_MAX_NM = 1.5
-# Run B fixes.
-CONTACT_PERSIST_S = 0.06
+# Run B fix.
 CLOSED_STOP_IGNORE_DEG = 4.0
 # Thermal: the Star servo (RawBus's own guard is 60 C) and the follower
 # gripper (the project's 82 C abort, below the driver's 85 C stop).
@@ -259,7 +263,6 @@ class GripperHaptics:
         self.baseline = self.threshold = self.travel = None
         self.latched = False
         self.wall_f = None
-        self._candidate_t = None
         self._squeeze_t = 0.0
         self.power = 0.0
         self.star_on = False
@@ -359,16 +362,9 @@ class GripperHaptics:
         else:
             squeeze = (tau - self.baseline) * self.f_close
             near_closed = (self.closed_f - f) * self.f_close < CLOSED_STOP_IGNORE_DEG
-            if not self.latched:
-                if still and squeeze >= self.threshold and not near_closed:
-                    self._candidate_t = t if self._candidate_t is None else self._candidate_t
-                    if t - self._candidate_t >= CONTACT_PERSIST_S:
-                        self.latched, self.wall_f, self._squeeze_t = True, f, t
-                        logger.info(
-                            "Gripper haptics: contact at follower %+.1f deg (squeeze %.2f N m)", f, squeeze
-                        )
-                else:
-                    self._candidate_t = None
+            if not self.latched and still and squeeze >= self.threshold and not near_closed:
+                self.latched, self.wall_f, self._squeeze_t = True, f, t
+                logger.info("Gripper haptics: contact at follower %+.1f deg (squeeze %.2f N m)", f, squeeze)
             if self.latched:
                 if still and squeeze >= 0.3 * self.threshold:
                     self.wall_f = 0.8 * self.wall_f + 0.2 * f
@@ -384,7 +380,7 @@ class GripperHaptics:
                 if squeeze >= 0.3 * self.threshold:
                     self._squeeze_t = t
                 if pen < -RELEASE_DEG or t - self._squeeze_t > SQUEEZE_GONE_S:
-                    self.latched, self._candidate_t = False, None
+                    self.latched = False
                     logger.info(
                         "Gripper haptics: contact off (penetration %+.1f deg, squeeze %.2f N m)", pen, squeeze
                     )

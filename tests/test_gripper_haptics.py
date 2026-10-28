@@ -130,11 +130,9 @@ def test_contact_renders_a_wall_and_releases_when_the_hand_opens():
     rig = Rig()
     rig.calibrate()
     wall = 20.0 * SCALE + OFFSET  # the jaws stop on an object at Star 20 deg
-    # A single squeezed tick is not contact (persistence).
+    # The first squeezed tick with the jaws still is contact: a fast close
+    # must not wait (2026-10-28).
     rig.tick(20.0, follower=wall, torque=3.0)
-    assert not rig.haptics.latched
-    for _ in range(4):
-        rig.tick(20.0, follower=wall, torque=3.0)
     assert rig.haptics.latched
     # The hand closes the Star 5 deg past the wall: the Star pushes back.
     for _ in range(10):
