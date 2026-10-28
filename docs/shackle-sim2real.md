@@ -139,6 +139,26 @@ the real arm (sim to real).
   first seated success, no new episode after 10:30 CDT
   ([BRIEF_SHACKLE_LEARN_CHAIN.md](../scripts/viscous-dream1/BRIEF_SHACKLE_LEARN_CHAIN.md);
   progress `runs/shackle_astra/chain.log`, table `summary.md`).
+  - **2026-10-28 05:18 CDT: Astra seated the pin on attempt 2**
+    (`shackle_S001_20261028_001`, lessons s001 = its own notes after attempt 1).
+    Through the clear ear, 8.04 turns into the tapped ear, collar gap
+    0.0004 mm; 494 commands, 947 s sim, 55 min wall; 2 pin drops, both
+    recovered; final claim matches the sim; audit clean (README, LESSONS,
+    `./robot` and its own images only). Attempt 1 (flange notes only) failed
+    with the pin lost off the table. The chain stopped on success and wrote
+    s002 from attempt 2.
+  - What this does and does not show: one failure then one success on the
+    same seed is consistent with in-context learning from its own notes, but
+    it is n=1. A controlled claim needs repeated runs with and without the
+    shackle notes, like the flange A/B (`astra_learn/ab.sh`).
+  - Videos (`BRIEF_SHACKLE_VIDEO.md`, done 05:32 CDT), a replay of the
+    recorded states only, speeds labelled:
+    `runs/shackle_astra/shackle_S001_20261028_001/video/` (`shackle_social.mp4`
+    ~49 s, `shackle_social_vertical.mp4`, `shackle_autonomous_10x.mp4`,
+    `hero_seated.png`). Summary and social cut sent to Gavin's Telegram.
+  - Next (for Gavin): his measurements (pin diameter, pitch, pin lengths, ear
+    gap) and rebuild; repeat runs for a real in-context-learning claim; the
+    torque gap (scripted peak 6.86 Nm vs the real 5 Nm) before task 6.
 - (4, continued) Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - (5, original line) **In-context learning check.** Do later episodes improve from the
