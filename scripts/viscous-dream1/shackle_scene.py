@@ -1,5 +1,5 @@
 """Real-scale glued shackle station; task-only contact grasp and ideal screw.
-No network or inference. The original station cameras/lights remain unchanged.
+No network or inference. Task-only lighting; original station cameras unchanged.
 """
 from pathlib import Path
 import json
@@ -34,11 +34,19 @@ def camera(world,name,eye,target,fovy):
 
 def add_scene(root):
     w,a=root.find('worldbody'),root.find('asset')
-    # Task-only studio lighting: the key's shadow map self-shadows the curved
-    # steel with jagged patches, even at 16384 px. Keep its smooth direct light
-    # and the authored split normals (including crisp threads), without shadows.
-    for light in w.findall('light'):
-        light.set('castshadow','false')
+    # Task-only key from the inspection side: move the shadow terminator off
+    # the visible bow. Resolution alone leaves serrated self-shadow boundaries.
+    # Keep the original light colours, fill, materials, meshes and all cameras.
+    key=w.find('light')
+    key.set('pos','.8 -.7 2.0');key.set('dir','-.6 .8 -1.2')
+    key.set('castshadow','true')
+    visual=root.find('visual')
+    quality=visual.find('quality')
+    if quality is None:quality=ET.SubElement(visual,'quality')
+    quality.set('shadowsize','8192')
+    mapping=visual.find('map')
+    if mapping is None:mapping=ET.SubElement(visual,'map')
+    mapping.set('shadowscale','.8')
     root.find('size').set('memory','512M')
     for n in ('apple','orange','bowl','banana','water_bottle','plate'):
         b=w.find(f"body[@name='{n}']")

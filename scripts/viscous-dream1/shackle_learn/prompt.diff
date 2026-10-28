@@ -1,0 +1,8 @@
+--- ASTRA_OPERATOR_PROMPT_SHACKLE.md
++++ ASTRA_OPERATOR_PROMPT_SHACKLE_LESSONS.md
+@@ -8,3 +8,5 @@
+ - If it slips or jams, look, work out why, and recover. Do not give up early.
+ - Stay inside this workspace. Use only `./robot`, `README.md` and files in `obs/`. Do not read other files or directories, or reach the simulator another way.
+ - When you believe the task is done, look again, run `./robot done "<what you achieved>"`, then give a short summary.
++
++`LESSONS.md` holds notes you wrote after earlier work screwing a nut onto a bolt in a different (flange) task. Read it first, use what applies to this shackle task, and ignore what is specific to the flange task.

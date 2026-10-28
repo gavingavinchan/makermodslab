@@ -122,6 +122,11 @@ the real arm (sim to real).
     Episode 1 plan: flange lessons v006 as `LESSONS.md`, with a prompt saying
     they come from a different task, to see whether in-context lessons
     carry over to a new task.
+  - 2026-10-28 03:42 CDT: shadows restored without the acne (8192 shadow map,
+    key light moved; minor jagged edges remain, re-render later for polish).
+    Launcher smoke-tested beside the A/B (its guard never saw the shackle
+    server). Launched episode `shackle_L006_20261028_001` (lessons v006, 240
+    min wall cap); outputs `runs/shackle_astra/` on gavin-linux.
 - (4, continued) Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - [ ] **5. In-context learning check.** Do later episodes improve from the
