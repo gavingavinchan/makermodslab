@@ -9,6 +9,11 @@ from shackle_scene import *
 from flange_start import local_ik
 from flange_ik_check import orientation
 
+# Offline verification grasp yaw, chosen with layout v2 to keep the 120-degree
+# roll stroke clear of the upper arm. This does not set the pin's orientation
+# or change either runner, the robot start pose, or the task physics.
+SCRIPT_JAW=np.array([np.cos(np.pi/6),np.sin(np.pi/6),0.])
+
 class Demo:
  def __init__(self,render=False):
   self.e=ShackleEnv();self.ik=local_ik(self.e);self.m=Measurements(self.e);self.q=self.e.state()['left'].copy();self.correction=np.zeros(6);self.rows=[];self.errors=[];self.stage='start';self.render=render
@@ -64,12 +69,15 @@ class Demo:
    self.mark('close on shank');self.grip(0)
    if not e.grasps.active:raise RuntimeError('bilateral shank pickup did not attach')
    self.grip(max(0,e.state()['left'][6]-.004),.3)
-   self.mark('lift pin');self.object_move(PIN+[0,.06,.025],np.eye(3),4)
-   self.mark('carry over clear ear');self.object_move(np.r_[CENTER[:2],TOP+.004],np.eye(3),5)
+   self.mark('lift pin');self.object_move(PIN+[0,.075,.025],np.eye(3),4)
+   # Raise beside the fixture before crossing its ears; the old diagonal
+   # carry grazed the upper ear. The upright pin stays clear until insertion.
+   self.mark('raise pin clear of fixture');self.object_move(np.array([PIN[0],PIN[1]+.075,TOP+.006]),np.eye(3),3)
+   self.mark('carry over clear ear');self.object_move(np.r_[CENTER[:2],TOP+.006],np.eye(3),5)
    self.mark('insert through clear ear');self.object_move(np.r_[CENTER[:2],TOP-.021],np.eye(3),5)
    if e.data.body('pin').xpos[2]>TOP-.019:raise RuntimeError('pin blocked in clear ear')
    self.mark('release shank for head regrasp');self.grip(.8);self.hold(.5)
-   self.mark('approach head');R=orientation([0,0,-1],[1,0,0])
+   self.mark('approach head');R=orientation([0,0,-1],SCRIPT_JAW)
    tip=e.data.body('pin').xpos.copy();self.cart(tip+[0,0,.124],R,3);self.grip(0)
    if not e.grasps.active:raise RuntimeError('head regrasp did not attach')
    self.grip(max(0,e.state()['left'][6]-.004),.3)
@@ -83,7 +91,7 @@ class Demo:
     self.grip(.8)
     # Reset around the pin axis, not around an off-centre old TCP. The head
     # stays supported by its thread while open; no part coordinates are set.
-    self.cart(e.data.body('pin').xpos+[0,0,.124],orientation([0,0,-1],[1,0,0]),2)
+    self.cart(e.data.body('pin').xpos+[0,0,.124],orientation([0,0,-1],SCRIPT_JAW),2)
     self.grip(0)
     if not e.grasps.active:self.hold(1.)
     if not e.grasps.active:raise RuntimeError('lost head on roll regrasp')

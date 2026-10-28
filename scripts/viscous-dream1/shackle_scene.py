@@ -13,8 +13,13 @@ HERE=Path(__file__).resolve().parent
 ASSETS=HERE/'assets/shackle'
 OUT=HERE/'runs/shackle_scene'
 TABLE=.76
-CENTER=np.array([.20,.18,TABLE+.04924987])
-PIN=np.array([.24,.004,TABLE+.00015])
+CENTER=np.array([.245,.1425,TABLE+.04924987])
+PIN=np.array([.305,.040,TABLE+.00015])
+# Left base is (.305,.240); its rest-pose tool projects along -Y.
+# The bow extends along mesh -X. Rotate both glued parts together so -X
+# points radially away from that base, leaving the ears on the near side.
+FIXTURE_YAW=float(np.arctan2(.0975,.060))
+FIXTURE_QUAT=np.array([np.cos(FIXTURE_YAW/2),0,0,np.sin(FIXTURE_YAW/2)])
 PITCH=.0025
 UNDERHEAD=.07985
 TOP=CENTER[2]+.039925
@@ -29,6 +34,11 @@ def camera(world,name,eye,target,fovy):
 
 def add_scene(root):
     w,a=root.find('worldbody'),root.find('asset')
+    # Task-only studio lighting: the key's shadow map self-shadows the curved
+    # steel with jagged patches, even at 16384 px. Keep its smooth direct light
+    # and the authored split normals (including crisp threads), without shadows.
+    for light in w.findall('light'):
+        light.set('castshadow','false')
     root.find('size').set('memory','512M')
     for n in ('apple','orange','bowl','banana','water_bottle','plate'):
         b=w.find(f"body[@name='{n}']")
@@ -39,12 +49,12 @@ def add_scene(root):
         ET.SubElement(a,'mesh',name='shackle_'+n,file=str(ASSETS/f'shackle_{n}.obj'),smoothnormal='false')
     def visual(b,n,mat):
         ET.SubElement(b,'geom',name=n+'_visual',type='mesh',mesh=n,material=mat,contype='0',conaffinity='0',mass='0',group='2')
-    body=ET.SubElement(w,'body',name='shackle',pos=numbers(CENTER))
+    body=ET.SubElement(w,'body',name='shackle',pos=numbers(CENTER),quat=numbers(FIXTURE_QUAT))
     visual(body,'shackle_body','shackle_stainless')
     for i,p in enumerate(sorted((ASSETS/'collision').glob('*.stl'))):
         n=f'shackle_cell_{i}';ET.SubElement(a,'mesh',name=n,file=str(p))
         ET.SubElement(body,'geom',name=n,type='mesh',mesh=n,rgba='0 0 0 0',group='3',margin='0',friction='.5 .01 .001')
-    holder=ET.SubElement(w,'body',name='shackle_holder',pos=numbers(CENTER))
+    holder=ET.SubElement(w,'body',name='shackle_holder',pos=numbers(CENTER),quat=numbers(FIXTURE_QUAT))
     visual(holder,'shackle_holder_sim','holder_pla')
     # Static mesh's convex envelope is sufficient: the entire holder is >68 mm
     # from the insertion axis. Both body trees have no joints: welded to world.
@@ -62,7 +72,7 @@ def add_scene(root):
     ET.SubElement(pin,'geom',name='pin_tab',type='box',pos='0 0 .094',size='.012 .004595 .010',rgba='0 0 0 0',group='3',friction='1.5 .02 .002')
     camera(w,'shackle_overview',[.85,-.72,1.23],np.array([.16,.08,.83]),42)
     camera(w,'shackle_plan',[.181,.101,1.65],np.array([.18,.10,.80]),35)
-    camera(w,'shackle_detail',[.44,-.13,1.02],CENTER+[0,0,.048],28)
+    camera(w,'shackle_detail',[.44,-.13,1.02],np.array([.20,.18,TABLE+.04924987+.048]),28)
     root.find('visual/global').set('offwidth','1280');root.find('visual/global').set('offheight','720')
     return root
 

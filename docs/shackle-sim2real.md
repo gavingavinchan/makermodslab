@@ -105,7 +105,24 @@ the real arm (sim to real).
     be closer to the arm, and the C-shaped part should be facing away from the
     arm." `BRIEF_SHACKLE_LAYOUT.md` (Codex, after the shading fix). The 0/3
     above is on the old layout (`layout_v1`).
-- [ ] **4. Astra does it in sim.** Codex model `gpt-6-astra` drives the arm:
+  - Layout v2 done: pin 20 cm straight ahead of the left base (no base
+    rotation to grasp), shackle ears toward the arm, bow away. The scripted
+    demo still seats the pin; peak torque fell 11.75 -> 6.86 Nm (still above
+    5 Nm). The white patches were shadow acne; the first fix turned shadows
+    off, which looks flat, so `BRIEF_SHACKLE_ASTRA_PREP.md` asks for shadows
+    back without the acne.
+  - Gavin gave no answer on re-running Dream-1 on v2 before going to sleep;
+    the stated default was to skip it and go to Astra (136 calls left).
+- [ ] **4. Astra does it in sim.**
+  - 2026-10-28: the lessons A/B (another session) holds `astra_op/server.py`
+    for hours, and its runner refuses to start an episode while any
+    `astra_op/server.py` process exists. So the shackle episodes get their own
+    launcher (`shackle_learn/run_episode.py`) that starts `shackle_astra.py`
+    directly and never matches that guard (`BRIEF_SHACKLE_ASTRA_PREP.md`).
+    Episode 1 plan: flange lessons v006 as `LESSONS.md`, with a prompt saying
+    they come from a different task, to see whether in-context lessons
+    carry over to a new task.
+- (4, continued) Codex model `gpt-6-astra` drives the arm:
   grasp, insert, tighten. Record its transcript and have it write `LESSONS.md`.
 - [ ] **5. In-context learning check.** Do later episodes improve from the
   lessons alone (no weight updates)? Compare episode 1 to episode N.
