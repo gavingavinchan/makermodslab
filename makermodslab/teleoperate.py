@@ -327,6 +327,8 @@ class TeleoperateRequest(BaseModel):
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
     joint_posture_mapping: bool = False
+    # Opt-in Star gripper haptics (gripper_haptics.py); single Viscous only.
+    gripper_haptics: bool = False
     allow_unit_override: bool = False
     # Session wrapper releases this only after identity and lease attribution.
     _start_gate: Any = PrivateAttr(default=None)
@@ -747,7 +749,14 @@ def _connect_can(request: TeleoperateRequest, wait=None):
     # BiRebot102Leader), so dispatching on the registered `config.type` is the
     # only mapping guaranteed to stay correct if that changes upstream.
     robot = make_robot_from_config(robot_config)
-    teleop_device = make_teleoperator_from_config(teleop_config)
+    if request.gripper_haptics:
+        # The stock leader on the raw transport: motorbridge cannot send a
+        # capped-power gripper move, and the two must never share the port.
+        from .gripper_haptics import HapticStarLeader
+
+        teleop_device = HapticStarLeader(teleop_config)
+    else:
+        teleop_device = make_teleoperator_from_config(teleop_config)
     if request.joint_posture_mapping:
         from .joint_posture_mapping import prepare_test
 
@@ -1035,6 +1044,8 @@ def _finish_start_teleoperation(request, websocket_manager=None):
             raise ValueError("Joint posture mapping requires a single Viscous arm")
         if request.speed_limit_deg_s is not None and not family.supports_teleop_speed_limit:
             raise ValueError("This arm does not support the local teleop target speed limit")
+        if request.gripper_haptics and (not family.supports_gripper_haptics or request.mode != "single"):
+            raise ValueError("Gripper haptics requires a single Viscous arm")
         if not family.uses_feetech_bus:
             wait = (
                 ConnectWait(_start_cancel.is_set, _connection_phase, sleep=_start_cancel.wait)
@@ -1129,6 +1140,13 @@ def _finish_start_teleoperation(request, websocket_manager=None):
         # with the followers on a normal stop. Nothing on every other leader.
         rest_poses += family.capture_leader_rest_poses(teleop_device)
 
+        haptics = None
+        if request.gripper_haptics:
+            from .gripper_haptics import GripperHaptics
+            from .utils.config import GRIPPER_HAPTICS_LOG_DIR
+
+            haptics = GripperHaptics(robot, teleop_device, log_dir=GRIPPER_HAPTICS_LOG_DIR)
+
         # Stream the arms in the background; the worker owns disconnect so stop()
         # does not race the serial bus from the request thread.
         # A bimanual BiSO robot exposes left_arm/right_arm; broadcast both arms'
@@ -1160,7 +1178,11 @@ def _finish_start_teleoperation(request, websocket_manager=None):
 
                 while teleoperation_active:
                     action = teleop_device.get_action()
+                    if haptics is not None:
+                        action = haptics.before_send(action)
                     robot.send_action(action)
+                    if haptics is not None:
+                        haptics.after_send()
 
                     current_time = time.time()
                     if current_time - last_broadcast_time >= broadcast_interval:
@@ -1212,6 +1234,10 @@ def _finish_start_teleoperation(request, websocket_manager=None):
                 # session died on its own — a real failure, classified below.
                 loop_error = format_exception(e)
             finally:
+                if haptics is not None:
+                    # Release the Star gripper before anything else moves:
+                    # the return to rest below drives the follower alone.
+                    haptics.close()
                 telemetry_summary = telemetry.summary()
                 if telemetry_summary:
                     logger.info(telemetry_summary)
@@ -1438,6 +1464,7 @@ def handle_teleoperation_status() -> dict[str, Any]:
         if teleoperation_active
         else None,
         "posture_mapping": getattr(current_teleop, "posture_mapping_status", None),
+        "gripper_haptics": getattr(current_teleop, "gripper_haptics_status", None),
         "available_controls": {
             "stop_teleoperation": teleoperation_active,
         },

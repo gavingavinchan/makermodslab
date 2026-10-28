@@ -44,6 +44,9 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const family = byId(selectedRecord?.arm_type);
   const supportsSlowTeleop = !!family?.capabilities.supports_teleop_speed_limit;
   const discoversTeleopUsb = !!family?.capabilities.teleop_usb_discovery;
+  const supportsGripperHaptics = !!family?.capabilities.supports_gripper_haptics &&
+    selectedRecord?.mode !== "bimanual";
+  const [gripperHaptics, setGripperHaptics] = useState(false);
   const [slowTeleop, setSlowTeleop] = useState(true);
   const [postureMapping, setPostureMapping] = useState(true);
   const supportsPostureMapping = selectedRecord?.arm_type === "viscous" &&
@@ -51,6 +54,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const usePostureMapping = supportsPostureMapping && postureMapping;
   const [activeSpeedLimit, setActiveSpeedLimit] = useState<number | null>(null);
   const [activePostureMapping, setActivePostureMapping] = useState(false);
+  const [activeGripperHaptics, setActiveGripperHaptics] = useState(false);
   const [startIssue, setStartIssue] = useState<{
     robot: RobotRecord;
     options: TeleoperationSessionOptions;
@@ -75,6 +79,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
     const options: TeleoperationSessionOptions = retryOptions ?? {
       ...(supportsSlowTeleop && (slowTeleop || usePostureMapping) ? { speed_limit_deg_s: 15 } : {}),
       ...(usePostureMapping ? { joint_posture_mapping: true } : {}),
+      ...(supportsGripperHaptics && gripperHaptics ? { gripper_haptics: true } : {}),
     };
     setStartIssue(null);
     setTeleopStarting(true);
@@ -87,6 +92,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
       });
       setActiveSpeedLimit(options.speed_limit_deg_s ?? null);
       setActivePostureMapping(options.joint_posture_mapping ?? false);
+      setActiveGripperHaptics(options.gripper_haptics ?? false);
       setTeleopSessionId(session.id);
       if (warnings?.length) {
         // A success can carry a warn-but-allow arm-identity finding (e.g. the
@@ -262,6 +268,17 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
           {t("robot.teleop.postureMapping")}
         </label>
       )}
+      {arms === "both" && supportsGripperHaptics && (
+        <label className="flex items-center gap-1 px-2 text-xs whitespace-nowrap" title={t("robot.teleop.gripperHapticsHint")}>
+          <input
+            type="checkbox"
+            checked={gripperHaptics}
+            disabled={teleopStarting || teleopOpen}
+            onChange={(e) => setGripperHaptics(e.target.checked)}
+          />
+          {t("robot.teleop.gripperHaptics")}
+        </label>
+      )}
       {arms === "both" && actionButton(
         t("robot.corner.teleop"),
         <Gamepad2 className="h-3.5 w-3.5" />,
@@ -304,6 +321,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
         sessionId={teleopSessionId}
         speedLimitDegS={activeSpeedLimit}
         postureMapping={activePostureMapping}
+        gripperHaptics={activeGripperHaptics}
       />
 
       <HostingDialog

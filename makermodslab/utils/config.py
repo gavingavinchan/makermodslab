@@ -349,6 +349,10 @@ LIVEKIT_CONFIG_FILE = os.path.join(MAKERMODSLAB_HOME, "livekit_config.yaml")
 # yet (a lone hostable robot is picked automatically, else the UI chooses).
 STATION_FILE = os.path.join(MAKERMODSLAB_HOME, "station.json")
 
+# One gzipped CSV per teleop session run with gripper haptics on
+# (gripper_haptics.py): the tick log the haptic feel is tuned from.
+GRIPPER_HAPTICS_LOG_DIR = os.path.join(MAKERMODSLAB_HOME, "gripper_haptics")
+
 # Tag stamped on every dataset pushed to the Hub from MakerMods Lab, so we can later
 # query the Hub for MakerMods Lab-produced datasets and compute usage metrics.
 MAKERMODSLAB_TAG = "MakerModsLab"

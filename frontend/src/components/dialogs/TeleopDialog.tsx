@@ -18,6 +18,7 @@ export interface TeleopDialogProps {
   sessionId: string | null;
   speedLimitDegS?: number | null;
   postureMapping?: boolean;
+  gripperHaptics?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
   sessionId,
   speedLimitDegS,
   postureMapping,
+  gripperHaptics,
 }) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -64,6 +66,13 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
     worst_joint?: string;
     limited_joints?: string[];
   }>({ phase: "warming_up" });
+  // makermodslab/gripper_haptics.py GripperHaptics._publish.
+  const [hapticsStatus, setHapticsStatus] = useState<{
+    phase: "connecting" | "calibrating" | "on" | "off";
+    contact?: boolean;
+    power_mw?: number;
+    reason?: string | null;
+  }>({ phase: "connecting" });
   const jointNumber = (name: string) => ({
     shoulder_pan: "J1", shoulder_lift: "J2", elbow_flex: "J3",
     wrist_flex: "J4", wrist_yaw: "J5", wrist_roll: "J6",
@@ -77,6 +86,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
       setConnecting(true);
       setConnectionStatus(null);
       setMappingStatus({ phase: "warming_up" });
+      setHapticsStatus({ phase: "connecting" });
     }
   }, [open]);
 
@@ -108,6 +118,7 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
         setConnecting(false);
         setConnectionStatus(status.status_sentence ?? null);
         if (status.posture_mapping?.phase) setMappingStatus(status.posture_mapping);
+        if (status.gripper_haptics?.phase) setHapticsStatus(status.gripper_haptics);
         if (
           !status.teleoperation_active &&
           !status.releasing &&
@@ -289,6 +300,16 @@ const TeleopDialog: React.FC<TeleopDialogProps> = ({
             {!!mappingStatus.limited_joints?.length && (
               <> {t("robot.teleop.postureLimited", { joints: mappingStatus.limited_joints.map(jointNumber).join(", ") })}</>
             )}
+          </p>
+        )}
+        {gripperHaptics && !finished && (
+          <p role="status" className="text-sm text-muted-foreground">
+            {hapticsStatus.phase === "calibrating" ? t("robot.teleop.hapticsCalibrating") :
+              hapticsStatus.phase === "on" ? (hapticsStatus.contact
+                ? t("robot.teleop.hapticsContact", { power: hapticsStatus.power_mw ?? 0 })
+                : t("robot.teleop.hapticsOn")) :
+              hapticsStatus.phase === "off" ? t("robot.teleop.hapticsOff", { reason: hapticsStatus.reason ?? "" }) :
+              t("robot.teleop.hapticsConnecting")}
           </p>
         )}
         {finished?.details != null && (

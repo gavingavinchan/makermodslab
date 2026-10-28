@@ -27,6 +27,7 @@ class ViscousFamily(CanArmFamily):
     teleop_usb_discovery = True
     teleop_requires_adapter_enrollment = True
     supports_joint_posture_mapping = True
+    supports_gripper_haptics = True
     single_robot_type = "viscous_follower"
     # No bimanual Viscous driver exists. All public starts check the capability;
     # the builder below also refuses direct callers before touching hardware.

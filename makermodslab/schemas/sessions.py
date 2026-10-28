@@ -98,6 +98,7 @@ class TeleoperationOptions(BaseModel):
     skip_identity_check: bool = False
     speed_limit_deg_s: float | None = Field(None, gt=0, le=30, allow_inf_nan=False)
     joint_posture_mapping: bool = False
+    gripper_haptics: bool = False
 
 
 class HostingOptions(BaseModel):
@@ -871,6 +872,7 @@ class TeleoperationStatusResponse(BaseModel):
     details: dict[str, Any] | None
     status_sentence: str | None
     posture_mapping: dict[str, Any] | None
+    gripper_haptics: dict[str, Any] | None
     available_controls: dict[str, bool]
     releasing: bool
     last_cleanup_error: str | None

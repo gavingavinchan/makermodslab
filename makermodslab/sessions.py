@@ -521,6 +521,7 @@ def _build_teleoperation_request(record: dict, opts: TeleoperationOptions):
         allow_unit_override=opts.allow_unit_override,
         speed_limit_deg_s=opts.speed_limit_deg_s,
         joint_posture_mapping=opts.joint_posture_mapping,
+        gripper_haptics=opts.gripper_haptics,
     )
 
 

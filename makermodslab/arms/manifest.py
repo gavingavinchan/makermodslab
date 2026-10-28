@@ -94,6 +94,7 @@ def describe_family(family: ArmFamily) -> dict:
             "supports_gripper_wiggle": family.supports_gripper_wiggle,
             "supports_teleop_speed_limit": family.supports_teleop_speed_limit,
             "teleop_usb_discovery": family.teleop_usb_discovery,
+            "supports_gripper_haptics": family.supports_gripper_haptics,
         },
         "robot_types": [kind for kind in (family.single_robot_type, family.bimanual_robot_type) if kind],
         "robot_type_markers": list(family.robot_type_markers),

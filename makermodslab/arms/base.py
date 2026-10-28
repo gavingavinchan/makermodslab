@@ -386,6 +386,10 @@ class ArmFamily(ABC):
 
     # The opt-in 1:1 joint-posture teleop trial (joint_posture_mapping.py).
     supports_joint_posture_mapping: bool = False
+    # Opt-in Star gripper haptics in local teleop (gripper_haptics.py): the
+    # Star leader's gripper servo pushes back where the follower's jaws meet
+    # an object.
+    supports_gripper_haptics: bool = False
     # Opt-in for the local MIT holding / mode-4 gripper adapters.
     supports_gripper_effort_control: bool = False
 

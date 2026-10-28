@@ -139,6 +139,11 @@
             "title": "Supports Dagger",
             "type": "boolean"
           },
+          "supports_gripper_haptics": {
+            "default": false,
+            "title": "Supports Gripper Haptics",
+            "type": "boolean"
+          },
           "supports_gripper_wiggle": {
             "title": "Supports Gripper Wiggle",
             "type": "boolean"
@@ -7360,6 +7365,11 @@
             "title": "Follower Port",
             "type": "string"
           },
+          "gripper_haptics": {
+            "default": false,
+            "title": "Gripper Haptics",
+            "type": "boolean"
+          },
           "joint_posture_mapping": {
             "default": false,
             "title": "Joint Posture Mapping",
@@ -7486,6 +7496,18 @@
             ],
             "title": "Error"
           },
+          "gripper_haptics": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gripper Haptics"
+          },
           "hint": {
             "anyOf": [
               {
@@ -7573,6 +7595,7 @@
           "details",
           "status_sentence",
           "posture_mapping",
+          "gripper_haptics",
           "available_controls",
           "releasing",
           "last_cleanup_error",

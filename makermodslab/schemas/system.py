@@ -305,6 +305,8 @@ class ArmCapabilities(BaseModel):
     supports_teleop_speed_limit: bool = False
     # Local Teleop can resolve USB ports before checking record readiness.
     teleop_usb_discovery: bool = False
+    # Local Teleop can render grasp contact on the Star leader's gripper.
+    supports_gripper_haptics: bool = False
 
 
 class LeaderOptionInfo(BaseModel):

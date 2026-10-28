@@ -1376,6 +1376,44 @@ read-only, to be discussed before any change.
   seen, and released everything. They double as stop-path proof on the real
   launch method (foreground ssh).
 
+### Gripper haptics in Lab teleop (2026-10-28, offline, not yet powered)
+
+*Intent:* Gavin: "can we add a checkbox button next to the teleop button in
+the gui to turn on and off the haptic feedback ... there should be one for
+only the gripper, i played with it 2 days back". What he played with was
+the PoC script; this moves its v2 loop into Lab teleop behind a checkbox.
+
+- **UI:** a "Gripper haptics" checkbox beside Teleop, off by default, shown
+  for a single arm whose family has `supports_gripper_haptics` (Viscous only).
+  It sends `gripper_haptics: true` in the teleoperation session options. The
+  teleop dialog shows the phase: connecting, calibrating (open and close the
+  Star freely), on, contact at N mW, or off with the reason.
+- **Code:** `makermodslab/gripper_haptics.py`. Same constants as v2 Run B, plus
+  two items from Run B's to-fix list: contact must persist 60 ms, and no
+  contact counts within 4 deg of the closed stop (so an object thinner than
+  that does not render). Not yet done: the moderate lead cap while moving
+  (impact spikes).
+- **Transport, and why:** motorbridge cannot send a capped-power move, so a
+  haptic session opens the Star through `fashionstar_raw` (`HapticStarLeader`
+  = the stock leader on `RawStarBus`), never both on the port. With the box
+  off, teleop is unchanged and still uses motorbridge. The raw bus reads the
+  seven servos one monitor request at a time; **the loop rate this gives is
+  unmeasured** (the Star was unpowered on 10-28). Measure it on the first run.
+- **Mapping:** the session's own leader mapping (Lab, absolute) replaces the
+  PoC's relative one. The closed stop is the leader's gripper offset (-33 on
+  the built-in unit 1 preset), and the follower never gets a target past it.
+- **Safety:** only the Star gripper is ever energized (100-600 mW, toward the
+  wall, released at or outside it). Any haptics fault (stale reading, Star at
+  55 C or more, follower gripper at 82 C or more, a serial error) releases it and
+  turns haptics off while teleop carries on. The loop releases it before the
+  return to rest; disconnect releases all seven twice. `RawBus.close()` is
+  not used, because its signal handlers only work in the main thread and teleop runs
+  in a worker, where it would close the port without releasing anything.
+- **Evidence:** each session writes
+  `$MAKERMODSLAB_HOME/gripper_haptics/gripper-haptics-<UTC>.csv.gz`, with the
+  PoC's columns.
+- Tests: `tests/test_gripper_haptics.py` (fakes and an injected clock).
+
 ## Handoff: state and how to resume (any agent, any tool)
 
 This section is the source of truth for picking the work back up. Nothing about
@@ -1503,6 +1541,12 @@ Actions are not enabled on the `gavingavinchan/makermodslab` fork (no
 workflows registered), so the new CI triggers do nothing until Gavin enables
 Actions in the fork's Actions tab; (3) stage 2, unit 1's measured profile,
 needs Gavin's re-zero vs recapture decision and him at the arm.
+
+**Resume haptics here (2026-10-28):** gripper haptics is in Lab teleop behind
+a checkbox (see "Gripper haptics in Lab teleop"), offline only. Next, with
+Gavin at unit 1: rebuild the frontend, restart the service (this also makes
+plug-and-play stage 1 live), and do the first powered run. Check the loop
+rate with the raw Star transport and his feel against Run B.
 
 **Resume haptics here (2026-10-27):** the gripper proof of concept works
 (see "Gripper haptics proof of concept"). Next: get Gavin's feel, fix the

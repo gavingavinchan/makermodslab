@@ -46,6 +46,9 @@ export interface ArmCapabilities {
   /** Local Teleop resolves USB ports before checking record readiness.
    * Absent on older servers; defaults to false. */
   teleop_usb_discovery?: boolean;
+  /** Local Teleop can push back on the Star leader's gripper when the
+   * follower's jaws meet an object. Absent on older servers. */
+  supports_gripper_haptics?: boolean;
 }
 
 /**

@@ -620,6 +620,7 @@ SO101_ENTRY = {
         "supports_gripper_wiggle": False,
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
+        "supports_gripper_haptics": False,
     },
     "robot_types": ["so101_follower", "bi_so_follower"],
     "robot_type_markers": ["so100", "so101", "so-100", "so-101", "so_follower", "so_leader"],
@@ -676,6 +677,7 @@ METAL_ENTRY = {
         "supports_gripper_wiggle": True,
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
+        "supports_gripper_haptics": False,
     },
     "robot_types": ["metal_follower", "bi_metal_follower"],
     "robot_type_markers": ["metal"],
@@ -741,6 +743,9 @@ def test_manifest_lists_the_built_ins_in_registry_order_with_the_documented_shap
     assert {arm_id for arm_id, entry in by_id.items() if entry["capabilities"]["teleop_usb_discovery"]} == {
         "viscous"
     }
+    assert {
+        arm_id for arm_id, entry in by_id.items() if entry["capabilities"]["supports_gripper_haptics"]
+    } == {"viscous"}
 
 
 def test_manifest_calibration_summary_is_the_families_own(client) -> None:
