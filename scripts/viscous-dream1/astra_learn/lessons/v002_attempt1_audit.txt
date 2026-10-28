@@ -1,0 +1,5 @@
+tools {'exec_command': 7}
+paths {}
+robot {}
+images 0
+non-robot cmds [('python3 - <<', 3), ('pwd && cat LESSONS.md previous_attempt.log outcome.txt', 1), ('cat outcome.txt; wc -l LESSONS.md previous_attempt.log; rg -n ', 1), ('python - <<', 1), ('cat > LESSONS.md <<', 1)]

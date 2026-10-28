@@ -1,0 +1,46 @@
+[
+  {
+    "episode": "learn_smoke_N_20261027_02",
+    "ended_by": "done",
+    "frames_decoded": 13,
+    "dimensions": [
+      2560,
+      400
+    ],
+    "duration_s": 1.3,
+    "memory_rows": 0
+  },
+  {
+    "episode": "learn_smoke_L_20261027_02",
+    "ended_by": "done",
+    "frames_decoded": 13,
+    "dimensions": [
+      2560,
+      400
+    ],
+    "duration_s": 1.3,
+    "memory_rows": 0
+  },
+  {
+    "episode": "learn_smoke_cap_20261027_01",
+    "ended_by": "wall_cap",
+    "frames_decoded": 13,
+    "dimensions": [
+      2560,
+      400
+    ],
+    "duration_s": 1.3,
+    "memory_rows": 0
+  },
+  {
+    "episode": "learn_smoke_crash_20261027_01",
+    "ended_by": "crash",
+    "frames_decoded": 13,
+    "dimensions": [
+      2560,
+      400
+    ],
+    "duration_s": 1.3,
+    "memory_rows": 0
+  }
+]

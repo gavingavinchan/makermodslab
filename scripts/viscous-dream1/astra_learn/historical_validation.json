@@ -1,0 +1,54 @@
+[
+  {
+    "episode": "astra_g3_20261025_006",
+    "expected_drops": 3,
+    "detected_drops": 3,
+    "events": [
+      {
+        "start_sim_s": 188.60000000053648,
+        "detected_sim_s": 188.65000000053672,
+        "fall_mm": 36.88410353724081
+      },
+      {
+        "start_sim_s": 487.9999999953722,
+        "detected_sim_s": 488.049999995371,
+        "fall_mm": 20.201923938435673
+      },
+      {
+        "start_sim_s": 709.4499999901357,
+        "detected_sim_s": 709.6499999901309,
+        "fall_mm": 74.38993870893773
+      }
+    ]
+  },
+  {
+    "episode": "astra_rov_g3_20261026_001",
+    "expected_drops": 0,
+    "detected_drops": 0,
+    "events": []
+  },
+  {
+    "episode": "astra_rov_backup_g3_20261026_001",
+    "expected_drops": 0,
+    "detected_drops": 0,
+    "events": []
+  },
+  {
+    "episode": "astra_rov_backup_g3_20261026_002",
+    "expected_drops": 0,
+    "detected_drops": 0,
+    "events": []
+  },
+  {
+    "episode": "astra_rov_backup_g3_20261026_003",
+    "expected_drops": 0,
+    "detected_drops": 0,
+    "events": []
+  },
+  {
+    "episode": "astra_rov_backup2_g3_20261026_001",
+    "expected_drops": 0,
+    "detected_drops": 0,
+    "events": []
+  }
+]

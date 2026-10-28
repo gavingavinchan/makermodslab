@@ -1,0 +1,162 @@
+--- v002.md
++++ v003.md
+@@ -4,87 +4,87 @@
+ 
+ ## General — Success, seating, and evidence
+ 
+-- Task success requires at least two **relative nut-minus-bolt turns** while threaded; seating is separate.
+-  Hand roll, requested roll, and world nut rotation are not interchangeable with relative thread rotation.
+-- Track actual nut rotation relative to the bolt and axial advance relative to the bolt, not just TCP feed.
+-  For a 3.5 mm pitch, two relative turns imply about 7 mm advance before seating; verify the current pitch.
+-- Seating needs evidence that the nut's bearing face has reached the flange, after confirmed thread advance.
+-  Bolt protrusion or a nut staying on the thread after release establishes neither a closed gap nor seating.
+-- A collision, hooked finger, joint limit, or otherwise loaded wrist can mimic a snug torque stall.
+-  Inspect the gap from a useful view, clearance, residuals, and loads; if occluded, report seating as uncertain.
+-- Scorer measurements below are retrospective evidence, unavailable to the live operator. `done` records a claim.
+-
+-## ROV one-hand — What this later episode established
+-
+-- The scorer confirmed success and seating: about 10.28 nut turns, a 0.08 mm face gap, and zero drops.
+-  It recorded three thread engagements: the eventual success does not establish a clean first engagement.
+-- The left arm stayed idle. Bolt turns and backup-head retention were unmeasured, not measured as zero/false;
+-  this episode does not validate one-hand tightening of a freely rotating bolt.
+-- After clearance adjustments, a +20° start with about +0.194 mm feed tracked well. A 360° screw batch at
+-  45°/s completed, followed by 1080° at 90°/s and 2160° at the episode's default 180°/s.
+-  These are successful observations, not required batch sizes or proof that the selected rates caused success.
+-- The final requested 720° stopped after about 108° with a torque-rise stall. Seating was confirmed afterwards,
+-  but the live result also had wrist saturation, about 6° orientation error, and unloaded jaws; stall alone was weak proof.
+-- Posture/roll changes eventually enabled progress; clearance plausibly caused earlier stops, but not every stall is explained.
++- Task success requires **at least two relative nut-minus-bolt turns while threaded**; seating is separate.
++  Requested roll, measured hand roll, world nut rotation, and relative thread rotation are different quantities.
++- Track nut motion relative to the bolt and axial advance along its axis. With verified 3.5 mm pitch,
++  two relative turns imply about 7 mm advance before seating; TCP feed alone is not evidence of that advance.
++- Seating requires the nut's bearing face to reach the flange after verified thread advance. Inspect that gap
++  directly where possible; outer-face distance requires independently measured nut thickness along the axis.
++- Collision, hooked fingers, joint limits, or a loaded/compliant wrist can mimic a snug torque stall.
++  Check clearance, reached motion, loads, and the gap together; if the gap is occluded, report seating as uncertain.
++- Scorer values are retrospective, not live sensors. `done` records a claim. Retention/protrusion alone cannot certify seating.
+ 
+ ## General — Prepare a reliable first attempt
+ 
+-1. Inspect before every decision and after every motion. Identify the nut, exposed bolt, flange bearing face,
+-   approach corridor, and whether the bolt needs restraint. Use the other wrist view when the working view is occluded.
+-2. Measure opposing face edges for the nut center and three non-collinear points on the same face for its normal.
+-   Measure the exposed shaft/tip and flange separately; a depth sample can hit a bevel, finger, or background in the bore.
+-   Refresh calibration after movement; depth queries may advance time.
+-3. Grip opposing outer flats with pad overlap, avoiding the bore and inner lip. Align the actual bore with both
+-   the bolt axis and wrist roll axis; a straight wrist does not prove a straight nut. Recheck after any handoff.
+-4. Choose a reachable staging posture with wrist margin and clearance for the full tightening/reset cycle.
+-   Account for fingertips, open jaws, wrist camera, and forearm, not only the TCP. Test small rolls in clear space.
++1. Look before each decision and after each motion. Locate the nut, bolt tip/shaft, flange bearing face, and
++   approach corridor; establish whether the bolt needs insertion or restraint. Use another view for occlusion.
++2. Measure opposing face edges for the nut center and three non-collinear points on one face for its normal.
++   Sample shaft/tip and flange separately; bore depth can hit a bevel, finger, or background. Refresh after motion;
++   depth queries may advance time. Compare the same surfaces along the bolt axis.
++3. Grip opposing outer flats with adequate pad overlap, avoiding the bore and inner lip. Align the actual bore
++   with the bolt and working wrist roll axis; wrist alignment alone is insufficient. Remeasure after any handoff.
++4. Choose staging postures with reach, wrist margin, and clearance through approach, tightening, opening, and reset.
++   Include fingertips, camera, forearm, and the other arm. Test small rolls in clear space before approaching.
+ 5. Approach from the tip toward the flange with near-parallel axes and preferably submillimetre centering.
+-   Use 1–2 mm final nudges; inspect reached motion and stop at unexpected resistance or contact loss.
+-6. Touch the leading face to the tip without pushing through resistance. For the documented tip-side convention,
+-   positive roll/feed tighten: feed = relative degrees × pitch / 360. With 3.5 mm pitch, +20° needs +0.194 mm.
+-   This hand-feed pairing assumes the bolt stays still. A clean hand turn alone does not prove thread engagement.
+-7. Verify nut-relative rotation and matching advance before automatic release/reset cycles. Start with a short,
+-   inspected screw batch; extend only after consistent progress. Reduce batch size as the flange gap closes.
+-8. Confirm at least two relative turns separately from any seating claim. Release only with established thread
+-   support, check actual jaw opening and unloading, withdraw gently along the axis, and inspect before finishing.
++   Use 1–2 mm final nudges; compare requested and reached motion. Stop at unexpected resistance or contact loss.
++6. Touch the leading face to the tip without forcing it. Verify handedness/signs in README; feed = relative degrees × pitch / 360.
++   For the documented tip-side convention with a stationary bolt and 3.5 mm pitch, +20° pairs with +0.194 mm feed; inspect progress.
++7. Confirm relative rotation and matching advance before repeated release/reset cycles. Start with a short,
++   inspected screw batch; extend only after consistent progress and a clear reset. Shorten batches near the flange.
++8. Verify the two-turn requirement separately from seating. Release the working hand only with established
++   support; check actual opening/unloading, withdraw gently along the axis, and inspect the retained assembly.
+ 
+-## General — Read results and recover without compounding errors
++## ROV two-hand — Backup grip and common rotation
+ 
+-- Check reached pose, translation/orientation residuals, `ik_hit_limit`, saturation, and settling even when `ok`.
+-  Small IK error means a target is kinematically feasible; it does not establish a collision-free path.
+-- `holding` is a bilateral-load signal, not identity or engagement. `empty` can occur with a retained nut when
+-  one pad unloads; combine images, opening, contact history, and part motion rather than blindly opening or closing.
+-- Read `degrees_turned`, `regrasp_cycles`, `stop_phase`, and `stop_reason`; screw rotation is measured at the hand.
+-  `completed` does not prove advance; `timed_out` is incomplete. Wait for long calls; recover disconnect results with `last`.
+-- Early or repeated stalls require diagnosis. If available, `stall_at_start: false` only establishes prior motion.
+-  This episode used a sustained torque rise above baseline, not the old 0.15 Nm budget; use README thresholds.
+-- `lost_grasp`: locate and support the nut, then recenter before reclosing. `loaded_on_open`: fingers may still
+-  be hooked; do not reset through contact. With independent support, gently open and withdraw axially to clear them.
+-- Earlier recoveries found approximately 0.5–1 mm transverse corrections could restore opposing contact.
+-  Recenter gently instead of squeezing harder; large loads or collapsed opening can mean a wedge at the inner edge.
+-- A blocked sweep at similar roll angles, with freer rotation away from the fixture, suggests interference.
+-  Retain support, retreat safely, change posture/roll in clear space, and realign; do not repeat obstructed sweeps.
+-- If engaged, back off with matched negative roll/feed rather than pulling straight out. A nut perched on the
+-  tip can fall when the hand clears; unsupported release is never an engagement test. Avoid tilting unsecured parts.
+-- For a handoff, verify the receiver's outer-flat grip before releasing the donor, then remeasure bore alignment.
++- In the loose-bolt profile, verify insertion through both holes and grip opposite head flats with the left hand
++  before driving the right-hand nut. Maintain backup contact throughout working-hand opening and regrasp cycles.
++- An axial backup-hand approach may be unreachable; a reachable oblique grip across head flats worked here.
++  Verify both pads contact the head rather than the flange or adjacent hardware; do not copy the old posture.
++- A fixed commanded backup pose or `holding` signal does not prove an immobile bolt. Watch head orientation,
++  both hands, and nut advance: common nut/bolt rotation can consume world or hand turns with little thread progress.
++- Estimate relative nut-minus-bolt rotation using a common axis/sign convention. Commanded hand-based feed assumes
++  effective restraint; if the bolt follows, stop and restore backup contact instead of forcing the nominal feed.
++- Keep the head retained while clearing the working hand. If backup slips, preserve support and reacquire it.
++  Release backup only after tightening stops and the assembly is supported.
++- This profile has finite backup-arm compliance. Prefer short gentle finishing strokes, such as 20° at 5°/s
++  when supported by README. Relative hand speed is a profile-specific stall cue, not direct part-motion sensing.
+ 
+-## ROV two-hand — Freely turning bolt and backup retention
++## ROV two-hand — What this episode established
+ 
+-- If the scene has a loose bolt, verify insertion through both holes and retain its head with the backup hand.
+-  Establish head contact before driving the nut and maintain restraint through working-hand release/reset cycles.
+-- Watch both nut and bolt: common rotation can consume hand/world nut turns with little relative advance.
+-  Estimate nut-minus-bolt rotation and matching relative feed; commanded feed cannot compensate for a spinning bolt.
+-- If the backup slips, stop, preserve support, and reacquire the head. Nut attachment alone does not justify backup release.
+-  These are conditional precautions, not outcomes demonstrated by this one-hand transcript.
++- Scorer: success and seating, about 0.028 mm final gap, zero drops; `nut_turns` ≈10.284, `bolt_turns` ≈−0.395,
++  `left_holds_bolt` ≈0.9985. These retrospective measures do not certify hand-turn counts or perfectly fixed backup.
++- Two thread engagements were recorded. The transcript reports the nut coming off during first-attempt recovery
++  after apparent multi-turn advance. Final success does not validate that first attempt or preserve its turn count.
++- Large/asymmetric loads, loaded opening, and blocked motion occurred during that recovery. Finger interference
++  was suspected; the record does not establish the exact cause of disengagement. Zero drops does not mean no loss of engagement.
++- A supported handoff restored an outer-flat grip; remeasurement and a changed wrist/reset range preceded success.
++  Estimated advance of 6.4 mm over a later two-turn batch corroborated progress, but did not prove why recovery worked.
++- The final sequence had a motion-progress stall followed by a sustained torque-rise stall on a gentle check,
++  with about 20° orientation error and one unloaded pad. Seating was confirmed retrospectively; stall alone was inconclusive.
+ 
+-## ROV one-hand — Scene clearance and recovery limits
++## General — Diagnose and recover without compounding errors
+ 
+-- Remeasure each ROV scene. The pipe, neighboring fasteners, vehicle frame, foam, thrusters, and camera hardware
+-  constrain the whole arm; a free wrist roll away from the fixture does not guarantee a clear approach or reset.
+-- Historical fingertips extended about 34 mm beyond the TCP; verify current geometry. No collision avoidance was supplied.
+-- Sand can catch drops, but retrieval may be difficult; do not assume a recovery table.
++- Read reached pose, residuals, `ik_hit_limit`, saturation, and settling even when `ok`. Small IK error establishes
++  neither a collision-free path nor actual arrival. Repeated blocked sweeps call for clearance diagnosis, not force.
++- `holding` means bilateral load, not part identity or engagement; `empty` can mean one pad unloaded.
++  Combine images, actual opening, loads, and part motion. Recenter gently rather than repeatedly squeezing harder.
++- Earlier 0.5–1 mm transverse corrections sometimes restored contact. High loads or collapsed opening can indicate wedging.
++- Read `degrees_turned`, `regrasp_cycles`, `stop_phase`, and `stop_reason`; screw degrees are hand motion.
++  `completed` does not certify thread advance; `timed_out` is incomplete. Wait for long calls; use `last` after disconnects.
++- For `lost_grasp`, locate/support the nut and restore outer-flat contact. For `loaded_on_open`, verify unloading
++  before reset. With independent support, gently clear hooked fingers axially; inspect each step and stop if blocked.
++- Maximum opening sometimes increased fixture contact load here. Retreat safely and change roll/posture in clear space.
++- If still engaged, back off with matched negative relative roll/feed rather than pulling the nut straight out.
++  Unsupported release is not an engagement test. For handoffs, confirm receiver support before freeing the donor;
++  avoid tilting unsecured parts, remeasure the bore afterward, and restore backup before restarting tightening.
++
++## ROV one-hand — Earlier evidence
++- Earlier success/seating lacked bolt-rotation and backup measurements; it does not validate unrestrained loose-bolt driving.
++  Earlier successful speeds/batch sizes are not universal settings.
++
++## ROV two-hand — Scene clearance (also applies to ROV one-hand)
++- Remeasure clearance to pipe, neighboring fasteners, frame, foam, thrusters, cameras, and both arms.
++  Verify fingertip overhang (historically about 34 mm beyond TCP); do not assume collision avoidance or easy sand retrieval.
+ 
+ ## Tabletop — Transfer limits
+-
+-- Use the tabletop's own frame, cameras, gravity/support geometry, rates, and reachable paths. A table may support
+-  recovery only after observed stable contact; neither tabletop poses nor ROV roll choices transfer between scenes.
++- Use the scene's own frame, cameras, rates, paths, and support geometry; rely on a table only after observed stable contact.

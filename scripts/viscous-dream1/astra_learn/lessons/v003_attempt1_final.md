@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in 90 lines. Updated the two-hand outcome, clarified relative turns versus seating, strengthened backup-retention and clearance guidance, and preserved useful alignment/recovery advice while separating scorer evidence from live observations and uncertain causes.

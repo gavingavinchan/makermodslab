@@ -633,6 +633,20 @@ restore paths in the DAgger runner.
     before each run, so the lessons file is the only carry-over.
   This feeds B4 ([shackle-sim2real.md](shackle-sim2real.md)), which asks whether
   the lessons carry to the real arm.
+  *Tooling and catch-up done (2026-10-27).* Sol's report and code are in
+  `scripts/viscous-dream1/astra_learn/` (the lessons store is under `lessons/`;
+  `report.md`). Scored from the sim log, all six past episodes reached two or
+  more turns and four seated. Backup ep 1, although seated, took 552 commands
+  and 2.4 h. The drop detector finds ep 6's three drops and none elsewhere.
+  Three final claims disagree with the sim: two "seated" calls at about 2 mm
+  short, and "more than eleven turns" against 10.25. v002..v006 each passed the
+  length and no-coordinates checks. A caution on v006: revising made it more
+  hedged and general. It dropped v001's concrete recipe (start with
+  `turn right 20 --feed-mm 0.194`, then `screw right 1080`) in favour of "not a
+  fixed recipe". If the A/B shows v001 helps, test v006 against v001 before
+  adopting the running file. *A/B launched 2026-10-27 23:39 CDT* on gavin-linux
+  (`astra_learn/ab.sh`; progress in `runs/astra_flange/ab/ab.log`, results in
+  `runs/astra_flange/ab/summary.md`).
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

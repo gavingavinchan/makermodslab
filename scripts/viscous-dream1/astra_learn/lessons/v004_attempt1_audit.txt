@@ -1,0 +1,5 @@
+tools {'exec_command': 8}
+paths {'/bin/bash': 1}
+robot {'./robot look': 1, './robot point': 1, './robot status': 1}
+images 0
+non-robot cmds [('python3 - <<', 3), ('cat LESSONS.md previous_attempt.log outcome.txt', 1), ('cat outcome.txt LESSONS.md', 1), ('python - <<', 1), ('sed -n ', 1), ('cat > LESSONS.md <<', 1)]

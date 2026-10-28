@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in 90 lines. Corrected the outcome to approximately 9.65 relative turns with a 2.21 mm gap, clarified why sustained stall does not certify seating, and preserved alignment, recovery, backup-retention, and clearance guidance with profile labels.

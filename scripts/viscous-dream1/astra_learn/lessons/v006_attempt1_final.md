@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in 90 lines. Corrected the outcome to seated with 10.246 relative turns, separated scorer evidence from live observations, and strengthened backup retention, stall interpretation, and both-arm clearance guidance while preserving alignment and recovery lessons.

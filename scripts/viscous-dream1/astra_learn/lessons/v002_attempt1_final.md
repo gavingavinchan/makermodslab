@@ -1,0 +1,1 @@
+Rewrote LESSONS.md to 90 lines. Incorporated scorer-confirmed success and seating, separated relative turns from hand rotation and seating evidence, updated stall guidance, preserved recovery and clearance advice, and added conditional two-hand backup retention guidance. Only LESSONS.md was changed.

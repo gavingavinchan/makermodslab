@@ -1,0 +1,1 @@
+Rewrote LESSONS.md in 90 lines. Corrected the seating claim to the measured 2.03 mm gap, distinguished `lost_grasp` from stall, clarified relative turns and backup restraint, and preserved alignment, recovery, and clearance guidance.
