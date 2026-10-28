@@ -1,0 +1,34 @@
+{
+  "episode": "astra_ab_N3",
+  "success": true,
+  "nut_seated": true,
+  "nut_face_gap_mm": 0.03360954389792191,
+  "nut_turns": 10.28036345625852,
+  "bolt_turns": 0.0026905683251547117,
+  "left_holds_bolt": 1.0,
+  "tightening_sim_s": 389.2499999961913,
+  "commands": 94,
+  "sim_s": 525.352999994489,
+  "wall_s": 1280.390421701013,
+  "wall_s_source": "runner monotonic: operator start to process exit",
+  "nut_drops": 0,
+  "drop_events": [],
+  "thread_engagements": 1,
+  "engagement_sim_s": [
+    62.651999999944685
+  ],
+  "ended_by": "done",
+  "final_claim": "Held the bolt head with the left gripper and threaded the nut with the right for more than two full turns; continued tightening until a sustained torque-rise stall, then visually checked that the nut remained engaged.",
+  "claim_vs_truth": null,
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T13:49:11.929194+00:00"
+  },
+  "operator_exit_code": 0,
+  "session": "/home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T08-49-24-01a182c5-ceda-7691-857a-c7948807e4a1.jsonl",
+  "malformed_log_lines": 0,
+  "runner_error": null
+}

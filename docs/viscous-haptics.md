@@ -647,6 +647,31 @@ restore paths in the DAgger runner.
   adopting the running file. *A/B launched 2026-10-27 23:39 CDT* on gavin-linux
   (`astra_learn/ab.sh`; progress in `runs/astra_flange/ab/ab.log`, results in
   `runs/astra_flange/ab/summary.md`).
+  *A/B result (2026-10-28).* Same scene and start for all six runs; all
+  audits are clean. With notes (v001):
+  - L1: 6.6 turns, 9.8 mm short, 19 min, 157 commands. Claimed "at the
+    flange", and the scorer missed that overclaim.
+  - L2: seated, 40 min, 180 commands.
+  - L3: seated, 27 min, 127 commands.
+  - No drops.
+
+  Without notes:
+  - N1: failed, 0 turns at the 4 h cap, 846 commands, 3 drops.
+  - N2: seated, 2.5 h, 429 commands, 1 drop.
+  - N3: seated, 21 min, 94 commands, 0 drops (the best run of the six).
+
+  Reading: the notes did not make the best case faster (N3 beat every L run).
+  They removed the bad tail: no failure, no drops, every run under 40 min,
+  against a no-notes spread from 21 min to failure. Three runs per arm is
+  enough to see that pattern, but not enough to quote rates. Copied here:
+  `scripts/viscous-dream1/runs/astra_flange/ab/` (summary, per-run
+  `outcome.json` and audit). The videos stay on gavin-linux. Gavin's follow-up
+  question, still open: how should notes be written (short or detailed), does
+  Astra get confused as notes pile up, and can it pick the relevant ones from a
+  large library of "robot skills" (turn a nut, insert a bolt, grab a cube)?
+  The proposed tests are short vs detailed notes, the one useful note among
+  20-30 unrelated ones, and a skill library against one page, on the shackle
+  pin (B4) as the second task.
 - *B3b. Next, after B3a (Gavin, 2026-10-23, "in case I forget").* Move the sim off
   the tabletop and onto the BlueROV2 ("the blue RV"): the two Viscous arms mounted
   on the BlueROV2 Heavy as in `~/Documents/viscous-rov-model` (URDF

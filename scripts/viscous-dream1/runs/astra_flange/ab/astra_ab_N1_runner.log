@@ -1,0 +1,50 @@
+{
+  "episode": "astra_ab_N1",
+  "success": false,
+  "nut_seated": false,
+  "nut_face_gap_mm": 19.302483539826078,
+  "nut_turns": -0.1015502140027246,
+  "bolt_turns": -3.3126719886396767,
+  "left_holds_bolt": 0.861277990172489,
+  "tightening_sim_s": 91.5499999999355,
+  "commands": 846,
+  "sim_s": 1191.699999978732,
+  "wall_s": 14400.190924360068,
+  "wall_s_source": "runner monotonic: operator start to process exit",
+  "nut_drops": 3,
+  "drop_events": [
+    {
+      "start_sim_s": 216.0000000006673,
+      "detected_sim_s": 219.3500000006833,
+      "fall_mm": 10.633489665966778
+    },
+    {
+      "start_sim_s": 793.4499999881493,
+      "detected_sim_s": 810.3499999877497,
+      "fall_mm": 14.98563306541456
+    },
+    {
+      "start_sim_s": 816.3999999876066,
+      "detected_sim_s": 816.8999999875948,
+      "fall_mm": 32.51656487469179
+    }
+  ],
+  "thread_engagements": 1,
+  "engagement_sim_s": [
+    86.44100000004869
+  ],
+  "ended_by": "wall_cap",
+  "final_claim": null,
+  "claim_vs_truth": null,
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T05:08:19.816149+00:00"
+  },
+  "operator_exit_code": 0,
+  "session": "/home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T00-08-31-01a180e8-f045-7c83-900d-95f53259afe6.jsonl",
+  "malformed_log_lines": 0,
+  "runner_error": null
+}

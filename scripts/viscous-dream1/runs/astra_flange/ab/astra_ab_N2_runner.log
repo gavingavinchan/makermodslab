@@ -1,0 +1,42 @@
+{
+  "episode": "astra_ab_N2",
+  "success": true,
+  "nut_seated": true,
+  "nut_face_gap_mm": 0.09398649186555946,
+  "nut_turns": 10.252460265388994,
+  "bolt_turns": -0.28228865005886067,
+  "left_holds_bolt": 1.0,
+  "tightening_sim_s": 1035.9999999768263,
+  "commands": 429,
+  "sim_s": 1460.9349999723654,
+  "wall_s": 9098.55235432589,
+  "wall_s_source": "runner monotonic: operator start to process exit",
+  "nut_drops": 1,
+  "drop_events": [
+    {
+      "start_sim_s": 143.65000000032185,
+      "detected_sim_s": 143.7000000003221,
+      "fall_mm": 10.680164592617448
+    }
+  ],
+  "thread_engagements": 3,
+  "engagement_sim_s": [
+    91.15800000007121,
+    124.81900000023194,
+    462.12099999598416
+  ],
+  "ended_by": "done",
+  "final_claim": "Held the bolt head with the left gripper while threading the nut with the right for well over two full turns. Advanced it to the flange and finished with gentle 20-degree turns until a sustained torque-rise stall indicated snug seating; final camera inspection was consistent with seating.",
+  "claim_vs_truth": null,
+  "memory_check": {
+    "checked": true,
+    "database": "/home/gavin/.codex/memories_1.sqlite",
+    "table": "stage1_outputs",
+    "rows": 0,
+    "checked_at": "2026-10-28T10:17:09.049189+00:00"
+  },
+  "operator_exit_code": 0,
+  "session": "/home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T05-17-22-01a18203-b011-7cf1-86f7-cc4a127bc741.jsonl",
+  "malformed_log_lines": 0,
+  "runner_error": null
+}

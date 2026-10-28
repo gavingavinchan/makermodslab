@@ -1,0 +1,8 @@
+tools {'exec_command': 430, 'view_image': 215, 'write_stdin': 159}
+paths {'obs/rov.png': 73, 'obs/wrist_l.png': 32, 'obs/wrist_r.png': 111, 'obs/N_wrist_r.png': 1}
+robot {'./robot look': 188, './robot point': 54, './robot grip': 32, './robot move': 49, './robot turn': 16, './robot nudge': 69, './robot screw': 17, './robot last': 1, './robot done': 1}
+images 217
+non-robot cmds [('cat README.md', 3)]
+
+session /home/gavin/.codex/sessions/2026/10/28/rollout-2026-10-28T05-17-22-01a18203-b011-7cf1-86f7-cc4a127bc741.jsonl
+Initial workspace: ["README.md", "obs", "robot"]
