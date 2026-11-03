@@ -1596,6 +1596,32 @@ but check whether the Lab's camera config passes it through before relying on
 it. Ask which way it is flipped (180 deg vs mirrored) before fixing: a mirror
 is not a rotation. Fix it before recording any dataset or policy run on unit 1.
 
+## Waterproof arm actuator check before the SubConn splice (2026-11-03)
+
+*Intent:* Gavin, before cutting the waterproof arm's cables to splice in SubConn
+connectors: "make sure all the actuators are still working". The arm was on
+gavin-linux (CANable `205038953846` on `ttyACM0`), the Star leader unplugged.
+
+- *Result: all seven actuators move and their encoders follow.* Shoulder, elbow
+  and wrist_flex by `scripts/viscous-point-up.py` (folded to straight up and back,
+  3 deg/s: shoulder_lift -88 for -90, elbow 157.9 for 157, wrist_flex 32.1 for 32).
+  Gripper, wrist_roll, wrist_yaw and pan by `scripts/viscous-wiggle-joints.py`,
+  the Lab's CAN gripper wiggle widened to any joint (one motor on the bus, the rest
+  limp): commanded/encoder 12.6/10.7, 20/19.7, 20/17.4 and 10/9.8 deg.
+- *Straight up on the URDF* is shoulder_lift -90, elbow_flex 157, wrist_flex 32,
+  not elbow 180: the forearm and wrist are cranked ~23 deg. Wrist, roll joint and
+  tool0 then sit within 1 mm of the vertical over the shoulder.
+- *J1's real negative stop bit:* pan rested at -37 (past the recorded -32.4 stop
+  of the post-ROV frame; Lab's soft limit still allows -127). A -15 deg pan
+  stroke from there tripped the 10 deg lag check against the stop; one
+  `No response ... shoulder_pan` warning came with it. Stroke pan + only from
+  there until its soft limit is moved into the new frame.
+- *Launch gotcha:* `nohup setsid cmd & echo $!` records setsid's pid, not
+  Python's, so the first stop signal went to a dead pid. Both scripts take
+  `--pid-file`/handle SIGTERM; signal the pid the script wrote.
+- gavin-linux's `viscous_waterproof_01` record still points at unit 1's CANable;
+  the scripts took `--port` explicitly. Not yet changed (Gavin's call).
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
