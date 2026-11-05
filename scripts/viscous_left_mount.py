@@ -60,6 +60,10 @@ def profiles(shift):
     center = sum(ranges[J1]) / (2 * DIRECTIONS[J1])
     if not center - 180 < STAR_J1["min_deg"] < STAR_J1["max_deg"] < center + 180:
         raise ValueError("Prepared leader J1 range cannot unwrap its measured travel safely")
+    # Lab's Viscous build_single_configs refuses a pair unless the leader ranges
+    # equal the follower limits rounded inward, so the follower takes the same
+    # Star-reachable J1 window (the leader could never command past it anyway).
+    limits[J1] = [max(limits[J1][0], ranges[J1][0]), min(limits[J1][1], ranges[J1][1] + 0.999)]
     return {
         "follower": {"joint_limits": limits},
         "leader": {

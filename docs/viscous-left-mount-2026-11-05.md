@@ -336,3 +336,31 @@ Gavin: "put this into the gui? as a 3rd arm?" On the Mac (Lab home
   the old-frame preset. Install the same files there before unit 1 runs on Linux.
 - The waterproof's 1:1 posture trial is gated to `viscous_waterproof_01` in both
   frontend and backend, so it does not apply to unit 1.
+
+## First powered teleop on the left mount (2026-11-05, Mac) — shoulder overheat, safety bug fixed
+
+- First start was refused (no motion): Lab's pairing check requires the Star
+  ranges to equal the follower limits rounded inward, and the staged pair
+  translated follower J1 to −267.9 while the Star stayed at −154. Fixed by cutting
+  follower J1 to the Star-reachable −154…+45.06 (installed profiles, staged files,
+  `profiles()`, and a test that runs `build_single_configs`).
+- Then teleop worked (12:36). With the arm held stretched out horizontally on
+  the ROV, **shoulder_lift went 27 → 85 C in ~2 min**, three sessions running
+  (12:39, 12:42, 13:06), peaking at **101 C (MOS) at 13:07**. Two all-motors-silent
+  dropouts (12:36:48, 13:15:38) look like the supply tripping under that load.
+- **Safety bug:** the follower's thermal stop and all-silent stop are raised from
+  `get_observation()`, which Lab's teleop loop called only inside the joint
+  broadcast `try`, so both were logged and swallowed and torque stayed on. Fixed:
+  `teleoperate.read_can_observation` re-raises exactly those two, and the loop
+  reads it outside the broadcast `try`, so they end the session through the
+  error exit (immediate torque release, no return-to-rest).
+  `tests/test_can_follower_safety_stop.py`.
+- Gavin reported joint 4 (wrist_flex) "stopped working" at a later start. A
+  read-only probe right after (torque off) shows all seven motors answering, J4 at
+  63.4°, 31 C. The log shows J4 stalling 25–39° short of its goal at the 13:14 and
+  13:16 starts. Not yet explained; a supply dip resetting a motor into its
+  disabled state is a guess. Next: a single-joint powered J4 wiggle
+  (`scripts/viscous-wiggle-joints.py`) with Gavin's OK.
+- **Hardware constraint, Gavin's call:** on the ROV this arm's shoulder cannot hold
+  the stretched-out horizontal pose for more than ~1–2 min. Keep sessions near
+  folded, or give J2 gravity help, before longer teleop.

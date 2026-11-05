@@ -2,7 +2,7 @@
   "follower": {
     "joint_limits": {
       "shoulder_pan": [
-        -267.94340277758624,
+        -154.0,
         45.056597222413785
       ],
       "shoulder_lift": [

@@ -430,13 +430,28 @@ def get_maker_joint_degrees(robot, prefix: str = "") -> dict[str, float]:
         return {}
 
 
+# The CAN follower's observation tick raises these on purpose so the session
+# ends: a joint held at its stop temperature, or every motor silent (a tripped
+# supply). Swallowing them kept a 2026-11-05 Viscous session holding torque
+# with the shoulder at 101 C. Anything else (one bad read) still holds pose.
+_FATAL_FOLLOWER_ERRORS = ("thermal stop:", "has no CAN feedback from any motor")
+
+
+def read_can_observation(robot) -> dict:
+    """One follower observation; re-raises the follower's own session-ending stops."""
+    try:
+        return robot.get_observation()
+    except Exception as e:
+        if any(marker in str(e) for marker in _FATAL_FOLLOWER_ERRORS):
+            raise
+        logger.error(f"Error reading CAN joint positions: {e}")
+        return {}
+
+
 def get_can_joint_data(robot, family, is_bimanual: bool, timestamp: float, *, observation=None) -> dict:
     """Read once for both viewers and numeric telemetry; a failed read holds pose."""
-    try:
-        observation = robot.get_observation() if observation is None else observation
-    except Exception as e:
-        logger.error(f"Error reading CAN joint positions: {e}")
-        observation = {}
+    if observation is None:
+        observation = read_can_observation(robot)
     data = {"type": "joint_update", "timestamp": timestamp}
     sides = (("left_", ""), ("right_", "_right")) if is_bimanual else (("", ""),)
     for prefix, suffix in sides:
@@ -1186,6 +1201,11 @@ def _finish_start_teleoperation(request, websocket_manager=None):
 
                     current_time = time.time()
                     if current_time - last_broadcast_time >= broadcast_interval:
+                        # Outside the broadcast try below: a follower
+                        # thermal stop or total bus silence must end the
+                        # session (error exit, torque released), not be
+                        # logged as a broadcast hiccup.
+                        can_observation = None if family.uses_feetech_bus else read_can_observation(robot)
                         try:
                             # Piggyback the ~1 Hz current sample on the
                             # broadcast tick — no extra loop overhead, one
@@ -1195,7 +1215,9 @@ def _finish_start_teleoperation(request, websocket_manager=None):
                                     telemetry.sample(bus, prefix)
                                 last_current_sample_time = current_time
                             if not family.uses_feetech_bus:
-                                joint_data = get_can_joint_data(robot, family, is_bimanual, current_time)
+                                joint_data = get_can_joint_data(
+                                    robot, family, is_bimanual, current_time, observation=can_observation
+                                )
                             else:
                                 if is_bimanual:
                                     joint_positions = get_joint_positions_from_robot(

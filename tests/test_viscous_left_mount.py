@@ -22,7 +22,8 @@ def test_wrong_sign_branch_or_nonfinite_aborts(value):
 
 def test_new_limits_use_actual_shift_and_leader_neutral_stays_zero():
     profile = mount.profiles(93.2)
-    assert profile["follower"]["joint_limits"][mount.J1] == pytest.approx([-278.6, 34.4])
+    # Follower J1 is cut to the Star-reachable window so Lab accepts the pair.
+    assert profile["follower"]["joint_limits"][mount.J1] == pytest.approx([-154, 34.4])
     assert profile["leader"]["joint_ranges"][mount.J1] == [-154, 34]
     assert profile["leader"]["joint_offsets"][mount.J1] == 0
     assert profile["leader"]["joint_offsets"]["gripper"] == -33
@@ -71,8 +72,15 @@ def test_staged_pair_is_accepted_by_existing_unit_profile_loader(tmp_path, monke
     monkeypatch.setattr(config, "MAKERMODSLAB_HOME", str(tmp_path))
     follower = VISCOUS.single_follower_config("fake-CAN", "viscous_01")
     leader = VISCOUS.single_leader_config("fake-Star", "star_viscous")
-    assert follower.joint_limits[mount.J1] == pytest.approx([-277.4, 35.6])
+    assert follower.joint_limits[mount.J1] == pytest.approx([-154, 35.6])
     assert leader.joint_ranges[mount.J1] == [-154, 35]
+    # The pairing check Lab runs at every teleop start (it refused the first
+    # staged pair live on 2026-11-05, when only the follower J1 was translated).
+    from types import SimpleNamespace
+
+    VISCOUS.build_single_configs(
+        SimpleNamespace(follower_port="fake-CAN", leader_port="fake-Star"), None, "star_viscous", "viscous_01"
+    )
     assert leader.joint_offsets[mount.J1] == 0
     assert leader.joint_directions[mount.J1] == 1.439742
 
