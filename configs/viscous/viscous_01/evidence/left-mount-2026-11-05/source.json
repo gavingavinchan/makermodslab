@@ -1,0 +1,15 @@
+{
+  "source": "viscous-rov-model/model/viscous_rov.urdf",
+  "source_urdf_sha256": "ba0de79eed16f00af38ed1f850b668889aecc0afc1314d32abc2615316516947",
+  "manifest_sha256": "2fb7b54e871432f8fd6caf8e56d12f42ba3d8a2618ceaa47f3dc37b425bcbeee",
+  "coordinate_mapping": "ROV XYZ=(CAD Z-16.1, CAD X, CAD Y-220)/1000; +X forward to grippers, +Y left, +Z up",
+  "reference_arm_pose_rad": [
+    -1.063389621943347e-14,
+    -2.5307274132196036,
+    2.0943950712969577,
+    -0.449389073928059,
+    -1.587555002010933e-11,
+    1.3069563253990988e-11
+  ],
+  "scope": "Joint-only immutable snapshot: no invented hull, no motor calibration; source mesh mount hull vertices stored separately."
+}

@@ -2,6 +2,30 @@
 
 Status: planned, not started. Written 2026-10-11.
 
+**2026-11-05 update — unit 1 now on LEFT:** Gavin reports dry `viscous_01`
+has moved to the left ROV mount; `viscous_waterproof_01` was the right-mounted
+arm. [Left-mount audit and future re-zero procedure](viscous-left-mount-2026-11-05.md)
+are prepared offline only. Right recorded −94.48° motor means 94.48° CCW;
+left proposed 90° CW predicts +90° in unit 1's old frame, **conditional on the
+actual physical base index**, absent from the CAD. Both CAD mount rotations
+are identity, with left/right J1 axes −Z/+Z because the right assembly is a
+mirror. Do not treat mirrored right CAD as an identical physical arm's motor
+mapping. No hardware zero, profile deployment or envelope capture was done.
+
+For the new left envelope, use unit 1's own measured-shift release and the
+single-arm/reference handedness. At exactly +90 re-zero its backed-off J1
+range becomes −275.4…+37.6°; these are stop limits, **not a safe hull range**.
+Old right-side envelopes and old-zero pose samples are invalid for this mount.
+Store unit, zero-receipt hash, motor→URDF offsets, actual fixed-base transform,
+URDF hash and hull/payload revision with the painted volume; refuse mismatches.
+The original base-local painting approach still applies, but requires the
+correct new→reference J1 conversion (`old = new + measured_shift`) and a fresh
+sweep on the actual left assembly. For CAD-native FK, account for folded
+reference offsets [0,−145,+120,−25.748,0,0]° rather than using all-zero motors.
+Review actual joint signs, clearances and gripper motor→gap mapping before
+allowing this visualization to enforce hull safety. No existing envelope is
+automatically reflected or relabelled as validated left-arm space.
+
 ## Problem
 
 `viscous_waterproof_01` is mounted on the ROV and can hit the hull. Joint

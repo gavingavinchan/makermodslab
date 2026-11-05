@@ -9,8 +9,9 @@ and where it stands. Quotes are Gavin's words from the working sessions. When a
 subtask changes direction, add a dated line rather than rewriting the old one.
 
 **Resuming? Read the To-do list first:** "Handoff: state and how to resume" →
-"To-do". The top item (2026-10-27) is making teleop plug-and-play so fixes
-stay fixed.
+"To-do". The newest physical change (2026-11-05) is unit 1 on the LEFT ROV
+mount: read the left-mount audit before any re-zero or powered motion. The
+plug-and-play work remains open.
 
 ## Goal tree
 
@@ -92,6 +93,18 @@ URDF and sim all use, with drift caught before an arm moves.
   that our workflow is working properly" (Gavin, 2026-10-27).
 - *Status:* problem written up in [viscous-mapping/README.md](viscous-mapping/README.md)
   with two independent read-only investigations; nothing changed yet.
+
+**A5a. Unit 1's LEFT ROV mount and zero-frame migration (2026-11-05).**
+- *Intent:* Gavin: “the dry one on the left side of the ROV … mirror some
+  things across … clockwise 90 degrees I think … use a URDF.” Establish the
+  sign before moving anything, then keep limits, leader mapping, visual/sim
+  and envelope in the same frame. This supports A3 and B3/B4 as well.
+- *Status:* offline audit, drawings and gated operator tool prepared; no
+  hardware access, zeroing, live-state edits or service changes. The right
+  −94.48° motor shift means 94.48° CCW under the existing −Z motor/URDF
+  mapping. Left 90° CW predicts **+90° motor**, conditional on physical base
+  indexing; CAD has identity mount rotations and does not prove that index.
+  See [the complete audit/procedure](viscous-left-mount-2026-11-05.md).
 
 **A4. 1:1 posture mapping.** A horizontal leader gives a horizontal follower.
 - *Intent:* pilots expect the follower to mirror their pose. It is also needed to
@@ -1466,6 +1479,23 @@ file instead.
 
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
+- [x] **2026-11-05 offline left-mount preparation (A5a):** URDF/plate audit,
+  top/three-quarter PNGs, pending unit assignment, candidate limits, and
+  motor-1-only operator tool with hardware-free default/dry-run and fake-bus
+  tests. [Findings and exact future commands](viscous-left-mount-2026-11-05.md).
+- [ ] **Before any next powered run:** Gavin confirms unit 1's actual left
+  mount index/handedness and forward neutral. Candidate reading +90° ±10°
+  in unit 1's existing branch; wrong sign/whole-turn branch aborts. CAD alone
+  cannot settle the physical index. New soft range at exactly +90 would be
+  −275.4…+37.6°, with limited CW travel; judge suitability at the hull.
+- [ ] **Only after that confirmation:** Gavin runs the prepared motor-1
+  re-zero procedure, preserves actual evidence, stages and installs BOTH
+  measured-shift profiles with Lab stopped, updates calibration metadata and
+  commits the release. No re-zero has been done. Do not start the old fallback
+  after zeroing. Keep FF/haptics off for initial acceptance; preserve the wet
+  arm's separate frame/profile. Repaint the left-unit hull envelope before
+  hull-near teleop, and synchronise the verified unit-1 release to the Mac.
+
 **Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
@@ -1504,6 +1534,10 @@ reviews (Claude, Codex, Fable), Codex's design and the stage 1 report are in
   `configs/viscous/viscous_01/viscous_profiles/viscous_01.json`, remove the
   preset fallback in `arms/viscous.py`, route `scripts/gripper-haptics-poc.py`
   through the same loader. Fixes the gripper not opening fully.
+  **2026-11-05 update:** the LEFT mounting now has a prepared J1-only migration
+  under A5a above. Its operator-generated profile translates J1 only; all-joint
+  stop/leader/gripper measurement remains outstanding. Do not install nominal
+  +90 candidate data as a measured profile.
 - [ ] **Reconcile the Mac's waterproof profile:** the live copy (Oct 13) is
   newer than the committed bundle (Oct 9); commit the live one before anything
   enforces the committed copy.
@@ -1523,6 +1557,9 @@ reviews (Claude, Codex, Fable), Codex's design and the stage 1 report are in
   `/dev/serial/by-id/usb-Openlight_Labs_CANable2_..._207E37A55445-if00`, Star on
   `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`. Lab runs as the user
   service `makermodslab-viscous` (`http://100.64.91.4:8000`).
+  **2026-11-05 physical update:** Gavin says dry `viscous_01` is now on the
+  LEFT ROV mount. Prior right-mounted unit was `viscous_waterproof_01`. This
+  reports physical placement, not a change to USB ownership or robot records.
 - The Mac repo has a `linux` remote (`gavin-linux:Documents/makermodslab-viscous`)
   for moving unpushed work between machines. Git on Linux authenticates through
   `gh` (`gh auth setup-git` is done); its GitHub fetches occasionally time out, so retry.
@@ -1539,6 +1576,45 @@ reviews (Claude, Codex, Fable), Codex's design and the stage 1 report are in
   collection planner refuses to start from the tipped pose.
 - Pinocchio is installed in both venvs. On a new machine: `uv sync --extra test
   --extra arm-dynamics`.
+
+**Resume left mounting here (2026-11-05):**
+Read [viscous-left-mount-2026-11-05.md](viscous-left-mount-2026-11-05.md) and
+show `configs/viscous/viscous_01/evidence/left-mount-2026-11-05/top-down.png`
+and `three-quarter.png`. Both CAD mount rotations are identity. Left J1 axis
+−Z, mirrored right +Z; Lab's reference model uses direct motor radians about
+−Z. The CAD folded reference pose is [0,−145,+120,−25.748,0,0]°, not the Lab
+zero. Full plate geometry is exactly Y-reflected, not evidence of a simple
+±90° rotated same part. Physical manufacturing equivalence remains unverified.
+Unit 1 must use the reference/single-arm handedness, not a reflected motor map.
+
+The proposed left +90° old-frame motor reading would move 90° CW, with new
+backed-off J1 range −275.4…+37.6° (estimated physical stops −278.265…+40.465°).
+This is **conditional**: no existing CAD/calibration file records the actual
+base bolt index. The right recorded −94.48° shift supports about 90° CCW;
+its 4.48° deviation is not a left-unit offset. Future operator tool
+`scripts/viscous_left_mount.py` defaults to a completely offline dry run;
+`--inspect`/`--execute` are explicitly future hardware operations. It rejects
+wrong sign/branch, journals the persistent write, verifies zero and final
+release, then stages paired profiles using the actual shift. It never edits
+live Lab state. The shared presets/URDF, wet profiles, existing sim scenes,
+uncommitted gripper POC and `frontend/dist` are unchanged by this work.
+
+The prepared leader J1 clamp is narrower, −154…37° at the nominal shift,
+because shifting the whole follower range into the Star's output range would
+move its raw unwrap boundary inside the leader's measured positive travel and
+cause a large negative target jump. Gain stays +1.439742 and offset 0;
+501-point travel/whole-turn-alias tests cover shifts +80/+90/+100.
+
+Verification: 31 offline tests pass (new operator-tool fakes plus existing
+Viscous family tests); 100-pose FK/mirror checks pass, fitted gravity is
+invariant to upright J1 yaw to 1.8e−15 Nm, source snapshots/hash evidence and
+both reviewed Blender PNGs are committed. The air fit needs no sign flip for
+upright yaw alone; ROV tilt/immersion/payload and hull clearance remain outside
+that result. No arm/Star port opened, no service restart/reconfiguration, no
+robot record edits. Only this Linux checkout's task changes are committed and
+pushed; no cross-machine deployment or unrelated-repository commits are part
+of this offline task. Next action is physical inspection with Gavin, not an
+automatic motor command.
 
 **Resume Dream-1 here (2026-10-23):** B3a (propeller scrubbing in sim) is done:
 zero-shot Dream-1 carries the sponge to the propeller but never scrubs. B3c (flange

@@ -1,0 +1,35 @@
+{
+  "status": "pending_physical_verification_not_consumed_by_live_code",
+  "requires": "Successful unit-1 J1 re-zero receipt and measured rigid base indexing before hardware-linked scene use",
+  "frame": "+X grippers, +Y vehicle left, +Z up",
+  "left": {
+    "unit": "viscous_01",
+    "mechanism": "configs/viscous/model/viscous_arm.urdf",
+    "handedness": "reference, never reflected",
+    "mount_translation_m": [
+      0.165721504063,
+      0.246525,
+      -0.226
+    ],
+    "candidate_rigid_base_world_yaw_deg": 90.0,
+    "candidate_old_equals_new_plus_deg": 90.0,
+    "candidate_moving_J1_world_rotation_deg_CCW": -90.0,
+    "candidate_native_left_J1_deg": "m_new_J1, ONLY after fixed-base indexing is established",
+    "other_native_rotary_joints": "radians(motor_degrees) - source.json reference_arm_pose_rad; gripper unresolved"
+  },
+  "right": {
+    "unit": "viscous_waterproof_01",
+    "recorded_old_equals_new_plus_deg": -94.48,
+    "recorded_moving_J1_world_rotation_deg_CCW": 94.48,
+    "inferred_rigid_base_world_yaw_deg": -94.48,
+    "mount_translation_m": [
+      0.165721504063,
+      -0.246525,
+      -0.226
+    ],
+    "native_mirrored_CAD_J1_deg": "-m_new_J1 for yaw ONLY, conditional on recorded-neutral registration",
+    "real_mechanism": "Use single-arm identical mechanism if physically identical; native right mirrored geometry remains a drawing proxy"
+  },
+  "legacy_scenes": "Keep historical --scene rov, canonical IK signs and cinematic unchanged; rebuild a separate measured physical scene before hardware use",
+  "activation": "No live file installed by this task. Future successful operator run stages both per-unit profiles; install together with Lab stopped."
+}

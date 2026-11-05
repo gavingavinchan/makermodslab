@@ -13,7 +13,7 @@ on the CANable 2 adapter with serial `207E37A55445` and a CH340 (`1a86`) USB
 serial for the Star leader, and it was the arm used for the dry-bench gravity
 identification on 2026-10-20.
 
-## No hardware profiles: the built-in presets are this arm's
+## Current table-frame fallback and pending left-mount migration
 
 Unlike the waterproof bundle, there is no `viscous_profiles/` here. Unit 1's soft
 limits and leader mapping are the driver's built-in presets
@@ -21,9 +21,20 @@ limits and leader mapping are the driver's built-in presets
 which were captured on this arm (the follower limits are
 `evidence/commissioning/joint-limits-zeroed-frame.json`). `makermodslab/arms/viscous.py`
 (`_commissioned_config`) uses those built-ins when the ids are `viscous_01` /
-`star_viscous` and no profile file exists, so do **not** create profile files for
-these ids. Because the presets live in the driver, the driver pin matters: use
+`star_viscous` and no profile file exists. Do not create nominal candidate
+profiles for these ids before changing the physical zero. Because the presets
+live in the driver, the driver pin matters: use
 `2a5ea4e581c0d8956b6e58a8e1c6bf8e13486daa` (see `pyproject.toml`).
+
+**2026-11-05:** Gavin has placed this dry arm on the LEFT ROV mount. The
+[offline audit and operator procedure](../../../docs/viscous-left-mount-2026-11-05.md)
+prepare a possible J1 re-zero; nothing has been run or activated. A proposed
+90° CW move predicts **+90° old motor degrees**, conditional on physical base
+indexing. Only the future successful re-zero tool stages paired measured-shift
+profiles to override the fallback. After re-zero, preserve that release and
+install both profiles together while Lab stays stopped; restoring this old
+table-frame bundle alone would be wrong. Existing commissioning files remain
+historical evidence. The gripper and other-joint measurement work remains open.
 
 ## Restore on another machine
 

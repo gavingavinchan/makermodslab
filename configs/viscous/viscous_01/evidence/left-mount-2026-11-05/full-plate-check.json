@@ -1,0 +1,14 @@
+{
+  "scope": "Bidirectional every-vertex to target triangles on full visual plate meshes; not only convex hull. Source parts 1264 and 1338.",
+  "distance_mm": {
+    "identity": 2.99999862909317,
+    "reflect_Y": 0,
+    "rotate_Z_90": 3.62547711916521,
+    "rotate_Z_-90": 3.625478810511634,
+    "rotate_Z_180": 0.2111497320774474
+  },
+  "source_mesh_sha256": {
+    "left": "c629d6b3fadfb4cfe060fd8a78d54e7eee6947330e2f66db2773eb00d3cd6933",
+    "right": "558fc97aac590ebfd744a83b968c1537bee41588328320a900dc705c7b78afd3"
+  }
+}
