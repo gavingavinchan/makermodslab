@@ -312,3 +312,27 @@ external CAD checkout. Drawings show folded CAD articulation with unit labels,
 a conditional +90° left move and the recorded −94.48° right move; the right
 arm is marked as a mirrored CAD proxy. They illustrate the proposed yaw
 neutral, not a measured all-joint pose or a hull-safety result.
+
+## Mac Lab install as a third arm (2026-11-05)
+
+Gavin: "put this into the gui? as a 3rd arm?" On the Mac (Lab home
+`~/.makermods/makermodslab-viscous`, launch agent `com.gavin.makermods-viscous`):
+
+- New robot record **`viscous_01_rov_left`** (follower config `viscous_01_rov_left`,
+  leader config `star_viscous_01_rov_left`), cloned from `viscous_01`.
+- Profiles `viscous_profiles/viscous_01_rov_left.json` and
+  `star_viscous_01_rov_left.json` = the staged `operator-run/` profile (s=+82.54).
+  Follower calibration `viscous_follower/viscous_01_rov_left.json` = the staged
+  new-frame calibration; Star calibration `star_viscous_01_rov_left.json` = an
+  unchanged copy of `star_viscous.json`.
+- `configs/viscous/viscous_01/manifest.json` enrolls `viscous_01_rov_left` under
+  adapter `207E37A55445`, so plug-and-play recognises it without the warning.
+- The old `viscous_01` record was left in place but would now let J1 travel ~82 deg
+  past the real inward stop, so the same new-frame profiles were also installed as
+  `viscous_profiles/viscous_01.json` / `star_viscous.json` on the Mac. Its cache
+  calibration file is untouched. Backups: `~/.makermods/makermodslab-viscous/backups/left-mount-20261105/`
+  (before this, the Mac had no unit-1 profile files, only the waterproof's).
+- **gavin-linux still has NO new-frame profiles**: its `viscous_01` record would run
+  the old-frame preset. Install the same files there before unit 1 runs on Linux.
+- The waterproof's 1:1 posture trial is gated to `viscous_waterproof_01` in both
+  frontend and backend, so it does not apply to unit 1.

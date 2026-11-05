@@ -20,7 +20,8 @@
   "adapter_enrollment": {
     "follower_usb_serial": "207E37A55445",
     "follower_calibrations": [
-      "viscous_01"
+      "viscous_01",
+      "viscous_01_rov_left"
     ],
     "identity_kind": "usb_adapter_only"
   }
