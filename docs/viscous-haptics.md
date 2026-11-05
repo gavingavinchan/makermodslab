@@ -10,7 +10,8 @@ subtask changes direction, add a dated line rather than rewriting the old one.
 
 **Resuming? Read the To-do list first:** "Handoff: state and how to resume" →
 "To-do". The newest physical change (2026-11-05) is unit 1 on the LEFT ROV
-mount: read the left-mount audit before any re-zero or powered motion. The
+mount: J1 was re-zeroed for it on 2026-11-05 (s=+82.54) and the new-frame
+profiles are staged but NOT installed; read the left-mount doc before any powered motion. The
 plug-and-play work remains open.
 
 ## Goal tree
@@ -1483,15 +1484,21 @@ file instead.
   top/three-quarter PNGs, pending unit assignment, candidate limits, and
   motor-1-only operator tool with hardware-free default/dry-run and fake-bus
   tests. [Findings and exact future commands](viscous-left-mount-2026-11-05.md).
-- [ ] **Before any next powered run:** Gavin confirms unit 1's actual left
+- [x] **2026-11-05, done on the Mac:** forward neutral confirmed by Gavin with the arm
+  stretched out; J1 read +82.54 (folded it read +118.4, misleading), zeroed to −0.01.
+  See "Re-zero done" in the left-mount doc.
+- [x] ~~**Before any next powered run:**~~ Gavin confirms unit 1's actual left
   mount index/handedness and forward neutral. Candidate reading +90° ±10°
   in unit 1's existing branch; wrong sign/whole-turn branch aborts. CAD alone
   cannot settle the physical index. New soft range at exactly +90 would be
   −275.4…+37.6°, with limited CW travel; judge suitability at the hull.
-- [ ] **Only after that confirmation:** Gavin runs the prepared motor-1
+- [ ] **Remaining from here (re-zero DONE 2026-11-05, s=+82.54; profiles staged in
+  `operator-run/`, NOT installed):** install BOTH staged profiles + calibration with Lab
+  stopped on whichever machine runs unit 1, before ANY Lab teleop on it.
+  Original item: ~~Gavin runs the prepared motor-1
   re-zero procedure, preserves actual evidence, stages and installs BOTH
   measured-shift profiles with Lab stopped, updates calibration metadata and
-  commits the release. No re-zero has been done. Do not start the old fallback
+  commits the release.~~ Do not start the old fallback
   after zeroing. Keep FF/haptics off for initial acceptance; preserve the wet
   arm's separate frame/profile. Repaint the left-unit hull envelope before
   hull-near teleop, and synchronise the verified unit-1 release to the Mac.

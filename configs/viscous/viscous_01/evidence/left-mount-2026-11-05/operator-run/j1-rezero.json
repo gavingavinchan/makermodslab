@@ -1,0 +1,31 @@
+{
+  "unit": "viscous_01",
+  "date_utc": "2026-11-05T18:30:24.512720+00:00",
+  "joint": "shoulder_pan",
+  "motor_id": 1,
+  "mode": "execute",
+  "reason": "Dry arm moved to LEFT ROV mount; operator confirms neutral and encoder branch",
+  "expected_old_frame_deg": 82.54,
+  "tolerance_deg": 3.0,
+  "method": "Motor 1 only: connect(handshake=False), disable, fresh reads, SET_ZERO 0xFE, verify, disable",
+  "zero_write_attempted": true,
+  "activation_ready": true,
+  "calibration_sha256": "95b40c39407fd0862b1f5f60c181753fea388be7376dc060da620623cbcf6e28",
+  "readings_before_deg": [
+    82.54340277758621,
+    82.54340277758621,
+    82.54340277758621,
+    82.54340277758621,
+    82.54340277758621
+  ],
+  "reading_before_old_frame_deg": 82.54340277758621,
+  "physical_mount_verified_by_operator": true,
+  "readings_after_deg": [
+    -0.010989668856061292,
+    -0.010989668856061292,
+    -0.010989668856061292,
+    -0.010989668856061292,
+    -0.010989668856061292
+  ],
+  "final_torque_disabled": true
+}

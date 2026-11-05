@@ -1,10 +1,42 @@
 # Unit 1 on the left ROV mount — offline preparation, 2026-11-05
 
-**Status: prepared, NOT re-zeroed, NOT deployed.** Subtask A5 (one mapping per
+**Status: J1 RE-ZEROED on the Mac 2026-11-05 18:30 UTC (see "Re-zero done" below); new-frame profiles STAGED, NOT installed in Lab, NOT deployed.** Subtask A5 (one mapping per
 unit), A3 (haptics), and B3/B4 (ROV scenes). Gavin: “the dry one on the left
 side of the ROV … mirror some things across … clockwise 90 degrees I think …
 use a URDF.” The uncertainty in “I think” matters: no motor-zero action is
 justified by this CAD alone.
+
+## Re-zero done (2026-11-05, Mac, Gavin at the arm)
+
+Unit 1 and its Star were plugged into the MacBook (CANable `207E37A55445` on
+`/dev/cu.usbmodem207E37A554451`), mounted on the ROV's left side, Mac Lab not
+running. Every step below was torque off, motor 1 only, bus opened without the
+energizing handshake.
+
+- *First read, arm folded:* J1 **+118.4°**, 28° outside the +90 ±10 prediction,
+  which would have left only ~9° of inward (CW) travel. Not zeroed.
+- *Gavin:* "base is not straight forward but its already mounted on the rov, so
+  that is fixed. the arm is pointed forwards, aka the grippers is pointed
+  forwards". Then he stretched the arm out: "now its actually pointed forwards
+  relative to the rov". Second read: **+82.54°**, inside the prediction.
+  **Lesson: judge J1's forward neutral with the arm stretched out.** In the folded
+  pose the gripper's heading misread J1 by ~36°.
+- *Zero:* Gavin said "go". `scripts/viscous_left_mount.py`'s own `operate()` ran
+  through a throwaway Mac wrapper. The wrapper swaps the by-id port for the Mac
+  path and the systemd check for "nothing listening on :8000". Expected
+  +82.54 ±3, re-read after the confirmation (no movement), SET_ZERO 0xFE.
+  Read **−0.01°** after, and again −0.01° on a fresh connection. Torque disabled
+  at the end. Shift `s = +82.54`: old frame = new frame + 82.54.
+- *Staged, not installed:* `configs/viscous/viscous_01/evidence/left-mount-2026-11-05/operator-run/`
+  holds the receipt `j1-rezero.json`, `viscous_profiles/viscous_01.json` +
+  `star_viscous.json` and `viscous_01-calibration-new-frame.json`. New J1
+  follower soft limits **−267.94…+45.06°** (≈45° inward/CW, ≈268° outward/CCW);
+  Star J1 clamp **−154…+45**. Install both profiles together with Lab stopped,
+  per step 6 below (`RELEASE=.../operator-run`). Until then **do not start Lab
+  teleop on unit 1**: the fallback preset is in the old frame and is now 82.5°
+  off on J1.
+- The tables below that assume `s = +90` are superseded by `s = +82.54`.
+  Approximate hard stops are now −270.8…+47.9.
 
 ## Answer and sign derivation
 
