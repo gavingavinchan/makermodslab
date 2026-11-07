@@ -319,6 +319,16 @@ the real arm (sim to real).
     roll (rolling toward 90 deg at the pedestal hits it); roll-0 pickup is 16.7 mm
     under the water line at 500 mm (8.9-24.5 mm over tips 480-520 mm). Pin contact
     with the fixture is still pending in the holder session.
+  - 2026-11-07, envelope audit at 0.5 mm padding SUPERSEDES the 12 mm limit:
+    cup pickup and extraction at roll 0 clear at every opening; insertion start
+    and head regrip clear at rolls 0-120 deg and every opening; thread-catch and
+    seated clear at rolls 0-120 deg with at most 26 mm per side (jaw gap ~52 mm).
+    Still colliding (stress cases, `fixture_clearance_checks.json`): full opening
+    (52.4 mm per side) at thread-catch/seated, and rolling while around the cup.
+    Gate: wrist resets between strokes at <= 26 mm per side; withdraw from the
+    cup at roll 0 before any roll. The holder session's envelope audit is the
+    authoritative hand-vs-fixture check (its palm meshes are open); the gate is
+    whole arm, end to end. Use the `tilt_85deg` assets at the SHA it gives.
   - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
     45 deg puts the wrist above J3's height whatever the distance); overhead
     camera above the water or housed; call-ledger cap for evaluation (~110
