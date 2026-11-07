@@ -1,0 +1,154 @@
+{
+  "tilt_from_vertical_deg": 75.0,
+  "layout_status": "EXAMPLE; await environment feasibility",
+  "units": "mm",
+  "dimensions_mm": [
+    150.0,
+    130.0,
+    27.561300000000003
+  ],
+  "holder_volume_mm3": 133666.46785239238,
+  "shackle_bore_center_print_mm": [
+    0,
+    0,
+    96.98428985873856
+  ],
+  "body_to_print_rotation": [
+    [
+      0.25881904510252074,
+      0.0,
+      -0.9659258262890683
+    ],
+    [
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.9659258262890683,
+      0.0,
+      0.25881904510252074
+    ]
+  ],
+  "bow_floor_clearance_mm": 0.0,
+  "base_center_s_mm": -12.792131304192086,
+  "nominal_fit_clearance_mm": 0.7,
+  "edge_treatment_mm": 0.5,
+  "zip_tie_channels": [
+    {
+      "number": 1,
+      "center_mm": [
+        -45.185498895600276,
+        0,
+        3.4
+      ],
+      "clear_width_mm": 6.2,
+      "clear_height_mm": 2.8,
+      "floor_mm": 2.0,
+      "roof_to_cutter_mm": 3.2466998136557246,
+      "illustrated_loop_length_mm": 162.984340200676
+    },
+    {
+      "number": 2,
+      "center_mm": [
+        19.601236287216103,
+        0,
+        3.4
+      ],
+      "clear_width_mm": 6.2,
+      "clear_height_mm": 2.8,
+      "floor_mm": 2.0,
+      "roof_to_cutter_mm": 3.710708348537552,
+      "illustrated_loop_length_mm": 162.984340200676
+    }
+  ],
+  "single_watertight_solid": true,
+  "body_intersection_mm3": 0,
+  "vertical_drop_in_intersections_mm3": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "pin_path_samples_clear": 33,
+  "complete_tie_loops_clear": 2,
+  "head_side_corridor": {
+    "diameter_mm": 60,
+    "length_mm": 300,
+    "starts_at_body_z_mm": 39.925,
+    "holder_and_ties_intersection_mm3": 0
+  },
+  "export_roundtrips_pass": true,
+  "estimated_masses_kg_body_pin_40pct_petg": [
+    0.6938597658142752,
+    0.24073158043470916,
+    0.06790256566901533
+  ],
+  "static_stability": {
+    "dry_body_only": {
+      "combined_com_mm": [
+        -9.964723553970424,
+        0.0006349576331854133,
+        54.60683008486181
+      ],
+      "support_margin_mm": [
+        71.67259224977833,
+        64.49936504236682
+      ],
+      "effective_weight_N": 7.47288847185108,
+      "minimum_gravity_restoring_moment_Nm": 0.48199656146681763
+    },
+    "dry_pin_seated": {
+      "combined_com_mm": [
+        -10.510775517118425,
+        0.00043142837191666595,
+        65.57080406430725
+      ],
+      "support_margin_mm": [
+        72.21864421292634,
+        64.49956857162809
+      ],
+      "effective_weight_N": 9.834465275915576,
+      "minimum_gravity_restoring_moment_Nm": 0.634318767429212
+    },
+    "wet_body_only": {
+      "combined_com_mm": [
+        -9.760247330677982,
+        0.0006795029667933058,
+        58.19657868788363
+      ],
+      "support_margin_mm": [
+        71.4681160264859,
+        64.49932049703321
+      ],
+      "effective_weight_N": 6.086765517487148,
+      "minimum_gravity_restoring_moment_Nm": 0.3925922399026937
+    },
+    "wet_pin_seated": {
+      "combined_com_mm": [
+        -10.387547744364213,
+        0.0004537055618637097,
+        68.84419064130714
+      ],
+      "support_margin_mm": [
+        72.09541644017213,
+        64.49954629443813
+      ],
+      "effective_weight_N": 8.149408548885253,
+      "minimum_gravity_restoring_moment_Nm": 0.5256331539711142
+    }
+  },
+  "steep_downface_area_mm2": 381.5702499935554,
+  "max_downface_bridge_span_mm": 6.2,
+  "source_sha256": {
+    "shackle_body.stl": "408a6cba10f4e5ae24d7c73adc82c9b924d7179faee400748f681d14bba2b0ef",
+    "shackle_pin.stl": "a304fc613476662e2b16b38b29bb22ca845532168118e466cdcd37680b87c508",
+    "shackle_params.json": "cae1e63b74ba6a56e1836b4ddfee16a793fc9e136b6cd70cf66741f7cc3ed8dd",
+    "shackle_assets.py": "020db18b9c23dee07727da8cb06c2cb6f09a5ec6911cdee69847dfb417dac8ca"
+  }
+}

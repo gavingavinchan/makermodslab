@@ -73,6 +73,21 @@ the real arm (sim to real).
   loads: the shackle is hot-glued to the holder and the holder to the desk, so
   no redesign (`BRIEF_SHACKLE_HOLDER_FOLLOWUP.md`, resumed in the same Codex
   session).
+- 2026-11-06, **freestanding holder replaces the glue design** (Gavin):
+  "cant tape or glue to the tank when its filled with water", so use a broad
+  base and zip ties between shackle and print. New
+  `scripts/viscous-dream1/shackle_tied_holder.py`: 150 × 130 mm base, two
+  top-access tie channels (6.2 × 2.8 mm), two curved saddles, 0.5 mm edge
+  treatment. A floor opening preserves zero added bow height. The 75° example
+  is **provisional pending the other thread's layout/feasibility result**;
+  change the CAD angle before printing. STL/3MF, body-frame sim meshes, fit and
+  gravity-stability evidence, images and reproduction instructions are in
+  [the holder handoff](../scripts/viscous-dream1/runs/shackle_tied_holder/README.md).
+  Mesh/drop-in/pin-path/tie-routing checks pass. Gravity support margin ≥64.5 mm
+  dry/wet, pin present/absent; wet minimum restoring moment 0.393 N m. This does
+  not establish resistance to robot torque or wet-floor sliding. No physical
+  print, load trial or hardware run. Use the **new** holder and tie meshes in
+  the environment's pre-print acceptance test; original scene/meshes unchanged.
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).

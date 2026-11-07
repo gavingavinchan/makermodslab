@@ -1504,6 +1504,16 @@ file instead.
   hull-near teleop, and synchronise the verified unit-1 release to the Mac.
 
 **Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
+
+2026-11-06, B4 holder: Gavin requested 2–3 zip-tie routes and clarified that the
+filled tank cannot take tape/glue. New freestanding 150 × 130 mm base, two
+top-access tie channels and curved saddles keep the bow at floor height.
+75° is a CAD example pending the environment thread's final layout; do not
+treat it as the approved print angle. Files, mesh/fit/gravity checks and the
+handoff to use the actual holder in sim are in
+[the holder report](../scripts/viscous-dream1/runs/shackle_tied_holder/README.md).
+This supersedes the old glued mounting assumption; no powered run or print.
+
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
 list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,

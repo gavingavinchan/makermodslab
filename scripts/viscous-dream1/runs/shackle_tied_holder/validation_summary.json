@@ -1,0 +1,56 @@
+{
+  "generator_sha256": "43fd8a01f1bffac9fb1bcd77729dab5a6f58f1872f17b26ab806fa91e120ee78",
+  "results": {
+    "55": {
+      "single_watertight_solid": true,
+      "body_intersection_mm3": 0,
+      "pin_path_samples_clear": 33,
+      "complete_tie_loops_clear": 2,
+      "export_roundtrips_pass": true,
+      "bow_floor_clearance_mm": 0.0,
+      "head_side_corridor": null
+    },
+    "75": {
+      "single_watertight_solid": true,
+      "body_intersection_mm3": 0,
+      "pin_path_samples_clear": 33,
+      "complete_tie_loops_clear": 2,
+      "export_roundtrips_pass": true,
+      "bow_floor_clearance_mm": 0.0,
+      "head_side_corridor": {
+        "diameter_mm": 60,
+        "length_mm": 300,
+        "starts_at_body_z_mm": 39.925,
+        "holder_and_ties_intersection_mm3": 0
+      }
+    },
+    "80": {
+      "single_watertight_solid": true,
+      "body_intersection_mm3": 0,
+      "pin_path_samples_clear": 33,
+      "complete_tie_loops_clear": 2,
+      "export_roundtrips_pass": true,
+      "bow_floor_clearance_mm": 0.0,
+      "head_side_corridor": {
+        "diameter_mm": 60,
+        "length_mm": 300,
+        "starts_at_body_z_mm": 39.925,
+        "holder_and_ties_intersection_mm3": 0
+      }
+    },
+    "85": {
+      "single_watertight_solid": true,
+      "body_intersection_mm3": 0,
+      "pin_path_samples_clear": 33,
+      "complete_tie_loops_clear": 2,
+      "export_roundtrips_pass": true,
+      "bow_floor_clearance_mm": 0.0,
+      "head_side_corridor": {
+        "diameter_mm": 60,
+        "length_mm": 300,
+        "starts_at_body_z_mm": 39.925,
+        "holder_and_ties_intersection_mm3": 0
+      }
+    }
+  }
+}
