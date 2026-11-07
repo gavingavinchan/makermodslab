@@ -171,6 +171,13 @@ the real arm (sim to real).
   `runs/shackle_tilt45/water_check_*.json`), figure
   `runs/shackle_tilt45/shackle_water_line_283mm_planar.png`, orientation
   sketches `shackle_tilt45_sketch.py`.
+  - 2026-11-07, **superseded by the end-to-end gate** (task 7, `3393c787`):
+    the placement above (bore 575, cup tip 500) fails, because my screen saw
+    only the grip poses. The cup extraction runs J4 to its limit and the
+    pre-grasp breaks the water line by 4.1 mm; the gate also confirmed the
+    fingertip caveat (a mid-head grip runs into the collar and the clear ear).
+    Same parts, moved: **bore s 600, cup tip 565 mm at +15°, 80 mm up**,
+    head grip with the TCP 120 mm from the tip, 90° strokes (`348fefac`).
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).
