@@ -1761,6 +1761,17 @@ How Gavin wants the work done. These apply to every agent and tool.
   ignored), no render-frame dumps, no candidate/duplicate videos. Never `git
   add` a non-LFS file over ~50 MB. This branch never merges into `main`
   wholesale: land app code through a curated PR.
+- **Renders live on gavin-linux (2 TB), never on the MacBook (256 GB)**
+  (2026-11-06, Gavin). Render, encode and run Blender on gavin-linux only.
+  The Mac clone is deliberately slimmed: a sparse checkout
+  (`.git/info/sparse-checkout`) leaves every `.blend`/`.mp4`/`.mov`/`.webm`/
+  `.npz`/`.exr` under `scripts/viscous-dream1/` and `configs/viscous/` out of
+  its working tree, `lfs.fetchexclude` keeps LFS from downloading them, and it
+  is a partial clone (`remote.origin.partialclonefilter=blob:limit=1m`), so
+  old versions of big files are fetched from GitHub only if a command needs
+  them. Those files missing on the Mac is expected, not breakage: don't
+  "restore" them, and don't `git add --sparse` them there. To show one in chat,
+  `scp` it from gavin-linux into `/tmp` and delete it afterwards.
 - **No AI attribution trailers** (no `Co-Authored-By`) in commits or PRs.
 - **Safe tests: run them, don't wait.** Once Gavin has judged a test safe (for
   example the Star gripper actuation check), run it yourself and report the
