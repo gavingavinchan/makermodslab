@@ -1514,6 +1514,13 @@ handoff to use the actual holder in sim are in
 [the holder report](../scripts/viscous-dream1/runs/shackle_tied_holder/README.md).
 This supersedes the old glued mounting assumption; no powered run or print.
 
+2026-11-06, later B4 direction: Gavin rejected the initial freestanding holder's
+appearance and explicitly asked Astra to redesign it, with Prusa MK3-style
+guided zip-tie channels and a cylindrical pin cup about 3 cm. Task sequence is
+now pickup **from the cup**, insert, then tighten. Astra implementation is
+running; first exports remain review material. Cup height is provisionally
+30 mm, pin-size bore; final tilt/placement awaits the environment session.
+
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
 list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,

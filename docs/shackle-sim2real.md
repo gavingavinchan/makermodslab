@@ -88,6 +88,20 @@ the real arm (sim to real).
   not establish resistance to robot torque or wet-floor sliding. No physical
   print, load trial or hardware run. Use the **new** holder and tie meshes in
   the environment's pre-print acceptance test; original scene/meshes unchanged.
+- 2026-11-06, **holder redesign and pin pickup cup** (Gavin): rejected the
+  first freestanding CAD as "so ugly and bad", explicitly requested Astra,
+  and asked for zip-tie channels like Prusa's open-source MK3 printed parts.
+  Astra is implementing a new shape with recessed guided tie routing, using
+  the MK3 `y-rod-holder.scad`, `bearing.scad` and `cable-holder.scad` as design
+  references (Prusa commit `902885a41340eea19c19c10d36dfc4af8e209d47`, original
+  implementation rather than copied GPL source). The old 75° exports are
+  superseded review material, not the selected print.
+  Gavin also wants a cylindrical cup "about 3cm" to hold the disassembled pin:
+  **pickup from cup → insert into shackle → spin to tighten**. Working
+  assumption: 30 mm cup height, loose bore sized to the modeled ~20 mm pin,
+  drainage/air escape, independent stable foot and room to grasp above its lip.
+  Final angle and cup placement wait for the environment session. This replaces
+  the old assumption that the pin needs no stand.
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).
