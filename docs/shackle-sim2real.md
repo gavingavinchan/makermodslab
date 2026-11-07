@@ -125,6 +125,18 @@ the real arm (sim to real).
   This is not continuous-motion acceptance: seated fingertips vs clear ear,
   complete arm/cup/holder collisions and pickup-to-insertion travel remain
   for the end-to-end simulation test.
+- 2026-11-07, Astra round 2 complete, parent reviewed: selected print geometry
+  is in `runs/shackle_tied_holder/tilt_85deg/`, with the curved Prusa-style
+  holder and one-piece raised, tilted 30 mm axial cup. The 21.5 mm bore has a
+  27 mm insertion depth; its pin tip is 80 mm above the floor. Cup foot is
+  96 × 76 mm, offset toward the pin's overhanging mass. Drain cores, 61 axial
+  extraction samples, watertight mm STL/3MF and metre OBJ round trips pass.
+  Parent's independent 21,780-pair padded hand-envelope screen passes the
+  required states **with motion limits**: cup extraction at roll 0°, then
+  reorient; late threading/seated jaw opening ≤26 mm per side. Full-splay and
+  in-cup rolled stress states overlap conservative bounds and remain recorded.
+  `layout_manifest.json` supplies exact frames/hashes for the simulation gate.
+  No physical print, slicer profile or robot-load qualification is claimed.
 - 2026-11-06/07, **layout for the aquarium** (orientation session; selected
   numbers not yet seen by Gavin, who was in flight). Gavin's constraints, in
   order: the bolt "at 45 degrees, with the top pointed towards the arm",

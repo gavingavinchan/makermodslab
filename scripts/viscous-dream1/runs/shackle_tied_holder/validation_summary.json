@@ -1,55 +1,57 @@
 {
-  "generator_sha256": "43fd8a01f1bffac9fb1bcd77729dab5a6f58f1872f17b26ab806fa91e120ee78",
-  "results": {
-    "55": {
-      "single_watertight_solid": true,
-      "body_intersection_mm3": 0,
-      "pin_path_samples_clear": 33,
-      "complete_tie_loops_clear": 2,
-      "export_roundtrips_pass": true,
-      "bow_floor_clearance_mm": 0.0,
-      "head_side_corridor": null
-    },
-    "75": {
-      "single_watertight_solid": true,
-      "body_intersection_mm3": 0,
-      "pin_path_samples_clear": 33,
-      "complete_tie_loops_clear": 2,
-      "export_roundtrips_pass": true,
-      "bow_floor_clearance_mm": 0.0,
-      "head_side_corridor": {
-        "diameter_mm": 60,
-        "length_mm": 300,
-        "starts_at_body_z_mm": 39.925,
-        "holder_and_ties_intersection_mm3": 0
-      }
-    },
-    "80": {
-      "single_watertight_solid": true,
-      "body_intersection_mm3": 0,
-      "pin_path_samples_clear": 33,
-      "complete_tie_loops_clear": 2,
-      "export_roundtrips_pass": true,
-      "bow_floor_clearance_mm": 0.0,
-      "head_side_corridor": {
-        "diameter_mm": 60,
-        "length_mm": 300,
-        "starts_at_body_z_mm": 39.925,
-        "holder_and_ties_intersection_mm3": 0
-      }
-    },
-    "85": {
-      "single_watertight_solid": true,
-      "body_intersection_mm3": 0,
-      "pin_path_samples_clear": 33,
-      "complete_tie_loops_clear": 2,
-      "export_roundtrips_pass": true,
-      "bow_floor_clearance_mm": 0.0,
-      "head_side_corridor": {
-        "diameter_mm": 60,
-        "length_mm": 300,
-        "starts_at_body_z_mm": 39.925,
-        "holder_and_ties_intersection_mm3": 0
+  "status": "Round-2 selected CAD generation passed; physical print and full motion acceptance pending",
+  "generator_sha256": "5aec68dabb626236bc4ab69fb90ad1d38ef5cbc7f27e5aa97adf4f91a6cd2e31",
+  "holder_tilt_deg": 85,
+  "cup_tilt_deg": 85,
+  "pin_tip_height_mm": 80,
+  "current_reports": [
+    "tilt_85deg/holder_checks.json",
+    "tilt_85deg/cup_checks.json"
+  ],
+  "round2_full_generator_angles_tested": [
+    85
+  ],
+  "watertight_exports_pass": true,
+  "cup_extraction_samples_clear": 61,
+  "wide_pickup_envelope_clear": true,
+  "selected_fixture_placement_clash": false,
+  "pending": [
+    "actual meshes and end-to-end motion",
+    "seated clear-ear fingertip contact",
+    "283 mm waterline",
+    "slicer supports, physical drainage and load trial"
+  ],
+  "independent_hand_screen": {
+    "status": "PASS_WITH_MOTION_CONSTRAINTS",
+    "required_operating_state_overlaps": 0,
+    "unrestricted_conservative_overlaps": 555,
+    "operating_constraints": [
+      "Pick up and extract from cup at roll0; reorient only after clearing pedestal",
+      "At thread_start and seated, opening<=26mm per side for rolls0..120",
+      "Fully open regrip is screened at insert_start/head_regrip, not near seated holder"
+    ],
+    "report": "tilt_85deg/fixture_clearance_checks.json"
+  },
+  "parent_independent_regeneration": {
+    "command": "uv run --script scripts/viscous-dream1/shackle_tied_holder.py --tilt 85 --cup-tilt 85 --pin-tip-height 80 --cup-tip-forward 500 --cup-azimuth 15 --no-render --output-dir /tmp/shackle-final-parent-review",
+    "parts": {
+      "shackle_tied_holder": {
+        "roundtrips_match": true,
+        "dimensions_mm": [
+          146.0,
+          112.0,
+          32.18600082397461
+        ],
+        "volume_mm3": 93107.28562935746
+      },
+      "pin_cup": {
+        "roundtrips_match": true,
+        "dimensions_mm": [
+          100.15040016174316,
+          76.0,
+          96.2416000366211
+        ],
+        "volume_mm3": 126865.31024074981
       }
     }
   }

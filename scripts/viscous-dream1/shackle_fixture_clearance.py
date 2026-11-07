@@ -41,11 +41,6 @@ def solid(mesh):
     )
 
 
-def mesh_of(shape):
-    mesh = shape.to_mesh64()
-    return trimesh.Trimesh(mesh.vert_properties[:, :3], mesh.tri_verts, process=True)
-
-
 def transform(mesh, rotation, translation):
     result = mesh.copy()
     result.vertices = result.vertices @ rotation.T + translation
@@ -143,7 +138,7 @@ def main():
     for name, tcp, approach_axis, jaw_across in poses:
         # 121 static rolls, with closed, 12mm-per-side and fully open fingers.
         for roll in range(121):
-            for opening in [0.0, 12.0, 52.4125]:
+            for opening in [0.0, 12.0, 26.0, 52.4125]:
                 for hand_name, hand in hand_parts(tcp, approach_axis, jaw_across, roll, opening):
                     for fixture_name, fixture in fixtures.items():
                         box_tests += 1
@@ -162,8 +157,18 @@ def main():
                                     "intersection_mm3": float(volume),
                                 }
                             )
+    # Keep all stress-test collisions visible. Operational states constrain
+    # cup extraction to roll0 and reserve full splay for the earlier regrip.
+    required_hits = [
+        h
+        for h in hits
+        if (h["pose"] == "cup_pickup" and h["roll_deg"] == 0)
+        or (h["pose"] in ["insert_start", "head_regrip"])
+        or (h["pose"] in ["thread_start", "seated"] and h["opening_per_side_mm"] <= 26)
+    ]
     data = {
-        "status": "PASS" if not hits else "REVIEW_REQUIRED",
+        "status": "REVIEW_REQUIRED" if required_hits else "PASS_WITH_MOTION_CONSTRAINTS",
+        "unrestricted_stress_screen": "COLLISIONS_FOUND" if hits else "CLEAR",
         "units": "mm",
         "frame": "s ahead of left J1, w toward sim +X, h above tank floor",
         "holder_tilt_deg": 85,
@@ -174,12 +179,18 @@ def main():
         "cup_floor_translation_mm": cup_translation.tolist(),
         "gripper_box_padding_mm": PADDING,
         "roll_samples_deg": [0, 120, 1],
-        "finger_openings_per_side_mm": [0, 12, 52.4125],
+        "finger_openings_per_side_mm": [0, 12, 26, 52.4125],
         "poses": [p[0] for p in poses],
         "aabb_pair_tests": box_tests,
         "boolean_pair_tests": boolean_tests,
         "fixture_intersections": fixture_intersections,
         "hand_fixture_intersections": hits,
+        "required_operating_state_intersections": required_hits,
+        "operating_constraints": [
+            "Pick up and extract from cup at roll0; reorient only after clearing pedestal",
+            "At thread_start and seated, opening<=26mm per side for rolls0..120",
+            "Fully open regrip is screened at insert_start/head_regrip, not near seated holder",
+        ],
         "limitations": [
             "Static hand bounds only; no arm IK or wrist/forearm geometry",
             "No inter-pose travel or continuous roll proof",
@@ -196,8 +207,8 @@ def main():
             trimesh.exchange.obj.export_obj(mesh).rstrip() + "\n"
         )
     print(f"{data['status']}: {box_tests} pairs, {boolean_tests} booleans, {len(hits)} overlaps; {out}")
-    if hits:
-        print(json.dumps(hits[:10], indent=2))
+    if required_hits:
+        print(json.dumps(required_hits[:10], indent=2))
         raise SystemExit(1)
 
 

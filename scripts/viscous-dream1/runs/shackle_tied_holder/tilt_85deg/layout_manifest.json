@@ -1,0 +1,123 @@
+{
+  "status": "Selected CAD; end-to-end simulation and physical acceptance pending",
+  "plane_frame": "S forward from left J1, W toward sim +X, H above floor",
+  "plane_metres_to_sim_world_metres": [
+    [
+      0,
+      1,
+      0,
+      0.305
+    ],
+    [
+      -1,
+      0,
+      0,
+      0.24
+    ],
+    [
+      0,
+      0,
+      1,
+      0.76
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "shackle_bore_midpoint_mm": [
+    575.0,
+    0.0,
+    98.4839981465657
+  ],
+  "cup_pin_tip_mm": [
+    482.9629131445342,
+    129.40952255126038,
+    80.0
+  ],
+  "cup_azimuth_deg": 15,
+  "cup_axis_tilt_from_vertical_deg": 85,
+  "cup_floor_rotation": [
+    [
+      0.9659258262890683,
+      -0.25881904510252074,
+      0.0
+    ],
+    [
+      0.25881904510252074,
+      0.9659258262890683,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "cup_floor_translation_mm": [
+    482.9629131445342,
+    129.40952255126038,
+    0.0
+  ],
+  "operating_constraints": [
+    "Pick up and extract from cup at roll0; reorient only after clearing pedestal",
+    "At thread_start and seated, opening<=26mm per side for rolls0..120",
+    "Fully open regrip is screened at insert_start/head_regrip, not near seated holder"
+  ],
+  "files": {
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/shackle_tied_holder.stl": {
+      "sha256": "2f5d9b4b6e457e9468b105337c41a06ce1ecc71be20eb1db7d481247e6b9ea5d",
+      "units": "mm"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/shackle_tied_holder.3mf": {
+      "sha256": "5d0815747cb5ee389c45196946f6b9bfd713447e2680e3debdf7fe3fcb929a89",
+      "units": "mm"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_cup.stl": {
+      "sha256": "849a9d0757c32d48d5600c6a5db93049053e1cb555fd155df8e7ae617826f820",
+      "units": "mm"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_cup.3mf": {
+      "sha256": "d680b04778a6c1264580b983f19f6c3a1e3f3a79740e4aa1a8de9c4fd7faa9d7",
+      "units": "mm"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/shackle_tied_holder_body_frame.obj": {
+      "sha256": "c0b1f535118ef10a0194dc42ae61973a6a36e40e3cbc9af96054978066bce255",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/zip_tie_envelope_body_frame.obj": {
+      "sha256": "2cb3400d1d6f3415afe50de2a2f98187566bbf7fb1c030b86e8765efbf7ea855",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_cup_floor_frame.obj": {
+      "sha256": "5489a0394a99940456d9e32dd9969819f59f823f50424311460d6756ac5a026a",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_seated_in_cup_floor_frame.obj": {
+      "sha256": "b1f9cad0e476f80ae1dc35ad17f2017a4352087d7e40e0f429d02e1432306ebf",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_pickup_corridor_floor_frame.obj": {
+      "sha256": "14929542a381b8714b4ccacaee8d8ae7c4873351f0b7aceab9d3bdf55e1be854",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/pin_pickup_wide_envelope_floor_frame.obj": {
+      "sha256": "5e929d80763dcf36a46b9e0467ea71748db58d7272bcadde88b01a64140a3d43",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_holder_plane_frame.obj": {
+      "sha256": "5fc4ebf334508b1fdd0c7c48c6c6f04b515ab3ed6318524c3566dcb7914a31d9",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_ties_and_heads_plane_frame.obj": {
+      "sha256": "bf490b958309a4e22662fbfe595481c412c016b3221582cb8eace36b82c2c534",
+      "units": "m"
+    },
+    "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_cup_pedestal_plane_frame.obj": {
+      "sha256": "b6cfb7cb83bc7b6ff0a4c961ae1f919050c85a67c9d8efbbb0dacca8739640e2",
+      "units": "m"
+    }
+  }
+}

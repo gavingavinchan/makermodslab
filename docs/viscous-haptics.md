@@ -1528,6 +1528,16 @@ building a tilted cup on a raised pedestal; 30 mm is its axial cup length,
 with the pedestal height determined by pickup feasibility. Final dimensions
 and layout remain with the orientation session; no print has been selected.
 
+2026-11-07, B4 fixture CAD ready for the pre-print gate: Astra's curved holder
+and raised tilted cup are generated at the selected 85° / 80 mm tip-height
+pose, with local and placed scene meshes in `runs/shackle_tied_holder/tilt_85deg`.
+Parent independently rebuilt the prints and checked the hand envelope. Required
+states clear with 0.5 mm padding, provided cup extraction stays at roll 0° and
+late threading uses ≤26 mm jaw opening per side. Full-splay/in-cup-roll stress
+overlaps remain in the evidence. No print, full-motion acceptance or hardware
+trial yet; see the holder handoff and task 7's pre-print gate. The Mac remains
+unreachable over SSH; the Linux changes are the current handoff.
+
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
 list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,

@@ -1,0 +1,391 @@
+{
+  "units": "mm",
+  "cup_axial_length_mm": 30,
+  "insertion_depth_mm": 27,
+  "bore_diameter_mm": 21.5,
+  "lead_in_diameter_mm": 23.5,
+  "floor_thickness_mm": 3,
+  "cup_tilt_from_vertical_deg": 85,
+  "pin_tip_height_mm": 80,
+  "pin_tip_floor_frame_mm": [
+    0.0,
+    0.0,
+    80.0
+  ],
+  "extraction_axis_floor_frame": [
+    -0.9961946980917455,
+    0.0,
+    0.08715574274765814
+  ],
+  "foot_center_mm": [
+    -48,
+    0,
+    0
+  ],
+  "foot_nominal_dimensions_mm": [
+    96,
+    76
+  ],
+  "dimensions_mm": [
+    100.1504,
+    76.0,
+    96.2416
+  ],
+  "pin_tip_to_floor_transform_mm": [
+    [
+      0.08715574274765814,
+      0.0,
+      -0.9961946980917455,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.9961946980917455,
+      0.0,
+      0.08715574274765814,
+      80.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "floor_to_pin_tip_transform_mm": [
+    [
+      0.08715574274765814,
+      0.0,
+      0.9961946980917455,
+      -79.69557584733964
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      -0.9961946980917455,
+      -0.0,
+      0.08715574274765814,
+      -6.972459419812651
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "pin_tip_to_foot_center_mm": [
+    -48,
+    0,
+    -80
+  ],
+  "pin_axis_tip_to_head": [
+    -0.9961946980917455,
+    0.0,
+    0.08715574274765814
+  ],
+  "pin_bounds_mm": [
+    [
+      -107.6096448218002,
+      -13.84000014513731,
+      70.35126919793072
+    ],
+    [
+      0.6768874967016353,
+      13.84000014513731,
+      102.67651958890329
+    ]
+  ],
+  "pickup_assumption": {
+    "grip_center_from_tip_mm": 68,
+    "grip_center_floor_mm": [
+      -67.7412394702387,
+      0.0,
+      85.92659050684075
+    ],
+    "fingertip_forward_offset_mm": 34.3,
+    "corridor_start_from_tip_mm": 33.7,
+    "lip_clearance_mm": 6.7,
+    "corridor_diameter_mm": 60,
+    "corridor_length_mm": 150,
+    "cup_intersection_mm3": 0.0,
+    "wide_fingers_and_swept_palm_intersection_mm3": 0.0,
+    "wide_finger_box_mm": [
+      42,
+      162,
+      84.3
+    ],
+    "palm_sweep_radius_mm": 80.09993757800315,
+    "palm_axial_interval_from_tip_mm": [
+      118,
+      178
+    ]
+  },
+  "drain_removed_material_mm3": 846.9811255669216,
+  "drain_material_removed_by_tool_mm3": {
+    "rear": 84.58097255859353,
+    "bottom": 568.9445220229018,
+    "floor_outlet": 248.42366594068324
+  },
+  "mesh_weld_grid_mm": 0.0001,
+  "estimated_cup_mass_kg_40pct_petg": 0.06444757766524149,
+  "modeled_pin_mass_kg": 0.2407315804347092,
+  "drain_clear_intersections_mm3": {
+    "rear": {
+      "nominal_tool_residual_mm3": 0.0016809334183022096,
+      "inset_0_05mm_core_intersection_mm3": 0.0
+    },
+    "bottom": {
+      "nominal_tool_residual_mm3": 0.015345259593261449,
+      "inset_0_05mm_core_intersection_mm3": 0.0
+    },
+    "floor_outlet": {
+      "nominal_tool_residual_mm3": 0.005871198000871546,
+      "inset_0_05mm_core_intersection_mm3": 0.0
+    }
+  },
+  "extraction_samples_mm": [
+    0.0,
+    2.0,
+    4.0,
+    6.0,
+    8.0,
+    10.0,
+    12.0,
+    14.0,
+    16.0,
+    18.0,
+    20.0,
+    22.0,
+    24.0,
+    26.0,
+    28.0,
+    30.0,
+    32.0,
+    34.0,
+    36.0,
+    38.0,
+    40.0,
+    42.0,
+    44.0,
+    46.0,
+    48.0,
+    50.0,
+    52.0,
+    54.0,
+    56.0,
+    58.0,
+    60.0,
+    62.0,
+    64.0,
+    66.0,
+    68.0,
+    70.0,
+    72.0,
+    74.0,
+    76.0,
+    78.0,
+    80.0,
+    82.0,
+    84.0,
+    86.0,
+    88.0,
+    90.0,
+    92.0,
+    94.0,
+    96.0,
+    98.0,
+    100.0,
+    102.0,
+    104.0,
+    106.0,
+    108.0,
+    110.0,
+    112.0,
+    114.0,
+    116.0,
+    118.0,
+    120.0
+  ],
+  "intersection_volumes_mm3": [
+    2.6493564286855786e-15,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "single_watertight_solid": true,
+  "export_roundtrips_pass": true,
+  "static_stability": {
+    "dry_empty": {
+      "combined_com_mm": [
+        -32.28776844167108,
+        2.3928369653939554e-06,
+        27.02372217164681
+      ],
+      "support_margin_mm": 28.297368441671082,
+      "effective_weight_N": 0.632230736896019,
+      "minimum_gravity_restoring_moment_Nm": 0.017890466102095864
+    },
+    "dry_with_pin": {
+      "combined_com_mm": [
+        -48.14914292416479,
+        -0.00016720761189977556,
+        72.42935546967651
+      ],
+      "support_margin_mm": 37.48345791270624,
+      "effective_weight_N": 2.9938075409605167,
+      "minimum_gravity_restoring_moment_Nm": 0.1122182589603361
+    },
+    "wet_empty": {
+      "combined_com_mm": [
+        -32.28776844167108,
+        2.3928369653939554e-06,
+        27.02372217164681
+      ],
+      "support_margin_mm": 28.297368441671082,
+      "effective_weight_N": 0.13441125902513795,
+      "minimum_gravity_restoring_moment_Nm": 0.003803484919343216
+    },
+    "wet_with_pin": {
+      "combined_com_mm": [
+        -51.16533053823806,
+        -0.00019945871181378276,
+        81.0636581849818
+      ],
+      "support_margin_mm": 37.25933923288936,
+      "effective_weight_N": 2.1970542904232433,
+      "minimum_gravity_restoring_moment_Nm": 0.08186079111995463
+    }
+  },
+  "illustrative_layout": {
+    "cup_tip_radial_mm": 500,
+    "cup_azimuth_deg": 15,
+    "shackle_bore_forward_mm": 575,
+    "placement_convention": "world forward/lateral/up; positive lateral is toward sim +X",
+    "global_placement_exported": false,
+    "suggested_floor_to_world_transform_mm": [
+      [
+        0.9659258262890683,
+        -0.25881904510252074,
+        0.0,
+        482.9629131445342
+      ],
+      [
+        0.25881904510252074,
+        0.9659258262890683,
+        0.0,
+        129.40952255126038
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "shackle_tilt_deg": 85.0,
+    "holder_overlap_mm3": 0.0,
+    "shackle_overlap_mm3": 0.0,
+    "pin_holder_overlap_mm3": 0.0,
+    "holder_bounds_cup_floor_frame_mm": [
+      [
+        -20.738847796002545,
+        -205.00026209743513,
+        0.0
+      ],
+      [
+        123.23209703495068,
+        -90.41165487786041,
+        32.186
+      ]
+    ],
+    "cup_bounds_cup_floor_frame_mm": [
+      [
+        -96.0,
+        -38.0,
+        0.0
+      ],
+      [
+        4.1504,
+        38.0,
+        96.2416
+      ]
+    ],
+    "clash": false
+  },
+  "generator_sha256": "5aec68dabb626236bc4ab69fb90ad1d38ef5cbc7f27e5aa97adf4f91a6cd2e31",
+  "scene_frame": "metres; origin floor below pin tip; +X away from arm, +Y across, +Z up",
+  "status": "Selected 85/80 pose; full motion, wet sliding, print supports and drainage trial unverified"
+}
