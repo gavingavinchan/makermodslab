@@ -111,6 +111,20 @@ the real arm (sim to real).
   adapting the 30 mm axial cup to a near-horizontal pin on a raised pedestal,
   with configurable tilt and pin-tip height. The round-1 upright cup is not the
   task's selected pickup geometry. Final environment pose is still pending.
+- 2026-11-07, **orientation session's final screening layout** (Gavin in
+  flight; he has not reviewed the numbers): shackle axis 85° from vertical,
+  bore midpoint 575 mm ahead of left J1, about 98.5 mm above floor, lowest bow
+  on floor. Pickup cup is off the forward line: pin tip 500 mm radially from
+  J1 at +15° toward sim +X, height 80 mm, pin axis 85°, head toward J1.
+  The cup's 30 mm external axial length and 3 mm stop leave 27 mm inserted;
+  pickup TCP is 68 mm from the tip, fingers about 6.7 mm clear of the rim.
+  Cup lies beside the task line because an on-line pedestal obstructs the
+  inserting hand/wrist. Astra round 2 has these values. Parent's independent
+  static hand/fixture screen includes the ±80 mm palm plate and finger bounds
+  through 0–120° roll; the earlier 60 mm corridor alone is insufficient.
+  This is not continuous-motion acceptance: seated fingertips vs clear ear,
+  complete arm/cup/holder collisions and pickup-to-insertion travel remain
+  for the end-to-end simulation test.
 - 2026-11-06/07, **layout for the aquarium** (orientation session; selected
   numbers not yet seen by Gavin, who was in flight). Gavin's constraints, in
   order: the bolt "at 45 degrees, with the top pointed towards the arm",
