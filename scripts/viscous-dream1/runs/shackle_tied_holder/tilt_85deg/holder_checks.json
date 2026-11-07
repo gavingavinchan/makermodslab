@@ -1,6 +1,6 @@
 {
   "tilt_from_vertical_deg": 85.0,
-  "layout_status": "85 deg selected; full motion acceptance pending",
+  "layout_status": "85 deg selected; placement/kinematic evidence in layout_manifest.json",
   "units": "mm",
   "dimensions_mm": [
     146.0,

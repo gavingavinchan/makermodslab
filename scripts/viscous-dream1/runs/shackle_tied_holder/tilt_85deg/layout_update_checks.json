@@ -1,0 +1,38 @@
+{
+  "reference_geometry_commit": "0de8facd",
+  "unchanged_files": {
+    "shackle_tied_holder.stl": "2f5d9b4b6e457e9468b105337c41a06ce1ecc71be20eb1db7d481247e6b9ea5d",
+    "shackle_tied_holder.3mf": "5d0815747cb5ee389c45196946f6b9bfd713447e2680e3debdf7fe3fcb929a89",
+    "pin_cup.stl": "849a9d0757c32d48d5600c6a5db93049053e1cb555fd155df8e7ae617826f820",
+    "pin_cup.3mf": "d680b04778a6c1264580b983f19f6c3a1e3f3a79740e4aa1a8de9c4fd7faa9d7",
+    "shackle_tied_holder_body_frame.obj": "c0b1f535118ef10a0194dc42ae61973a6a36e40e3cbc9af96054978066bce255",
+    "zip_tie_envelope_body_frame.obj": "2cb3400d1d6f3415afe50de2a2f98187566bbf7fb1c030b86e8765efbf7ea855",
+    "pin_cup_floor_frame.obj": "5489a0394a99940456d9e32dd9969819f59f823f50424311460d6756ac5a026a"
+  },
+  "placed_mesh_translation_checks": {
+    "layout_holder_plane_frame.obj": {
+      "translation_mm": [
+        25.0,
+        0.0,
+        0.0
+      ],
+      "maximum_coordinate_error_mm": 9.020562075079397e-14
+    },
+    "layout_ties_and_heads_plane_frame.obj": {
+      "translation_mm": [
+        25.0,
+        0.0,
+        0.0
+      ],
+      "maximum_coordinate_error_mm": 9.020562075079397e-14
+    },
+    "layout_cup_pedestal_plane_frame.obj": {
+      "translation_mm": [
+        62.78517870878944,
+        16.823237931663847,
+        0.0
+      ],
+      "maximum_coordinate_error_mm": 8.708789495104341e-06
+    }
+  }
+}

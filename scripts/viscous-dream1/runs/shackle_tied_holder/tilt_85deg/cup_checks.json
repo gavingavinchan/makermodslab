@@ -5,8 +5,8 @@
   "bore_diameter_mm": 21.5,
   "lead_in_diameter_mm": 23.5,
   "floor_thickness_mm": 3,
-  "cup_tilt_from_vertical_deg": 85,
-  "pin_tip_height_mm": 80,
+  "cup_tilt_from_vertical_deg": 85.0,
+  "pin_tip_height_mm": 80.0,
   "pin_tip_floor_frame_mm": [
     0.0,
     0.0,
@@ -86,7 +86,7 @@
   "pin_tip_to_foot_center_mm": [
     -48,
     0,
-    -80
+    -80.0
   ],
   "pin_axis_tip_to_head": [
     -0.9961946980917455,
@@ -324,9 +324,9 @@
     }
   },
   "illustrative_layout": {
-    "cup_tip_radial_mm": 500,
-    "cup_azimuth_deg": 15,
-    "shackle_bore_forward_mm": 575,
+    "cup_tip_radial_mm": 565.0,
+    "cup_azimuth_deg": 15.0,
+    "shackle_bore_forward_mm": 600.0,
     "placement_convention": "world forward/lateral/up; positive lateral is toward sim +X",
     "global_placement_exported": false,
     "suggested_floor_to_world_transform_mm": [
@@ -334,13 +334,13 @@
         0.9659258262890683,
         -0.25881904510252074,
         0.0,
-        482.9629131445342
+        545.7480918533236
       ],
       [
         0.25881904510252074,
         0.9659258262890683,
         0.0,
-        129.40952255126038
+        146.23276048292422
       ],
       [
         0.0,
@@ -361,13 +361,13 @@
     "pin_holder_overlap_mm3": 0.0,
     "holder_bounds_cup_floor_frame_mm": [
       [
-        -20.738847796002545,
-        -205.00026209743513,
+        -61.590702138775775,
+        -211.47073822499814,
         0.0
       ],
       [
-        123.23209703495068,
-        -90.41165487786041,
+        82.38024269217746,
+        -96.88213100542343,
         32.186
       ]
     ],
@@ -385,7 +385,7 @@
     ],
     "clash": false
   },
-  "generator_sha256": "5aec68dabb626236bc4ab69fb90ad1d38ef5cbc7f27e5aa97adf4f91a6cd2e31",
+  "generator_sha256": "4e67338cb7d2c1202ddbb5c03ed553c6650e9434d0a9860f1bdf1ca9f5eaa69f",
   "scene_frame": "metres; origin floor below pin tip; +X away from arm, +Y across, +Z up",
-  "status": "Selected 85/80 pose; full motion, wet sliding, print supports and drainage trial unverified"
+  "status": "Selected 85/80 geometry; see layout_manifest.json for kinematic gate; physical trials pending"
 }

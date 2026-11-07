@@ -5,13 +5,13 @@
   "frame": "s ahead of left J1, w toward sim +X, h above tank floor",
   "holder_tilt_deg": 85,
   "bore_midpoint_mm": [
-    575.0,
+    600.0,
     0.0,
     98.4839981465657
   ],
   "cup_pin_tip_mm": [
-    482.9629131445342,
-    129.40952255126038,
+    545.7480918533236,
+    146.23276048292422,
     80.0
   ],
   "cup_azimuth_deg": 15,
@@ -33,8 +33,8 @@
     ]
   ],
   "cup_floor_translation_mm": [
-    482.9629131445342,
-    129.40952255126038,
+    545.7480918533236,
+    146.23276048292422,
     0.0
   ],
   "gripper_box_padding_mm": 0.5,
@@ -51,13 +51,27 @@
   ],
   "poses": [
     "insert_start",
+    "shank_pushed",
     "head_regrip",
     "thread_start",
     "seated",
     "cup_pickup"
   ],
-  "aabb_pair_tests": 21780,
-  "boolean_pair_tests": 1416,
+  "pose_tcp_from_bore_mm": {
+    "insert_start": 137.925,
+    "shank_pushed": 77.22500000000004,
+    "head_regrip": 129.37500000000006,
+    "thread_start": 99.57599999999998,
+    "seated": 80.22500000000002
+  },
+  "validated_grip_strategy": {
+    "head_tcp_from_tip_mm": 120.15,
+    "cup_tcp_from_tip_mm": 68,
+    "reset_opening_per_side_mm": 18,
+    "tightening_stroke_deg": 90
+  },
+  "aabb_pair_tests": 26136,
+  "boolean_pair_tests": 1224,
   "fixture_intersections": [
     {
       "pair": [
@@ -76,876 +90,740 @@
   ],
   "hand_fixture_intersections": [
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 64,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 0.40692449726278396
+      "intersection_mm3": 0.1873824146203575
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 65,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 3.1899532942065574
+      "intersection_mm3": 2.236081484341783
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 66,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 10.087535307684908
+      "intersection_mm3": 7.927637300698341
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 67,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 22.326649071258743
+      "intersection_mm3": 18.516362920805033
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 68,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 40.721750474067235
+      "intersection_mm3": 34.8412566585001
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 69,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 65.11594151522003
+      "intersection_mm3": 57.09330707004785
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 70,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 92.97039654198623
+      "intersection_mm3": 83.24590581895073
     },
     {
-      "pose": "thread_start",
-      "roll_deg": 70,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 0.0001798110911131398
-    },
-    {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 71,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 121.90136065675524
+      "intersection_mm3": 110.88221659667504
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 71,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.14064112075175528
+      "intersection_mm3": 0.02617907837115785
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 72,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 150.31944344368827
+      "intersection_mm3": 138.3505092474997
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 72,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.8230292236184158
+      "intersection_mm3": 0.3490288660849271
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 73,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 177.16490812535358
+      "intersection_mm3": 164.5326595737225
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 73,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 2.2299623031176763
+      "intersection_mm3": 1.1986849986345909
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 74,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 202.28096148388912
+      "intersection_mm3": 188.95611368624634
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 74,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 4.282899262818097
+      "intersection_mm3": 2.562898758747949
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 75,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 225.9301065812488
+      "intersection_mm3": 211.7846355418924
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 75,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 6.707904682586744
+      "intersection_mm3": 4.246520146479835
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 76,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 248.3191300970357
+      "intersection_mm3": 233.27355648359
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 76,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 9.103448625952364
+      "intersection_mm3": 5.944412637701721
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 77,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 269.4986173907223
+      "intersection_mm3": 253.50254434949426
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 77,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 10.805848058071504
+      "intersection_mm3": 7.233557193804692
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 78,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 289.48300444805227
+      "intersection_mm3": 272.48835834453587
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 78,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 11.377798526962687
+      "intersection_mm3": 7.646858951370573
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 79,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 308.3481937539406
+      "intersection_mm3": 290.2161840529604
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 79,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 10.726444120268118
+      "intersection_mm3": 7.121567571333437
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 80,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 325.65593203135455
+      "intersection_mm3": 306.1470529254692
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 80,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 9.202251122081746
+      "intersection_mm3": 6.029054430006909
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 81,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 340.35821457814205
+      "intersection_mm3": 319.1322447843276
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 81,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 7.446959858755689
+      "intersection_mm3": 4.7548473162345495
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 82,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 350.4519039800521
+      "intersection_mm3": 327.3281888198199
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 82,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 5.796384954472506
+      "intersection_mm3": 3.563184596832924
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 83,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 354.2711421753148
+      "intersection_mm3": 329.39925175672573
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 83,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 4.354925389599256
+      "intersection_mm3": 2.5400662001341816
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 84,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 351.4314133484115
+      "intersection_mm3": 325.35824394183567
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 84,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 3.1538485062515402
+      "intersection_mm3": 1.7104480834456066
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 85,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 343.9693451654529
+      "intersection_mm3": 317.4622329511268
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 85,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 2.193254453950962
+      "intersection_mm3": 1.0742318974246057
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 86,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 336.0810926608574
+      "intersection_mm3": 309.76958601214545
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 86,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 1.4573920811693022
+      "intersection_mm3": 0.6154785641685394
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 87,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 329.83034511314327
+      "intersection_mm3": 303.6749254989176
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 87,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.9215734634597295
+      "intersection_mm3": 0.30920874612260096
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 88,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 325.3083397434029
+      "intersection_mm3": 299.2633469621951
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 88,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.5623727148068233
+      "intersection_mm3": 0.1253740202931511
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 89,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 322.5715006510381
+      "intersection_mm3": 296.5926910521312
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 89,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.3582593704981059
+      "intersection_mm3": 0.03287873931907229
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 90,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 321.65342263314096
+      "intersection_mm3": 295.69692214452937
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 90,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.2923102903678976
+      "intersection_mm3": 0.0035833820763275788
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 91,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 322.565070088999
+      "intersection_mm3": 296.5868960328483
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 91,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.35825950499965586
+      "intersection_mm3": 0.0328788468618647
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 92,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 325.2949983255572
+      "intersection_mm3": 299.25082543396906
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 92,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.5623729939488693
+      "intersection_mm3": 0.12537428307586906
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 93,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 329.8098969996726
+      "intersection_mm3": 303.65477501092994
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 93,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.921573888316354
+      "intersection_mm3": 0.3092092174054352
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 94,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 336.05288220724606
+      "intersection_mm3": 309.7413138022102
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 94,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 1.4573925140630495
+      "intersection_mm3": 0.615479089134903
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 95,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 343.93234888640933
+      "intersection_mm3": 317.4251860791536
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 95,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 2.1932546538562545
+      "intersection_mm3": 1.0742323334052744
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 96,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 351.38651392978323
+      "intersection_mm3": 325.31354390913214
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 96,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 3.1538485505393656
+      "intersection_mm3": 1.7104482854125316
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 97,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 354.2215034848448
+      "intersection_mm3": 329.34995788026885
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 97,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 4.354925318259632
+      "intersection_mm3": 2.5400662290440645
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 98,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 350.43129927147
+      "intersection_mm3": 327.3093576040532
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 98,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 5.796384835372794
+      "intersection_mm3": 3.563184649591349
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 99,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 340.35360137681045
+      "intersection_mm3": 319.1300964245907
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 99,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 7.446959800987993
+      "intersection_mm3": 4.754847676718806
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 100,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 325.6492556811963
+      "intersection_mm3": 306.14470469601747
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 100,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 9.202251518575583
+      "intersection_mm3": 6.029054949098477
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 101,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 308.3553426834108
+      "intersection_mm3": 290.2250526209165
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 101,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 10.72644484343836
+      "intersection_mm3": 7.121567957320118
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 102,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 289.49633133497053
+      "intersection_mm3": 272.50347611873923
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 102,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 11.377799701810792
+      "intersection_mm3": 7.646859636924098
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 103,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 269.50356928080777
+      "intersection_mm3": 253.50986283280122
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 103,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 10.805847105553498
+      "intersection_mm3": 7.233556444733562
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 104,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 248.34947125253544
+      "intersection_mm3": 233.30689679965545
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 104,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 9.103448308397757
+      "intersection_mm3": 5.944412297374331
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 105,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 226.00880569890475
+      "intersection_mm3": 211.86656459737378
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 105,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 6.7079049855624095
+      "intersection_mm3": 4.246520386705313
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 106,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 202.3324234537539
+      "intersection_mm3": 189.01108553534138
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 106,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 4.282899116186129
+      "intersection_mm3": 2.5628987982371956
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 107,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 177.2060583732305
+      "intersection_mm3": 164.57457109173615
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 107,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 2.229961904916567
+      "intersection_mm3": 1.1986846347655418
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 108,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 150.36971497675503
+      "intersection_mm3": 138.4013269015318
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 108,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.8230297243334556
+      "intersection_mm3": 0.349028986513229
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 109,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 121.95144811698032
+      "intersection_mm3": 110.93390742927991
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 109,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "ties_and_heads",
-      "intersection_mm3": 0.1406412439348053
+      "intersection_mm3": 0.02617911123280814
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 110,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 93.01278836510939
+      "intersection_mm3": 83.29118686109891
     },
     {
-      "pose": "thread_start",
-      "roll_deg": 110,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 0.00017981187079807448
-    },
-    {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 111,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 65.16365687132297
+      "intersection_mm3": 57.143034700633834
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 112,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 40.765087054083175
+      "intersection_mm3": 34.88479446548186
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 113,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 22.33551778114514
+      "intersection_mm3": 18.525277259317335
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 114,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 10.089272962460607
+      "intersection_mm3": 7.929730394591614
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 115,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 3.1922596140809683
+      "intersection_mm3": 2.2381840594583866
     },
     {
-      "pose": "thread_start",
+      "pose": "shank_pushed",
       "roll_deg": 116,
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 0.4077571618109481
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 58,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 0.03826068704281469
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 59,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 6.204308281010286
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 60,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 32.33245740128888
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 61,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 90.59052506593882
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 61,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 0.31281629393720695
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 62,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 182.45092780805567
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 62,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 22.852753727577458
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 63,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 291.66715399810914
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 63,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 79.89599524791558
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 64,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 429.4025314597553
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 64,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 114.41090581334605
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 65,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 596.0502270775688
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 65,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 132.62466370507286
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 66,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 768.9282553308112
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 66,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 147.1062808189208
+      "intersection_mm3": 0.18795490846370047
     },
     {
       "pose": "seated",
@@ -953,15 +831,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 920.603250479733
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 67,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 160.15499830928064
+      "intersection_mm3": 0.0028293831744504658
     },
     {
       "pose": "seated",
@@ -969,15 +839,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1031.0995534045614
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 68,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 172.32162921677516
+      "intersection_mm3": 0.47616679521872607
     },
     {
       "pose": "seated",
@@ -985,15 +847,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1096.7698487597934
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 69,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 183.82954143678631
+      "intersection_mm3": 2.3356900218124075
     },
     {
       "pose": "seated",
@@ -1001,15 +855,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1138.5846557726613
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 70,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 193.7460459547887
+      "intersection_mm3": 6.0965643226028945
     },
     {
       "pose": "seated",
@@ -1017,15 +863,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1169.3430170401732
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 71,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 200.65561728217702
+      "intersection_mm3": 11.99802635958548
     },
     {
       "pose": "seated",
@@ -1033,15 +871,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1194.4296611084487
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 72,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 204.50711889284838
+      "intersection_mm3": 20.00706658117045
     },
     {
       "pose": "seated",
@@ -1049,15 +879,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1216.9828895155886
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 73,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 206.28913560508926
+      "intersection_mm3": 29.650973852508145
     },
     {
       "pose": "seated",
@@ -1065,15 +887,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1238.923977999142
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 74,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 206.67989548491514
+      "intersection_mm3": 39.92651886183486
     },
     {
       "pose": "seated",
@@ -1081,15 +895,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1261.668208347216
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 75,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 206.19733436752938
+      "intersection_mm3": 49.936782044143314
     },
     {
       "pose": "seated",
@@ -1097,15 +903,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1286.6911898347314
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 76,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 205.28422525550351
+      "intersection_mm3": 59.06316184522793
     },
     {
       "pose": "seated",
@@ -1113,15 +911,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1315.4087292517129
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 77,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 204.47690636603468
+      "intersection_mm3": 66.72884540515055
     },
     {
       "pose": "seated",
@@ -1129,15 +919,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1349.8548504058303
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 78,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 204.59624446071783
+      "intersection_mm3": 72.43397275977239
     },
     {
       "pose": "seated",
@@ -1145,15 +927,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1392.5798965728209
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 79,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 206.7643140329171
+      "intersection_mm3": 75.7604207213059
     },
     {
       "pose": "seated",
@@ -1161,15 +935,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1448.233791471968
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 80,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 212.23659371778987
+      "intersection_mm3": 76.38143820397524
     },
     {
       "pose": "seated",
@@ -1177,15 +943,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1527.5163231893246
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 81,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 222.5590595336334
+      "intersection_mm3": 74.38041215681704
     },
     {
       "pose": "seated",
@@ -1193,15 +951,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1675.0338371912724
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 82,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 239.7215913561406
+      "intersection_mm3": 70.36588097142577
     },
     {
       "pose": "seated",
@@ -1209,15 +959,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1865.8899634171025
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 83,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 265.09170570270834
+      "intersection_mm3": 65.70691048842404
     },
     {
       "pose": "seated",
@@ -1225,15 +967,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2006.9980637484844
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 84,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 307.7374071819459
+      "intersection_mm3": 61.39559417737088
     },
     {
       "pose": "seated",
@@ -1241,15 +975,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2119.522796416803
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 85,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 384.91942976684714
+      "intersection_mm3": 57.57326059531479
     },
     {
       "pose": "seated",
@@ -1257,15 +983,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2236.287431185222
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 86,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 427.4308294853268
+      "intersection_mm3": 54.3368982837114
     },
     {
       "pose": "seated",
@@ -1273,15 +991,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2332.9286778496075
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 87,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 467.5290910396172
+      "intersection_mm3": 51.75587294421167
     },
     {
       "pose": "seated",
@@ -1289,15 +999,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2352.8835867065955
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 88,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 508.62729487890664
+      "intersection_mm3": 49.88129568831573
     },
     {
       "pose": "seated",
@@ -1305,15 +1007,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2336.7541462788718
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 89,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 550.711077974123
+      "intersection_mm3": 48.745043803070644
     },
     {
       "pose": "seated",
@@ -1321,15 +1015,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2331.3857787690304
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 90,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 573.8638535846171
+      "intersection_mm3": 48.36453795066419
     },
     {
       "pose": "seated",
@@ -1337,15 +1023,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2336.7759162130797
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 91,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 574.2527032899833
+      "intersection_mm3": 48.744757174034824
     },
     {
       "pose": "seated",
@@ -1353,15 +1031,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2352.9267238854027
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 92,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 575.4276132340538
+      "intersection_mm3": 49.88017103490737
     },
     {
       "pose": "seated",
@@ -1369,15 +1039,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2314.4153436884235
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 93,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 577.4146174184777
+      "intersection_mm3": 51.75363130988761
     },
     {
       "pose": "seated",
@@ -1385,15 +1047,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2187.756685484518
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 94,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 580.2539717889736
+      "intersection_mm3": 54.33359738877516
     },
     {
       "pose": "seated",
@@ -1401,15 +1055,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 2051.9917301814753
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 95,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 579.7047368381158
+      "intersection_mm3": 57.568628151204074
     },
     {
       "pose": "seated",
@@ -1417,15 +1063,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1928.6195381385196
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 96,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 523.7340395674129
+      "intersection_mm3": 61.38838739574864
     },
     {
       "pose": "seated",
@@ -1433,15 +1071,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1782.5366086031327
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 97,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 482.1815940932046
+      "intersection_mm3": 65.69755120271805
     },
     {
       "pose": "seated",
@@ -1449,15 +1079,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1591.6082437999419
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 98,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 456.81148002206777
+      "intersection_mm3": 70.35570199736951
     },
     {
       "pose": "seated",
@@ -1465,15 +1087,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1444.1206720126713
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 99,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 439.6489472508652
+      "intersection_mm3": 74.37404612337279
     },
     {
       "pose": "seated",
@@ -1481,15 +1095,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1364.8462675317437
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 100,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 429.3264802277875
+      "intersection_mm3": 76.37314226761828
     },
     {
       "pose": "seated",
@@ -1497,15 +1103,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1309.194953510411
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 101,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 423.85420187063863
+      "intersection_mm3": 75.75532232369525
     },
     {
       "pose": "seated",
@@ -1513,15 +1111,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1266.4448464128589
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 102,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 421.68613479638185
+      "intersection_mm3": 72.42907296582092
     },
     {
       "pose": "seated",
@@ -1529,15 +1119,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1231.9963973729893
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 103,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 421.56679281390893
+      "intersection_mm3": 66.72795108756367
     },
     {
       "pose": "seated",
@@ -1545,15 +1127,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1203.2694041463378
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 104,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 422.3741147359456
+      "intersection_mm3": 59.07431074440462
     },
     {
       "pose": "seated",
@@ -1561,15 +1135,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1178.3164750927372
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 105,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 423.28722479171773
+      "intersection_mm3": 49.98557764937391
     },
     {
       "pose": "seated",
@@ -1577,15 +1143,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1155.495001339955
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 106,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 423.76978563424643
+      "intersection_mm3": 39.94798413715733
     },
     {
       "pose": "seated",
@@ -1593,15 +1151,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1133.5326922429817
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 107,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 423.3790248529801
+      "intersection_mm3": 29.660068982135673
     },
     {
       "pose": "seated",
@@ -1609,15 +1159,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1111.0069188472855
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 108,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 421.5970094671301
+      "intersection_mm3": 20.01422335830566
     },
     {
       "pose": "seated",
@@ -1625,15 +1167,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1085.917411674987
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 109,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 417.7455056765109
+      "intersection_mm3": 12.00529789153364
     },
     {
       "pose": "seated",
@@ -1641,15 +1175,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1055.1230893677018
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 110,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 410.8359326032283
+      "intersection_mm3": 6.101944730642042
     },
     {
       "pose": "seated",
@@ -1657,15 +1183,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 1013.3520041238559
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 111,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 400.9194320257989
+      "intersection_mm3": 2.3368920548560093
     },
     {
       "pose": "seated",
@@ -1673,15 +1191,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 947.6729506146316
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 112,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 389.4115166292619
+      "intersection_mm3": 0.48387115718928364
     },
     {
       "pose": "seated",
@@ -1689,127 +1199,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "holder",
-      "intersection_mm3": 837.2255473169095
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 113,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 377.2448868915659
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 114,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 685.5379216725607
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 114,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 364.19616919832094
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 115,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 512.6430886060477
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 115,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 349.71455201591294
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 116,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 345.9754316452928
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 116,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 331.5007959616327
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 117,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 208.24997280340813
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 117,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 296.98588420608246
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 118,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 102.3655263511309
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 118,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 237.82528661962618
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 119,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 31.285357179246418
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 119,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 186.1173270015844
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 120,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "holder",
-      "intersection_mm3": 5.827998347700419
-    },
-    {
-      "pose": "seated",
-      "roll_deg": 120,
-      "opening_per_side_mm": 52.4125,
-      "hand": "finger_-1",
-      "fixture": "ties_and_heads",
-      "intersection_mm3": 137.15212687342938
+      "intersection_mm3": 0.0029878402565680917
     },
     {
       "pose": "cup_pickup",
@@ -1817,7 +1207,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.00018073212174990184
+      "intersection_mm3": 0.00018073212174931578
     },
     {
       "pose": "cup_pickup",
@@ -1825,7 +1215,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.00018073212174969785
+      "intersection_mm3": 0.00018073212174943293
     },
     {
       "pose": "cup_pickup",
@@ -1833,7 +1223,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.09828028761714658
+      "intersection_mm3": 0.09828028761709108
     },
     {
       "pose": "cup_pickup",
@@ -1841,7 +1231,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.09828028761710109
+      "intersection_mm3": 0.09828028761711291
     },
     {
       "pose": "cup_pickup",
@@ -1849,7 +1239,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.5812449995991037
+      "intersection_mm3": 0.5812449995991807
     },
     {
       "pose": "cup_pickup",
@@ -1857,7 +1247,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.5812449995989005
+      "intersection_mm3": 0.5812449995991019
     },
     {
       "pose": "cup_pickup",
@@ -1865,7 +1255,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1.7541411692643174
+      "intersection_mm3": 1.7541411692648512
     },
     {
       "pose": "cup_pickup",
@@ -1873,7 +1263,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1.7541411692643187
+      "intersection_mm3": 1.7541411692646014
     },
     {
       "pose": "cup_pickup",
@@ -1881,7 +1271,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.0639502398175487
+      "intersection_mm3": 0.06395023981756887
     },
     {
       "pose": "cup_pickup",
@@ -1889,7 +1279,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3.9465504833256966
+      "intersection_mm3": 3.9465504833263134
     },
     {
       "pose": "cup_pickup",
@@ -1897,7 +1287,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3.946550483325689
+      "intersection_mm3": 3.946550483326267
     },
     {
       "pose": "cup_pickup",
@@ -1905,7 +1295,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.6108708462829426
+      "intersection_mm3": 0.6108708462829396
     },
     {
       "pose": "cup_pickup",
@@ -1913,7 +1303,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 7.525158693940644
+      "intersection_mm3": 7.52515869394179
     },
     {
       "pose": "cup_pickup",
@@ -1921,7 +1311,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 7.525158693940355
+      "intersection_mm3": 7.525158693940892
     },
     {
       "pose": "cup_pickup",
@@ -1929,7 +1319,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2.194995607674312
+      "intersection_mm3": 2.194995607674527
     },
     {
       "pose": "cup_pickup",
@@ -1937,7 +1327,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12.817262994975643
+      "intersection_mm3": 12.817262994976746
     },
     {
       "pose": "cup_pickup",
@@ -1945,7 +1335,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12.93078931413328
+      "intersection_mm3": 12.930789314134048
     },
     {
       "pose": "cup_pickup",
@@ -1953,7 +1343,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5.394719700089077
+      "intersection_mm3": 5.394719700089109
     },
     {
       "pose": "cup_pickup",
@@ -1961,7 +1351,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 19.626563077163855
+      "intersection_mm3": 19.626563077163656
     },
     {
       "pose": "cup_pickup",
@@ -1969,7 +1359,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 20.6542663626874
+      "intersection_mm3": 20.654266362689132
     },
     {
       "pose": "cup_pickup",
@@ -1977,7 +1367,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 10.82720054037997
+      "intersection_mm3": 10.8272005403804
     },
     {
       "pose": "cup_pickup",
@@ -1985,7 +1375,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 27.61347412912777
+      "intersection_mm3": 27.613474129129774
     },
     {
       "pose": "cup_pickup",
@@ -1993,7 +1383,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 31.24058552857793
+      "intersection_mm3": 31.240585528582532
     },
     {
       "pose": "cup_pickup",
@@ -2001,7 +1391,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 19.162645350021194
+      "intersection_mm3": 19.16264535002143
     },
     {
       "pose": "cup_pickup",
@@ -2009,7 +1399,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 36.48111784696245
+      "intersection_mm3": 36.48111784696426
     },
     {
       "pose": "cup_pickup",
@@ -2017,7 +1407,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 45.32325530458202
+      "intersection_mm3": 45.32325530458633
     },
     {
       "pose": "cup_pickup",
@@ -2025,7 +1415,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 31.13521456501417
+      "intersection_mm3": 31.13521456501588
     },
     {
       "pose": "cup_pickup",
@@ -2033,7 +1423,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 46.00796002695749
+      "intersection_mm3": 46.007960026960006
     },
     {
       "pose": "cup_pickup",
@@ -2041,7 +1431,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 63.67912176565285
+      "intersection_mm3": 63.67912176565289
     },
     {
       "pose": "cup_pickup",
@@ -2049,7 +1439,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 47.54573025181625
+      "intersection_mm3": 47.54573025181876
     },
     {
       "pose": "cup_pickup",
@@ -2057,7 +1447,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 55.96679871780695
+      "intersection_mm3": 55.96679871780762
     },
     {
       "pose": "cup_pickup",
@@ -2065,7 +1455,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 87.1760547312134
+      "intersection_mm3": 87.17605473121338
     },
     {
       "pose": "cup_pickup",
@@ -2073,7 +1463,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 69.28541475049443
+      "intersection_mm3": 69.28541475049693
     },
     {
       "pose": "cup_pickup",
@@ -2081,7 +1471,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 66.14366684067323
+      "intersection_mm3": 66.14366684067757
     },
     {
       "pose": "cup_pickup",
@@ -2089,7 +1479,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 116.81843645402516
+      "intersection_mm3": 116.81843645402736
     },
     {
       "pose": "cup_pickup",
@@ -2097,7 +1487,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 97.37613517095423
+      "intersection_mm3": 97.37613517095072
     },
     {
       "pose": "cup_pickup",
@@ -2105,7 +1495,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 76.36031937161538
+      "intersection_mm3": 76.36031937161788
     },
     {
       "pose": "cup_pickup",
@@ -2113,7 +1503,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 153.72992683584457
+      "intersection_mm3": 153.72992683585136
     },
     {
       "pose": "cup_pickup",
@@ -2121,7 +1511,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 133.01618142155723
+      "intersection_mm3": 133.01618142156386
     },
     {
       "pose": "cup_pickup",
@@ -2129,7 +1519,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 86.4948197594699
+      "intersection_mm3": 86.49481975947285
     },
     {
       "pose": "cup_pickup",
@@ -2137,7 +1527,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 197.79156231524402
+      "intersection_mm3": 197.79156231524982
     },
     {
       "pose": "cup_pickup",
@@ -2145,7 +1535,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 177.61881099643455
+      "intersection_mm3": 177.61881099643156
     },
     {
       "pose": "cup_pickup",
@@ -2153,7 +1543,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 96.39425491467811
+      "intersection_mm3": 96.39425491467928
     },
     {
       "pose": "cup_pickup",
@@ -2161,7 +1551,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 247.74006990075702
+      "intersection_mm3": 247.7400699007708
     },
     {
       "pose": "cup_pickup",
@@ -2169,7 +1559,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 232.88240704802615
+      "intersection_mm3": 232.88240704801916
     },
     {
       "pose": "cup_pickup",
@@ -2177,7 +1567,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 105.91564598976184
+      "intersection_mm3": 105.91564598976272
     },
     {
       "pose": "cup_pickup",
@@ -2185,7 +1575,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 302.4664431381345
+      "intersection_mm3": 302.4664431381278
     },
     {
       "pose": "cup_pickup",
@@ -2193,7 +1583,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 300.8407490648297
+      "intersection_mm3": 300.8407490648275
     },
     {
       "pose": "cup_pickup",
@@ -2201,7 +1591,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 114.96147484694312
+      "intersection_mm3": 114.9614748469428
     },
     {
       "pose": "cup_pickup",
@@ -2209,7 +1599,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 361.04756605489536
+      "intersection_mm3": 361.0475660548943
     },
     {
       "pose": "cup_pickup",
@@ -2217,7 +1607,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 383.9124097472987
+      "intersection_mm3": 383.912409747309
     },
     {
       "pose": "cup_pickup",
@@ -2225,7 +1615,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 123.45607538124233
+      "intersection_mm3": 123.4560753812429
     },
     {
       "pose": "cup_pickup",
@@ -2233,7 +1623,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 422.6872595632487
+      "intersection_mm3": 422.687259563268
     },
     {
       "pose": "cup_pickup",
@@ -2241,7 +1631,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 485.00611584816295
+      "intersection_mm3": 485.00611584818233
     },
     {
       "pose": "cup_pickup",
@@ -2249,7 +1639,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.35539501009344066
+      "intersection_mm3": 0.3553950100934936
     },
     {
       "pose": "cup_pickup",
@@ -2257,7 +1647,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 131.29224030882972
+      "intersection_mm3": 131.29224030883194
     },
     {
       "pose": "cup_pickup",
@@ -2265,7 +1655,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 486.63944815872253
+      "intersection_mm3": 486.63944815873845
     },
     {
       "pose": "cup_pickup",
@@ -2273,7 +1663,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 607.6739156454651
+      "intersection_mm3": 607.6739156454895
     },
     {
       "pose": "cup_pickup",
@@ -2281,7 +1671,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5.761427846533889
+      "intersection_mm3": 5.7614278465337465
     },
     {
       "pose": "cup_pickup",
@@ -2289,7 +1679,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 138.3719977208557
+      "intersection_mm3": 138.3719977208591
     },
     {
       "pose": "cup_pickup",
@@ -2297,7 +1687,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 552.2317376139944
+      "intersection_mm3": 552.2317376140057
     },
     {
       "pose": "cup_pickup",
@@ -2305,7 +1695,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 753.1128221098363
+      "intersection_mm3": 753.1128221098464
     },
     {
       "pose": "cup_pickup",
@@ -2313,7 +1703,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 23.689594499388402
+      "intersection_mm3": 23.689594499388154
     },
     {
       "pose": "cup_pickup",
@@ -2321,7 +1711,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 144.65297703876433
+      "intersection_mm3": 144.65297703876823
     },
     {
       "pose": "cup_pickup",
@@ -2329,7 +1719,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 618.9002755609646
+      "intersection_mm3": 618.9002755609771
     },
     {
       "pose": "cup_pickup",
@@ -2337,7 +1727,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 917.1871164078118
+      "intersection_mm3": 917.187116407846
     },
     {
       "pose": "cup_pickup",
@@ -2345,7 +1735,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 61.912654849040415
+      "intersection_mm3": 61.9126548490416
     },
     {
       "pose": "cup_pickup",
@@ -2353,7 +1743,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 150.07598989326254
+      "intersection_mm3": 150.07598989326343
     },
     {
       "pose": "cup_pickup",
@@ -2361,7 +1751,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 686.1095201842464
+      "intersection_mm3": 686.109520184261
     },
     {
       "pose": "cup_pickup",
@@ -2369,7 +1759,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1096.2808258281345
+      "intersection_mm3": 1096.2808258281525
     },
     {
       "pose": "cup_pickup",
@@ -2377,7 +1767,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 128.97803665074295
+      "intersection_mm3": 128.9780366507439
     },
     {
       "pose": "cup_pickup",
@@ -2385,7 +1775,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 154.5627953402689
+      "intersection_mm3": 154.56279534027232
     },
     {
       "pose": "cup_pickup",
@@ -2393,7 +1783,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 753.3434522053291
+      "intersection_mm3": 753.3434522053353
     },
     {
       "pose": "cup_pickup",
@@ -2401,7 +1791,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1287.605024968951
+      "intersection_mm3": 1287.6050249689379
     },
     {
       "pose": "cup_pickup",
@@ -2417,7 +1807,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 158.05261449674867
+      "intersection_mm3": 158.05261449674887
     },
     {
       "pose": "cup_pickup",
@@ -2425,7 +1815,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 820.1305045280997
+      "intersection_mm3": 820.1305045280967
     },
     {
       "pose": "cup_pickup",
@@ -2433,7 +1823,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1488.8109146300749
+      "intersection_mm3": 1488.8109146301108
     },
     {
       "pose": "cup_pickup",
@@ -2441,7 +1831,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 391.99985900449235
+      "intersection_mm3": 391.99985900448553
     },
     {
       "pose": "cup_pickup",
@@ -2449,7 +1839,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 160.5279461991632
+      "intersection_mm3": 160.52794619916682
     },
     {
       "pose": "cup_pickup",
@@ -2457,7 +1847,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 886.0684629196115
+      "intersection_mm3": 886.0684629196317
     },
     {
       "pose": "cup_pickup",
@@ -2465,7 +1855,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1697.8701290233482
+      "intersection_mm3": 1697.870129023371
     },
     {
       "pose": "cup_pickup",
@@ -2473,7 +1863,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 618.2346465552154
+      "intersection_mm3": 618.2346465552133
     },
     {
       "pose": "cup_pickup",
@@ -2481,7 +1871,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 161.9478534701705
+      "intersection_mm3": 161.94785347016807
     },
     {
       "pose": "cup_pickup",
@@ -2489,7 +1879,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 950.7460417996906
+      "intersection_mm3": 950.746041799695
     },
     {
       "pose": "cup_pickup",
@@ -2497,7 +1887,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1913.0169915026238
+      "intersection_mm3": 1913.0169915026472
     },
     {
       "pose": "cup_pickup",
@@ -2505,7 +1895,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 933.3362650594338
+      "intersection_mm3": 933.3362650594474
     },
     {
       "pose": "cup_pickup",
@@ -2513,7 +1903,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 162.272606652134
+      "intersection_mm3": 162.27260665213433
     },
     {
       "pose": "cup_pickup",
@@ -2521,7 +1911,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1013.7678241427316
+      "intersection_mm3": 1013.7678241427524
     },
     {
       "pose": "cup_pickup",
@@ -2529,7 +1919,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2132.712081688021
+      "intersection_mm3": 2132.712081688013
     },
     {
       "pose": "cup_pickup",
@@ -2537,7 +1927,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1352.6988806411898
+      "intersection_mm3": 1352.698880641198
     },
     {
       "pose": "cup_pickup",
@@ -2545,7 +1935,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 161.49056904932726
+      "intersection_mm3": 161.49056904933167
     },
     {
       "pose": "cup_pickup",
@@ -2553,7 +1943,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1074.7675454070068
+      "intersection_mm3": 1074.76754540702
     },
     {
       "pose": "cup_pickup",
@@ -2561,7 +1951,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2355.5126275745993
+      "intersection_mm3": 2355.512627574605
     },
     {
       "pose": "cup_pickup",
@@ -2569,7 +1959,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1856.073026202593
+      "intersection_mm3": 1856.0730262026323
     },
     {
       "pose": "cup_pickup",
@@ -2577,7 +1967,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 159.61425249752145
+      "intersection_mm3": 159.61425249752546
     },
     {
       "pose": "cup_pickup",
@@ -2585,7 +1975,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1133.4135355376584
+      "intersection_mm3": 1133.4135355376725
     },
     {
       "pose": "cup_pickup",
@@ -2593,7 +1983,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2580.0893969351555
+      "intersection_mm3": 2580.0893969351996
     },
     {
       "pose": "cup_pickup",
@@ -2601,7 +1991,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2425.666973545734
+      "intersection_mm3": 2425.6669735457685
     },
     {
       "pose": "cup_pickup",
@@ -2609,7 +1999,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 156.63122399564512
+      "intersection_mm3": 156.6312239956493
     },
     {
       "pose": "cup_pickup",
@@ -2617,7 +2007,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1189.3630472596863
+      "intersection_mm3": 1189.3630472596913
     },
     {
       "pose": "cup_pickup",
@@ -2625,7 +2015,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2805.238911338052
+      "intersection_mm3": 2805.238911338072
     },
     {
       "pose": "cup_pickup",
@@ -2633,7 +2023,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3050.676525851095
+      "intersection_mm3": 3050.676525851114
     },
     {
       "pose": "cup_pickup",
@@ -2641,7 +2031,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 152.5336259715575
+      "intersection_mm3": 152.53362597155876
     },
     {
       "pose": "cup_pickup",
@@ -2649,7 +2039,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1242.2815043773871
+      "intersection_mm3": 1242.281504377409
     },
     {
       "pose": "cup_pickup",
@@ -2657,7 +2047,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3029.847242054057
+      "intersection_mm3": 3029.847242054086
     },
     {
       "pose": "cup_pickup",
@@ -2665,7 +2055,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3722.8733776152735
+      "intersection_mm3": 3722.8733776153
     },
     {
       "pose": "cup_pickup",
@@ -2673,7 +2063,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 147.29569681132165
+      "intersection_mm3": 147.295696811324
     },
     {
       "pose": "cup_pickup",
@@ -2681,7 +2071,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1291.845866343503
+      "intersection_mm3": 1291.845866343502
     },
     {
       "pose": "cup_pickup",
@@ -2689,7 +2079,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3252.820530153896
+      "intersection_mm3": 3252.820530153931
     },
     {
       "pose": "cup_pickup",
@@ -2697,7 +2087,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4435.445098578251
+      "intersection_mm3": 4435.4450985782505
     },
     {
       "pose": "cup_pickup",
@@ -2705,7 +2095,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 140.90707186198898
+      "intersection_mm3": 140.90707186199518
     },
     {
       "pose": "cup_pickup",
@@ -2713,7 +2103,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1337.755828809924
+      "intersection_mm3": 1337.7558288099426
     },
     {
       "pose": "cup_pickup",
@@ -2721,7 +2111,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3473.1196671554058
+      "intersection_mm3": 3473.1196671554226
     },
     {
       "pose": "cup_pickup",
@@ -2729,7 +2119,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5182.5508475881825
+      "intersection_mm3": 5182.550847588219
     },
     {
       "pose": "cup_pickup",
@@ -2737,7 +2127,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 133.41325910618215
+      "intersection_mm3": 133.41325910618548
     },
     {
       "pose": "cup_pickup",
@@ -2745,7 +2135,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1379.7504843034355
+      "intersection_mm3": 1379.7504843034512
     },
     {
       "pose": "cup_pickup",
@@ -2753,7 +2143,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3689.7869024715974
+      "intersection_mm3": 3689.7869024716065
     },
     {
       "pose": "cup_pickup",
@@ -2761,7 +2151,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5958.76436507885
+      "intersection_mm3": 5958.764365078849
     },
     {
       "pose": "cup_pickup",
@@ -2769,7 +2159,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 124.91792129476202
+      "intersection_mm3": 124.91792129476424
     },
     {
       "pose": "cup_pickup",
@@ -2777,7 +2167,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1417.6298207275784
+      "intersection_mm3": 1417.6298207275966
     },
     {
       "pose": "cup_pickup",
@@ -2785,7 +2175,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3901.874090658843
+      "intersection_mm3": 3901.874090658882
     },
     {
       "pose": "cup_pickup",
@@ -2793,7 +2183,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6758.7926671071755
+      "intersection_mm3": 6758.792667107215
     },
     {
       "pose": "cup_pickup",
@@ -2801,7 +2191,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 115.52099886714088
+      "intersection_mm3": 115.52099886714242
     },
     {
       "pose": "cup_pickup",
@@ -2809,7 +2199,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1451.2342747615403
+      "intersection_mm3": 1451.2342747615717
     },
     {
       "pose": "cup_pickup",
@@ -2817,7 +2207,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4108.4353843083
+      "intersection_mm3": 4108.435384308345
     },
     {
       "pose": "cup_pickup",
@@ -2825,7 +2215,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 7578.09207956432
+      "intersection_mm3": 7578.092079564332
     },
     {
       "pose": "cup_pickup",
@@ -2833,7 +2223,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 105.3773396560033
+      "intersection_mm3": 105.377339656007
     },
     {
       "pose": "cup_pickup",
@@ -2841,7 +2231,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1480.425312015411
+      "intersection_mm3": 1480.425312015419
     },
     {
       "pose": "cup_pickup",
@@ -2849,7 +2239,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4308.5451664770935
+      "intersection_mm3": 4308.5451664771645
     },
     {
       "pose": "cup_pickup",
@@ -2857,7 +2247,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 8412.45954766776
+      "intersection_mm3": 8412.459547667811
     },
     {
       "pose": "cup_pickup",
@@ -2865,7 +2255,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 94.68528763647109
+      "intersection_mm3": 94.68528763647232
     },
     {
       "pose": "cup_pickup",
@@ -2873,7 +2263,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1505.086170301397
+      "intersection_mm3": 1505.0861703014014
     },
     {
       "pose": "cup_pickup",
@@ -2881,7 +2271,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4501.31136280194
+      "intersection_mm3": 4501.3113628019655
     },
     {
       "pose": "cup_pickup",
@@ -2889,7 +2279,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 9258.17502166224
+      "intersection_mm3": 9258.175021662217
     },
     {
       "pose": "cup_pickup",
@@ -2897,7 +2287,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 83.66344233924531
+      "intersection_mm3": 83.66344233924752
     },
     {
       "pose": "cup_pickup",
@@ -2905,7 +2295,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1525.126738366161
+      "intersection_mm3": 1525.1267383661568
     },
     {
       "pose": "cup_pickup",
@@ -2913,7 +2303,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4685.997820941883
+      "intersection_mm3": 4685.997820941981
     },
     {
       "pose": "cup_pickup",
@@ -2921,7 +2311,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 10111.920038294316
+      "intersection_mm3": 10111.920038294342
     },
     {
       "pose": "cup_pickup",
@@ -2929,7 +2319,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 72.53054992944159
+      "intersection_mm3": 72.53054992944294
     },
     {
       "pose": "cup_pickup",
@@ -2937,7 +2327,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1540.4849667649946
+      "intersection_mm3": 1540.4849667650112
     },
     {
       "pose": "cup_pickup",
@@ -2945,7 +2335,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4862.1169681408155
+      "intersection_mm3": 4862.116968140856
     },
     {
       "pose": "cup_pickup",
@@ -2953,7 +2343,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 10970.72684241807
+      "intersection_mm3": 10970.726842418107
     },
     {
       "pose": "cup_pickup",
@@ -2961,7 +2351,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 61.60016517610192
+      "intersection_mm3": 61.60016517610485
     },
     {
       "pose": "cup_pickup",
@@ -2969,7 +2359,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1551.1298363627286
+      "intersection_mm3": 1551.1298363627463
     },
     {
       "pose": "cup_pickup",
@@ -2977,7 +2367,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5029.2303875221
+      "intersection_mm3": 5029.230387522149
     },
     {
       "pose": "cup_pickup",
@@ -2985,7 +2375,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 11831.854477387478
+      "intersection_mm3": 11831.854477387484
     },
     {
       "pose": "cup_pickup",
@@ -2993,7 +2383,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 51.24953380182593
+      "intersection_mm3": 51.24953380182757
     },
     {
       "pose": "cup_pickup",
@@ -3001,7 +2391,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1557.0665925110343
+      "intersection_mm3": 1557.0665925110425
     },
     {
       "pose": "cup_pickup",
@@ -3009,7 +2399,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5186.940912111575
+      "intersection_mm3": 5186.940912111597
     },
     {
       "pose": "cup_pickup",
@@ -3017,7 +2407,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12692.728784443798
+      "intersection_mm3": 12692.728784443876
     },
     {
       "pose": "cup_pickup",
@@ -3025,7 +2415,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 41.89561529055167
+      "intersection_mm3": 41.89561529055031
     },
     {
       "pose": "cup_pickup",
@@ -3033,7 +2423,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1558.3414317090524
+      "intersection_mm3": 1558.3414317090753
     },
     {
       "pose": "cup_pickup",
@@ -3041,7 +2431,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5334.819212413868
+      "intersection_mm3": 5334.819212413909
     },
     {
       "pose": "cup_pickup",
@@ -3049,7 +2439,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 13550.950056885948
+      "intersection_mm3": 13550.950056886002
     },
     {
       "pose": "cup_pickup",
@@ -3057,7 +2447,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 33.804804270561114
+      "intersection_mm3": 33.80480427056075
     },
     {
       "pose": "cup_pickup",
@@ -3065,7 +2455,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1555.0486078943297
+      "intersection_mm3": 1555.0486078943516
     },
     {
       "pose": "cup_pickup",
@@ -3073,7 +2463,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5472.362924376597
+      "intersection_mm3": 5472.36292437664
     },
     {
       "pose": "cup_pickup",
@@ -3081,7 +2471,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 14404.177209604686
+      "intersection_mm3": 14404.177209604737
     },
     {
       "pose": "cup_pickup",
@@ -3089,7 +2479,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 26.9070956251905
+      "intersection_mm3": 26.90709562519043
     },
     {
       "pose": "cup_pickup",
@@ -3097,7 +2487,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1547.3395558389013
+      "intersection_mm3": 1547.339555838914
     },
     {
       "pose": "cup_pickup",
@@ -3105,7 +2495,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5599.101059085647
+      "intersection_mm3": 5599.101059085699
     },
     {
       "pose": "cup_pickup",
@@ -3113,7 +2503,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 15250.061010938103
+      "intersection_mm3": 15250.061010938152
     },
     {
       "pose": "cup_pickup",
@@ -3121,7 +2511,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 21.097120513209344
+      "intersection_mm3": 21.09712051321141
     },
     {
       "pose": "cup_pickup",
@@ -3129,7 +2519,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1535.4345039127356
+      "intersection_mm3": 1535.4345039127352
     },
     {
       "pose": "cup_pickup",
@@ -3137,7 +2527,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5714.601904545697
+      "intersection_mm3": 5714.601904545728
     },
     {
       "pose": "cup_pickup",
@@ -3145,7 +2535,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16086.277179713028
+      "intersection_mm3": 16086.277179713077
     },
     {
       "pose": "cup_pickup",
@@ -3153,7 +2543,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16.235959254821402
+      "intersection_mm3": 16.235959254822152
     },
     {
       "pose": "cup_pickup",
@@ -3161,7 +2551,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1519.6410137538571
+      "intersection_mm3": 1519.6410137538733
     },
     {
       "pose": "cup_pickup",
@@ -3169,7 +2559,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5818.476667125629
+      "intersection_mm3": 5818.476667125641
     },
     {
       "pose": "cup_pickup",
@@ -3177,7 +2567,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16910.4178461914
+      "intersection_mm3": 16910.417846191405
     },
     {
       "pose": "cup_pickup",
@@ -3185,7 +2575,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12.210139159782678
+      "intersection_mm3": 12.210139159783658
     },
     {
       "pose": "cup_pickup",
@@ -3193,7 +2583,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1500.3733202407468
+      "intersection_mm3": 1500.3733202407539
     },
     {
       "pose": "cup_pickup",
@@ -3201,7 +2591,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5910.38599910978
+      "intersection_mm3": 5910.385999109786
     },
     {
       "pose": "cup_pickup",
@@ -3209,7 +2599,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 17719.94243938599
+      "intersection_mm3": 17719.942439386054
     },
     {
       "pose": "cup_pickup",
@@ -3217,7 +2607,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 8.939738132320338
+      "intersection_mm3": 8.939738132320578
     },
     {
       "pose": "cup_pickup",
@@ -3225,7 +2615,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1478.1791772685506
+      "intersection_mm3": 1478.179177268566
     },
     {
       "pose": "cup_pickup",
@@ -3233,7 +2623,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5990.049645857158
+      "intersection_mm3": 5990.049645857204
     },
     {
       "pose": "cup_pickup",
@@ -3241,7 +2631,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 18512.215692360678
+      "intersection_mm3": 18512.215692360736
     },
     {
       "pose": "cup_pickup",
@@ -3249,7 +2639,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6.345638191081248
+      "intersection_mm3": 6.345638191081443
     },
     {
       "pose": "cup_pickup",
@@ -3257,7 +2647,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1453.7861738050142
+      "intersection_mm3": 1453.786173805022
     },
     {
       "pose": "cup_pickup",
@@ -3265,7 +2655,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6057.268146469765
+      "intersection_mm3": 6057.268146469855
     },
     {
       "pose": "cup_pickup",
@@ -3273,7 +2663,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 19284.68138924097
+      "intersection_mm3": 19284.681389240974
     },
     {
       "pose": "cup_pickup",
@@ -3281,7 +2671,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4.314467364200547
+      "intersection_mm3": 4.314467364200905
     },
     {
       "pose": "cup_pickup",
@@ -3289,7 +2679,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1428.155834091518
+      "intersection_mm3": 1428.1558340915537
     },
     {
       "pose": "cup_pickup",
@@ -3297,7 +2687,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6111.937716752092
+      "intersection_mm3": 6111.937716752121
     },
     {
       "pose": "cup_pickup",
@@ -3305,7 +2695,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 20035.38426759165
+      "intersection_mm3": 20035.384267591682
     },
     {
       "pose": "cup_pickup",
@@ -3313,7 +2703,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2.7709648470345782
+      "intersection_mm3": 2.7709648470346266
     },
     {
       "pose": "cup_pickup",
@@ -3321,7 +2711,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1402.5717785292043
+      "intersection_mm3": 1402.5717785292074
     },
     {
       "pose": "cup_pickup",
@@ -3329,7 +2719,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6154.081294458051
+      "intersection_mm3": 6154.081294458084
     },
     {
       "pose": "cup_pickup",
@@ -3337,7 +2727,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 20763.69201240231
+      "intersection_mm3": 20763.69201240234
     },
     {
       "pose": "cup_pickup",
@@ -3345,7 +2735,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1.6535571458271219
+      "intersection_mm3": 1.6535571458272451
     },
     {
       "pose": "cup_pickup",
@@ -3353,7 +2743,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1378.7764954960685
+      "intersection_mm3": 1378.7764954960742
     },
     {
       "pose": "cup_pickup",
@@ -3361,7 +2751,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6183.900044836644
+      "intersection_mm3": 6183.900044836683
     },
     {
       "pose": "cup_pickup",
@@ -3369,7 +2759,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 21470.4433032867
+      "intersection_mm3": 21470.44330328674
     },
     {
       "pose": "cup_pickup",
@@ -3377,7 +2767,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.8933866247504187
+      "intersection_mm3": 0.8933866247504846
     },
     {
       "pose": "cup_pickup",
@@ -3385,7 +2775,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1358.2561193345794
+      "intersection_mm3": 1358.2561193345964
     },
     {
       "pose": "cup_pickup",
@@ -3393,7 +2783,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6201.829549830116
+      "intersection_mm3": 6201.82954983015
     },
     {
       "pose": "cup_pickup",
@@ -3401,7 +2791,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 22148.41912505158
+      "intersection_mm3": 22148.41912505167
     },
     {
       "pose": "cup_pickup",
@@ -3409,7 +2799,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.40458055121216013
+      "intersection_mm3": 0.4045805512121925
     },
     {
       "pose": "cup_pickup",
@@ -3417,7 +2807,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1341.0864884596278
+      "intersection_mm3": 1341.086488459632
     },
     {
       "pose": "cup_pickup",
@@ -3433,7 +2823,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 22786.31111393256
+      "intersection_mm3": 22786.311113932614
     },
     {
       "pose": "cup_pickup",
@@ -3441,7 +2831,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.13120058175102678
+      "intersection_mm3": 0.13120058175104965
     },
     {
       "pose": "cup_pickup",
@@ -3449,7 +2839,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1327.1694750061693
+      "intersection_mm3": 1327.1694750061865
     },
     {
       "pose": "cup_pickup",
@@ -3457,7 +2847,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6205.673353691794
+      "intersection_mm3": 6205.673353691869
     },
     {
       "pose": "cup_pickup",
@@ -3465,7 +2855,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 23373.20807813872
+      "intersection_mm3": 23373.208078138738
     },
     {
       "pose": "cup_pickup",
@@ -3473,7 +2863,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.018218308537627466
+      "intersection_mm3": 0.018218308537632132
     },
     {
       "pose": "cup_pickup",
@@ -3481,7 +2871,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1316.4259741514525
+      "intersection_mm3": 1316.4259741514686
     },
     {
       "pose": "cup_pickup",
@@ -3497,7 +2887,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 23892.099722446164
+      "intersection_mm3": 23892.099722446263
     },
     {
       "pose": "cup_pickup",
@@ -3505,7 +2895,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1308.795134270932
+      "intersection_mm3": 1308.795134270952
     },
     {
       "pose": "cup_pickup",
@@ -3513,7 +2903,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6179.955475627984
+      "intersection_mm3": 6179.9554756279995
     },
     {
       "pose": "cup_pickup",
@@ -3521,7 +2911,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 24286.410485555258
+      "intersection_mm3": 24286.410485555276
     },
     {
       "pose": "cup_pickup",
@@ -3529,7 +2919,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1304.2337767078677
+      "intersection_mm3": 1304.233776707878
     },
     {
       "pose": "cup_pickup",
@@ -3537,7 +2927,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6166.481300637524
+      "intersection_mm3": 6166.481300637562
     },
     {
       "pose": "cup_pickup",
@@ -3545,7 +2935,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 24527.43381819447
+      "intersection_mm3": 24527.433818194608
     },
     {
       "pose": "cup_pickup",
@@ -3553,7 +2943,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1302.7161484686444
+      "intersection_mm3": 1302.7161484686624
     },
     {
       "pose": "cup_pickup",
@@ -3561,7 +2951,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6161.585719272054
+      "intersection_mm3": 6161.585719272115
     },
     {
       "pose": "cup_pickup",
@@ -3569,7 +2959,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 24608.369306758625
+      "intersection_mm3": 24608.369306758694
     },
     {
       "pose": "cup_pickup",
@@ -3577,7 +2967,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1304.233692347765
+      "intersection_mm3": 1304.2336923477808
     },
     {
       "pose": "cup_pickup",
@@ -3585,7 +2975,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6166.480758880164
+      "intersection_mm3": 6166.480758880219
     },
     {
       "pose": "cup_pickup",
@@ -3593,7 +2983,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 24527.438028117784
+      "intersection_mm3": 24527.43802811789
     },
     {
       "pose": "cup_pickup",
@@ -3601,7 +2991,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1308.7949650842695
+      "intersection_mm3": 1308.7949650842818
     },
     {
       "pose": "cup_pickup",
@@ -3609,7 +2999,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6179.954554630186
+      "intersection_mm3": 6179.954554630158
     },
     {
       "pose": "cup_pickup",
@@ -3617,7 +3007,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 24286.4172945554
+      "intersection_mm3": 24286.417294555482
     },
     {
       "pose": "cup_pickup",
@@ -3625,7 +3015,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.01821392225964634
+      "intersection_mm3": 0.018213922259655926
     },
     {
       "pose": "cup_pickup",
@@ -3633,7 +3023,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1316.4257192018965
+      "intersection_mm3": 1316.4257192019168
     },
     {
       "pose": "cup_pickup",
@@ -3641,7 +3031,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6194.969876722082
+      "intersection_mm3": 6194.969876722143
     },
     {
       "pose": "cup_pickup",
@@ -3649,7 +3039,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 23892.10872262661
+      "intersection_mm3": 23892.10872262671
     },
     {
       "pose": "cup_pickup",
@@ -3657,7 +3047,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.1312142458193294
+      "intersection_mm3": 0.13121424581934507
     },
     {
       "pose": "cup_pickup",
@@ -3665,7 +3055,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1327.1691327512822
+      "intersection_mm3": 1327.169132751303
     },
     {
       "pose": "cup_pickup",
@@ -3673,7 +3063,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6205.672547719589
+      "intersection_mm3": 6205.672547719605
     },
     {
       "pose": "cup_pickup",
@@ -3681,7 +3071,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 23373.224896397205
+      "intersection_mm3": 23373.22489639726
     },
     {
       "pose": "cup_pickup",
@@ -3689,7 +3079,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.40462506275031146
+      "intersection_mm3": 0.4046250627504061
     },
     {
       "pose": "cup_pickup",
@@ -3697,7 +3087,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1341.0860560753902
+      "intersection_mm3": 1341.0860560754152
     },
     {
       "pose": "cup_pickup",
@@ -3705,7 +3095,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6208.656720441579
+      "intersection_mm3": 6208.656720441679
     },
     {
       "pose": "cup_pickup",
@@ -3713,7 +3103,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 22786.335935458283
+      "intersection_mm3": 22786.33593545836
     },
     {
       "pose": "cup_pickup",
@@ -3721,7 +3111,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 0.8934902706811579
+      "intersection_mm3": 0.8934902706812419
     },
     {
       "pose": "cup_pickup",
@@ -3729,7 +3119,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1358.2555933774565
+      "intersection_mm3": 1358.2555933774615
     },
     {
       "pose": "cup_pickup",
@@ -3737,7 +3127,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6201.829537250381
+      "intersection_mm3": 6201.829537250446
     },
     {
       "pose": "cup_pickup",
@@ -3745,7 +3135,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 22148.45136615127
+      "intersection_mm3": 22148.451366151377
     },
     {
       "pose": "cup_pickup",
@@ -3753,7 +3143,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1.6536916857485795
+      "intersection_mm3": 1.6536916857487867
     },
     {
       "pose": "cup_pickup",
@@ -3761,7 +3151,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1378.7758604067735
+      "intersection_mm3": 1378.775860406789
     },
     {
       "pose": "cup_pickup",
@@ -3769,7 +3159,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6183.900094702041
+      "intersection_mm3": 6183.9000947021095
     },
     {
       "pose": "cup_pickup",
@@ -3777,7 +3167,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 21470.48157169674
+      "intersection_mm3": 21470.481571696815
     },
     {
       "pose": "cup_pickup",
@@ -3785,7 +3175,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2.771073143080823
+      "intersection_mm3": 2.7710731430810642
     },
     {
       "pose": "cup_pickup",
@@ -3793,7 +3183,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1402.5710524861497
+      "intersection_mm3": 1402.5710524861634
     },
     {
       "pose": "cup_pickup",
@@ -3801,7 +3191,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6154.081166743215
+      "intersection_mm3": 6154.081166743294
     },
     {
       "pose": "cup_pickup",
@@ -3809,7 +3199,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 20763.73614241772
+      "intersection_mm3": 20763.736142417765
     },
     {
       "pose": "cup_pickup",
@@ -3817,7 +3207,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4.314618245264987
+      "intersection_mm3": 4.314618245265304
     },
     {
       "pose": "cup_pickup",
@@ -3825,7 +3215,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1428.1549783417042
+      "intersection_mm3": 1428.1549783417015
     },
     {
       "pose": "cup_pickup",
@@ -3833,7 +3223,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6111.938859760123
+      "intersection_mm3": 6111.938859760157
     },
     {
       "pose": "cup_pickup",
@@ -3841,7 +3231,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 20035.433589042128
+      "intersection_mm3": 20035.433589042183
     },
     {
       "pose": "cup_pickup",
@@ -3849,7 +3239,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6.345811343603795
+      "intersection_mm3": 6.345811343603715
     },
     {
       "pose": "cup_pickup",
@@ -3857,7 +3247,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1453.7851958605806
+      "intersection_mm3": 1453.7851958605872
     },
     {
       "pose": "cup_pickup",
@@ -3865,7 +3255,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6057.270563527328
+      "intersection_mm3": 6057.270563527306
     },
     {
       "pose": "cup_pickup",
@@ -3873,7 +3263,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 19284.733186056703
+      "intersection_mm3": 19284.733186056746
     },
     {
       "pose": "cup_pickup",
@@ -3881,7 +3271,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 8.93993532869106
+      "intersection_mm3": 8.939935328691048
     },
     {
       "pose": "cup_pickup",
@@ -3889,7 +3279,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1478.1780761487685
+      "intersection_mm3": 1478.1780761487673
     },
     {
       "pose": "cup_pickup",
@@ -3897,7 +3287,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5990.053267147895
+      "intersection_mm3": 5990.053267147954
     },
     {
       "pose": "cup_pickup",
@@ -3905,7 +3295,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 18512.269717701765
+      "intersection_mm3": 18512.269717701813
     },
     {
       "pose": "cup_pickup",
@@ -3913,7 +3303,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12.210352155470842
+      "intersection_mm3": 12.210352155471181
     },
     {
       "pose": "cup_pickup",
@@ -3921,7 +3311,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1500.3720691943872
+      "intersection_mm3": 1500.3720691944188
     },
     {
       "pose": "cup_pickup",
@@ -3929,7 +3319,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5910.3909183584665
+      "intersection_mm3": 5910.390918358602
     },
     {
       "pose": "cup_pickup",
@@ -3937,7 +3327,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 17719.997182204264
+      "intersection_mm3": 17719.997182204283
     },
     {
       "pose": "cup_pickup",
@@ -3945,7 +3335,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16.236150573592496
+      "intersection_mm3": 16.236150573593168
     },
     {
       "pose": "cup_pickup",
@@ -3953,7 +3343,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1519.6396433736436
+      "intersection_mm3": 1519.63964337368
     },
     {
       "pose": "cup_pickup",
@@ -3961,7 +3351,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5818.4830624020815
+      "intersection_mm3": 5818.483062402103
     },
     {
       "pose": "cup_pickup",
@@ -3969,7 +3359,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16910.47317397901
+      "intersection_mm3": 16910.473173979095
     },
     {
       "pose": "cup_pickup",
@@ -3977,7 +3367,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 21.09734203844146
+      "intersection_mm3": 21.097342038442083
     },
     {
       "pose": "cup_pickup",
@@ -3985,7 +3375,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1535.4333690047033
+      "intersection_mm3": 1535.4333690046915
     },
     {
       "pose": "cup_pickup",
@@ -3993,7 +3383,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5714.609912506767
+      "intersection_mm3": 5714.609912506814
     },
     {
       "pose": "cup_pickup",
@@ -4001,7 +3391,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 16086.328084603818
+      "intersection_mm3": 16086.328084603823
     },
     {
       "pose": "cup_pickup",
@@ -4009,7 +3399,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 26.90734320023508
+      "intersection_mm3": 26.90734320023536
     },
     {
       "pose": "cup_pickup",
@@ -4017,7 +3407,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1547.3385341956662
+      "intersection_mm3": 1547.3385341956696
     },
     {
       "pose": "cup_pickup",
@@ -4025,7 +3415,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5599.110366193116
+      "intersection_mm3": 5599.110366193159
     },
     {
       "pose": "cup_pickup",
@@ -4033,7 +3423,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 15250.103288679878
+      "intersection_mm3": 15250.103288679931
     },
     {
       "pose": "cup_pickup",
@@ -4041,7 +3431,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 33.80508757700028
+      "intersection_mm3": 33.80508757700132
     },
     {
       "pose": "cup_pickup",
@@ -4049,7 +3439,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1555.0476919718749
+      "intersection_mm3": 1555.0476919718915
     },
     {
       "pose": "cup_pickup",
@@ -4057,7 +3447,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5472.373294750242
+      "intersection_mm3": 5472.373294750251
     },
     {
       "pose": "cup_pickup",
@@ -4065,7 +3455,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 14404.215540439318
+      "intersection_mm3": 14404.215540439363
     },
     {
       "pose": "cup_pickup",
@@ -4073,7 +3463,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 41.89588738005124
+      "intersection_mm3": 41.895887380048244
     },
     {
       "pose": "cup_pickup",
@@ -4081,7 +3471,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1558.3406486487736
+      "intersection_mm3": 1558.3406486488125
     },
     {
       "pose": "cup_pickup",
@@ -4089,7 +3479,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5334.830154409096
+      "intersection_mm3": 5334.830154409112
     },
     {
       "pose": "cup_pickup",
@@ -4097,7 +3487,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 13550.98415635713
+      "intersection_mm3": 13550.984156357174
     },
     {
       "pose": "cup_pickup",
@@ -4105,7 +3495,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 51.249704432727526
+      "intersection_mm3": 51.24970443273199
     },
     {
       "pose": "cup_pickup",
@@ -4113,7 +3503,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1557.066034225434
+      "intersection_mm3": 1557.0660342254455
     },
     {
       "pose": "cup_pickup",
@@ -4121,7 +3511,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5186.950861367973
+      "intersection_mm3": 5186.950861367996
     },
     {
       "pose": "cup_pickup",
@@ -4129,7 +3519,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 12692.762164911086
+      "intersection_mm3": 12692.762164911122
     },
     {
       "pose": "cup_pickup",
@@ -4137,7 +3527,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 61.60029463315949
+      "intersection_mm3": 61.60029463316204
     },
     {
       "pose": "cup_pickup",
@@ -4145,7 +3535,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1551.1296589079827
+      "intersection_mm3": 1551.1296589079886
     },
     {
       "pose": "cup_pickup",
@@ -4153,7 +3543,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5029.239134609565
+      "intersection_mm3": 5029.239134609586
     },
     {
       "pose": "cup_pickup",
@@ -4161,7 +3551,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 11831.885925551569
+      "intersection_mm3": 11831.88592555158
     },
     {
       "pose": "cup_pickup",
@@ -4169,7 +3559,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 72.53048774838645
+      "intersection_mm3": 72.53048774838742
     },
     {
       "pose": "cup_pickup",
@@ -4177,7 +3567,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1540.4850982804535
+      "intersection_mm3": 1540.485098280469
     },
     {
       "pose": "cup_pickup",
@@ -4185,7 +3575,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4862.124539855785
+      "intersection_mm3": 4862.124539855807
     },
     {
       "pose": "cup_pickup",
@@ -4193,7 +3583,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 10970.762077877287
+      "intersection_mm3": 10970.762077877345
     },
     {
       "pose": "cup_pickup",
@@ -4201,7 +3591,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 83.66323445652522
+      "intersection_mm3": 83.66323445652564
     },
     {
       "pose": "cup_pickup",
@@ -4209,7 +3599,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1525.1271149401814
+      "intersection_mm3": 1525.1271149401919
     },
     {
       "pose": "cup_pickup",
@@ -4217,7 +3607,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4686.004179917202
+      "intersection_mm3": 4686.004179917286
     },
     {
       "pose": "cup_pickup",
@@ -4225,7 +3615,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 10111.961480427926
+      "intersection_mm3": 10111.961480427955
     },
     {
       "pose": "cup_pickup",
@@ -4233,7 +3623,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 94.68491496618984
+      "intersection_mm3": 94.68491496619367
     },
     {
       "pose": "cup_pickup",
@@ -4241,7 +3631,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1505.0867496991973
+      "intersection_mm3": 1505.0867496992055
     },
     {
       "pose": "cup_pickup",
@@ -4249,7 +3639,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4501.316859763544
+      "intersection_mm3": 4501.31685976359
     },
     {
       "pose": "cup_pickup",
@@ -4257,7 +3647,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 9258.22230057739
+      "intersection_mm3": 9258.222300577436
     },
     {
       "pose": "cup_pickup",
@@ -4265,7 +3655,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 105.37683247383303
+      "intersection_mm3": 105.37683247383639
     },
     {
       "pose": "cup_pickup",
@@ -4273,7 +3663,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1480.4259517054327
+      "intersection_mm3": 1480.425951705452
     },
     {
       "pose": "cup_pickup",
@@ -4281,7 +3671,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4308.550165983385
+      "intersection_mm3": 4308.550165983465
     },
     {
       "pose": "cup_pickup",
@@ -4289,7 +3679,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 8412.511254456282
+      "intersection_mm3": 8412.5112544563
     },
     {
       "pose": "cup_pickup",
@@ -4297,7 +3687,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 115.52039264396167
+      "intersection_mm3": 115.52039264396329
     },
     {
       "pose": "cup_pickup",
@@ -4305,7 +3695,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1451.2346663982664
+      "intersection_mm3": 1451.234666398277
     },
     {
       "pose": "cup_pickup",
@@ -4313,7 +3703,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4108.440626828158
+      "intersection_mm3": 4108.440626828186
     },
     {
       "pose": "cup_pickup",
@@ -4321,7 +3711,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 7578.1456264591725
+      "intersection_mm3": 7578.145626459183
     },
     {
       "pose": "cup_pickup",
@@ -4329,7 +3719,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 124.91729623569262
+      "intersection_mm3": 124.91729623569674
     },
     {
       "pose": "cup_pickup",
@@ -4337,7 +3727,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1417.6298365124655
+      "intersection_mm3": 1417.6298365124871
     },
     {
       "pose": "cup_pickup",
@@ -4345,7 +3735,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3901.8796091994373
+      "intersection_mm3": 3901.879609199453
     },
     {
       "pose": "cup_pickup",
@@ -4353,7 +3743,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 6758.846220595359
+      "intersection_mm3": 6758.846220595383
     },
     {
       "pose": "cup_pickup",
@@ -4361,7 +3751,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 133.41257661828158
+      "intersection_mm3": 133.41257661828053
     },
     {
       "pose": "cup_pickup",
@@ -4369,7 +3759,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1379.750642188937
+      "intersection_mm3": 1379.7506421889518
     },
     {
       "pose": "cup_pickup",
@@ -4377,7 +3767,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3689.793943272855
+      "intersection_mm3": 3689.7939432728986
     },
     {
       "pose": "cup_pickup",
@@ -4385,7 +3775,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5958.816787073214
+      "intersection_mm3": 5958.816787073224
     },
     {
       "pose": "cup_pickup",
@@ -4393,7 +3783,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 140.90634755884636
+      "intersection_mm3": 140.90634755885546
     },
     {
       "pose": "cup_pickup",
@@ -4401,7 +3791,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1337.7561374288093
+      "intersection_mm3": 1337.756137428833
     },
     {
       "pose": "cup_pickup",
@@ -4409,7 +3799,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3473.128658800386
+      "intersection_mm3": 3473.1286588004086
     },
     {
       "pose": "cup_pickup",
@@ -4417,7 +3807,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 5182.599998384205
+      "intersection_mm3": 5182.599998384251
     },
     {
       "pose": "cup_pickup",
@@ -4425,7 +3815,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 147.29495625740543
+      "intersection_mm3": 147.29495625740324
     },
     {
       "pose": "cup_pickup",
@@ -4433,7 +3823,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1291.8464311770451
+      "intersection_mm3": 1291.8464311770622
     },
     {
       "pose": "cup_pickup",
@@ -4441,7 +3831,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3252.8311701265175
+      "intersection_mm3": 3252.831170126544
     },
     {
       "pose": "cup_pickup",
@@ -4449,7 +3839,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 4435.485100781828
+      "intersection_mm3": 4435.485100781871
     },
     {
       "pose": "cup_pickup",
@@ -4457,7 +3847,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 152.53282845104516
+      "intersection_mm3": 152.53282845104957
     },
     {
       "pose": "cup_pickup",
@@ -4465,7 +3855,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1242.282336640978
+      "intersection_mm3": 1242.2823366409903
     },
     {
       "pose": "cup_pickup",
@@ -4473,7 +3863,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3029.859284614044
+      "intersection_mm3": 3029.8592846140714
     },
     {
       "pose": "cup_pickup",
@@ -4481,7 +3871,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3722.9054630458027
+      "intersection_mm3": 3722.9054630458286
     },
     {
       "pose": "cup_pickup",
@@ -4489,7 +3879,7 @@
       "opening_per_side_mm": 0.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 156.63043288161575
+      "intersection_mm3": 156.6304328816172
     },
     {
       "pose": "cup_pickup",
@@ -4497,7 +3887,7 @@
       "opening_per_side_mm": 12.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 1189.3642928983095
+      "intersection_mm3": 1189.364292898314
     },
     {
       "pose": "cup_pickup",
@@ -4505,7 +3895,7 @@
       "opening_per_side_mm": 26.0,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 2805.2520335505174
+      "intersection_mm3": 2805.2520335505487
     },
     {
       "pose": "cup_pickup",
@@ -4513,7 +3903,7 @@
       "opening_per_side_mm": 52.4125,
       "hand": "finger_-1",
       "fixture": "cup_pedestal",
-      "intersection_mm3": 3050.7024285778607
+      "intersection_mm3": 3050.7024285778716
     }
   ],
   "required_operating_state_intersections": [],
@@ -4525,7 +3915,7 @@
   "limitations": [
     "Static hand bounds only; no arm IK or wrist/forearm geometry",
     "No inter-pose travel or continuous roll proof",
-    "Held-pin and shackle contacts excluded; seated fingertip/ear contact remains open"
+    "Held-pin and shackle contacts excluded here; see the separate whole-arm kinematic gate"
   ],
   "source_sha256": {
     "shackle_tied_holder_body_frame.obj": "c0b1f535118ef10a0194dc42ae61973a6a36e40e3cbc9af96054978066bce255",

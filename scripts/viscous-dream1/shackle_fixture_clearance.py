@@ -21,6 +21,7 @@ contacts with the held pin and the shackle need the full simulation test.
 import argparse
 import hashlib
 import json
+from os.path import relpath
 from pathlib import Path
 
 import manifold3d as md
@@ -29,6 +30,12 @@ import trimesh
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_ASSETS = HERE / "runs/shackle_tied_holder/tilt_85deg"
+GATE_REPORT = HERE / "runs/shackle85_gate/cup_r565_bore_s600/gate_report.json"
+GATE_LOCAL_MESH_SHA256 = {
+    "shackle_tied_holder_body_frame.obj": "c0b1f535118ef10a0194dc42ae61973a6a36e40e3cbc9af96054978066bce255",
+    "zip_tie_envelope_body_frame.obj": "2cb3400d1d6f3415afe50de2a2f98187566bbf7fb1c030b86e8765efbf7ea855",
+    "pin_cup_floor_frame.obj": "5489a0394a99940456d9e32dd9969819f59f823f50424311460d6756ac5a026a",
+}
 PADDING = 0.5  # Expand every hand dimension by this amount for the static screen.
 
 
@@ -84,19 +91,92 @@ def overlaps(a, b):
     return bool(np.all(aa[0] < bb[1]) and np.all(bb[0] < aa[1]))
 
 
+def write_manifest(root, data):
+    """Record placement and link the whole-arm gate only at its tested pose."""
+    gate = json.loads(GATE_REPORT.read_text()) if GATE_REPORT.exists() else None
+    radius = float(np.linalg.norm(data["cup_pin_tip_mm"][:2]))
+    gate_matches = bool(
+        gate
+        and gate["verdict"] == "PASS"
+        and gate["completed"]
+        and abs(gate["bore_s_mm"] - data["bore_midpoint_mm"][0]) < 0.001
+        and abs(gate["cup_tip_radius_mm"] - radius) < 0.001
+        and data["cup_azimuth_deg"] == 15
+        and data["cup_pin_tip_mm"][2] == 80
+        and data["source_sha256"] == GATE_LOCAL_MESH_SHA256
+    )
+    names = [
+        "shackle_tied_holder.stl",
+        "shackle_tied_holder.3mf",
+        "pin_cup.stl",
+        "pin_cup.3mf",
+        "shackle_tied_holder_body_frame.obj",
+        "zip_tie_envelope_body_frame.obj",
+        "pin_cup_floor_frame.obj",
+        "pin_seated_in_cup_floor_frame.obj",
+        "pin_pickup_corridor_floor_frame.obj",
+        "pin_pickup_wide_envelope_floor_frame.obj",
+        "layout_holder_plane_frame.obj",
+        "layout_ties_and_heads_plane_frame.obj",
+        "layout_cup_pedestal_plane_frame.obj",
+    ]
+    manifest = {
+        "status": "Kinematic gate PASS; slicing and physical trials pending"
+        if gate_matches
+        else "Static screen only; placement not matched to whole-arm gate",
+        "plane_frame": "S forward from left J1, W toward sim +X, H above floor",
+        "plane_metres_to_sim_world_metres": [
+            [0, 1, 0, 0.305],
+            [-1, 0, 0, 0.240],
+            [0, 0, 1, 0.760],
+            [0, 0, 0, 1],
+        ],
+        "shackle_bore_midpoint_mm": data["bore_midpoint_mm"],
+        "cup_pin_tip_mm": data["cup_pin_tip_mm"],
+        "cup_azimuth_deg": data["cup_azimuth_deg"],
+        "cup_axis_tilt_from_vertical_deg": 85,
+        "cup_floor_rotation": data["cup_floor_rotation"],
+        "cup_floor_translation_mm": data["cup_floor_translation_mm"],
+        "operating_constraints": data["operating_constraints"],
+        "gripper_strategy": data["validated_grip_strategy"],
+        "files": {
+            relpath(root / name, HERE.parents[1]): {
+                "sha256": hashlib.sha256((root / name).read_bytes()).hexdigest(),
+                "units": "mm" if name.endswith((".stl", ".3mf")) else "m",
+            }
+            for name in names
+        },
+    }
+    if gate_matches:
+        manifest["kinematic_gate"] = {
+            "report": str(GATE_REPORT.relative_to(HERE.parents[1])),
+            "commit": "3393c787",
+            "verdict": "PASS",
+            "samples": gate["samples"],
+            "worst": gate["worst"],
+            "scope": "Kinematic whole-arm mesh distances, water, wall, elbow, limits and self-collision",
+            "not_tested": ["dynamics", "grasp strength", "thread friction", "torque", "water drag"],
+        }
+    (root / "layout_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--assets", type=Path, default=DEFAULT_ASSETS)
+    parser.add_argument("--bore-forward", type=float, default=600)
+    parser.add_argument("--cup-tip-forward", type=float, default=565)
+    parser.add_argument("--cup-azimuth", type=float, default=15)
     args = parser.parse_args()
     root = args.assets
     holder_info = json.loads((root / "holder_checks.json").read_text())
     cup_info = json.loads((root / "cup_checks.json").read_text())
     assert holder_info["tilt_from_vertical_deg"] == 85
+    assert cup_info["cup_tilt_from_vertical_deg"] == 85 and cup_info["pin_tip_height_mm"] == 80
     cup_tip_local = np.array(cup_info["pin_tip_floor_frame_mm"])
     holder_rotation = np.array(holder_info["body_to_print_rotation"])
-    bore = np.array(holder_info["shackle_bore_center_print_mm"]) + [575, 0, 0]
-    selected_tip = yaw(15) @ np.array([500.0, 0.0, 0.0]) + [0, 0, 80]
-    cup_rotation = yaw(15)
+    bore = np.array(holder_info["shackle_bore_center_print_mm"]) + [args.bore_forward, 0, 0]
+    selected_tip = yaw(args.cup_azimuth) @ np.array([args.cup_tip_forward, 0.0, 0.0]) + [0, 0, 80]
+    cup_rotation = yaw(args.cup_azimuth)
     cup_translation = selected_tip - cup_rotation @ cup_tip_local
     paths = [
         root / "shackle_tied_holder_body_frame.obj",
@@ -124,10 +204,11 @@ def main():
     poses = [
         (name, bore + axis * along, axis, across)
         for name, along in [
-            ("insert_start", 101.925),
-            ("head_regrip", 112.2),
-            ("thread_start", 77),
-            ("seated", 57),
+            ("insert_start", 39.925 + 30 + 68),
+            ("shank_pushed", 39.925 + 3 + 34.3),
+            ("head_regrip", 39.925 + 3 - (68 - 34.3) + 120.15),
+            ("thread_start", -20.574 + 120.15),
+            ("seated", -39.925 + 120.15),
         ]
     ]
     cup_axis = cup_rotation @ np.array([-np.sin(np.radians(85)), 0, np.cos(np.radians(85))])
@@ -164,7 +245,7 @@ def main():
         for h in hits
         if (h["pose"] == "cup_pickup" and h["roll_deg"] == 0)
         or (h["pose"] in ["insert_start", "head_regrip"])
-        or (h["pose"] in ["thread_start", "seated"] and h["opening_per_side_mm"] <= 26)
+        or (h["pose"] in ["shank_pushed", "thread_start", "seated"] and h["opening_per_side_mm"] <= 26)
     ]
     data = {
         "status": "REVIEW_REQUIRED" if required_hits else "PASS_WITH_MOTION_CONSTRAINTS",
@@ -174,13 +255,20 @@ def main():
         "holder_tilt_deg": 85,
         "bore_midpoint_mm": bore.tolist(),
         "cup_pin_tip_mm": selected_tip.tolist(),
-        "cup_azimuth_deg": 15,
+        "cup_azimuth_deg": args.cup_azimuth,
         "cup_floor_rotation": cup_rotation.tolist(),
         "cup_floor_translation_mm": cup_translation.tolist(),
         "gripper_box_padding_mm": PADDING,
         "roll_samples_deg": [0, 120, 1],
         "finger_openings_per_side_mm": [0, 12, 26, 52.4125],
         "poses": [p[0] for p in poses],
+        "pose_tcp_from_bore_mm": {p[0]: float(np.dot(p[1] - bore, axis)) for p in poses[:-1]},
+        "validated_grip_strategy": {
+            "head_tcp_from_tip_mm": 120.15,
+            "cup_tcp_from_tip_mm": 68,
+            "reset_opening_per_side_mm": 18,
+            "tightening_stroke_deg": 90,
+        },
         "aabb_pair_tests": box_tests,
         "boolean_pair_tests": boolean_tests,
         "fixture_intersections": fixture_intersections,
@@ -194,7 +282,7 @@ def main():
         "limitations": [
             "Static hand bounds only; no arm IK or wrist/forearm geometry",
             "No inter-pose travel or continuous roll proof",
-            "Held-pin and shackle contacts excluded; seated fingertip/ear contact remains open",
+            "Held-pin and shackle contacts excluded here; see the separate whole-arm kinematic gate",
         ],
         "source_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
     }
@@ -206,6 +294,7 @@ def main():
         (root / f"layout_{name}_plane_frame.obj").write_text(
             trimesh.exchange.obj.export_obj(mesh).rstrip() + "\n"
         )
+    write_manifest(root, data)
     print(f"{data['status']}: {box_tests} pairs, {boolean_tests} booleans, {len(hits)} overlaps; {out}")
     if required_hits:
         print(json.dumps(required_hits[:10], indent=2))

@@ -370,6 +370,14 @@ the real arm (sim to real).
         flats and its edges.
     - **Not covered:** dynamics, grasp force, thread friction, torque, drag.
       The overhead camera is still the old station camera.
+  - 2026-11-07, holder handoff updated to the passing placement: generator
+    defaults are cup radius565/bore600; `layout_manifest.json` and all three
+    placed plane-frame OBJs now match those coordinates. Original print files
+    and local scene meshes are byte-identical to `0de8facd` (no revision or
+    reprint). Translation verification is in `tilt_85deg/layout_update_checks.json`.
+    The manifest links the gate only when both placement and local-mesh hashes
+    match its tested inputs, and records the corrected 120.15 mm head grip,
+    90° strokes and 18 mm-per-side resets. Slicing and physical trials remain.
   - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
     45 deg puts the wrist above J3's height whatever the distance); overhead
     camera above the water or housed; call-ledger cap for evaluation (~110

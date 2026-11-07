@@ -1538,6 +1538,15 @@ overlaps remain in the evidence. No print, full-motion acceptance or hardware
 trial yet; see the holder handoff and task 7's pre-print gate. The Mac remains
 unreachable over SSH; the Linux changes are the current handoff.
 
+2026-11-07, B4 pre-print gate passed kinematically (`3393c787`): the parts
+need no revision. The old cup radius500/bore575 placement failed extraction
+and water checks; use **cup radius565 at +15°, tip80 mm up, bore600 mm**.
+Updated generator defaults, placed meshes and layout manifest reproduce that
+passing placement; all print files/local fixture meshes remain byte-identical
+to `0de8facd`. The gate uses head TCP120.15 mm from the tip, 90° strokes and
+18 mm-per-side resets to clear the collar/ear. Force, friction, torque, drag,
+slicing and physical fit/grasp trials remain untested; see the gate report.
+
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
 list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,

@@ -1,5 +1,5 @@
 {
-  "status": "Selected CAD; end-to-end simulation and physical acceptance pending",
+  "status": "Kinematic gate PASS; slicing and physical trials pending",
   "plane_frame": "S forward from left J1, W toward sim +X, H above floor",
   "plane_metres_to_sim_world_metres": [
     [
@@ -28,13 +28,13 @@
     ]
   ],
   "shackle_bore_midpoint_mm": [
-    575.0,
+    600.0,
     0.0,
     98.4839981465657
   ],
   "cup_pin_tip_mm": [
-    482.9629131445342,
-    129.40952255126038,
+    545.7480918533236,
+    146.23276048292422,
     80.0
   ],
   "cup_azimuth_deg": 15,
@@ -57,8 +57,8 @@
     ]
   ],
   "cup_floor_translation_mm": [
-    482.9629131445342,
-    129.40952255126038,
+    545.7480918533236,
+    146.23276048292422,
     0.0
   ],
   "operating_constraints": [
@@ -66,6 +66,12 @@
     "At thread_start and seated, opening<=26mm per side for rolls0..120",
     "Fully open regrip is screened at insert_start/head_regrip, not near seated holder"
   ],
+  "gripper_strategy": {
+    "head_tcp_from_tip_mm": 120.15,
+    "cup_tcp_from_tip_mm": 68,
+    "reset_opening_per_side_mm": 18,
+    "tightening_stroke_deg": 90
+  },
   "files": {
     "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/shackle_tied_holder.stl": {
       "sha256": "2f5d9b4b6e457e9468b105337c41a06ce1ecc71be20eb1db7d481247e6b9ea5d",
@@ -108,16 +114,80 @@
       "units": "m"
     },
     "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_holder_plane_frame.obj": {
-      "sha256": "5fc4ebf334508b1fdd0c7c48c6c6f04b515ab3ed6318524c3566dcb7914a31d9",
+      "sha256": "3b714bc6a13b7c45efa2f105764a15457bc870e4e91372c15c8821ba6a765598",
       "units": "m"
     },
     "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_ties_and_heads_plane_frame.obj": {
-      "sha256": "bf490b958309a4e22662fbfe595481c412c016b3221582cb8eace36b82c2c534",
+      "sha256": "9e8a98280f3a6b199be4321ab07bac1f227f5135fbe21244ee6979dc981d0e89",
       "units": "m"
     },
     "scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg/layout_cup_pedestal_plane_frame.obj": {
-      "sha256": "b6cfb7cb83bc7b6ff0a4c961ae1f919050c85a67c9d8efbbb0dacca8739640e2",
+      "sha256": "7fa05b9a509d0ad0d680987d1ca2dd135bf0382703c13d054072c0858176b964",
       "units": "m"
     }
+  },
+  "kinematic_gate": {
+    "report": "scripts/viscous-dream1/runs/shackle85_gate/cup_r565_bore_s600/gate_report.json",
+    "commit": "3393c787",
+    "verdict": "PASS",
+    "samples": 1246,
+    "worst": {
+      "clearance_mm:finger~cup_pedestal": {
+        "value": 6.67,
+        "stage": "cup: close on the shank"
+      },
+      "clearance_mm:finger~pin (not held)": {
+        "value": 3.57,
+        "stage": "screw: reset after stroke 1 (open 18 mm/side, roll back)"
+      },
+      "clearance_mm:finger~shackle": {
+        "value": 2.97,
+        "stage": "insert: shank push until the fingertips are 3 mm off the clear ear"
+      },
+      "clearance_mm:pin~cup (seated in its bore)": {
+        "value": -0.0,
+        "stage": "start pose"
+      },
+      "clearance_mm:pin~cup_pedestal": {
+        "value": 12.67,
+        "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+      },
+      "clearance_mm:pin~shackle": {
+        "value": 0.3,
+        "stage": "insert: shank push until the fingertips are 3 mm off the clear ear"
+      },
+      "clearance_mm:wrist_roll_link~cup_pedestal": {
+        "value": 74.21,
+        "stage": "insert: shank push until the fingertips are 3 mm off the clear ear"
+      },
+      "j3_ahead_of_j1_mm": {
+        "value": 110.49,
+        "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+      },
+      "joint_limit_margin_deg": {
+        "value": 10.15,
+        "stage": "start pose"
+      },
+      "pin_water_margin_mm": {
+        "value": 155.75,
+        "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+      },
+      "wall_margin_mm": {
+        "value": 3.39,
+        "stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)"
+      },
+      "water_margin_mm": {
+        "value": 15.77,
+        "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+      }
+    },
+    "scope": "Kinematic whole-arm mesh distances, water, wall, elbow, limits and self-collision",
+    "not_tested": [
+      "dynamics",
+      "grasp strength",
+      "thread friction",
+      "torque",
+      "water drag"
+    ]
   }
 }

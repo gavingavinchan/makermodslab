@@ -8,14 +8,18 @@ coordinated cup can be positioned by the environment thread. No adhesive,
 tank attachment, robot motion or paid inference is involved.
 
 **Selected CAD pose: holder 85°; cup 85°, tip 80 mm above the floor.**
-The environment selected bore midpoint 575 mm ahead of J1 and cup tip 500 mm
-radially from J1, 15° toward sim +X. End-to-end motion and print acceptance
-remain pending. The accepted curved holder and its two tie channels are unchanged.
+The whole-arm kinematic gate selected bore midpoint **600 mm** ahead of J1 and
+cup tip **565 mm** radially from J1, 15° toward sim +X. The original 575/500 mm
+placement failed extraction/reach and water checks. **No CAD revision or reprint
+is needed**: move the same two pieces. The recommended placement completed the
+1,246-sample offline sequence; forces, friction, torque and physical trials
+remain untested. See [the gate report](../shackle85_gate/README.md).
 
 ## Reproduce and coordinate frames
 
 ```sh
-uv run --script scripts/viscous-dream1/shackle_tied_holder.py --tilt 85 --cup-tilt 85 --pin-tip-height 80 --cup-tip-forward 500 --cup-azimuth 15
+uv run --script scripts/viscous-dream1/shackle_tied_holder.py --tilt 85 --cup-tilt 85 --pin-tip-height 80 --cup-tip-forward 565 --cup-azimuth 15 --shackle-forward 600
+uv run --script scripts/viscous-dream1/shackle_fixture_clearance.py
 ```
 
 Dependencies are pinned in the script. No hardware, billed calls, environment
@@ -40,8 +44,8 @@ relative to the tip's floor projection (default -48 mm toward the arm).
   `assembled.png`, `holder_only.png`, `side.png`, `tie_section.png`.
 
 The local tip is `[0,0,80]` mm. Rotate the local cup frame +15° about Z and
-translate its origin to `[500*cos(15°),500*sin(15°),0]` mm in (s,w,h).
-This places the tip at approximately `[482.963,129.410,80]` mm.
+translate its origin to `[565*cos(15°),565*sin(15°),0]` mm in (s,w,h).
+This places the tip at approximately `[545.748,146.233,80]` mm.
 JSON includes a **suggested** placement transform and the generator checks and
 renders that placement; **no globally placed scene mesh is exported**. Parent
 owns the independent global scene and gripper audit. Holder print frame retains
@@ -114,7 +118,7 @@ finite-volume material cuts, not just lines or zero-thickness openings.
 The loose thread/bore clearance and rear hole vent the seated pin; physical
 water flow and any residual puddle still require a print trial.
 
-The supplied grip/TCP reference is **68 mm from the pin tip**. Fingertips
+The cup pickup grip/TCP reference is **68 mm from the pin tip**. Fingertips
 extend 34.3 mm toward the tip, so their foremost plane is at 33.7 mm,
 **6.7 mm beyond the cup lip**. The generator checks the legacy 60 mm diameter
 corridor and additionally a conservative 42 × 162 mm finger cross-section
@@ -154,28 +158,39 @@ and **0.08186 N m flooded with pin**. The empty cup can therefore be displaced
 by quite small external loads despite being gravity-stable.
 
 The selected off-line placement yields zero cup/holder, cup/shackle and
-pin/holder intersection in this generator's check. This is a local CAD audit,
-not the independent global arm/environment acceptance test.
+pin/holder intersection in this generator's check. The separate whole-arm gate
+also passes the recommended placement. Print geometry and all local mesh frames
+are unchanged from `0de8facd`; only the placed meshes and metadata move.
 
 Print feet flat. The tilted tube roof and drain require slicer inspection;
 PETG, 0.2 mm layers, five walls and 40% infill are starting assumptions, not a
 validated profile. No physical print, water-flow or load trial has been done.
-End-to-end motion, seated clear-ear/fingertip contact and the 283 mm waterline
-remain simulation acceptance gaps. Parent owns integration, review, shared
-project docs, commit/push and both-machine synchronisation.
+The gate resolved the earlier seated clear-ear/fingertip collision by changing
+the **head grip**, not the part: TCP **120.15 mm from the pin tip**, fingertips
+2 mm above the collar, gripping with the distal ~22 mm of the fingers. Do not
+reuse the nominal mid-head grip (96.9 mm from the tip), which intersects the
+collar and clear ear. Tightening uses **90° strokes and 18 mm-per-side resets**.
+The tab's flats must face the jaws in the cup. The strength of this distal
+grip on the real fingers still needs a physical trial.
+
+The kinematic sequence passes water, wall, elbow, limits and self-collision:
+minimum water margin **15.8 mm**, wall **3.4 mm**, elbow **110 mm** ahead of J1,
+joint-limit margin **10.2°**, cup/finger clearance **6.67 mm**. This is not a
+dynamic or force qualification. The overhead camera remains provisional.
 
 ## Independent fixture placement and hand envelope review
 
 Run `uv run --script scripts/viscous-dream1/shackle_fixture_clearance.py` from
 the repository root after generating the selected CAD. It places the exact
-holder, tie/head envelopes and cup at the supplied 575 mm / 500 mm / 15°
+holder, tie/head envelopes and cup at the recommended 600 mm / 565 mm / 15°
 layout, then checks 121 static roll angles from 0–120°, four jaw openings and
-five task poses. Palm bounds include ±80 mm jaw width, ±4 mm thickness and
+six task poses using the corrected head grip. Palm bounds include ±80 mm jaw
+width, ±4 mm thickness and
 53.4–110 mm behind TCP. The published finger bounds are represented by two
 conservative boxes, with **0.5 mm extra padding** around every hand dimension.
 
-**Result: clear with explicit motion constraints**, across 21,780 tested
-hand/fixture pairs (1,416 Boolean intersection tests after bounding-box
+**Result: clear with explicit motion constraints**, across 26,136 tested
+hand/fixture pairs (1,224 Boolean intersection tests after bounding-box
 filtering). Required operating states have zero overlaps:
 
 - Cup pickup/extraction at **roll 0°**, before reorienting away from the cup.
@@ -183,14 +198,14 @@ filtering). Required operating states have zero overlaps:
 - Threads-catching and seated poses: **at most 26 mm opening per side**
   through rolls 0–120°. Open enough to release the pin; avoid full splay there.
 
-The unrestricted stress screen **does find 555 conservative overlaps**: full
+The unrestricted stress screen **does find 477 conservative overlaps**: full
 52.4125 mm-per-side opening near the seated holder, and rolling while the
 fingers still surround the cup pedestal. These are retained in the evidence,
 not counted as passing. Some boxes enclose voids in the actual finger CAD;
 they are deliberate bounds, not proof that every flagged state collides.
 The motion planner must honour the constraints or establish clearance with
-the actual meshes. The check excludes held-pin/shackle contact and the rest of
-the arm; it does not prove travel between poses or continuous motion.
+the actual meshes. This box screen excludes held-pin/shackle contact and the rest
+of the arm; the separate gate checks those meshes across the full sequence.
 
 `layout_manifest.json` records exact placement and file hashes. The three
 `layout_*_plane_frame.obj` files are already positioned in **metres** in the

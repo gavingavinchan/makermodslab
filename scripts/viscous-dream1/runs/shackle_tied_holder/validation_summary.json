@@ -1,6 +1,6 @@
 {
-  "status": "Round-2 selected CAD generation passed; physical print and full motion acceptance pending",
-  "generator_sha256": "5aec68dabb626236bc4ab69fb90ad1d38ef5cbc7f27e5aa97adf4f91a6cd2e31",
+  "status": "CAD unchanged; moved placement passes whole-arm kinematic gate; physical trials pending",
+  "generator_sha256": "4e67338cb7d2c1202ddbb5c03ed553c6650e9434d0a9860f1bdf1ca9f5eaa69f",
   "holder_tilt_deg": 85,
   "cup_tilt_deg": 85,
   "pin_tip_height_mm": 80,
@@ -16,15 +16,15 @@
   "wide_pickup_envelope_clear": true,
   "selected_fixture_placement_clash": false,
   "pending": [
-    "actual meshes and end-to-end motion",
-    "seated clear-ear fingertip contact",
-    "283 mm waterline",
-    "slicer supports, physical drainage and load trial"
+    "slicer review",
+    "physical fit and drainage",
+    "grasp strength, dynamics, thread friction, torque and water drag",
+    "replace overhead camera with measured real camera poses"
   ],
   "independent_hand_screen": {
     "status": "PASS_WITH_MOTION_CONSTRAINTS",
     "required_operating_state_overlaps": 0,
-    "unrestricted_conservative_overlaps": 555,
+    "unrestricted_conservative_overlaps": 477,
     "operating_constraints": [
       "Pick up and extract from cup at roll0; reorient only after clearing pedestal",
       "At thread_start and seated, opening<=26mm per side for rolls0..120",
@@ -33,7 +33,7 @@
     "report": "tilt_85deg/fixture_clearance_checks.json"
   },
   "parent_independent_regeneration": {
-    "command": "uv run --script scripts/viscous-dream1/shackle_tied_holder.py --tilt 85 --cup-tilt 85 --pin-tip-height 80 --cup-tip-forward 500 --cup-azimuth 15 --no-render --output-dir /tmp/shackle-final-parent-review",
+    "command": "uv run --script scripts/viscous-dream1/shackle_tied_holder.py --tilt 85 --cup-tilt 85 --pin-tip-height 80 --cup-tip-forward 565 --cup-azimuth 15 --shackle-forward 600 --output-dir /tmp/shackle-placement-565-600",
     "parts": {
       "shackle_tied_holder": {
         "roundtrips_match": true,
@@ -54,5 +54,13 @@
         "volume_mm3": 126865.31024074981
       }
     }
-  }
+  },
+  "kinematic_gate": {
+    "commit": "3393c787",
+    "report": "scripts/viscous-dream1/runs/shackle85_gate/cup_r565_bore_s600/gate_report.json",
+    "verdict": "PASS",
+    "samples": 1246,
+    "scope": "Kinematic only; no force, friction, torque or drag"
+  },
+  "print_geometry_changed": false
 }

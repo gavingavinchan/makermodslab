@@ -19,7 +19,7 @@
 Run: uv run --script shackle_tied_holder.py --tilt 85
 Angle is from vertical, with the head leaning toward the arm, bow toward/down.
 Selected CAD: holder 85 degrees; cup 85 degrees, tip 80 mm above floor.
-Full motion and physical print acceptance remain pending.
+Selected placement: cup tip radius565 mm, shackle bore600 mm; physical trials pending.
 Only this design's assets and report directory are written. No hardware or API.
 """
 
@@ -383,7 +383,7 @@ def build(tilt, out):
     steep = down_faces & nonbed & (overhang > 46)
     stats = {
         "tilt_from_vertical_deg": tilt,
-        "layout_status": "85 deg selected; full motion acceptance pending"
+        "layout_status": "85 deg selected; placement/kinematic evidence in layout_manifest.json"
         if tilt == 85
         else "Alternative CAD angle",
         "units": "mm",
@@ -497,8 +497,8 @@ def build_cup(
     tilt=85,
     tip_height=80,
     foot_offset=-48,
-    tip_forward=500,
-    shackle_forward=575,
+    tip_forward=565,
+    shackle_forward=600,
     assembly=None,
     azimuth=15,
 ):
@@ -766,7 +766,7 @@ def build_cup(
         "illustrative_layout": layout,
         "generator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "scene_frame": "metres; origin floor below pin tip; +X away from arm, +Y across, +Z up",
-        "status": "Selected 85/80 pose; full motion, wet sliding, print supports and drainage trial unverified",
+        "status": "Selected 85/80 geometry; see layout_manifest.json for kinematic gate; physical trials pending",
     }
     (out / "cup_checks.json").write_text(json.dumps(data, indent=2) + "\n")
     if do_render:
@@ -828,9 +828,9 @@ def main():
     parser.add_argument("--cup-tilt", type=float, default=85)
     parser.add_argument("--pin-tip-height", type=float, default=80)
     parser.add_argument("--cup-foot-offset", type=float, default=-48)
-    parser.add_argument("--cup-tip-forward", type=float, default=500)
+    parser.add_argument("--cup-tip-forward", type=float, default=565)
     parser.add_argument("--cup-azimuth", type=float, default=15)
-    parser.add_argument("--shackle-forward", type=float, default=575)
+    parser.add_argument("--shackle-forward", type=float, default=600)
     args = parser.parse_args()
     if not 0 <= args.cup_tilt <= 90 or args.pin_tip_height < 30:
         parser.error("Cup tilt 0..90 degrees; raised tip height >=30 mm")
