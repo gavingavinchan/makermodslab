@@ -306,6 +306,19 @@ the real arm (sim to real).
     `shackle_fixture_clearance.py` (holder session) only screens the static hand
     against the fixture; it is not this gate. Start only on Gavin's word or the
     holder session's CAD push.
+  - 2026-11-07, second relay: assets will land under
+    `scripts/viscous-dream1/runs/shackle_tied_holder/tilt_85deg` (use the
+    committed versions after the holder session's review). Cup OBJ local frame:
+    pin tip [0, 0, 80] mm, foot centre [-48, 0, 0]; place it rotated +15 deg about
+    vertical and translated to [482.963, 129.410, 0] mm in (s, w, h), w = sim +X
+    (= tip 500 mm from J1 at J1 +15 deg). Motion limits from the holder session's
+    conservative hand-box audit (limits, not proven clearances): near the holder
+    at the thread-catch and seated grips, open at most 12 mm per side (full
+    52.4 mm hits holder/ties at rolls ~58-120 deg; 26 mm being checked); pick
+    from the cup at roll 0 and withdraw along the pin axis toward J1 before any
+    roll (rolling toward 90 deg at the pedestal hits it); roll-0 pickup is 16.7 mm
+    under the water line at 500 mm (8.9-24.5 mm over tips 480-520 mm). Pin contact
+    with the fixture is still pending in the holder session.
   - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
     45 deg puts the wrist above J3's height whatever the distance); overhead
     camera above the water or housed; call-ledger cap for evaluation (~110
