@@ -21,8 +21,8 @@ What it does not do: dynamics, grasp forces, thread friction, torque (Gavin 2026
 The pin is moved kinematically (held = rigid to the hand; released = fixed; screwing = rotation about its axis with
 2.5 mm pitch advance). It is a geometric/kinematic gate, not a physics success claim.
 
-    MUJOCO_GL=egl ~/dreamtrial/.venv/bin/python shackle85_gate.py            # committed layout (cup 500, bore 575)
-    GATE_CUP_R_MM=565 GATE_BORE_S_MM=600 MUJOCO_GL=egl ... shackle85_gate.py  # moved placement (no reprint)
+    MUJOCO_GL=egl ~/dreamtrial/.venv/bin/python shackle85_gate.py            # the manifest's placement
+    GATE_CUP_R_MM=540 GATE_BORE_S_MM=625 MUJOCO_GL=egl ... shackle85_gate.py  # another placement (no reprint)
     ~/dreamtrial/.venv/bin/python shackle85_gate.py --summarise              # table over every run folder
 """
 
@@ -42,10 +42,7 @@ import shackle_scene
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE / "assets/shackle"
 FIX = HERE / "runs/shackle_tied_holder/tilt_85deg"
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "runs/shackle85_gate"
-if os.environ.get("GATE_CUP_R_MM") or os.environ.get("GATE_BORE_S_MM"):
-    OUT = OUT / (f"cup_r{float(os.environ.get('GATE_CUP_R_MM', 500)):.0f}"
-                 + (f"_bore_s{float(os.environ['GATE_BORE_S_MM']):.0f}" if os.environ.get("GATE_BORE_S_MM") else ""))
+OUT_ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else HERE / "runs/shackle85_gate"
 MANIFEST = json.loads((FIX / "layout_manifest.json").read_text())
 TABLE = shackle_scene.TABLE
 
@@ -64,7 +61,8 @@ def plane_to_world(p):
 # Shackle body frame in world: Z = pin axis toward the head (toward J1 = world +Y, and up), Y = across (world +X),
 # X = Y x Z; the bow runs along body -X, i.e. toward J1 and down (orientation session, 2026-11-07).
 R_SHACKLE = np.column_stack([[0, -C, S], [1, 0, 0], [0, S, C]])
-# GATE_BORE_S_MM moves the shackle, holder and ties together along the line (placement tolerance); default 575.
+# GATE_BORE_S_MM moves the shackle, holder and ties together along the line (placement tolerance); default: the
+# manifest's bore (600 since 348fefac).
 BORE_S_LAYOUT = MANIFEST["shackle_bore_midpoint_mm"][0]
 BORE_S = float(os.environ.get("GATE_BORE_S_MM", BORE_S_LAYOUT))
 SHACKLE_SHIFT = np.array([0.0, -(BORE_S - BORE_S_LAYOUT) / 1000, 0.0])  # plane S runs along world -Y
@@ -118,11 +116,13 @@ def rot(axis, angle):
 # --- the cup and the pin's pose in it ---------------------------------------------------------------------------
 RADIAL_CUP = np.array([np.sin(CUP_AZ), -np.cos(CUP_AZ), 0.0])  # away from J1 along the cup's line, world
 # GATE_CUP_R_MM moves the whole cup along its own radial line (same azimuth, height and tilt): a placement change, not
-# a reprint. Default: the committed layout's 500 mm.
+# a reprint. Default: the manifest's cup radius (565 since 348fefac).
 CUP_R_LAYOUT = float(np.hypot(*MANIFEST["cup_pin_tip_mm"][:2]))
 CUP_R = float(os.environ.get("GATE_CUP_R_MM", CUP_R_LAYOUT))
 CUP_SHIFT = RADIAL_CUP * (CUP_R - CUP_R_LAYOUT) / 1000
 CUP_TIP = plane_to_world(np.array(MANIFEST["cup_pin_tip_mm"]) / 1000)[0] + CUP_SHIFT
+# Every run lands in a folder named by the placement it actually used, defaults included.
+OUT = OUT_ROOT / f"cup_r{CUP_R:.0f}_bore_s{BORE_S:.0f}"
 CUP_EXTRACT = 0.040  # axial pull toward J1: 27 mm tip-to-mouth plus 13 mm before any sideways motion
 CUP_ABOVE = 0.040  # pre-grasp: open hand this far straight above the shank grip, then straight down
 ACROSS_CUP = np.array([np.cos(CUP_AZ), np.sin(CUP_AZ), 0.0])
@@ -789,7 +789,7 @@ def summarise_sweep(root):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--summarise"]:
-        summarise_sweep(HERE / "runs/shackle85_gate")
+        summarise_sweep(OUT_ROOT)
         sys.exit(0)
     result = Gate().run()
     print(json.dumps({k: v for k, v in result.items() if k not in ("stages",)}, indent=1, default=jsonable)[:6000])
