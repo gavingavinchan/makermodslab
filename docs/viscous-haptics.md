@@ -1746,6 +1746,21 @@ How Gavin wants the work done. These apply to every agent and tool.
   calibration, profile, fit and config it needs. Committed data stores
   repo-relative paths, never `~/Documents/...`. Never commit `frontend/dist`
   (rebuild locally) or multi-GB render output.
+- **Heavy binaries go through Git LFS, not git** (2026-11-06). By then this
+  branch had added ~1.9 GB to history against `main` (10 versions of the two
+  ~100 MB `.blend` files = 0.8 GB, 102 `.mp4` versions = 0.5 GB), every
+  version kept forever, and `final_scene.blend` was 96 MiB, just under
+  GitHub's 100 MiB per-file hard limit that would refuse the push. The root
+  `.gitattributes` now routes `.blend`/`.mp4`/`.mov`/`.webm`/`.npz`/`.exr`
+  under `scripts/viscous-dream1/` and `configs/viscous/` to LFS (both machines
+  have git-lfs); files already committed convert the next time they change.
+  Text run logs (`log.json`, `trajectory.json`, evidence JSON) stay in git:
+  they compress well and are what this doc cites, even though they are most of
+  T3's "+5.4M lines". Before committing a run, commit the inputs and the
+  evidence, not scratch: no Blender backups (`*.blend1`, `*.prelogo.blend` are
+  ignored), no render-frame dumps, no candidate/duplicate videos. Never `git
+  add` a non-LFS file over ~50 MB. This branch never merges into `main`
+  wholesale: land app code through a curated PR.
 - **No AI attribution trailers** (no `Co-Authored-By`) in commits or PRs.
 - **Safe tests: run them, don't wait.** Once Gavin has judged a test safe (for
   example the Star gripper actuation check), run it yourself and report the

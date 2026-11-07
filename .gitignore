@@ -101,3 +101,9 @@ jetson/
 # API. Contains personal data (emails, IPs) and an API key — local only, never
 # committed.
 waitlist/
+
+# Blender autosave/backup copies and pre-edit snapshots (never commit; the
+# tracked .blend is the record, and it goes through LFS via .gitattributes)
+*.blend1
+*.blend2
+*.prelogo.blend

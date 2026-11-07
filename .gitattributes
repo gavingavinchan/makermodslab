@@ -1,0 +1,15 @@
+# Viscous run output: heavy binaries go to Git LFS so history stays small and no
+# single file can hit GitHub's 100 MiB hard limit (final_scene.blend was at 96 MiB
+# when this was added, 2026-11-06). Text run logs (json/jsonl) stay in git: they
+# compress well and are the evidence the docs cite. Scoped to the Viscous paths so
+# the app's own files (frontend/public/media) are untouched. See the working rules
+# in docs/viscous-haptics.md.
+scripts/viscous-dream1/**/*.blend filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-dream1/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-dream1/**/*.mov filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-dream1/**/*.webm filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-dream1/**/*.npz filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-dream1/**/*.exr filter=lfs diff=lfs merge=lfs -text
+configs/viscous/**/*.blend filter=lfs diff=lfs merge=lfs -text
+configs/viscous/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
+configs/viscous/**/*.npz filter=lfs diff=lfs merge=lfs -text
