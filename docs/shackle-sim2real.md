@@ -293,6 +293,19 @@ the real arm (sim to real).
     joint limits; no arm/gripper collision with holder, shackle or tank; the
     scripted demo seats the pin end to end; pin and shackle visible in the
     overhead and wrist cameras; arm top vs the water line reported.
+  - 2026-11-07, gate spec updated from the orientation and holder sessions
+    (task 2's 2026-11-06/07 entry has the layout): use ONLY the holder
+    session's final 85 deg assets (curved cradle, ties, tilted cup on its
+    pedestal) at the paths it gives, never `assets/shackle/shackle_holder*` or
+    `runs/shackle_tied_holder/tilt_75deg`. Placement: shackle bore s 575,
+    h 98.5, pin 85 deg; cup pin tip 500 mm from J1 at J1 +15 deg (toward sim +X),
+    80 mm up, pin 85 deg. Whole arm, end to end: the 283 mm water line at every
+    step, the wall 40 mm behind J1 (elbow ahead of J1), a new start pose under
+    the line, both regrips, and an explicit check that the seated head grip's
+    fingertips (34.3 mm ahead of the pad TCP) clear the clear ear's outer face.
+    `shackle_fixture_clearance.py` (holder session) only screens the static hand
+    against the fixture; it is not this gate. Start only on Gavin's word or the
+    holder session's CAD push.
   - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
     45 deg puts the wrist above J3's height whatever the distance); overhead
     camera above the water or housed; call-ledger cap for evaluation (~110
