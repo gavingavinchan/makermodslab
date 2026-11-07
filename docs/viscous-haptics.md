@@ -1774,6 +1774,26 @@ gavin-linux (CANable `205038953846` on `ttyACM0`), the Star leader unplugged.
 - gavin-linux's `viscous_waterproof_01` record still points at unit 1's CANable;
   the scripts took `--port` explicitly. Not yet changed (Gavin's call).
 
+## Waterproof arm after the SubConn splice: CAN check (2026-11-07)
+
+*Intent:* Gavin, after re-doing the cable management with the SubConn
+connectors installed: "try to connect to it". Arm on the Mac (CANable
+`205038953846`), no Star leader plugged in, Lab running but idle.
+
+- Read-only check: bus opened without the enable handshake, each motor sent the
+  same clear-fault state refresh as the Lab's reads, closed with no disable write.
+  Nothing was energized.
+- *First try: no motor answered* (0/5 on all seven; the adapter itself
+  answered). Cause: the GND had come loose on the shore side of the splice;
+  Gavin fixed it.
+- *After the fix: all seven answer 5/5*, torque 0, MOS 25-26 C. Readings (deg):
+  pan +182.8, lift +297.4 (-62.6 one turn down), elbow 0.16, wrist_flex +40.4,
+  yaw -2.4, roll -3.6, gripper +242.1 (-117.9 one turn down). Elbow matches its
+  2026-10-11 folded reading exactly, so its zero survived the splice; the arm
+  was not folded at the time. Gripper -117.9 would be 2.8 deg past its lower soft
+  limit (-115.1); confirm its pose before any powered run.
+- No powered motion yet.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
