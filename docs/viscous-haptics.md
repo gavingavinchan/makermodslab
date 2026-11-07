@@ -1521,6 +1521,13 @@ now pickup **from the cup**, insert, then tighten. Astra implementation is
 running; first exports remain review material. Cup height is provisionally
 30 mm, pin-size bore; final tilt/placement awaits the environment session.
 
+2026-11-06, Astra round 1 reviewed: curved cradle/elliptical foot and enclosed
+Prusa-style routes replace the blocky first form. New environment finding:
+upright pin pickup violates the underwater wrist constraint. Astra round 2 is
+building a tilted cup on a raised pedestal; 30 mm is its axial cup length,
+with the pedestal height determined by pickup feasibility. Final dimensions
+and layout remain with the orientation session; no print has been selected.
+
 Model a U-shaped part and its bolt, have Astra insert and tighten it in sim,
 then test whether its in-context lessons carry to the real arm. Plan and task
 list in [shackle-sim2real.md](shackle-sim2real.md). 2026-10-28: model,

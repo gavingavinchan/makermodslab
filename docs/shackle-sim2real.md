@@ -102,6 +102,15 @@ the real arm (sim to real).
   drainage/air escape, independent stable foot and room to grasp above its lip.
   Final angle and cup placement wait for the environment session. This replaces
   the old assumption that the pin needs no stand.
+- 2026-11-06, Astra round 1 complete and parent visually reviewed: continuous
+  curved cradle, tapered elliptical 146 × 112 mm foot, two enclosed annular
+  tie returns with tangential mouths and locking-head pockets. Bow height stays
+  unchanged; 55°, 70°, 75° and 85° builds pass fit, export and 60 mm approach
+  corridor checks. **Cup revision in progress:** the orientation session found
+  an upright pickup would take the wrist above the water. Astra round 2 is
+  adapting the 30 mm axial cup to a near-horizontal pin on a raised pedestal,
+  with configurable tilt and pin-tip height. The round-1 upright cup is not the
+  task's selected pickup geometry. Final environment pose is still pending.
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).
