@@ -341,6 +341,35 @@ the real arm (sim to real).
     cup at roll 0 before any roll. The holder session's envelope audit is the
     authoritative hand-vs-fixture check (its palm meshes are open); the gate is
     whole arm, end to end. Use the `tilt_85deg` assets at the SHA it gives.
+  - **2026-11-07, gate run (Claude, offline, assets `0de8facd`):**
+    `scripts/viscous-dream1/shackle85_gate.py`, report
+    `scripts/viscous-dream1/runs/shackle85_gate/README.md`. The run is
+    kinematic: exact triangle-mesh distances for the whole arm and the pin,
+    water, wall, elbow, joint limits and self-collision at every sample.
+    - **CAD needs no revision.** The hand never comes within 20 mm of the
+      holder or ties; it gets 6.67 mm from the cup at the shank grasp.
+    - **The committed placement fails.** Cup tip at 500 mm: the pin can't be
+      pulled out of the cup (stops after 29 of 40 mm with J4 at its limit),
+      and the pre-grasp breaks the water line by 4.1 mm.
+    - **Recommended placement passes** (no reprint):
+      - cup tip at 565 mm, azimuth +15°, still 80 mm up;
+      - bore at s 600.
+      - Margins: 15.8 mm under water, at least 10° joint margin, 3.4 mm wall.
+    - **Placement window:**
+      - holder bore s 565-625 (below 565 the arm goes above the water; at
+        635+ it can't reach);
+      - cup tip 525-600 (540 or more for comfortable J4).
+    - **Gripper strategy findings:**
+      - The nominal seated head grip (TCP mid-head) puts the flat fingers
+        4.4 mm into the pin's collar and 1.7 mm into the clear ear. Gate it
+        with the fingertips 2 mm above the collar instead (TCP 120 mm from
+        the tip, distal 22 mm of the fingers on the tab). Gavin to judge
+        that grip on the real fingers.
+      - Descend onto the cup shank from above (an axial approach exceeds J4).
+      - 90 deg tightening strokes so the jaws alternate between the tab's
+        flats and its edges.
+    - **Not covered:** dynamics, grasp force, thread friction, torque, drag.
+      The overhead camera is still the old station camera.
   - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
     45 deg puts the wrist above J3's height whatever the distance); overhead
     camera above the water or housed; call-ledger cap for evaluation (~110

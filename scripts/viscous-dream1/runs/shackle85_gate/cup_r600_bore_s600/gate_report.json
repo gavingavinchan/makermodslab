@@ -1,0 +1,226 @@
+{
+ "assets_commit": "0de8facd",
+ "bore_s_mm": 600.0,
+ "cup_tip_radius_mm": 600.0,
+ "cup_tip_radius_layout_mm": 500.0,
+ "water_line_mm": 283.0,
+ "wall_y_mm_behind_j1": 40.0,
+ "head_grip_tcp_from_tip_mm": 120.15,
+ "cup_grip_tcp_from_tip_mm": 68.0,
+ "completed": true,
+ "samples": 1247,
+ "start_pose": {
+  "tcp_s_mm": 460.0,
+  "tcp_h_mm": 120.0,
+  "pitch_down_deg": 0,
+  "arm_top_mm": 262.6,
+  "visibility": {
+   "left": {
+    "cup_pedestal": 0.887,
+    "cup_pedestal_bbox_px": [
+     116.8,
+     141.2
+    ],
+    "shackle": 1.0,
+    "shackle_bbox_px": [
+     50.1,
+     113.6
+    ]
+   },
+   "top": {
+    "cup_pedestal": 1.0,
+    "cup_pedestal_bbox_px": [
+     32.2,
+     52.7
+    ],
+    "shackle": 1.0,
+    "shackle_bbox_px": [
+     23.0,
+     48.4
+    ]
+   }
+  }
+ },
+ "worst": {
+  "clearance_mm:finger~cup_pedestal": {
+   "value": 6.67,
+   "stage": "cup: close on the shank"
+  },
+  "clearance_mm:finger~pin (not held)": {
+   "value": 3.57,
+   "stage": "screw: reset after stroke 1 (open 18 mm/side, roll back)"
+  },
+  "clearance_mm:finger~shackle": {
+   "value": 2.97,
+   "stage": "insert: shank push until the fingertips are 3 mm off the clear ear"
+  },
+  "clearance_mm:pin~cup (seated in its bore)": {
+   "value": -0.0,
+   "stage": "start pose"
+  },
+  "clearance_mm:pin~cup_pedestal": {
+   "value": 13.66,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  },
+  "clearance_mm:pin~shackle": {
+   "value": 0.3,
+   "stage": "insert: shank push until the fingertips are 3 mm off the clear ear"
+  },
+  "clearance_mm:wrist_roll_link~cup_pedestal": {
+   "value": 74.98,
+   "stage": "cup: descend onto the shank"
+  },
+  "j3_ahead_of_j1_mm": {
+   "value": 110.49,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  },
+  "joint_limit_margin_deg": {
+   "value": 10.15,
+   "stage": "start pose"
+  },
+  "pin_water_margin_mm": {
+   "value": 155.75,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  },
+  "wall_margin_mm": {
+   "value": 3.39,
+   "stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)"
+  },
+  "water_margin_mm": {
+   "value": 15.77,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  }
+ },
+ "stages": {
+  "start pose": {
+   "samples": 1,
+   "min_water_margin_mm": 20.4,
+   "min_clearance_mm": 133.23,
+   "self_collision": false
+  },
+  "cup": {
+   "samples": 116,
+   "min_water_margin_mm": 20.4,
+   "min_clearance_mm": 6.67,
+   "self_collision": false
+  },
+  "transfer": {
+   "samples": 12,
+   "min_water_margin_mm": 15.8,
+   "min_clearance_mm": 24.79,
+   "self_collision": false
+  },
+  "insert": {
+   "samples": 40,
+   "min_water_margin_mm": 16.6,
+   "min_clearance_mm": 0.3,
+   "self_collision": false
+  },
+  "regrip": {
+   "samples": 42,
+   "min_water_margin_mm": 20.4,
+   "min_clearance_mm": 0.3,
+   "self_collision": false
+  },
+  "push": {
+   "samples": 40,
+   "min_water_margin_mm": 20.9,
+   "min_clearance_mm": 0.3,
+   "self_collision": false
+  },
+  "screw": {
+   "samples": 912,
+   "min_water_margin_mm": 39.9,
+   "min_clearance_mm": 3.57,
+   "self_collision": false
+  },
+  "finish": {
+   "samples": 84,
+   "min_water_margin_mm": 20.4,
+   "min_clearance_mm": 5.94,
+   "self_collision": false
+  }
+ },
+ "failures": [],
+ "nominal_head_grip_seated": {
+  "stage": "nominal head grip (screening pose), seated",
+  "q": [
+   -0.0,
+   -2.84926,
+   2.14827,
+   0.7752,
+   0.0,
+   -0.0
+  ],
+  "opening_per_side_mm": 4.59,
+  "held": null,
+  "roll_deg": 0.0,
+  "arm_top_mm": 217.67,
+  "arm_top_part": "left_wrist_pitch_link",
+  "pin_top_mm": 117.68,
+  "back_beyond_wall_mm": -10.0,
+  "j3_ahead_of_j1_mm": 153.21,
+  "self_collision": false,
+  "min_limit_margin_deg": 13.11,
+  "fingertip_body_z_mm": 22.7,
+  "pin_tip_body_z_mm": -39.93,
+  "dist_mm": {
+   "finger~shackle": [
+    -1.7,
+    [
+     -8.3,
+     560.3,
+     95.8
+    ]
+   ],
+   "finger~pin (not held)": [
+    0.0,
+    null
+   ]
+  },
+  "finger_pin_max_penetration_mm": 4.44,
+  "fingertip_minus_collar_top_mm": -21.22,
+  "fingertip_minus_clear_ear_face_mm": -17.23
+ },
+ "events": [
+  {
+   "check": "holder pose matches layout_holder_plane_frame.obj",
+   "max_vertex_error_mm": 4.999477942746466e-06,
+   "note": null,
+   "bounds_error_mm": 4.741544823438915e-06
+  },
+  {
+   "check": "pin_seated_in_cup_floor_frame.obj vs our cup tip and axis",
+   "along_axis_mm": [
+    -4.774261132488107e-06,
+    107.9000016633831
+   ],
+   "max_radius_mm": 14.58285833849619
+  },
+  {
+   "check": "fixture clearance holder~ties_and_heads",
+   "mm": 0.49
+  },
+  {
+   "check": "fixture clearance holder~cup_pedestal",
+   "mm": 59.38
+  },
+  {
+   "check": "fixture clearance holder~shackle",
+   "mm": 0.69
+  },
+  {
+   "check": "fixture clearance ties_and_heads~cup_pedestal",
+   "mm": 90.81
+  },
+  {
+   "check": "fixture clearance ties_and_heads~shackle",
+   "mm": 3.92
+  },
+  {
+   "check": "fixture clearance cup_pedestal~shackle",
+   "mm": 101.22
+  }
+ ],
+ "verdict": "PASS"
+}

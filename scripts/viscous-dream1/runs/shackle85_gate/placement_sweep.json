@@ -1,0 +1,238 @@
+[
+ {
+  "cup_tip_radius_mm": 500.0,
+  "bore_s_mm": 575.0,
+  "verdict": "FAIL",
+  "completed": false,
+  "water_margin_mm": -4.13,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 0.0,
+  "joint_limit_stage": "cup: extract along the axis toward J1",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "arm above the water line",
+   "value_mm": -4.130001533000041,
+   "stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)"
+  }
+ },
+ {
+  "cup_tip_radius_mm": 500.0,
+  "bore_s_mm": 600.0,
+  "verdict": "FAIL",
+  "completed": false,
+  "water_margin_mm": -4.13,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 0.0,
+  "joint_limit_stage": "cup: extract along the axis toward J1",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "arm above the water line",
+   "value_mm": -4.130001533000041,
+   "stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)"
+  }
+ },
+ {
+  "cup_tip_radius_mm": 525.0,
+  "bore_s_mm": 600.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 5.98,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 1.35,
+  "joint_limit_stage": "cup: extract along the axis toward J1",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 540.0,
+  "bore_s_mm": 600.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 11.41,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 5.4,
+  "joint_limit_stage": "cup: extract along the axis toward J1",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 550.0,
+  "verdict": "FAIL",
+  "completed": true,
+  "water_margin_mm": -3.95,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 7.29,
+  "joint_limit_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "arm above the water line",
+   "value_mm": -3.9500015330000338,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  }
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 560.0,
+  "verdict": "FAIL",
+  "completed": true,
+  "water_margin_mm": -0.64,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 9.56,
+  "joint_limit_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "arm above the water line",
+   "value_mm": -0.6400015330000315,
+   "stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)"
+  }
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 565.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 1.12,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 575.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 4.87,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 590.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 11.13,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 600.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 15.77,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 610.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 17.57,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 625.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 17.57,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 10.12,
+  "joint_limit_stage": "insert: shank push until the fingertips are 3 mm off the clear ear",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 635.0,
+  "verdict": "FAIL",
+  "completed": false,
+  "water_margin_mm": 17.57,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 0.0,
+  "joint_limit_stage": "insert: shank push until the fingertips are 3 mm off the clear ear",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "sequence did not complete",
+   "events": [
+    {
+     "stage": "insert: shank push until the fingertips are 3 mm off the clear ear",
+     "issue": "stopped",
+     "error": "insert: shank push until the fingertips are 3 mm off the clear ear: IK lost at u=1.00"
+    },
+    {
+     "stage": "nominal head grip (screening pose), seated",
+     "issue": "no IK",
+     "error": "nominal head grip (screening pose), seated: no IK solution for [   0.  -578.2  103.5]"
+    }
+   ]
+  }
+ },
+ {
+  "cup_tip_radius_mm": 565.0,
+  "bore_s_mm": 650.0,
+  "verdict": "FAIL",
+  "completed": false,
+  "water_margin_mm": 17.57,
+  "water_margin_stage": "cup: pre-grasp (open hand 40 mm straight above the shank grip, roll 0)",
+  "joint_limit_margin_deg": 0.0,
+  "joint_limit_stage": "insert: shank push until the fingertips are 3 mm off the clear ear",
+  "wall_margin_mm": 3.39,
+  "first_failure": {
+   "check": "sequence did not complete",
+   "events": [
+    {
+     "stage": "insert: shank push until the fingertips are 3 mm off the clear ear",
+     "issue": "stopped",
+     "error": "insert: shank push until the fingertips are 3 mm off the clear ear: IK lost at u=0.75"
+    },
+    {
+     "stage": "nominal head grip (screening pose), seated",
+     "issue": "no IK",
+     "error": "nominal head grip (screening pose), seated: no IK solution for [   0.  -593.2  103.5]"
+    }
+   ]
+  }
+ },
+ {
+  "cup_tip_radius_mm": 590.0,
+  "bore_s_mm": 600.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 15.77,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ },
+ {
+  "cup_tip_radius_mm": 600.0,
+  "bore_s_mm": 600.0,
+  "verdict": "PASS",
+  "completed": true,
+  "water_margin_mm": 15.77,
+  "water_margin_stage": "transfer: to the pre-insert pose (tip 30 mm before the clear ear)",
+  "joint_limit_margin_deg": 10.15,
+  "joint_limit_stage": "start pose",
+  "wall_margin_mm": 3.39,
+  "first_failure": null
+ }
+]
