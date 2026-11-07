@@ -1,0 +1,1016 @@
+{
+ "water_line_mm": 283.0,
+ "wall_behind_j1_mm": 40.0,
+ "start_pose": {
+  "arm_top_mm": 388.1,
+  "j3_mm": 274.7
+ },
+ "rows": [
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 350,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 375,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 400,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 425,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 450,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 475,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 500,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 13,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 259.8,
+   "j3_mm": 231.3,
+   "per_roll": {
+    "0": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "15": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "30": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "45": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "60": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "120": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "135": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      -0.0,
+      -2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "225": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "240": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "300": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "315": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "330": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "345": {
+     "top_mm": 259.8,
+     "j3_mm": 231.3,
+     "q": [
+      -0.0,
+      -2.3982,
+      0.894,
+      1.5784,
+      0.0,
+      0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 23.2
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 525,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 13,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 249.9,
+   "j3_mm": 221.4,
+   "per_roll": {
+    "0": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "15": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "30": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "45": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "60": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "120": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "135": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      -0.0,
+      -2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "225": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "240": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "300": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "315": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "330": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "345": {
+     "top_mm": 249.9,
+     "j3_mm": 221.4,
+     "q": [
+      -0.0,
+      -2.4789,
+      1.1038,
+      1.4493,
+      0.0,
+      0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 33.1
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 550,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 13,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 237.3,
+   "j3_mm": 208.8,
+   "per_roll": {
+    "0": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "15": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "30": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "45": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "60": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "120": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "135": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      -0.0,
+      -2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "225": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "240": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "300": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "315": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "330": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "345": {
+     "top_mm": 237.3,
+     "j3_mm": 208.8,
+     "q": [
+      -0.0,
+      -2.5757,
+      1.337,
+      1.3128,
+      0.0,
+      0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 45.7
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 575,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 13,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 220.7,
+   "j3_mm": 192.2,
+   "per_roll": {
+    "0": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "15": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "30": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "45": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "60": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "120": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "135": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      -0.0,
+      -2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "225": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      2.3562
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "240": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      2.0944
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "300": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      1.0472
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "315": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      0.7854
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "330": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      0.5236
+     ],
+     "top_part": "left_upper_arm_link"
+    },
+    "345": {
+     "top_mm": 220.7,
+     "j3_mm": 192.2,
+     "q": [
+      -0.0,
+      -2.6945,
+      1.6088,
+      1.1599,
+      0.0,
+      0.2618
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 62.3
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 600,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": "left_forearm_link",
+   "reachable_rolls": 13,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 198.7,
+   "j3_mm": 168.4,
+   "per_roll": {
+    "0": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "15": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -0.2618
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "30": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -0.5236
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "45": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -0.7854
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "60": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -1.0472
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "120": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -2.0944
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "135": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      -0.0,
+      -2.3562
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "225": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      2.3562
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "240": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      2.0944
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "300": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      1.0472
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "315": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      0.7854
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "330": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      0.5236
+     ],
+     "top_part": "left_forearm_link"
+    },
+    "345": {
+     "top_mm": 198.7,
+     "j3_mm": 168.4,
+     "q": [
+      -0.0,
+      -2.854,
+      1.9592,
+      0.969,
+      0.0,
+      0.2618
+     ],
+     "top_part": "left_forearm_link"
+    }
+   },
+   "margin_mm": 84.3
+  },
+  {
+   "tilt_deg": 85.0,
+   "distance_mm": 625,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  }
+ ]
+}

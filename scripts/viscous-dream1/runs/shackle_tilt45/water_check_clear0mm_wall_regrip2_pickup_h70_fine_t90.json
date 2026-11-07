@@ -1,0 +1,88 @@
+{
+ "water_line_mm": 283.0,
+ "wall_behind_j1_mm": 40.0,
+ "start_pose": {
+  "arm_top_mm": 388.1,
+  "j3_mm": 274.7
+ },
+ "rows": [
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 470,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 480,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 490,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 500,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 510,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 90.0,
+   "distance_mm": 520,
+   "grip": "cup pickup",
+   "center_height_mm": 70.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  }
+ ]
+}

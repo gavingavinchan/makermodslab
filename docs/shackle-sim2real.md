@@ -111,6 +111,40 @@ the real arm (sim to real).
   adapting the 30 mm axial cup to a near-horizontal pin on a raised pedestal,
   with configurable tilt and pin-tip height. The round-1 upright cup is not the
   task's selected pickup geometry. Final environment pose is still pending.
+- 2026-11-06/07, **layout for the aquarium** (orientation session; selected
+  numbers not yet seen by Gavin, who was in flight). Gavin's constraints, in
+  order: the bolt "at 45 degrees, with the top pointed towards the arm",
+  everything on the vertical plane straight ahead of the arm (pin axis, U and
+  shackle); then the shackle flipped 180° about the pin so the bow points toward
+  the arm and down; then the tank: "the water level is not much higher than j3",
+  set precisely as **J3's height with the J2–J3 link vertical = 283 mm** above
+  the floor, no arm part above it; "elbow cannot be behind j1, as it is the
+  aquarium wall" (J1 at the very edge of the long tank; wall taken at the base's
+  back edge, 40 mm behind J1); the tilt "does not have to be exactly 45deg";
+  "regripping is fine, otherwise kinda impossible".
+  Why 45° died: the wrist pitch sits ~248 mm back along the gripper axis from
+  the grip, so a 45° approach puts it ~175 mm above the pin head at any
+  distance (68–124 mm out of the water). Only near-horizontal pins at long
+  reach stay under. **Selected:** pin **85° from vertical**, head toward J1, bow
+  on the floor, bore midpoint **575 mm** ahead of J1 at h 98.5 mm (body spans
+  s 521–620 mm). Worst moment is the head regrip after the shank push, 17 mm
+  under the water; 550 mm still 6 mm under, 600 mm still reachable, 625 mm
+  cannot seat. Regrip plan forced by the gripper: the palm is 53.4 mm behind the
+  pad TCP, so ≤ ~50 mm of the 108 mm pin may sit behind the grip (shank grip 62
+  mm above the tip, push until the fingertips near the clear ear, regrip on the
+  head, push, screw). **Cup:** an upright cup is impossible underwater; on the
+  line in front of the shackle it blocks the insertion path, so it goes beside
+  the line: pin 85°, head toward J1, tip 500 mm from J1 with J1 turned 15°
+  (~129 mm to the side), pin axis 80 mm up at the tip (pedestal), pickup grip 68
+  mm above the tip (fingertips clear a 30 mm cup's rim). Reachable 480–520 mm.
+  The task's start pose (top 388 mm) is out of the water and needs replacing.
+  Screening only (IK poses with J1 = J5 = 0, self/table collisions, no motion
+  continuity, no holder/shackle/cup collisions, no torque); open check: whether
+  the seated head grip's fingertips (34 mm past the pads) clear the clear ear.
+  Tools: `scripts/viscous-dream1/shackle_tilt45_water_check.py` (results in
+  `runs/shackle_tilt45/water_check_*.json`), figure
+  `runs/shackle_tilt45/shackle_water_line_283mm_planar.png`, orientation
+  sketches `shackle_tilt45_sketch.py`.
 - [ ] **3. Simulation scene.** Put the part, holder and bolt into the MuJoCo
   scene with our arm, with thread engagement modelled (reuse the flange work's
   thread gate and friction).

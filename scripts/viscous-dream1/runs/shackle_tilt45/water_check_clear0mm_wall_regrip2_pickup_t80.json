@@ -1,0 +1,221 @@
+{
+ "water_line_mm": 283.0,
+ "wall_behind_j1_mm": 40.0,
+ "start_pose": {
+  "arm_top_mm": 388.1,
+  "j3_mm": 274.7
+ },
+ "rows": [
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 250,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 275,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 300,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 325,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 350,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 375,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 400,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 425,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 450,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 475,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": null,
+   "reachable_rolls": 0,
+   "best_window_start_deg": null,
+   "arm_top_mm": null,
+   "j3_mm": null,
+   "per_roll": {},
+   "margin_mm": null
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 500,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 1,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 238.0,
+   "j3_mm": 209.5,
+   "per_roll": {
+    "0": {
+     "top_mm": 238.0,
+     "j3_mm": 209.5,
+     "q": [
+      -0.0,
+      -2.5704,
+      0.9696,
+      1.5877,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 45.0
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 525,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 1,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 228.7,
+   "j3_mm": 200.2,
+   "per_roll": {
+    "0": {
+     "top_mm": 228.7,
+     "j3_mm": 200.2,
+     "q": [
+      -0.0,
+      -2.6379,
+      1.181,
+      1.4438,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 54.3
+  },
+  {
+   "tilt_deg": 80.0,
+   "distance_mm": 550,
+   "grip": "cup pickup",
+   "center_height_mm": 15.0,
+   "top_part": "left_upper_arm_link",
+   "reachable_rolls": 1,
+   "best_window_start_deg": 0,
+   "arm_top_mm": 216.1,
+   "j3_mm": 187.6,
+   "per_roll": {
+    "0": {
+     "top_mm": 216.1,
+     "j3_mm": 187.6,
+     "q": [
+      -0.0,
+      -2.7259,
+      1.4199,
+      1.293,
+      0.0,
+      -0.0
+     ],
+     "top_part": "left_upper_arm_link"
+    }
+   },
+   "margin_mm": 66.9
+  }
+ ]
+}
