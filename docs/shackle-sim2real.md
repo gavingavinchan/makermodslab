@@ -166,3 +166,48 @@ the real arm (sim to real).
 - [ ] **6. Real world.** Print the holder, set up the real part, run Astra with
   its sim lessons on the real arm. Powered-run safety rules in
   viscous-haptics.md apply.
+- [ ] **7. Fine-tune Dream-1 on the shackle task** (Gavin, 2026-11-06): "dream1
+  does not support my arm yet. can we fine tune dream1 to make it work for this
+  simulated task ... assume that this is in air rather than water first."
+  - Why a fine-tune: with any arm but YAM the public checkpoints read only the
+    images (state withheld), which is enough for apple-to-bowl but gave 0/3 here.
+    The installed client (`dreamlabs_client` 1.0.3) now does the whole loop
+    ourselves: `add_embodiment` (our state/action spans and cameras),
+    `validate_dataset` (local, free; LeRobot **v2.1** only), `upload_dataset`,
+    `finetune(..., use_eef=True, lr_schedule="cosine")`, then
+    `policy({"checkpoint": "dream-1-ft:..."})`. `use_eef` needs both arms' six
+    EEF parts in YAM's pose convention; its docstring warns "You may not get
+    high reliability on specialist tasks yet."
+  - **Real first, then sim** (Gavin agreed 2026-11-06): set up the arm, cameras
+    and shackle in the aquarium (dry first = "in air"), measure it, then build the
+    sim to match, because Dream-1 lives or dies by what its cameras see (the
+    wrist-camera finding in viscous-haptics.md). Building the sim first would
+    mean regenerating every demo once the real setup differs.
+  - Torque: Gavin, 2026-11-06, "dont worry too much about the torque limits";
+    log peak torque, gate nothing on it.
+  - Tonight (layout-independent): ChArUco camera target
+    (`scripts/viscous-dream1/shackle_real/charuco_target.py`, 7x5 x 30 mm, A4 and
+    Letter landscape, print at 100% and check the 100 mm bar, laminate); a
+    closed-loop privileged expert that can re-plan from any state, with the
+    scene's dimensions in one config; a sim -> LeRobot v2.1 writer checked with
+    `validate_dataset`; a v3 -> v2.1 converter for real Lab recordings; a staged
+    evaluation harness (grasped, inserted, engaged, turns, seated). No uploads
+    and no billed calls until Gavin says so.
+  - 2026-11-07 (hackathon day) capture at the dry tank: positions of holder,
+    pin start, tank walls and floor and planned water line relative to the arm
+    base (photo with a ruler); one frame per camera with the ChArUco board at a
+    measured spot; camera models/resolution and the wrist mount; reference
+    frames at the start pose; the tool point with `dreamcli tcp`; optionally
+    20-50 dry teleop demos.
+  - **Gate before Gavin prints the holder (morning of 2026-11-07):** once the
+    other thread's tilted-layout environment is done, Claude runs one
+    feasibility test of it: the printed holder STL is the sim's holder mesh;
+    the pin clears both ears; IK reaches every task pose (grasp, lift,
+    align, insert, every tightening stroke, regrasps) inside the left mount's
+    joint limits; no arm/gripper collision with holder, shackle or tank; the
+    scripted demo seats the pin end to end; pin and shackle visible in the
+    overhead and wrist cameras; arm top vs the water line reported.
+  - Open: the layout (upright v2 vs 45 deg vs ~75 deg; the other thread found
+    45 deg puts the wrist above J3's height whatever the distance); overhead
+    camera above the water or housed; call-ledger cap for evaluation (~110
+    calls per 4.4 min episode); fine-tune cost (ask Ryan).
