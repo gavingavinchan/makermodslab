@@ -130,7 +130,8 @@ def test_walls_refuse_but_floor_allows_contact(guard):
     assert not guard.check_pose({**WORK, "shoulder_pan": 160.0}).ok
     # Resting on the floor, as at the end of the trace: allowed.
     floor_slack = min(v for (link, face), v in guard.clearances(REST).items() if face == "floor")
-    assert floor_slack < 20  # the lowest vertex is within ~5 mm of the floor bound
+    # The 11-07 trace's rest; the floor bound moved down 25 mm when Gavin raised the base (2026-11-08).
+    assert floor_slack < 45
     assert guard.check_pose(REST).ok
 
 
@@ -142,7 +143,7 @@ def test_floor_press_is_bounded(guard, raw):
     pressing = variant(raw, guard, planes_mm={**raw["planes_mm"], "floor": {"value": lowest + 30.0}})
     verdict = pressing.check_pose(REST)
     assert not verdict.ok and verdict.face == "floor"  # 30 mm into the floor: refused
-    assert floor == -6.0
+    assert floor == -31.0  # measured at rest after the base was raised (2026-11-08)
 
 
 def test_limit_clamps_at_the_wall_and_the_granted_path_is_clear(guard):

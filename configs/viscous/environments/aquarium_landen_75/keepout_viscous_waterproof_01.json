@@ -35,14 +35,14 @@
       "source": "near (80) minus nominal inner length 734 mm; out of reach (furthest collision point ~610 mm)."
     },
     "floor": {
-      "value": -6.0,
+      "value": -31.0,
       "status": "bound",
-      "source": "Highest floor the evidence allows: the fingers' lowest mesh point reached -6.2 mm in the trace, so the glass is at -6 or lower. Gavin: \"the true gap is more like 15mm\" (floor ~ -15). Floor contact is allowed; the highest plausible floor bounds how hard a command can press into it."
+      "source": "Gavin 2026-11-08: \"i raised the bottom of the arm a bit more than before\". Lying on the glass at rest (shoulder_lift -201.7, elbow 157.9, wrist_flex 55.0, measured by the runner's start gate), wrist_yaw_link's lowest mesh point is at -31 mm, so the floor is there or lower. Was -6 (the 2026-11-08 trace's -6.2 mm, before the base was raised; Gavin then put the true gap at ~15 mm). Floor contact is allowed; floor_press_mm bounds how far below this a command may reach."
     },
     "rim": {
-      "value": 427.0,
+      "value": 411.0,
       "status": "estimate",
-      "source": "Lowest plausible rim: Gavin's floor at about -15 mm plus the nominal 442 mm inner height (450 outer - 8 glass)."
+      "source": "Lowest plausible rim: the floor at -31 mm (base raised 2026-11-08) plus the nominal 442 mm inner height (450 outer - 8 glass). Was 427 with the floor at about -15."
     }
   },
   "margins_mm": {

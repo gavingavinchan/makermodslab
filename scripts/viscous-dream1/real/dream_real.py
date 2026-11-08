@@ -1071,7 +1071,8 @@ class Episode:
             self.dream_start = self.start_target(self.start_pose)
             self._phase("start gate", "measured rest (limits + tank guard) and the Dream start pose (+ box)")
             if problems := self.start_gate(self.start_pose, self.dream_start):
-                raise RefusedError("start pose refused: " + "; ".join(problems))
+                measured = ", ".join(f"{m} {v:.1f}" for m, v in self.start_pose.items())
+                raise RefusedError(f"start pose refused (measured {measured}): " + "; ".join(problems))
             legs = self.plan_approach(self.start_pose, self.dream_start)
             for k, steps in enumerate(legs, 1):
                 approach.extend((k, i == len(steps) - 1, step) for i, step in enumerate(steps))

@@ -182,7 +182,7 @@ def test_trace_rest_slack_per_face(guard):
     # The numbers the module docstring states (sampled at the 20 Hz substeps).
     assert slack["near"] > 9.0
     assert slack["floor"] > 15.5
-    assert slack["rim"] > 43.0
+    assert slack["rim"] > 27.0  # the rim is 16 mm lower relative to the raised base (2026-11-08)
     assert slack["left"] > 45.0
     assert slack["right"] > 60.0
     assert slack["far"] > 50.0
