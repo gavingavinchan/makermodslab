@@ -200,6 +200,35 @@ restore paths in the DAgger runner.
   `wrist_l` slot, the inputs check, the tank guard merge. Noticed: the dry run's plan
   id (01054fd58f) was the same before and after the rest change, so the plan id does
   not cover the rest.
+- *Status (2026-11-08, later): tank guard reviewed, not yet merged.* Gavin: "how
+  about you check the tank guard, i have no idea how good or bad it is". Branch
+  `feat/viscous-dream1-tank-box` (aa7075a8, 5 commits): the code is
+  `makermodslab/tank_guard.py` (324 lines), its keep-out config and 15 tests; the
+  other ~92k lines are validation evidence. Verdict: **the geometry is sound**. It
+  checks every collision-mesh vertex of every moving link against six planes and
+  *proves* the straight joint-space path clear (a per-joint reach bound sets the
+  sampling so nothing moves more than 2 mm unchecked; vertex-only checks are exact
+  for half-spaces). An independent checker re-did 562,508 poses at <= 0.05 deg and
+  found no unsafe grant. It merges into `feat/viscous-arm` with no conflicts; on the
+  trial merge all 44 tests pass (15 guard + 29 runner) and the dry run is guarded.
+  From today's start pose: start gate passes (tightest: upper-arm heel vs the near
+  wall, 12.8 mm), the dry run's 481 substeps are all ok, median 1.4 ms, max 73 ms.
+  **What it cannot fix are its inputs:** (1) the near (back) wall is a 40 mm
+  estimate, never traced, and it is the binding face everywhere around the start pose
+  (upper-arm heel at 7-13 mm slack, on a link that has 0 mm margin precisely because
+  the wall is unknown); (2) the base slides about 30 mm under a push, which no margin
+  covers; (3) cable padding is an unmeasured 40 mm. Integration findings in
+  `dream_real.py`: (a) `plan_chunk` runs inline in the 20 Hz loop, so a chunk that
+  runs into a wall is clamped substep by substep at up to ~257 ms each (the report's
+  wall-clamp benchmark), stalling feedback and trip checks for seconds while the arm
+  holds; proposed: stop on a keep-out clamp (or cap planning time) for first runs.
+  (b) Nothing moves the arm from its torque-off rest (folded, J1 ~189-191) to the
+  start pose before Dream's first call, and a Lab teleop stop returns the arm to its
+  session start, so a live run would start Dream from the folded pose, not from the
+  recorded start pose. (c) Minor: the runner's gripper window ends at -1.03 deg, the
+  guard's at -2.92, so the guard clips the closed end; and from the folded pose its
+  limit clips make a 3.5 deg pan step the 30 deg/s bus backstop may slew-limit,
+  slightly bending the proven path.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
