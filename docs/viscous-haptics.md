@@ -470,6 +470,17 @@ restore paths in the DAgger runner.
   IK flips judged row to row on Dream's own chunk). Replaying call 2 from the stuck pose:
   17 rows skipped, 118 substeps (5.9 s), hand 41 -> 48 cm out and 119 -> 39 mm down;
   this replay is now a test. Gavin raised today's call limit to 200 (ledger cap edited).
+- *Status (2026-11-08, later): Dream opens the gripper and works the ball area.* The
+  approach first tripped the 5 Nm / 5 s tier (live 224555Z, 0 calls: lifting off the floor
+  holds 5.3-6.2 Nm for 5-6 s); Gavin approved 6.5 Nm. Live 224827Z (both cameras,
+  measured state, skip-ahead, 11 calls, 102 billed of today's 200, stopped by Gavin):
+  ~48 s of Dream control, 764 substeps. Call 1 the usual pull-in (skip-ahead kept 83
+  substeps); calls 2-3 down to the floor at ~40 cm, centred, gripper opened to 0.72 /
+  0.51; calls 5-11 at ~16-18 cm out, at floor height, side to side (y -54..+40 mm),
+  opening and closing (measured jaw down to -83 deg of -115). First full reach/open/close
+  behaviour on the real arm. Gripper tip lowest 6.5 mm under the -28 floor line (the
+  guard allows 10). Return: three legs settled, released at the rest. Peaks 6.1 Nm,
+  41 C, 23 deg/s.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
