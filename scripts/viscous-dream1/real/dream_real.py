@@ -82,6 +82,11 @@ START_LIMIT_TOLERANCE_DEG = 5.0  # the arm rests a few degrees outside soft limi
 # Gavin 2026-11-08: "as long as we go slow, must keep the 15deg/s limits". Every arm motion the runner
 # commands (Dream substeps, the approach, every return leg) and the bus backstop under it are capped here.
 HARD_ARM_SPEED_DEG_S = 15.0
+# MIT (kp, kd) overrides for this runner only (the Lab's defaults are untouched). The follower's shoulder/
+# elbow (30, 2) are untuned soft placeholders: at the start pose, in water, the shoulder sat 9.5 deg and
+# the elbow 5.4 deg below target, the hand ~12 cm under its command, and Dream chased that (live
+# 2026-11-08T211253Z). Gavin approved 60/3 to roughly halve the sag; torque to hold is unchanged.
+FOLLOWER_GAINS = {"shoulder_lift": (60.0, 3.0), "elbow_flex": (60.0, 3.0)}
 DEFAULT_HOLD_S = 120.0  # --rehearse: how long to hold at the Dream start pose before stopping by itself
 SCENARIOS = (
     "nominal",
@@ -502,6 +507,7 @@ class LabArm:
             leader_config="",
         )
         config = build_follower_config(request, cameras=_build_camera_configs(cameras, _platform_backend()))
+        config.gains = {**config.gains, **FOLLOWER_GAINS}
         robot = make_robot_from_config(config)
         can_speed_limit.install(robot, self.backstop)
         remote_can.prepare(robot)
@@ -1526,6 +1532,7 @@ def build_plan(
         "follower_port": record["follower_port"],
         "follower_config": record["follower_config"],
         "joints_that_move": {m: joint_plan(m, limits[m], ik, jmap, settings) for m in core.MOTORS},
+        "follower_gains_override": {m: list(g) for m, g in FOLLOWER_GAINS.items()},
         "limits_source": limits_source,
         "right_arm": "none on the rig; reported to Dream parked at the arm file's rest, grip 1 (open); its answers are dropped",
         "speed": {
