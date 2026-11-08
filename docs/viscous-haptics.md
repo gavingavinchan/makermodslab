@@ -233,6 +233,11 @@ restore paths in the DAgger runner.
   guard's at -2.92, so the guard clips the closed end; and from the folded pose its
   limit clips make a 3.5 deg pan step the 30 deg/s bus backstop may slew-limit,
   slightly bending the proven path.
+- *Status (2026-11-08, later): tank guard merged* into `feat/viscous-arm` (5fecff6e),
+  Gavin: "we measured the tank once before. so can you just merge it?". 44 tests pass;
+  the dry run is guarded and `--live` no longer lists the guard. The near wall is still
+  the keep-out file's 40 mm estimate (the 2026-11-08 trace covered the side walls and
+  floor), and runner gaps (a) and (b) above are still open.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
