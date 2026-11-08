@@ -2059,6 +2059,13 @@ script), the fit gates, the tower/cable extras, API and storage, the
 never-energize contract and the follow-ups. It measures and displays only;
 teleop still has no tank keep-out or start gate.
 
+2026-11-07, after the merge (5c642f32) put the **Measure tank** button in the
+running Lab: Gavin, "i will only move the arm manually when calibrating for
+now". So for now the arm moves in the tank only by hand, torque off, which is
+the one mode the measurement allows. The follower start gate and the J1 wrap
+guard stay at the top of the must-haves. They are parked, not dropped, and
+must be built before the next powered teleop in the tank.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
