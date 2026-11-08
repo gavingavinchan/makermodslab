@@ -156,9 +156,12 @@ class TankModelTest(unittest.TestCase):
             self.assertLessEqual(hi, ik[m][1] + 1e-6)
         self.assertAlmostEqual(math.degrees(tank["shoulder_pan"].lower), -90.0, places=6)
 
-    def test_generated_model_is_pending_and_has_no_tool_record(self):
+    def test_generated_model_is_approved_and_has_no_tool_record(self):
+        # Gavin approved it provisionally (2026-11-08), on condition every live motion stays <= 15 deg/s.
         provenance = json.loads((TANK / "viscous_waterproof_tank.provenance.json").read_text())
-        self.assertEqual(provenance["approval"]["status"], "pending_gavin_approval")
+        self.assertEqual(provenance["approval"]["by"], "Gavin")
+        urdf = (TANK / "viscous_waterproof_tank.urdf").read_bytes()
+        self.assertIsNone(core.approval_problem(urdf, provenance))
         arm = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())
         self.assertNotIn("tcp_calibration", arm)
         self.assertEqual(arm["base"], "dream_base")
@@ -364,18 +367,47 @@ class ImageTest(unittest.TestCase):
         self.assertEqual(state["state.right_grip"], [1.0])
 
 
+class RecordingStub(dream_real.DreamInternalStub):
+    """The internal stub, remembering the commanded row of every request."""
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.commanded = []
+
+    def request(self, commanded):
+        self.commanded.append(commanded)
+        return super().request(commanded)
+
+
 class EpisodeOnFakesTest(unittest.TestCase):
     """The loop end to end on a fake arm and the internal stub, virtual clock."""
 
-    def episode(self, scenario="nominal", guard=None, max_calls=2, after=None, start=None):
+    def episode(
+        self,
+        scenario="nominal",
+        guard=None,
+        max_calls=2,
+        after=None,
+        start=None,
+        rehearse=False,
+        hold_s=5.0,
+        arm_rest=None,
+    ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
         arm = dream_real.FakeArm(start or POSE, ["wrist"], clock, scenario)
-        dream = dream_real.DreamInternalStub(jmap, scenario)
-        worker = dream_real.Worker(dream, clock, threaded=False, latency_s=1.0, max_calls=max_calls)
+        self.sent = []
+        send = arm.send
+        arm.send = lambda target, previous: (self.sent.append(dict(target)), send(target, previous))
+        self.dream = None if rehearse else RecordingStub(jmap, scenario)
+        worker = (
+            None
+            if rehearse
+            else dream_real.Worker(self.dream, clock, threaded=False, latency_s=1.0, max_calls=max_calls)
+        )
         slots, _ = core.resolve_slots(["wrist"], None, "wrist", "black")
         settings = dream_real.Settings(
-            "put apple into the bowl", 48, max_calls, 15.0, 60.0, 20.0, 1.0, core.TripLimits(), slots
+            "put apple into the bowl", 48, max_calls, 15.0, 60.0, 20.0, 1.0, core.TripLimits(), slots, hold_s
         )
         tcp = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["tcp"]
         box = core.WorkspaceBox.load(dream_real.BOX_FILE, dream_real.SRC_URDF, jmap, tcp)
@@ -387,9 +419,9 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 after(clock, stop, abort)
 
         with tempfile.TemporaryDirectory() as tmp:
-            ep = dream_real.Episode(
+            self.ep = dream_real.Episode(
                 arm,
-                dream,
+                self.dream,
                 worker,
                 jmap,
                 LIMITS,
@@ -401,20 +433,72 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 Path(tmp),
                 stop,
                 abort,
+                arm_rest=arm_rest,
             )
-            return ep.run(), arm
+            return self.ep.run(), arm
 
     def assert_stopped_safely(self, arm, returned=True):
+        """After engage: the gripper released first, then the return legs, then all torque off."""
         names = [e.split(":")[0] for e in arm.events]
         self.assertEqual(names[-1], "release")
+        stop = names[names.index("engage") + 1 :]
+        self.assertEqual(stop[0], "release gripper")
         if returned:
-            self.assertEqual(names[-2], "return to rest")
+            self.assertGreaterEqual(stop.count("return leg"), 1)
+            self.assertEqual(set(stop[1:-1]), {"return leg"})
+            # The arm joints end at the measured rest; the limp gripper was never driven back.
+            last_pose, _ = arm.returns[-1]
+            self.assertEqual(last_pose, {m: POSE[m] for m in core.ARM})
+        self.assertTrue(all(speed <= dream_real.HARD_ARM_SPEED_DEG_S for _, speed in arm.returns))
         self.assertFalse(arm.energized)
+
+    def assert_under_speed_cap(self):
+        cap = dream_real.HARD_ARM_SPEED_DEG_S * core.ROW_DT_S + 1e-6
+        prev = POSE
+        for target in self.sent:
+            self.assertLessEqual(max(abs(target[m] - prev[m]) for m in core.ARM), cap)
+            prev = target
 
     def test_nominal_runs_to_the_call_cap_then_returns_and_releases(self):
         summary, arm = self.episode()
         self.assertEqual(summary["reason"], "call cap 2 reached")
         self.assertEqual(summary["calls"], 2)
+        self.assertEqual(summary["phases"][:5], ["connect", "start gate", "engage", "approach", "dream"])
+        self.assert_stopped_safely(arm)
+        self.assert_under_speed_cap()
+
+    def test_approach_reaches_the_dream_start_pose_before_the_first_call(self):
+        summary, _ = self.episode(max_calls=1)
+        start = self.ep.dream_start
+        first = self.dream.commanded[0]["q_l_chunk"]
+        expected = core.motor_to_ik_row(start, core.JointMap.load())
+        np.testing.assert_allclose(first, expected, atol=1e-9)
+        waypoints = core.approach_waypoints(POSE, start)
+        self.assertGreater(summary["approach_substeps"], len(waypoints))
+        for m in core.ARM:  # the start pose is the arm file's rest through the joint map
+            self.assertAlmostEqual(start[m], core.JointMap.load().to_motor(self.ep.right_rest)[m])
+        self.assertEqual(start["gripper"], POSE["gripper"])
+
+    def test_stop_past_the_approach_goes_to_the_start_then_back_along_the_route(self):
+        _, arm = self.episode(max_calls=1)  # one chunk: the arm stops away from the start pose
+        start = self.ep.dream_start
+        legs = [pose for pose, _ in arm.returns]
+        route = [start, *core.return_waypoints(POSE, start)]
+        self.assertEqual(legs, [{m: wp[m] for m in core.ARM} for wp in route])
+
+    def test_stop_mid_approach_retraces_the_legs_travelled(self):
+        # Leg 1 (the elbow lift) takes about 3 s; stop during leg 2.
+        summary, arm = self.episode(after=lambda c, s, a: s.set() if c.t > 1004.5 else None)
+        self.assertEqual(summary["reason"], "stop signal")
+        self.assertNotIn("dream", summary["phases"])
+        lift = core.approach_waypoints(
+            POSE, core.JointMap.load().to_motor(self.ep.right_rest) | {"gripper": 0}
+        )[0]
+        legs = [pose for pose, _ in arm.returns]
+        self.assertEqual(len(legs), 2)
+        for m in core.ARM:
+            self.assertAlmostEqual(legs[0][m], lift[m], places=9)
+        self.assertEqual(legs[1], {m: POSE[m] for m in core.ARM})
         self.assert_stopped_safely(arm)
 
     def test_every_fault_stops_through_the_stop_path(self):
@@ -428,28 +512,166 @@ class EpisodeOnFakesTest(unittest.TestCase):
             summary, arm = self.episode(scenario, max_calls=5)
             self.assertIn(trip, [t["name"] for t in summary["trips"]], scenario)
             self.assert_stopped_safely(arm)
+            self.assertEqual(summary["stop"]["gripper_release"], "ok")
 
     def test_signal_stops(self):
-        summary, arm = self.episode(after=lambda c, s, a: s.set() if c.t > 1004 else None)
+        summary, arm = self.episode(after=lambda c, s, a: s.set() if c.t > 1009 else None)
         self.assertEqual(summary["reason"], "stop signal")
         self.assert_stopped_safely(arm)
 
     def test_unclear_return_path_holds_until_the_second_signal(self):
         def after(clock, stop, abort):
-            if clock.t > 1004:
+            if clock.t > 1009:
                 stop.set()
-            if clock.t > 1010:
+            if clock.t > 1015:
                 abort.set()
 
         summary, arm = self.episode(guard=NoGuard(clear=False), after=after)
-        self.assertEqual(summary["stop"]["returned"], "held, released on the second signal")
+        self.assertEqual(summary["stop"]["returned"], "held before leg 1, released on the second signal")
+        self.assertTrue(arm.gripper_limp)  # released before the hold
+        self.assert_stopped_safely(arm, returned=False)
+
+    def test_second_signal_aborts_the_return_and_releases(self):
+        def after(clock, stop, abort):
+            if clock.t > 1009:
+                stop.set()
+                abort.set()
+
+        summary, arm = self.episode(after=after)
+        self.assertTrue(summary["stop"]["returned"].startswith("aborted by the second signal"))
+        self.assertEqual(arm.returns, [])
         self.assert_stopped_safely(arm, returned=False)
 
     def test_refused_start_never_energizes(self):
-        summary, arm = self.episode(start=dict(POSE, shoulder_pan=150.0))  # hand swung toward a wall
+        summary, arm = self.episode(start=dict(POSE, shoulder_lift=LIMITS["shoulder_lift"][0] - 6))
         self.assertTrue(summary["reason"].startswith("refused: start pose refused"))
         self.assertNotIn("engage", " ".join(arm.events))
-        self.assertEqual(arm.events[-1].split(":")[0], "release")
+        self.assertEqual([e.split(":")[0] for e in arm.events][-1], "release")
+
+    def test_the_box_gates_the_dream_start_pose_not_the_rest(self):
+        # A rest the box would refuse (hand swung toward a wall) is fine: only limits and the guard apply.
+        summary, arm = self.episode(start=dict(POSE, shoulder_pan=150.0), max_calls=1)
+        self.assertEqual(summary["reason"], "call cap 1 reached")
+        # A Dream start pose outside the box is refused before anything is energized.
+        rest = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["rest"]
+        swung = [rest[0] - 0.5, *rest[1:]]
+        summary, arm = self.episode(arm_rest=swung)
+        self.assertIn("Dream start pose, workspace box", summary["reason"])
+        self.assertNotIn("engage", " ".join(arm.events))
+
+    def test_rehearse_approaches_holds_then_stops_without_dream(self):
+        summary, arm = self.episode(rehearse=True, hold_s=5.0)
+        self.assertEqual(summary["reason"], "held 5 s at the Dream start pose")
+        self.assertEqual(summary["calls"], 0)
+        self.assertEqual(summary["phases"][:5], ["connect", "start gate", "engage", "approach", "hold"])
+        self.assert_stopped_safely(arm)
+        self.assert_under_speed_cap()
+        summary, arm = self.episode(
+            rehearse=True, hold_s=60, after=lambda c, s, a: s.set() if c.t > 1010 else None
+        )
+        self.assertEqual(summary["reason"], "stop signal")
+        self.assert_stopped_safely(arm)
+
+
+class HardSpeedCapTest(unittest.TestCase):
+    """Gavin: "as long as we go slow, must keep the 15deg/s limits"."""
+
+    def test_the_cap_is_15(self):
+        self.assertEqual(dream_real.HARD_ARM_SPEED_DEG_S, 15.0)
+
+    def test_cli_refuses_a_faster_arm(self):
+        for argv in (["--speed-deg-s", "15.5"], ["--rehearse", "--live", "--speed-deg-s", "20"]):
+            with self.assertRaises(SystemExit):
+                dream_real.main(argv)
+
+    def test_episode_and_bus_backstop_refuse_a_faster_arm(self):
+        slots, _ = core.resolve_slots(["wrist"], None, "wrist", "black")
+        settings = dream_real.Settings("p", 48, 1, 16.0, 60.0, 20.0, 1.0, core.TripLimits(), slots)
+        with self.assertRaises(dream_real.RefusedError):
+            dream_real.Episode(*[None] * 7, settings, FakeClock(), None, Path("."), None, None)
+        with self.assertRaises(dream_real.RefusedError):
+            dream_real.LabArm(Path("."), {}, 30.0)  # constructs only: no hardware is touched
+        dream_real.LabArm(Path("."), {}, 15.0)
+
+    def test_a_fast_substep_trips_before_it_is_sent(self):
+        slots, _ = core.resolve_slots(["wrist"], None, "wrist", "black")
+        settings = dream_real.Settings("p", 48, 1, 15.0, 60.0, 20.0, 1.0, core.TripLimits(), slots)
+        ep = dream_real.Episode(
+            None, None, None, None, None, None, None, settings, FakeClock(), None, Path("."), None, None
+        )
+        ep.planned = dict(POSE)
+        ep._check_speed(dict(POSE, elbow_flex=POSE["elbow_flex"] + 0.75))
+        with self.assertRaises(dream_real.TripStopError):
+            ep._check_speed(dict(POSE, elbow_flex=POSE["elbow_flex"] + 0.75 + 0.8))
+
+
+class RehearseRefusalTest(unittest.TestCase):
+    def test_only_hardware_refusals_apply(self):
+        facts = RefusalTest().facts(
+            tcp_problem="x",
+            missing_slots=["overhead"],
+            dream_problem="x",
+            ledger_remaining=0,
+            credentials_present=False,
+            arm_file_explicit=False,
+        )
+        self.assertEqual(dream_real.rehearse_refusals(facts), [])
+        for change in (
+            {"approval_problem": "x"},
+            {"acked_signs": []},
+            {"plan_id_given": None},
+            {"lab_holder": "teleoperation"},
+            {"port_holders": ["pid 1"]},
+            {"guard_problem": "x"},
+        ):
+            self.assertEqual(len(dream_real.rehearse_refusals(RefusalTest().facts(**change))), 1, change)
+
+
+class StopButtonTest(unittest.TestCase):
+    """The button's logic only (no window): what each press sends, and what it refuses to send."""
+
+    def logic(self, pid_text="4242\n", command="python dream_real.py --live"):
+        import stop_button
+
+        self.tmp = tempfile.TemporaryDirectory()
+        path = Path(self.tmp.name) / "dream_real.pid"
+        if pid_text is not None:
+            path.write_text(pid_text)
+        self.kills, self.clock = [], FakeClock(100.0)
+        return stop_button.StopLogic(
+            path,
+            kill=lambda pid, sig: self.kills.append((pid, sig)),
+            clock=self.clock,
+            command=lambda pid: command,
+        )
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_stop_then_release_all(self):
+        import signal
+
+        logic = self.logic()
+        self.assertEqual(logic.label, "STOP")
+        logic.press(from_key=True)
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM)])
+        self.assertIn("RELEASE ALL TORQUE NOW", logic.label)
+        logic.press(from_key=False)  # a double click: too soon
+        self.clock.t += 0.5
+        logic.press(from_key=True)  # a held key auto-repeating: keys never release all
+        self.clock.t += 5
+        logic.press(from_key=True)
+        self.assertEqual(len(self.kills), 1)
+        logic.press(from_key=False)
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM)] * 2)
+
+    def test_never_signals_a_dead_or_foreign_pid(self):
+        for pid_text, command in ((None, "x"), ("4242", None), ("4242", "/usr/bin/vim notes.txt")):
+            logic = self.logic(pid_text, command)
+            self.assertTrue(logic.press().startswith("NOT SENT"))
+            self.assertEqual(self.kills, [])
+            self.tearDown()
+        self.tmp = tempfile.TemporaryDirectory()
 
 
 class NoGuard:

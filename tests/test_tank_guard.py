@@ -95,11 +95,31 @@ def test_start_far_outside_a_limit_is_refused(guard):
     assert not verdict.ok and verdict.face == "joint_limit:shoulder_pan"
 
 
-def test_first_target_from_rest_is_clipped_into_limits(guard):
-    decision = guard.limit(REST, REST)
-    assert decision.status == "clamped"
-    assert set(decision.clipped_joints) == {"shoulder_pan", "shoulder_lift", "gripper"}
-    assert guard.outside_limits(decision.target) == []
+def test_a_rest_outside_the_limits_moves_back_in_without_snapping(guard):
+    # REST lies outside three soft limits; holding it is not a clip, so the first
+    # target never jumps to the limit (every motion <= 15 deg/s, Gavin 2026-11-08).
+    assert set(guard.outside_limits(REST)) == {"shoulder_pan", "shoulder_lift", "gripper"}
+    hold = guard.limit(REST, REST)
+    assert hold.status == "ok" and hold.target == REST
+    inward = {**REST, "shoulder_pan": REST["shoulder_pan"] - 0.5}
+    assert guard.limit(REST, inward).target == inward
+    # Never further out than the accepted pose.
+    outward = guard.limit(REST, {**REST, "shoulder_pan": REST["shoulder_pan"] + 1.0})
+    assert outward.status == "clamped" and outward.target["shoulder_pan"] == REST["shoulder_pan"]
+
+
+def test_guarded_targets_may_return_exactly_to_the_start(guard):
+    run = tg.GuardedTargets(guard, REST)
+    away = {**REST, "shoulder_pan": 186.0, "shoulder_lift": -196.0}
+    for _ in range(3):
+        run.step(away)
+    assert run.target == away
+    back = run.step(REST)
+    assert back.status == "ok" and back.target == REST
+    # Inside the limits, the plain limit still clips.
+    near_top = {**WORK, "wrist_roll": 145.0}
+    clipped = guard.limit(near_top, {**WORK, "wrist_roll": 155.0}, allowed=WORK)
+    assert clipped.status == "clamped" and clipped.target["wrist_roll"] == guard.limits["wrist_roll"][1]
 
 
 def test_walls_refuse_but_floor_allows_contact(guard):

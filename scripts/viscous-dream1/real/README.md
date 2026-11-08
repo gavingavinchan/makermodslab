@@ -16,14 +16,15 @@ Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-t
 
 | File | What it is |
 |---|---|
-| `dream_real.py` | The runner: `--dry-run` (default), `--preview`, `--live` |
+| `dream_real.py` | The runner: `--dry-run` (default), `--preview`, `--live`; `--rehearse` (no Dream) alone or with `--live` |
+| `stop_button.py` | The big red button: an always-on-top window that sends SIGTERM to the runner's `--pid-file` pid |
 | `dream_real_core.py` | Pure helpers: frame maps, limits, retiming, workspace box, trips, refusals, ledger, images |
 | `make_tank_arm.py` | Generates the tank IK model below, with provenance |
 | `tank_model/viscous_waterproof_tank.urdf` | The arm URDF with a `dream_base` root turned 180 deg and the unit's own limits |
-| `tank_model/viscous_waterproof_tank.provenance.json` | Sources, hashes, checks and **`approval.status: pending_gavin_approval`** |
+| `tank_model/viscous_waterproof_tank.provenance.json` | Sources, hashes, checks and `approval` (approved by Gavin 2026-11-08, provisionally, on condition every live motion stays <= 15 deg/s) |
 | `tank_model/viscous_waterproof_tank_arm.json` | Dry-run arm file only (no `tcp_calibration`; tcp copied from `viscous_arm.json`, never confirmed) |
 | `workspace_box_viscous_waterproof_01.json` | Per-point boxes in the physical base frame (proposal, pending Gavin) |
-| `tests/test_viscous_dream_real.py` (repo root) | 29 offline tests: pure helpers and the loop on fakes |
+| `tests/test_viscous_dream_real.py` (repo root) | Offline tests: pure helpers, the loop on fakes, the stop button's logic |
 
 ## Why a tank model
 
@@ -46,8 +47,10 @@ All from the repo root with the repo venv. Dream's client is loaded from `~/visc
 ```bash
 # Dry run: the plan, its plan id, live readiness, and the loop on fakes. No port, camera, network, billed call.
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py
-# Every safety trip fired once on the fake arm, each ending with return-to-rest then torque off:
+# Every safety trip fired once on the fake arm, each ending with gripper off, return legs, then torque off:
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --scenario all
+# Rehearsal on the fake arm (no Dream): every phase printed as it starts, then the stop path:
+.venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse [--hold-s 120]
 # Inputs preview, no motion (Gavin runs it; it opens the record's CAMERAS, never CAN/serial or the network):
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --preview --overhead <camera> [--wrist-r black|copy|camera:<name>]
 # Regenerate / export the tank model (offline):
@@ -98,26 +101,63 @@ it, and prints the 12-hex **inputs id**. Never run `python -m dream.check` on th
 9. **Lab idle.** No session, no tank measurement (`/api/v1/sessions/current`), nothing holding the
    follower port (`lsof`). `--lab-down-ok` if the server is stopped.
 
-Live, with Gavin at the power switch, backgrounded and relayed phase by phase:
+Live, with Gavin at the power switch and the red button on screen, backgrounded and relayed phase by
+phase (each phase prints a `phase:` line as it starts):
 
 ```bash
+.venv/bin/python scripts/viscous-dream1/real/stop_button.py --pid-file /tmp/dream_real.pid &   # the red button
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --live --arm-file ~/viscous-dream-real/station/arms/viscous-waterproof-tank.json \
   --overhead <camera> --plan-id <id> \
   --max-calls 10 --pid-file /tmp/dream_real.pid
-kill -TERM "$(cat /tmp/dream_real.pid)"   # stop; a second signal aborts the return and releases
+kill -TERM "$(cat /tmp/dream_real.pid)"   # the same as the button: stop; a second signal aborts the return and releases
 ```
+
+The button: first press (or Space / Enter / Escape with the window focused) is STOP; it then reads
+RELEASE ALL TORQUE NOW (arm drops), and a click on it (at least 1 s later; keys never do this, so a
+held key cannot skip the return) sends the second SIGTERM. It shows whether the pid is alive and
+refuses to signal a pid that is gone or is not `dream_real.py`. It is its own process, so it works
+even if the runner's loop is stuck.
+
+**Rehearsal on the arm (no Dream, no billed call, no cameras, no credentials or inputs check):** the
+same hardware path, stopping at the Dream start pose. It keeps the hardware refusals (tank model
+approved, joint signs, plan id, Lab idle, port free, tank guard). Its plan id differs from the Dream
+run's; take it from `--rehearse` (the fake form) with the same settings.
+
+```bash
+.venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse --live --plan-id <id> --pid-file /tmp/dream_real.pid [--hold-s 120]
+```
+
+Connect, start gate on the measured rest, engage, approach, hold at the start pose (fresh feedback,
+every trip and the guard monitor running) until the button or `--hold-s`, then the stop path.
 
 ## What a live run does
 
+**Speed: every arm motion is <= 15 deg/s** (Gavin: "as long as we go slow, must keep the 15deg/s
+limits"; the tank model is approved on that condition). `--speed-deg-s` above 15 is refused, the bus
+backstop is set to the same speed, the approach and every return leg run at it, and a planned
+substep faster than it trips before it is sent. The gripper keeps its own 60 deg/s cap.
+
 1. Refusals above. 2. Preflight: real cameras, real client, the first request built and stopped
 locally (nothing sent): refuse unless its inputs id is recorded. 3. Connect the follower like Lab
-hosting does (30 deg/s bus backstop installed first, `connect(calibrate=False)`, then zero effort and
-torque off); a failed connect runs the de-energize recovery. 4. Start gate on a fresh torque-off
-reading. 5. `remote_can.engage` (hold the measured pose). 6. Loop at 20 Hz: fresh feedback, trips,
-5 Hz frames to Dream; one billed call at a time (ledger first), executing each 48-row chunk, holding
-while the next call is in flight. 7. Every exit: return to the start pose (arm joints; the gripper
-keeps its grip) at the speed cap on fresh feedback, then `remote_can.release` (zero effort, torque
-off, cameras closed).
+hosting does (bus backstop at the arm speed, <= 15 deg/s, installed first, `connect(calibrate=False)`,
+then zero effort and torque off); a failed connect runs the de-energize recovery. 4. **Start gate** on
+a fresh torque-off reading of the **rest** (the arm lying flat on the tank floor): limits (5 deg
+tolerance) and the tank guard. The workspace box does not apply to the rest (lying flat, its tcp can
+be below the box floor). The **Dream start pose** (the arm file's `rest`, IK radians, through the joint
+map; gripper as measured) must be inside the limits and the box. The approach is planned here, every
+substep through the guard, so a refusal never energizes. 5. `remote_can.engage` (hold the measured
+rest). 6. **Approach**: rest to the start pose along `core.approach_waypoints` (lift the shoulder and
+fold the elbow first, then straight to the start), each leg retimed into 20 Hz substeps at the arm
+speed. Frames go to Dream, but no call is made until the start pose is reached. 7. Loop at 20 Hz:
+fresh feedback, trips, 5 Hz frames to Dream; one billed call at a time (ledger first), executing each
+48-row chunk, holding while the next call is in flight. 8. **Every exit** (trips, signals, the
+button, the call cap): (a) the gripper's torque goes off at once, and it may drop what it holds (a
+zero-effort MIT frame, then the RobStride disable for that one motor; the other six keep holding);
+(b) the six arm joints return to the measured rest leg by leg at the arm speed on fresh feedback.
+Past the approach that means straight to the start pose, then `core.return_waypoints` (the approach
+reversed). Mid-approach it means back along the legs travelled. Each leg's straight path is checked
+by the guard first; (c) `remote_can.release` (zero effort, torque off, cameras closed). A leg that
+does not arrive ends the return there and releases.
 
 Per row: IK radians to motor degrees (J1 + 180, J5 sign), grip 0..1 to motor -2.9 (closed) ..
 -115.1 (open), jump check, clamp 1 deg inside the limits, then **retimed** into equal 20 Hz substeps so
@@ -125,7 +165,7 @@ no arm joint exceeds 15 deg/s (gripper 60) and all joints arrive together (the g
 proof needs that), each substep through the box and the tank guard. The whole chunk is planned before
 any of it runs, so a refusal stops the arm before the chunk starts.
 
-## Trips (every one ends in return-to-rest, then torque off)
+## Trips (every one ends in gripper off, return legs to the rest, then torque off)
 
 | Trip | Default |
 |---|---|
@@ -137,12 +177,14 @@ any of it runs, so a refusal stops the arm before the chunk starts.
 | Temperature | >= 80 C (warn 70; the driver stops at 85) |
 | Feedback | no fresh reply, motor fault, camera read error |
 | Dream | error, malformed or non-finite chunk; inputs not checked (refused locally, not billed) |
-| Start gate | start more than 5 deg outside a limit, outside the box or the guard: never energized |
-| Stop | SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them) |
+| Start gate | rest more than 5 deg outside a limit or refused by the guard; Dream start pose outside the limits or the box; approach substep rejected by the guard: never energized |
+| Speed | a planned arm substep faster than 15 deg/s (cannot happen by construction; checked before every send) |
+| Stop | `stop_button.py`, SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them): gripper torque off at once, return legs to the rest at <= 15 deg/s, then all torque off. A second press / signal aborts the return and releases everything |
 | Billing | `--max-calls` (<= 20) per run and `runs/ledger.json` (cap 100, raised only by editing it) |
 
-If the guard says the straight return path is not clear, the arm holds (torque on) and waits for a
-second signal, so a person can support it before torque goes off.
+If the guard says a return leg's straight path is not clear, the arm holds (torque on, gripper
+already limp) and waits for a second signal (the button's RELEASE ALL), so a person can support it
+before torque goes off.
 
 ## Known limits and findings
 

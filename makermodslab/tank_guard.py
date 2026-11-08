@@ -25,7 +25,9 @@ What it checks, for a target AND the straight joint-space path to it:
   base-riding links, see the keep-out config);
 - the floor as an allowed contact: a vertex may go at most floor_press_mm
   below the floor bound, padding ignored;
-- joint limits (the target is clipped into them);
+- joint limits (the target is clipped into them, except that a joint already
+  outside a soft limit at an accepted target may hold or move back inward, never
+  further out, so a start a few degrees outside never snaps to the limit);
 - a jump filter: a joint target more than max_jump_deg from the last
   accepted one is refused, never slid toward (J1 wrap, IK branch flips).
 
@@ -257,12 +259,16 @@ class TankGuard:
         """The measured arm may eat into the margin by the tracking allowance only."""
         return self.check_pose(measured, need_mm=-self.tracking_allowance_mm)
 
-    def limit(self, previous: dict, requested: dict) -> Decision:
+    def limit(self, previous: dict, requested: dict, allowed: dict | None = None) -> Decision:
         """Grant as much of previous -> requested as is provably clear.
 
         previous must be a target this guard already accepted (or a pose that
         passed start_gate). Joint limits clip; a jump is refused; a path that
-        reaches the keep-out is cut at the last clear fraction.
+        reaches the keep-out is cut at the last clear fraction. The limits
+        stretch to cover previous (and `allowed`, the run's start-gated pose), so
+        a joint resting outside one moves back in at the requested pace instead
+        of snapping (Gavin 2026-11-08: every motion <= 15 deg/s), and a return
+        may end exactly at the start pose.
         """
         _check_positions(previous)
         _check_positions(requested)
@@ -271,7 +277,15 @@ class TankGuard:
         jumps = [m for m in ARM if abs(requested[m] - previous[m]) > self.max_jump_deg]
         if jumps:
             return Decision("rejected", dict(previous), "jump:" + ",".join(jumps), 0.0)
-        target = {m: min(max(requested[m], self.limits[m][0]), self.limits[m][1]) for m in MOTORS}
+        poses = (previous, allowed) if allowed is not None else (previous,)
+        bounds = {
+            m: (
+                min(self.limits[m][0], *(q[m] for q in poses)),
+                max(self.limits[m][1], *(q[m] for q in poses)),
+            )
+            for m in MOTORS
+        }
+        target = {m: min(max(requested[m], bounds[m][0]), bounds[m][1]) for m in MOTORS}
         clipped = tuple(m for m in MOTORS if target[m] != requested[m])
         start = self.check_pose(previous)
         if not start.ok:
@@ -304,10 +318,11 @@ class GuardedTargets:
             raise ValueError(f"Start pose refused: {gate}")
         self.guard = guard
         self.target = {m: float(start[m]) for m in MOTORS}
+        self.start = dict(self.target)
         self.counts = {"ok": 0, "clamped": 0, "rejected": 0}
 
     def step(self, requested: dict) -> Decision:
-        decision = self.guard.limit(self.target, requested)
+        decision = self.guard.limit(self.target, requested, allowed=self.start)
         self.counts[decision.status] += 1
         self.target = decision.target
         return decision

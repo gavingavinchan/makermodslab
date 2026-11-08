@@ -298,6 +298,67 @@ def retime(
     return [{m: previous[m] + (target[m] - previous[m]) * (i / n) for m in MOTORS} for i in range(1, n + 1)]
 
 
+# --- route between the tank rest and the start pose ---------------------------
+
+KEEPOUT_FILE = ROOT / "configs/viscous/environments/aquarium_landen_75/keepout_viscous_waterproof_01.json"
+# Leg 1 of the approach (Gavin 2026-11-08: "you probably need to lift the elbow
+# up first"): shoulder_lift up and elbow_flex folded by these, nothing else
+# moving, lifts the forearm and hand nearly straight up off the floor (the
+# lowest point rises about 2.3 mm per 0.9 mm outward at the TRACE_POSE rest),
+# elbow ~110 mm higher, hand ~75 mm higher, the arm's lowest point ~95 mm
+# above the floor bound, 3 s at 15 deg/s.
+APPROACH_LIFT_DEG = 40.0
+APPROACH_FOLD_DEG = 45.0
+ROUTE_LIMIT_MARGIN_DEG = 1.0  # the runner's limit_margin_deg
+
+
+def keepout_limits(path: Path = KEEPOUT_FILE) -> dict:
+    """Motor joint limits (deg) from the tank keep-out config, the ones the guard clips to."""
+    data = json.loads(Path(path).read_text())["joint_limits_deg"]
+    return {m: tuple(map(float, v)) for m, v in data.get("value", data).items()}
+
+
+def approach_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> list[dict]:
+    """Motor-degree waypoints (all seven motors) from rest to start: rest excluded, start included.
+    Each consecutive pair (rest -> wp[0] -> ... -> start) is a straight joint-space leg.
+
+    Two legs. Leg 1 lifts the elbow: shoulder_lift and elbow_flex move up to
+    APPROACH_LIFT_DEG / APPROACH_FOLD_DEG toward the start, every other joint
+    holds (the hand lies on the floor, so turning the pan or the wrist there
+    would scrub it) except that the arm joints come 1 deg inside the keep-out's
+    limits (the rest lies a few degrees outside some), gradually over the leg.
+    Leg 2, in the air, goes straight to the start. Relative to the given rest, so a rest a few degrees
+    off still lifts the same way. The gripper keeps the rest's value throughout.
+    """
+    limits = keepout_limits()
+    lift = {"shoulder_lift": APPROACH_LIFT_DEG, "elbow_flex": APPROACH_FOLD_DEG}
+    up = {}
+    for m in ARM:
+        value = float(rest[m])
+        if m in lift:
+            value += max(-lift[m], min(lift[m], float(start[m]) - value))
+        lo, hi = limits[m]
+        # A joint resting outside a soft limit comes back in during this leg, at the
+        # leg's pace (the guard no longer snaps it): held at the rest instead, the
+        # trace's first reading (pan 191.2, 0.66 mm off the left-wall margin) is refused.
+        up[m] = min(hi - ROUTE_LIMIT_MARGIN_DEG, max(lo + ROUTE_LIMIT_MARGIN_DEG, value))
+    grip = float(rest["gripper"])
+    end = {**{m: float(start[m]) for m in ARM}, "gripper": grip}
+    up["gripper"] = grip
+    return [end] if up == end else [up, end]
+
+
+def return_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> list[dict]:
+    """The same route back: from start to rest, start excluded, rest included (the approach reversed).
+
+    The arm joints retrace approach_waypoints exactly; the gripper keeps the
+    start's value throughout (the runner returns arm joints and leaves the grip).
+    """
+    grip = float(start["gripper"])
+    back = [*approach_waypoints(rest, start)[-2::-1], rest]
+    return [{**{m: float(wp[m]) for m in ARM}, "gripper": grip} for wp in back]
+
+
 # --- workspace box -----------------------------------------------------------
 
 

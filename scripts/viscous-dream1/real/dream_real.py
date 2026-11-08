@@ -26,6 +26,14 @@ Three modes (README.md has the preconditions):
   --live     Billed Dream calls on the real arm. RefusedError unless every precondition holds (tool point
              set by `dreamcli tcp`, inputs checked, tank model approved, unverified joint signs
              acknowledged, the dry run's --plan-id, Lab idle, tank guard present, credentials).
+  --rehearse With --live: the live hardware path WITHOUT Dream (no client, no billed call, no cameras):
+             connect, start gate on the rest, engage, approach the Dream start pose, hold there until a
+             stop signal or --hold-s, then the stop path. Alone (or with --dry-run): the same on FakeArm.
+
+Start: the arm lies flat on the tank floor (its rest). After engage it lifts the elbow and goes to the
+Dream start pose (core.approach_waypoints) before the first Dream call. Stop, on every exit: gripper
+torque off at once (it may drop what it holds), arm joints back along the route to the measured rest,
+then all torque off. stop_button.py is the big red button (SIGTERM to the --pid-file's pid).
 
 Never run `python -m dream.check` on this arm: it moves it (hand circles, 10 deg joint moves).
 Run with the repo venv; Dream's client comes from --dream-venv (default ~/viscous-dream-real/.venv):
@@ -70,6 +78,10 @@ YAM_EMBODIMENT = {
 }
 MIN_CLIENT = (1, 1, 3)
 START_LIMIT_TOLERANCE_DEG = 5.0  # the arm rests a few degrees outside soft limits in the tank
+# Gavin 2026-11-08: "as long as we go slow, must keep the 15deg/s limits". Every arm motion the runner
+# commands (Dream substeps, the approach, every return leg) and the bus backstop under it are capped here.
+HARD_ARM_SPEED_DEG_S = 15.0
+DEFAULT_HOLD_S = 120.0  # --rehearse: how long to hold at the Dream start pose before stopping by itself
 SCENARIOS = ("nominal", "jump", "workspace", "lag", "torque", "sustained", "temperature", "stale", "signal")
 # The pose the tank-measure trace last read (2026-11-08T04:44Z, torque off): the dry run's fake start.
 TRACE_POSE = {
@@ -278,6 +290,8 @@ class FakeArm:
         self.ticks = 0
         self.events = []
         self.energized = False
+        self.gripper_limp = False
+        self.returns = []  # (pose, speed) per return leg
 
     def connect(self):
         self.events.append("connect (fake: no port opened)")
@@ -287,7 +301,7 @@ class FakeArm:
         if self.scenario == "stale" and self.ticks > 70:
             raise ConnectionError("No fresh feedback from motor 'elbow_flex' within 50 ms (fake)")
         if self.energized:
-            for m in core.MOTORS:
+            for m in core.ARM if self.gripper_limp else core.MOTORS:
                 self.pos[m] += 0.6 * (self.target[m] - self.pos[m])
             if self.scenario == "lag" and self.ticks > 70:
                 self.pos["elbow_flex"] -= 0.8 * (self.ticks - 70)  # the joint sags away from its target
@@ -311,14 +325,24 @@ class FakeArm:
     def send(self, target, previous):
         self.target = dict(target)
 
+    def release_gripper(self):
+        self.gripper_limp = True
+        self.events.append(
+            "release gripper: zero-effort MIT frame, then torque off on the gripper motor only"
+        )
+        return None
+
     def return_to_rest(self, pose, abort, speed):
+        if "gripper" in pose:
+            raise AssertionError("the return must leave the (limp) gripper alone")
         travel = max(abs(self.pos[m] - pose[m]) for m in pose)
+        self.returns.append((dict(pose), speed))
         for m, v in pose.items():
             self.pos[m] = self.target[m] = v
         self.events.append(
-            f"return to rest: {travel:.1f} deg max travel at {speed:.0f} deg/s, gripper left as is"
+            f"return leg: {travel:.1f} deg max travel at {speed:.0f} deg/s, gripper limp: {self.gripper_limp}"
         )
-        return True, "fake arm at rest"
+        return True, "fake arm arrived"
 
     def release(self):
         self.energized = False
@@ -334,12 +358,18 @@ class LabArm:
     (remote_can.get_observation), engage = remote_can.engage, writes through
     remote_can.send_action, return via maker_rest_pose on fresh feedback, release
     via remote_can.release (neutralize + de_energize_can_device + cameras off),
-    which is also the recovery when connect fails part-way.
+    which is also the recovery when connect fails part-way. release_gripper
+    disables the ONE gripper motor at the start of every stop (see there).
+    cameras=False (--rehearse) opens the follower without the record's cameras.
     """
 
-    def __init__(self, home: Path, record: dict, backstop_deg_s: float):
+    def __init__(self, home: Path, record: dict, backstop_deg_s: float, cameras: bool = True):
+        if not 0 < backstop_deg_s <= HARD_ARM_SPEED_DEG_S:
+            raise RefusedError(f"bus backstop {backstop_deg_s} deg/s is above the {HARD_ARM_SPEED_DEG_S} cap")
         self.home, self.record, self.backstop = home, record, backstop_deg_s
+        self.use_cameras = cameras
         self.robot = None
+        self.gripper_released = False
 
     def connect(self):
         os.environ["MAKERMODSLAB_HOME"] = str(self.home)
@@ -354,7 +384,7 @@ class LabArm:
         from makermodslab.utils.robot_factory import build_follower_config
 
         cameras = {}
-        for entry in self.record.get("cameras") or []:
+        for entry in (self.record.get("cameras") or []) if self.use_cameras else []:
             cam = session_camera_config(entry)
             index = resolve_cv2_index(entry.get("unique_id"), cam.get("camera_index", 0))
             if index is None:
@@ -391,7 +421,8 @@ class LabArm:
         from makermodslab import remote_can
 
         obs = remote_can.get_observation(self.robot)  # raises on a stale or faulted motor
-        frames = {c["name"]: obs[c["name"]] for c in self.record.get("cameras") or []}
+        names = [c["name"] for c in self.record.get("cameras") or []] if self.use_cameras else []
+        frames = {n: obs[n] for n in names}
         return Reading(
             {m: float(obs[f"{m}.pos"]) for m in core.MOTORS},
             {m: float(obs[f"{m}.torque"]) for m in core.MOTORS},
@@ -408,17 +439,43 @@ class LabArm:
     def send(self, target, previous):
         from makermodslab import remote_can
 
+        # MakerFollower.send_action writes only the motors in the action, so a released
+        # gripper gets no further MIT frames from here.
+        motors = core.ARM if self.gripper_released else core.MOTORS
         remote_can.send_action(
             self.robot,
-            {f"{m}.pos": v for m, v in target.items()},
+            {f"{m}.pos": target[m] for m in motors},
             {f"{m}.pos": v for m, v in previous.items()},
         )
+
+    def release_gripper(self) -> str | None:
+        """Gripper motor only, at once (Gavin: it may drop what it holds). First a zero-effort MIT frame
+        (Kp = Kd = 0 cached for the gripper, as remote_can.neutralize does for all seven), so the motor
+        makes no torque even if the disable frame is lost; then RobstrideMotorsBus.disable_torque("gripper")
+        (`_disable_motor`: the MIT-protocol disable frame, FF x7 + CAN_CMD_DISABLE, to that one CAN id).
+        The gains stay zero in the bus cache, so no later frame can stiffen it; release() restores the
+        cache. The other six keep holding their setpoints. Never raises: the return follows regardless."""
+        problems = []
+        bus = self.robot.bus
+        try:
+            bus.sync_write("Kp", {"gripper": 0.0})
+            bus.sync_write("Kd", {"gripper": 0.0})
+            bus.sync_write("Goal_Position", {"gripper": 0.0})  # zero gains: a no-torque frame
+        except Exception as error:  # noqa: BLE001
+            problems.append(f"zero-effort gripper frame failed: {error}")
+        try:
+            bus.disable_torque("gripper")
+            self.gripper_released = True
+        except Exception as error:  # noqa: BLE001
+            problems.append(f"gripper disable failed: {error}")
+        return "; ".join(problems) or None
 
     def return_to_rest(self, pose, abort, speed):
         from makermodslab import remote_can
         from makermodslab.maker_rest_pose import MAKER_RETURN_CEILING_S, return_maker_to_pose
 
         robot = self.robot
+        speed = min(speed, HARD_ARM_SPEED_DEG_S)  # never the helper's 30 deg/s default
 
         class Fresh:  # the rest-return helper on fresh CAN feedback (remote_can's pattern)
             def get_observation(self):
@@ -680,10 +737,13 @@ class Settings:
     limit_margin_deg: float
     trips: core.TripLimits
     slots: dict
+    hold_s: float = DEFAULT_HOLD_S
 
 
 class Episode:
-    """The control loop. Every exit goes through stop(): return to rest, then torque off."""
+    """The control loop. Phases: connect, start gate, engage, approach (rest -> Dream start pose), then
+    dream (Dream chunks) or, with dream=None (--rehearse), hold at the start pose until a stop signal or
+    hold_s. Every exit goes through stop(): gripper torque off, return legs to the rest, all torque off."""
 
     def __init__(
         self,
@@ -701,7 +761,13 @@ class Episode:
         stop_event,
         abort_event,
         mutate=None,
+        arm_rest=None,
+        say=None,
     ):
+        if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
+            raise RefusedError(
+                f"arm speed {settings.speed_deg_s} deg/s is above the hard {HARD_ARM_SPEED_DEG_S} deg/s cap"
+            )
         self.arm, self.dream, self.worker, self.jmap, self.limits = arm, dream, worker, jmap, limits
         self.box, self.guard, self.s, self.clock, self.sleep = box, guard, settings, clock, sleep
         self.log_dir, self.stop_event, self.abort_event, self.mutate = (
@@ -710,24 +776,35 @@ class Episode:
             abort_event,
             mutate,
         )
+        self.say = say
         self.monitor = core.TripMonitor(settings.trips, clock)
-        arm_file = (
-            json.loads(Path(dream.config["ik"]["arm"]).read_text()) if hasattr(dream, "config") else None
-        )
-        rest = arm_file["rest"] if arm_file else json.loads(DEFAULT_ARM_FILE.read_text())["rest"]
-        self.right_rest = [float(v) for v in rest]
+        if arm_rest is None:
+            arm_file = (
+                json.loads(Path(dream.config["ik"]["arm"]).read_text()) if hasattr(dream, "config") else None
+            )
+            arm_rest = arm_file["rest"] if arm_file else json.loads(DEFAULT_ARM_FILE.read_text())["rest"]
+        # The arm file's rest (IK radians, the tank model's): the parked right arm reported to Dream, and,
+        # through the joint map, the pose the approach brings the working arm to before the first call.
+        self.right_rest = [float(v) for v in arm_rest]
         self.summary = {
             "trips": [],
             "calls": 0,
             "rows_planned": 0,
+            "approach_substeps": 0,
             "substeps_sent": 0,
             "clipped": 0,
             "guard": collections.Counter(),
             "stretched_rows": 0,
+            "phases": [],
         }
         self.energized = False
-        self.start_pose = None
+        self.phase = "connect"
+        self.start_pose = None  # the measured rest, lying on the tank floor
+        self.dream_start = None  # the arm file's rest in motor degrees, gripper as measured
+        self.trail = []  # approach leg ends reached, from the rest: the way back from a stop mid-approach
         self.commanded = None
+        self.planned = None  # the last planned substep: the hard speed cap is checked against it
+        self.t0 = clock()
         self.ticks = log_dir / "ticks.jsonl"
         self.chunks = log_dir / "chunks.jsonl"
 
@@ -735,19 +812,56 @@ class Episode:
         with path.open("a") as f:
             f.write(json.dumps(obj, default=float) + "\n")
 
-    def start_gate(self, pose) -> list[str]:
+    def _phase(self, name, detail=""):
+        self.summary["phases"].append(name)
+        if self.say:
+            self.say(f"[{self.clock() - self.t0:6.1f} s] phase: {name}{f' - {detail}' if detail else ''}")
+
+    def start_target(self, rest) -> dict:
+        return {**self.jmap.to_motor(self.right_rest), "gripper": float(rest["gripper"])}
+
+    def start_gate(self, rest, start) -> list[str]:
+        """The measured rest: limits (with the resting tolerance) and the tank guard. The workspace box
+        does not apply to it (lying flat, its tcp can sit below the box floor); it applies to the Dream
+        start pose (and every Dream substep), which must also be strictly inside the limits."""
         problems = []
         for m in core.MOTORS:
             lo, hi = self.limits[m]
-            if not lo - START_LIMIT_TOLERANCE_DEG <= pose[m] <= hi + START_LIMIT_TOLERANCE_DEG:
+            if not lo - START_LIMIT_TOLERANCE_DEG <= rest[m] <= hi + START_LIMIT_TOLERANCE_DEG:
                 problems.append(
-                    f"{m} at {pose[m]:.1f} is more than {START_LIMIT_TOLERANCE_DEG} deg outside "
+                    f"{m} at {rest[m]:.1f} is more than {START_LIMIT_TOLERANCE_DEG} deg outside "
                     f"[{lo:.1f}, {hi:.1f}]"
                 )
-        problems += [f"workspace box: {v}" for v in self.box.violations(pose)]
-        if g := self.guard.start(pose):
+        if g := self.guard.start(rest):
             problems.append(f"tank guard: {g}")
+        for m in core.ARM:
+            lo, hi = self.limits[m]
+            if not lo <= start[m] <= hi:
+                problems.append(f"Dream start pose: {m} at {start[m]:.1f} is outside [{lo:.1f}, {hi:.1f}]")
+        problems += [f"Dream start pose, workspace box: {v}" for v in self.box.violations(start)]
         return problems
+
+    def plan_approach(self, rest, start) -> list[list[dict]]:
+        """Rest -> core.approach_waypoints legs, each retimed at the arm speed cap and every substep
+        through the tank guard (rejected -> stop), all planned before the arm is energized. A substep
+        the guard clips (a rest outside a limit) is re-retimed from the last one, so no planned substep
+        moves an arm joint faster than the cap; the clipped segment is the one the guard checked."""
+        legs, prev = [], dict(rest)
+        for k, waypoint in enumerate(core.approach_waypoints(rest, start), 1):
+            steps = []
+            for step in core.retime(
+                prev, waypoint, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s
+            ):
+                status, granted, reason = self.guard.step(step)
+                self.summary["guard"][status] += 1
+                if status == "rejected":
+                    raise TripStopError([core.Trip("tank_guard", f"approach leg {k}: {reason}")])
+                steps += core.retime(
+                    prev, granted, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s
+                )
+                prev = granted
+            legs.append(steps)
+        return legs
 
     def plan_chunk(self, reply) -> list[dict]:
         rows = np.array(reply["q_l_chunk"], float)[: self.s.rows]
@@ -775,26 +889,59 @@ class Episode:
             for step in steps:
                 if bad := self.box.violations(step):
                     raise TripStopError([core.Trip("workspace", f"row {i}: {bad[0]}")])
-                status, step, reason = self.guard.step(step)
+                status, granted, reason = self.guard.step(step)
                 self.summary["guard"][status] += 1
                 if status == "rejected":
                     raise TripStopError([core.Trip("tank_guard", f"row {i}: {reason}")])
-                out.append(step)
-                prev = step
+                # A guard clamp ends short of the line; re-retime to it so the next substep stays under
+                # the cap (just `granted` when nothing was clamped).
+                subs = core.retime(prev, granted, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s)
+                for sub in subs if granted != step else ():
+                    if bad := self.box.violations(sub):
+                        raise TripStopError([core.Trip("workspace", f"row {i}: {bad[0]}")])
+                out += subs
+                prev = granted
         self.summary["rows_planned"] += len(rows)
         return out
 
+    def _check_speed(self, target):
+        """The hard cap on what is about to be sent, whatever planned it (a clamp is on the guard's line)."""
+        cap = HARD_ARM_SPEED_DEG_S * core.ROW_DT_S + 1e-6
+        if fast := [m for m in core.ARM if abs(target[m] - self.planned[m]) > cap]:
+            raise TripStopError(
+                [core.Trip("speed", f"{', '.join(fast)} would move faster than {HARD_ARM_SPEED_DEG_S} deg/s")]
+            )
+        self.planned = dict(target)
+
     def run(self) -> dict:
-        frames_fed, queue = 0, collections.deque()
+        frames_fed, queue, approach = 0, collections.deque(), collections.deque()
         reason = "finished"
+        hold_until = None
+        self._phase("connect")
         self.arm.connect()
         try:
             reading = self.arm.read()
             self.start_pose = dict(reading.pos)
-            if problems := self.start_gate(self.start_pose):
+            self.dream_start = self.start_target(self.start_pose)
+            self._phase("start gate", "measured rest (limits + tank guard) and the Dream start pose (+ box)")
+            if problems := self.start_gate(self.start_pose, self.dream_start):
                 raise RefusedError("start pose refused: " + "; ".join(problems))
+            legs = self.plan_approach(self.start_pose, self.dream_start)
+            for k, steps in enumerate(legs, 1):
+                approach.extend((k, i == len(steps) - 1, step) for i, step in enumerate(steps))
+            if self.stop_event.is_set():
+                raise RefusedError("stop signal before energizing")
+            self._phase("engage", "torque on, holding the measured rest")
             self.commanded = self.arm.engage()
             self.energized = True
+            self.planned = dict(self.start_pose)  # the approach was planned from the gate's reading
+            self.trail = [dict(self.start_pose)]
+            self.phase = "approach"
+            self._phase(
+                "approach",
+                f"{len(legs)} legs, {len(approach)} substeps, {len(approach) * core.ROW_DT_S:.1f} s at <= "
+                f"{self.s.speed_deg_s:g} deg/s to the Dream start pose",
+            )
             next_tick = next_frame = self.clock()
             while True:
                 now = self.clock()
@@ -811,6 +958,7 @@ class Episode:
                     self.ticks,
                     {
                         "t": now,
+                        "phase": self.phase,
                         "pos": reading.pos,
                         "cmd": self.commanded,
                         "torque": reading.torque,
@@ -820,7 +968,7 @@ class Episode:
                 )
                 if trips:
                     raise TripStopError(trips)
-                if now >= next_frame:
+                if self.dream is not None and now >= next_frame:
                     frames = core.slot_frames(reading.frames, self.s.slots)
                     state = core.dream_state(reading.pos, self.jmap, self.right_rest, self.s.prompt)
                     self.dream.set_observation(frames, state, now)
@@ -829,18 +977,42 @@ class Episode:
                 if self.stop_event.is_set():
                     reason = "stop signal"
                     break
+                if self.phase == "hold" and now >= hold_until:
+                    reason = f"held {self.s.hold_s:g} s at the Dream start pose"
+                    break
                 previous = self.commanded
-                if queue:
+                if approach:
+                    _leg, leg_end, self.commanded = approach.popleft()
+                    self._check_speed(self.commanded)
+                    self.summary["approach_substeps"] += 1
+                    if leg_end:
+                        self.trail.append(dict(self.commanded))
+                elif queue:
                     self.commanded = queue.popleft()
+                    self._check_speed(self.commanded)
                     self.summary["substeps_sent"] += 1
                 self.arm.send(self.commanded, previous)  # an empty queue re-sends the hold target
-                if not queue and not self.worker.busy and frames_fed >= core.FRAMES_IN_WINDOW:
+                if self.phase == "approach" and not approach:
+                    if self.dream is None:
+                        self.phase, hold_until = "hold", now + self.s.hold_s
+                        self._phase(
+                            "hold", f"at the Dream start pose until a stop signal or {self.s.hold_s:g} s"
+                        )
+                    else:
+                        self.phase = "dream"
+                        self._phase("dream", "start pose reached; Dream calls from here")
+                if (
+                    self.phase == "dream"
+                    and not queue
+                    and not self.worker.busy
+                    and frames_fed >= core.FRAMES_IN_WINDOW
+                ):
                     if self.worker.calls >= self.s.max_calls:
                         reason = f"call cap {self.s.max_calls} reached"
                         break
                     row = core.motor_to_ik_row(self.commanded, self.jmap)
                     self.worker.start({"q_l_chunk": row, "q_r_chunk": [*self.right_rest, 1.0]})
-                result = self.worker.take()
+                result = self.worker.take() if self.phase == "dream" else None
                 if result is not None:
                     reply, error, request = result
                     if error:
@@ -880,27 +1052,71 @@ class Episode:
         )
         return self.summary
 
+    def return_legs(self) -> list[dict]:
+        """Where the stop goes, in order, ending at the measured rest. Mid-approach: back along the
+        approach legs travelled, in reverse. Past it: straight to the Dream start pose, then the
+        approach route reversed (core.return_waypoints)."""
+        if self.phase == "approach":
+            return list(reversed(self.trail))
+        return [self.dream_start, *core.return_waypoints(self.start_pose, self.dream_start)]
+
     def stop(self, reason) -> dict:
-        """Every exit: return to the start pose (arm joints; the gripper keeps its grip) at the
-        speed cap, then torque off. A second signal aborts the return, then releases."""
-        out = {"reason": reason, "returned": None, "release_problems": None}
+        """Every exit: (a) gripper torque off at once, (b) the six arm joints back to the measured rest
+        leg by leg, at the speed cap on fresh feedback, each leg's straight path checked by the guard
+        (not clear: HOLD, torque on, until the second signal), (c) all torque off. A second signal
+        aborts the return and releases."""
+        out = {
+            "reason": reason,
+            "gripper_release": None,
+            "legs": [],
+            "returned": None,
+            "release_problems": None,
+        }
         try:
             if self.energized:
-                pose = {m: self.start_pose[m] for m in core.ARM}
+                self._phase("stop: gripper torque off")
+                try:
+                    out["gripper_release"] = self.arm.release_gripper() or "ok"
+                except Exception as error:  # noqa: BLE001 - the return and the release follow regardless
+                    out["gripper_release"] = f"{error.__class__.__name__}: {error}"
+                grip = self.commanded["gripper"]  # where the limp gripper was last held, for the guard
                 here = dict(self.commanded)
-                if not self.guard.path_clear(here, {**pose, "gripper": here["gripper"]}):
-                    print(
-                        "RETURN PATH NOT CLEAR of the tank keep-out: HOLDING. Support the arm, then signal "
-                        "again (Ctrl-C / kill -TERM) to release torque.",
-                        flush=True,
+                legs = self.return_legs()
+                if max(abs(legs[0][m] - here[m]) for m in core.ARM) < 1e-6:
+                    legs = legs[1:]  # stopped exactly at a leg end: nothing to travel on the first
+                out["returned"] = "at the rest"
+                for k, leg in enumerate(legs, 1):
+                    target = {**{m: float(leg[m]) for m in core.ARM}, "gripper": grip}
+                    if self.abort_event.is_set():
+                        out["returned"] = f"aborted by the second signal before leg {k}"
+                        break
+                    if not self.guard.path_clear(here, target):
+                        print(
+                            f"RETURN LEG {k}/{len(legs)} NOT CLEAR of the tank keep-out: HOLDING (gripper already "
+                            "limp). Support the arm, then press the stop button again (or Ctrl-C / kill -TERM) "
+                            "to release all torque.",
+                            flush=True,
+                        )
+                        while not self.abort_event.is_set():
+                            self.sleep(0.1)
+                        out["returned"] = f"held before leg {k}, released on the second signal"
+                        break
+                    travel = max(abs(target[m] - here[m]) for m in core.ARM)
+                    self._phase(
+                        f"return leg {k}/{len(legs)}", f"{travel:.1f} deg max at {self.s.speed_deg_s:g} deg/s"
                     )
-                    while not self.abort_event.is_set():
-                        self.sleep(0.1)
-                    out["returned"] = "held, released on the second signal"
-                else:
-                    ok, message = self.arm.return_to_rest(pose, self.abort_event, self.s.speed_deg_s)
-                    out["returned"] = {"ok": ok, "message": message}
+                    ok, message = self.arm.return_to_rest(
+                        {m: target[m] for m in core.ARM}, self.abort_event, self.s.speed_deg_s
+                    )
+                    out["legs"].append({"leg": k, "ok": ok, "message": message})
+                    if not ok:
+                        # A cut-short (second signal) or a leg that did not arrive: the next leg's checked
+                        # path would start from somewhere else, so stop the return and release here.
+                        out["returned"] = f"leg {k} ended early ({message}); released there"
+                        break
+                    here = target
         finally:
+            self._phase("release all torque")
             out["release_problems"] = self.arm.release()
             self.energized = False
         return out
@@ -982,8 +1198,10 @@ def build_plan(
         "speed": {
             "arm_target_deg_s": settings.speed_deg_s,
             "gripper_deg_s": settings.grip_deg_s,
-            "retime": "each row split into equal 20 Hz substeps, all joints arriving together",
-            "bus_backstop_deg_s": min(30.0, 2 * settings.speed_deg_s),
+            "retime": "each row and approach leg split into equal 20 Hz substeps, all joints arriving together",
+            "hard_arm_cap_deg_s": HARD_ARM_SPEED_DEG_S,
+            "bus_backstop_deg_s": settings.speed_deg_s,
+            "return_deg_s": settings.speed_deg_s,
             "rows_per_chunk": settings.rows,
             "max_calls": settings.max_calls,
         },
@@ -1024,9 +1242,21 @@ def build_plan(
             "feedback": "no fresh reply / motor fault / camera read error -> stop",
             "dream": "Dream error or a malformed / non-finite chunk -> stop",
             "inputs_unchecked": "first request refused locally (nothing sent) unless ~/.dreamlabs/inputs_checked holds its id",
-            "start_gate": f"start pose within {START_LIMIT_TOLERANCE_DEG} deg of limits, inside the box and the guard",
-            "stop": "SIGINT/SIGTERM/SIGHUP: return to the start pose at the speed cap (guard-checked path), then "
-            "torque off; a second signal aborts the return and releases. Every exit path does this.",
+            "start_gate": f"measured rest within {START_LIMIT_TOLERANCE_DEG} deg of limits and through the guard; "
+            "the Dream start pose inside the limits and the box",
+            "speed": f"any planned arm substep faster than {HARD_ARM_SPEED_DEG_S} deg/s -> stop",
+            "stop": "every exit (trips, SIGINT/SIGTERM/SIGHUP, stop_button.py): gripper torque off at once, then the "
+            "six arm joints back to the measured rest leg by leg at the speed cap (guard-checked legs; not clear "
+            "-> hold), then all torque off; a second signal aborts the return and releases.",
+        },
+        "run": "rehearse: approach, hold at the start pose, stop; no Dream"
+        if args.rehearse
+        else "dream: approach, then Dream chunks",
+        "approach": {
+            "from": "the measured rest (lying on the tank floor)",
+            "route": "core.approach_waypoints: lift shoulder/fold elbow first, then straight to the start pose",
+            "dream_start_motor_deg": {m: round(v, 2) for m, v in jmap.to_motor(arm["rest"]).items()},
+            "gripper": "as measured at the rest",
         },
         "box_config_sha256": core.sha256_bytes(BOX_FILE.read_bytes()),
         "box_points_mm": {k: v["box_mm"] for k, v in box_config["points"].items()},
@@ -1043,6 +1273,8 @@ def build_plan(
             "prompt",
             "trips",
             "box_config_sha256",
+            "run",
+            "approach",
         )
     }
     safety["arm_urdf"] = plan["arm_file"]["urdf_sha256"]
@@ -1078,6 +1310,9 @@ def print_plan(plan):
         print(f"  video.{slot:9s} <- {src}")
     for m in plan["missing_slots"]:
         print(f"  MISSING: {m}")
+    print(f"Run: {plan['run']}")
+    ap = plan["approach"]
+    print(f"Approach: from {ap['from']}, {ap['route']}; start pose (motor deg) {ap['dream_start_motor_deg']}")
     print(f"Prompt: {plan['prompt']!r}")
     print(
         "Workspace box (physical base frame, mm): "
@@ -1118,16 +1353,23 @@ def run_dry(args, ctx) -> int:
         out = ctx["out"] / scenario
         out.mkdir(parents=True, exist_ok=True)
         start = {**TRACE_POSE, **(args.start_motor_deg or {})}
-        arm = FakeArm(
-            start, [c["name"] for c in ctx["record"].get("cameras") or []] + ["(fake)"], clock, scenario
+        cameras = (
+            [] if args.rehearse else [c["name"] for c in ctx["record"].get("cameras") or []] + ["(fake)"]
         )
-        if ctx["dream_problem"] is None and not args.internal_stub:
+        arm = FakeArm(start, cameras, clock, scenario)
+        if args.rehearse:
+            dream = None
+        elif ctx["dream_problem"] is None and not args.internal_stub:
             dream = DreamReal(ctx["arm_path"], out, offline=True, scenario=scenario)
             dream.install_gate("record")
         else:
             dream = DreamInternalStub(ctx["jmap"], scenario)
         stop_event, abort_event = threading.Event(), threading.Event()
-        worker = Worker(dream, clock, threaded=False, latency_s=1.5, max_calls=ctx["settings"].max_calls)
+        worker = (
+            Worker(dream, clock, threaded=False, latency_s=1.5, max_calls=ctx["settings"].max_calls)
+            if dream is not None
+            else None
+        )
 
         def sleep(dt, clock=clock, stop_event=stop_event, scenario=scenario):
             clock.sleep(dt)
@@ -1149,22 +1391,33 @@ def run_dry(args, ctx) -> int:
             stop_event,
             abort_event,
             mutate=jump_mutation if scenario == "jump" else None,
+            arm_rest=ctx["arm"]["rest"],
+            say=print if args.rehearse else None,
         )
         summary = episode.run()
         summary["fake_arm_events"] = arm.events
         summary["inputs_id"] = getattr(dream, "inputs_id", None)
-        dream.close()
+        if dream is not None:
+            dream.close()
         core.atomic_json(out / "summary.json", summary)
         results.append((scenario, summary))
-    print("\n=== Dry run on fakes (virtual clock; no port, camera, network or billed call) ===")
+    what = "Rehearsal" if args.rehearse else "Dry run"
+    print(f"\n=== {what} on fakes (virtual clock; no port, camera, network or billed call) ===")
     for scenario, s in results:
         stop = s["stop"]
         print(f"- {scenario:11s} -> {s['reason'][:110]}")
         print(
-            f"    calls {s['calls']}, rows {s['rows_planned']}, substeps sent {s['substeps_sent']}, "
-            f"rows stretched by the speed cap {s['stretched_rows']}, clipped {s['clipped']}, guard {s['guard'] or 'n/a'}"
+            f"    approach substeps {s['approach_substeps']}, calls {s['calls']}, rows {s['rows_planned']}, "
+            f"substeps sent {s['substeps_sent']}, rows stretched by the speed cap {s['stretched_rows']}, "
+            f"clipped {s['clipped']}, guard {s['guard'] or 'n/a'}"
         )
-        print(f"    stop path: return {stop['returned']}; release problems: {stop['release_problems']}")
+        print(f"    phases: {' > '.join(s['phases'])}")
+        print(
+            f"    stop path: gripper {stop['gripper_release']}; legs {len(stop['legs'])} "
+            f"({', '.join(str(leg['ok']) for leg in stop['legs']) or 'none'}); {stop['returned']}; "
+            f"release problems: {stop['release_problems']}"
+        )
+        print(f"    fake arm: {' | '.join(e.split(':')[0] for e in s['fake_arm_events'])}")
         print(
             f"    peak lag {max(s['peak_lag_deg'].values()):.1f} deg, peak torque "
             f"{max(s['peak_torque_nm'].values()):.2f} Nm, peak temp {max(s['peak_temp_c'].values()):.1f} C"
@@ -1310,20 +1563,29 @@ def live_facts(args, ctx, ledger) -> core.LiveFacts:
     )
 
 
-def run_live(args, ctx) -> int:
-    arm_path, arm = ctx["arm_path"], ctx["arm"]
-    ledger = core.Ledger(LEDGER, LEDGER_CAP)
-    facts = live_facts(args, ctx, ledger)
-    if refusals := core.live_refusals(facts):
-        print("\n--live REFUSED:")
-        for r in refusals:
-            print(f"  - {r}")
-        return 2
-    out = ctx["out"]
-    out.mkdir(parents=True, exist_ok=True)
-    core.atomic_json(out / "plan.json", ctx["plan"])
-    if args.pid_file:
-        Path(args.pid_file).write_text(f"{os.getpid()}\n")
+def rehearse_refusals(f: core.LiveFacts) -> list[str]:
+    """--rehearse --live: the refusals that matter for the hardware (tank model approved, joint signs,
+    plan id, Lab idle, port free, tank guard), with the Dream-only facts (tool point, cameras, client,
+    ledger, credentials, an explicit dreamcli arm file) taken as satisfied: no Dream call is made."""
+    return core.live_refusals(
+        dataclasses.replace(
+            f,
+            tcp_problem=None,
+            missing_slots=[],
+            dream_problem=None,
+            ledger_remaining=1,
+            max_calls=1,
+            credentials_present=True,
+            arm_file_explicit=True,
+        )
+    )
+
+
+def install_stop_signals(pid_file):
+    """SIGINT/SIGTERM/SIGHUP (handlers installed, so nohup cannot swallow them): the first stops, a
+    second aborts the return and releases. stop_button.py sends SIGTERM to the pid written here."""
+    if pid_file:
+        Path(pid_file).write_text(f"{os.getpid()}\n")
     stop_event, abort_event = threading.Event(), threading.Event()
 
     def on_signal(signum, _frame):
@@ -1332,45 +1594,80 @@ def run_live(args, ctx) -> int:
 
     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, on_signal)
+    return stop_event, abort_event
 
-    # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
-    dream = DreamReal(arm_path, out, offline=False)
-    dream.install_gate("preflight")
-    _, grab, close = open_cameras(ctx["record"], fake=False)
-    rest = [float(v) for v in arm["rest"]]
-    state = core.dream_state(
-        {**ctx["jmap"].to_motor(rest), "gripper": core.GRIP_OPEN_DEG},
-        ctx["jmap"],
-        rest,
-        ctx["settings"].prompt,
-    )
-    try:
-        t0 = time.monotonic()
-        for i in range(core.FRAMES_IN_WINDOW):
-            dream.set_observation(core.slot_frames(grab(), ctx["settings"].slots), state, t0 + i * 0.2)
-            time.sleep(0.2)
-        with contextlib.suppress(PreflightDoneError):
-            dream.request({"q_l_chunk": [*state["state.left_arm"], 1.0], "q_r_chunk": [*rest, 1.0]})
-    finally:
-        close()
-        dream.close()
-    if not dream.inputs_checked:
-        print(
-            f"\n--live REFUSED: inputs id {dream.inputs_id} is not in ~/.dreamlabs/inputs_checked. Run --preview, "
-            "look, and Gavin records it with python -m dream.input_check."
-        )
+
+def remove_pid_file(pid_file):
+    with contextlib.suppress(OSError):
+        if pid_file and Path(pid_file).read_text().strip() == str(os.getpid()):
+            Path(pid_file).unlink()
+
+
+def run_live(args, ctx) -> int:
+    arm_path, arm = ctx["arm_path"], ctx["arm"]
+    ledger = core.Ledger(LEDGER, LEDGER_CAP)
+    facts = live_facts(args, ctx, ledger)
+    refusals = rehearse_refusals(facts) if args.rehearse else core.live_refusals(facts)
+    if refusals:
+        print(f"\n{'--rehearse ' if args.rehearse else ''}--live REFUSED:")
+        for r in refusals:
+            print(f"  - {r}")
         return 2
+    out = ctx["out"]
+    out.mkdir(parents=True, exist_ok=True)
+    core.atomic_json(out / "plan.json", ctx["plan"])
+    stop_event, abort_event = install_stop_signals(args.pid_file)
+    try:
+        return _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event)
+    finally:
+        remove_pid_file(args.pid_file)
+
+
+def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) -> int:
+    dream = worker = None
+    if not args.rehearse:
+        # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
+        dream = DreamReal(arm_path, out, offline=False)
+        dream.install_gate("preflight")
+        _, grab, close = open_cameras(ctx["record"], fake=False)
+        rest = [float(v) for v in arm["rest"]]
+        state = core.dream_state(
+            {**ctx["jmap"].to_motor(rest), "gripper": core.GRIP_OPEN_DEG},
+            ctx["jmap"],
+            rest,
+            ctx["settings"].prompt,
+        )
+        try:
+            t0 = time.monotonic()
+            for i in range(core.FRAMES_IN_WINDOW):
+                dream.set_observation(core.slot_frames(grab(), ctx["settings"].slots), state, t0 + i * 0.2)
+                time.sleep(0.2)
+            with contextlib.suppress(PreflightDoneError):
+                dream.request({"q_l_chunk": [*state["state.left_arm"], 1.0], "q_r_chunk": [*rest, 1.0]})
+        finally:
+            close()
+            dream.close()
+        if not dream.inputs_checked:
+            print(
+                f"\n--live REFUSED: inputs id {dream.inputs_id} is not in ~/.dreamlabs/inputs_checked. Run --preview, "
+                "look, and Gavin records it with python -m dream.input_check."
+            )
+            return 2
+        print(f"inputs id {dream.inputs_id} checked.", flush=True)
+        dream = DreamReal(arm_path, out, offline=False)
+        dream.install_gate("gate")
+        worker = Worker(
+            dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
+        )
     print(
-        f"inputs id {dream.inputs_id} checked. Energizing next: ALL SEVEN joints may move (plan "
-        f"{ctx['plan']['plan_id']}). Stop: Ctrl-C or kill -TERM {os.getpid()}; power switch is the hard stop.",
+        f"{'REHEARSAL (no Dream, no billed call). ' if args.rehearse else ''}Energizing next: ALL SEVEN joints may "
+        f"move (plan {ctx['plan']['plan_id']}), arm <= {ctx['settings'].speed_deg_s:g} deg/s. Stop: the red button "
+        f"(stop_button.py --pid-file {args.pid_file or '<none>'}), Ctrl-C or kill -TERM {os.getpid()}; a second press "
+        "releases all torque at once; the power switch is the hard stop.",
         flush=True,
     )
-    dream = DreamReal(arm_path, out, offline=False)
-    dream.install_gate("gate")
-    worker = Worker(
-        dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
-    )
-    arm_io = LabArm(ctx["home"], ctx["record"], min(30.0, 2 * ctx["settings"].speed_deg_s))
+    speed = ctx["settings"].speed_deg_s
+    arm_io = LabArm(ctx["home"], ctx["record"], speed, cameras=not args.rehearse)
     episode = Episode(
         arm_io,
         dream,
@@ -1385,13 +1682,16 @@ def run_live(args, ctx) -> int:
         out,
         stop_event,
         abort_event,
+        arm_rest=arm["rest"],
+        say=lambda line: print(line, flush=True),
     )
     try:
         summary = episode.run()
     finally:
-        dream.close()
+        if dream is not None:
+            dream.close()
     core.atomic_json(out / "summary.json", summary)
-    print(json.dumps({k: summary[k] for k in ("reason", "calls", "stop")}, indent=1, default=str))
+    print(json.dumps({k: summary[k] for k in ("reason", "calls", "phases", "stop")}, indent=1, default=str))
     return 0 if not summary["trips"] else 1
 
 
@@ -1403,6 +1703,14 @@ def main(argv=None) -> int:
         "--preview", action="store_true", help="no motion: cameras + Dream client offline, print inputs id"
     )
     mode.add_argument("--live", action="store_true", help="billed; refused unless every precondition holds")
+    p.add_argument(
+        "--rehearse",
+        action="store_true",
+        help="no Dream: approach, hold, stop. Alone = on FakeArm; with --live = the real arm (no billed call)",
+    )
+    p.add_argument(
+        "--hold-s", type=float, default=DEFAULT_HOLD_S, help="--rehearse: hold time at the start pose"
+    )
     p.add_argument("--robot", default="viscous_waterproof_01")
     p.add_argument(
         "--lab-home", help="MAKERMODSLAB_HOME (default: env, else ~/.makermods/makermodslab-viscous)"
@@ -1420,7 +1728,7 @@ def main(argv=None) -> int:
     )
     p.add_argument("--max-calls", type=int, default=10)
     p.add_argument("--rows", type=int, default=48)
-    p.add_argument("--speed-deg-s", type=float, default=15.0)
+    p.add_argument("--speed-deg-s", type=float, default=HARD_ARM_SPEED_DEG_S, help="arm cap, at most 15")
     p.add_argument("--grip-deg-s", type=float, default=60.0)
     p.add_argument("--max-jump-deg", type=float, default=20.0)
     p.add_argument("--limit-margin-deg", type=float, default=1.0)
@@ -1458,9 +1766,14 @@ def main(argv=None) -> int:
     sys.stdout.reconfigure(line_buffering=True)
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")
-    if not 0 < args.speed_deg_s <= 30 or not 0 < args.grip_deg_s <= 90 or not 0 < args.max_jump_deg <= 20:
-        p.error("--speed-deg-s (0, 30], --grip-deg-s (0, 90], --max-jump-deg (0, 20]")
+    if not 0 < args.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
+        p.error(f"--speed-deg-s must be in (0, {HARD_ARM_SPEED_DEG_S:g}]: the hard arm speed cap")
+    if not 0 < args.grip_deg_s <= 90 or not 0 < args.max_jump_deg <= 20 or not 0 < args.hold_s <= 600:
+        p.error("--grip-deg-s (0, 90], --max-jump-deg (0, 20], --hold-s (0, 600]")
+    if args.rehearse and args.preview:
+        p.error("--rehearse goes with --dry-run (the default) or --live, not --preview")
     kind = "live" if args.live else "preview" if args.preview else "dry"
+    kind = f"rehearse-{kind}" if args.rehearse else kind
 
     home = lab_home(args.lab_home)
     record = load_record(home, args.robot)
@@ -1501,6 +1814,7 @@ def main(argv=None) -> int:
         args.limit_margin_deg,
         trips,
         slots,
+        args.hold_s,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     guard = Guard()
@@ -1539,22 +1853,21 @@ def main(argv=None) -> int:
         "plan": plan,
         "out": out,
     }
-    if kind == "dry":
+    if not args.live and not args.preview:
         print(
             f"lab: {lab_holder(args.lab_url, True) or 'idle'}; follower port holders: "
             f"{port_holders(record['follower_port']) or 'none'}"
         )
         out.mkdir(parents=True, exist_ok=True)
         core.atomic_json(out / "plan.json", plan)
-        refusals = core.live_refusals(live_facts(args, ctx, core.Ledger(LEDGER, LEDGER_CAP)))
-        print(
-            "Live readiness: "
-            + ("would proceed to the preflight" if not refusals else "--live would REFUSE:")
-        )
+        facts = live_facts(args, ctx, core.Ledger(LEDGER, LEDGER_CAP))
+        refusals = rehearse_refusals(facts) if args.rehearse else core.live_refusals(facts)
+        live = "--rehearse --live" if args.rehearse else "--live"
+        print(f"{live} readiness: " + ("would proceed" if not refusals else f"{live} would REFUSE:"))
         for r in refusals:
             print(f"  - {r}")
         return run_dry(args, ctx)
-    if kind == "preview":
+    if args.preview:
         return run_preview(args, ctx)
     return run_live(args, ctx)
 

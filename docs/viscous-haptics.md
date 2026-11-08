@@ -267,6 +267,26 @@ restore paths in the DAgger runner.
   and "we should do one rehearsal": a powered run with no Dream calls (rest -> start
   pose -> hold -> red button -> back to rest -> torque off) before the first billed
   call, because the runner's hardware path has never moved the real arm.
+- *Status (2026-11-08, later): start/stop built (two subagents), offline only.*
+  `dream_real.py`: the live run starts from the arm lying flat (start gate on the
+  rest = limits + guard; the workspace box applies from the Dream start pose on),
+  then an approach `core.approach_waypoints`: leg 1 lifts shoulder_lift 40 deg and
+  folds the elbow 45 deg with pan and wrist held, so the hand peels off the floor;
+  leg 2 goes in the air to the start pose (114 substeps, 5.7 s). Every stop: the
+  gripper motor alone goes limp at once (zero-gain MIT frame, then
+  `RobstrideMotorsBus.disable_torque("gripper")`), then the six arm joints retrace the
+  route to the measured rest leg by leg (each leg guard-checked; not clear = hold
+  until the second press), then all torque off. Hard 15 deg/s on every arm motion,
+  bus backstop 15 too (was 30). `--rehearse [--live]`: the same hardware path with
+  no Dream, holds at the start pose until the button or `--hold-s`. New
+  `stop_button.py`: one big red STOP (SIGTERM via `--pid-file`), then RELEASE ALL
+  (second SIGTERM, only by a click >= 1 s later). Proven with a real nohup'd process
+  and two real signals. Guard change found on review: a joint resting a few degrees
+  outside a soft limit used to SNAP to the limit on the first target (pan 1.5-5 deg
+  in 50 ms, 30-100 deg/s, hand on the floor); it now eases back in at the leg's pace,
+  and a return may end exactly at the run's start rest. 113 targeted tests pass.
+  Only a powered run shows: the gripper really limp while the six hold, its feedback
+  still answering (the same clear-fault query reads torque-off motors today).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
