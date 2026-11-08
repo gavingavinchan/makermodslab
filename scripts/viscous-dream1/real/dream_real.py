@@ -1629,6 +1629,10 @@ def build_plan(
     }
     safety["arm_urdf"] = plan["arm_file"]["urdf_sha256"]
     safety["arm_tool"] = {k: arm[k] for k in core.TOOL_KEYS}
+    # The follower gains and the tank keep-out shape every motion too (both were left out until 2026-11-08,
+    # so a floor move and a gain change kept the old plan id).
+    safety["follower_gains_override"] = plan["follower_gains_override"]
+    safety["keepout_sha256"] = core.sha256_bytes(core.KEEPOUT_FILE.read_bytes())
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
