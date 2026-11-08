@@ -341,6 +341,18 @@ restore paths in the DAgger runner.
   not bound the real hand; floor contact is allowed, walls are less affected (the sag
   is mostly vertical). Peaks: shoulder 5.5 Nm, lag 11.4 deg, speed 20.8 deg/s,
   shoulder 25 -> 39 C in under a minute (watch heat on longer runs).
+- *Status (2026-11-08, later): slide along the limits.* Gavin: "it should be able to
+  slide along the limits of the aquarium" (the override cut the chunk and froze the
+  arm, wasting two of three calls). Dream's left hand targets are now clipped into the
+  tcp box in Dream's reply, before Dream's own IK (`SlideTransport`,
+  `core.clamp_eef_rows`), so the hand rides the limit while the rest of the motion
+  (sideways, wrist, gripper) continues; the box and the tank guard still check every
+  substep after the IK, and cut only as a backstop. Slide margins: 2 mm off the floor
+  and rim limits, 40 mm off far/near, 100 mm off the side limits, because the
+  wrist_roll_link mesh reaches ~90 mm past the tcp toward a side wall and the guard
+  keeps it 70 mm off the glass. Dry run, Dream pushing 25 cm into the right wall:
+  37-47 rows per call slid, no cuts, 153 substeps executed. A pick needs ~10-20 calls
+  (each call = one ~2.4 s chunk from the current image).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

@@ -359,6 +359,43 @@ def return_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> l
     return [{**{m: float(wp[m]) for m in ARM}, "gripper": grip} for wp in back]
 
 
+# --- slide along the limits ----------------------------------------------------
+
+# How far inside the tcp box the hand slides: 2 mm off the floor/rim limits (floor contact is allowed),
+# 100 mm off the side limits and 40 off far/near, because the wrist links are wider than the tcp point (the
+# wrist_roll_link mesh reaches ~90 mm past it toward a side wall, dry run 2026-11-08) and the tank
+# guard keeps their mesh 70 mm off the glass (a hand on the box's side edge gets cut there).
+SLIDE_MARGIN_MM = {"x": 40.0, "y": 100.0, "z": 2.0}
+
+
+def tcp_box_mm(box_file: Path) -> dict:
+    """The workspace box's tcp bounds (physical base frame, mm)."""
+    return {
+        a: tuple(map(float, v))
+        for a, v in json.loads(Path(box_file).read_text())["points"]["tcp"]["box_mm"].items()
+    }
+
+
+def clamp_eef_rows(rows_m, box_mm: Mapping, margin_mm: Mapping = SLIDE_MARGIN_MM):
+    """Clip Dream's hand targets (dream_base, metres; dream_base = Rz(180) over base_link, so physical
+    x = -x, y = -y, z = z) into the tcp box, `margin_mm` inside it. Returns (rows, how many changed).
+
+    Grace (DreamLabs) and Gavin 2026-11-08: the control loop overrides Dream to stay inside the tank and
+    the hand should slide along the limits, not stop at them. Clipping the target before Dream's own IK
+    keeps the rest of the motion (sideways, wrist, gripper) while the hand rides the limit; the box and
+    the tank guard still check every substep after the IK. `margin_mm` is per axis.
+    """
+    rows = np.array(rows_m, float, copy=True)
+    phys = np.stack([-rows[:, 0], -rows[:, 1], rows[:, 2]], axis=1) * 1000.0
+    lo = np.array([box_mm[a][0] + margin_mm[a] for a in "xyz"])
+    hi = np.array([box_mm[a][1] - margin_mm[a] for a in "xyz"])
+    clipped = np.clip(phys, lo, hi)
+    changed = int(np.any(np.abs(clipped - phys) > 1e-9, axis=1).sum())
+    out = clipped / 1000.0
+    rows[:, 0], rows[:, 1], rows[:, 2] = -out[:, 0], -out[:, 1], out[:, 2]
+    return rows, changed
+
+
 # --- workspace box -----------------------------------------------------------
 
 

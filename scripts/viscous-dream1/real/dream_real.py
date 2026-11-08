@@ -702,6 +702,33 @@ def deny_network():
     sys.addaudithook(hook)
 
 
+class SlideTransport:
+    """Wraps the client's transport: clips Dream's left hand targets into the tcp box (core.clamp_eef_rows)
+    BEFORE the client's IK, so the hand slides along the limits instead of the chunk being cut there."""
+
+    KEY = "action.left_eef_xyz"
+
+    def __init__(self, real, box_mm):
+        self.real, self.box_mm = real, box_mm
+        self.last_exchange = getattr(real, "last_exchange", None)
+        self.clamped_rows = []  # per reply: rows whose hand target was moved onto a limit
+
+    def request(self, request, headers, **kwargs):
+        reply = self.real.request(request, headers, **kwargs)
+        per_key = (reply or {}).get("actions", {}).get("per_key") if isinstance(reply, dict) else None
+        if per_key and self.KEY in per_key:
+            rows, changed = core.clamp_eef_rows(per_key[self.KEY], self.box_mm)
+            per_key[self.KEY] = rows.tolist()
+            self.clamped_rows.append(changed)
+        return reply
+
+    def __getattr__(self, name):
+        return getattr(self.real, name)
+
+    def close(self):
+        self.real.close()
+
+
 class DreamReal:
     """Dream's own client. offline=True patches the model lookup and the transport (no key, no network)."""
 
@@ -747,6 +774,8 @@ class DreamReal:
         else:
             self.client.policy(self.config)
             self.stub = None
+        self.slide = SlideTransport(self.client._policy._transport, core.tcp_box_mm(BOX_FILE))
+        self.client._policy._transport = self.slide
         self.inputs_id = None
         self.inputs_checked = None
         self.sent_observation = None
@@ -1191,6 +1220,16 @@ class Episode:
                     if error:
                         raise TripStopError([core.Trip("dream", error)])
                     self.summary["calls"] += 1
+                    slide = getattr(self.dream, "slide", None)
+                    slid = slide.clamped_rows[-1] if slide is not None and slide.clamped_rows else 0
+                    if slid:
+                        self.summary.setdefault("slid", []).append(
+                            {"call": self.summary["calls"], "rows": slid}
+                        )
+                        self._phase(
+                            "slide",
+                            f"call {self.summary['calls']}: {slid} hand targets moved onto the limits",
+                        )
                     try:
                         plan = self.plan_chunk(reply)
                     except TripStopError as trip:
