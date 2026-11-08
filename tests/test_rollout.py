@@ -614,6 +614,27 @@ def test_format_cameras_arg_handles_multiple_cameras() -> None:
     assert "wrist: {" in result
 
 
+def test_format_cameras_arg_rotation_parses_as_lerobot_rotation() -> None:
+    """An upside-down camera must reach the policy flipped, exactly as it was
+    recorded: the CLI value has to parse into OpenCVCameraConfig.rotation."""
+    from dataclasses import field, make_dataclass
+
+    import draccus
+
+    from lerobot.cameras.configs import CameraConfig, Cv2Rotation
+    from lerobot.cameras.opencv import OpenCVCameraConfig  # noqa: F401  (registers the type)
+    from makermodslab.rollout import _format_cameras_arg
+
+    # make_dataclass, not a class body: this module's `from __future__ import
+    # annotations` would leave a local class's annotation as an unresolvable string.
+    cameras_cli = make_dataclass("_Cameras", [("cameras", dict[str, CameraConfig], field(default_factory=dict))])
+
+    arg = _format_cameras_arg({"front": {"type": "opencv", "camera_index": 0, "rotation": 180}})
+    parsed = draccus.parse(cameras_cli, args=[f"--cameras={arg}"])
+
+    assert parsed.cameras["front"].rotation == Cv2Rotation.ROTATE_180
+
+
 def test_handle_stop_inference_when_idle_returns_409() -> None:
     from makermodslab.rollout import handle_stop_inference
 

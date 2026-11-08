@@ -12,6 +12,9 @@ interface BackendCameraStreamProps {
    * resolves indices against a startup snapshot that drifts from the fresh
    * enumeration after a replug, so index alone can open the wrong camera. */
   uniqueId?: string;
+  /** The camera's saved rotation (CameraConfig.rotation). The server turns the
+   * frames, so the tile shows what a session will record. */
+  rotation?: number;
   className?: string;
 }
 
@@ -41,6 +44,7 @@ const RETRY_MAX_MS = 12000;
 const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
   cameraIndex,
   uniqueId,
+  rotation,
   className,
 }) => {
   const { t } = useTranslation();
@@ -163,7 +167,7 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
       ref={attachImg}
       src={`${baseUrl}/api/v1/camera-preview/${cameraIndex}?r=${attempt}${
         uniqueId ? `&unique_id=${encodeURIComponent(uniqueId)}` : ""
-      }`}
+      }${rotation ? `&rotation=${rotation}` : ""}`}
       onError={handleError}
       className={className}
       alt={t("shared.camera.previewAlt")}

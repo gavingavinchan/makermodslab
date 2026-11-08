@@ -8962,7 +8962,7 @@
     },
     "/api/v1/camera-preview/{index}": {
       "get": {
-        "description": "MJPEG preview stream of a camera attached to the *server* machine.\n\nThe browser's getUserMedia only sees the *viewing* machine's cameras, and\nit identifies them by ``deviceId`` — which the frontend can only match to a\ncv2 index by localizedName. Two cameras of the same model share that name,\nso the match is a coin flip and the preview can show the wrong device (and\nswap between refreshes). Streaming from the backend by cv2 index removes\nthe browser from the loop: the tile shows exactly what the recorder will\nopen. It is also the only preview that works at all on a headless host.\n\n``unique_id`` (AVFoundation uniqueID, from /available-cameras) re-anchors\nthe index to the physical device before opening: cv2 resolves indices\nagainst this process's device snapshot, which diverges from the\nfresh-subprocess enumeration after a replug — without the re-anchor the\nstream can silently show a different camera (see makermodslab/camera_identity.py).\nThe identity is also what the preview registry shares captures by, so the\nresolver hands back both: the index to open and the key to file it under.\nKeying by the bare index aliased two different cameras onto one handle\nwhenever the device set renumbered mid-session.\n\nReturns 409 while recording or inference is active (they own the cv2\ndevices) and 503 when the camera can't be opened. Teleoperation drives the\nserial bus and opens no cv2 cameras, so a preview during teleop does not\ncontend — it is allowed.",
+        "description": "MJPEG preview stream of a camera attached to the *server* machine.\n\nThe browser's getUserMedia only sees the *viewing* machine's cameras, and\nit identifies them by ``deviceId`` — which the frontend can only match to a\ncv2 index by localizedName. Two cameras of the same model share that name,\nso the match is a coin flip and the preview can show the wrong device (and\nswap between refreshes). Streaming from the backend by cv2 index removes\nthe browser from the loop: the tile shows exactly what the recorder will\nopen. It is also the only preview that works at all on a headless host.\n\n``unique_id`` (AVFoundation uniqueID, from /available-cameras) re-anchors\nthe index to the physical device before opening: cv2 resolves indices\nagainst this process's device snapshot, which diverges from the\nfresh-subprocess enumeration after a replug — without the re-anchor the\nstream can silently show a different camera (see makermodslab/camera_identity.py).\nThe identity is also what the preview registry shares captures by, so the\nresolver hands back both: the index to open and the key to file it under.\nKeying by the bare index aliased two different cameras onto one handle\nwhenever the device set renumbered mid-session.\n\n``rotation`` is the camera's saved rotation (0 or 180), applied here so\nthe tile shows the picture the session will record.\n\nReturns 409 while recording or inference is active (they own the cv2\ndevices) and 503 when the camera can't be opened. Teleoperation drives the\nserial bus and opens no cv2 cameras, so a preview during teleop does not\ncontend — it is allowed.",
         "operationId": "camera_preview_stream",
         "parameters": [
           {
@@ -8988,6 +8988,16 @@
                 }
               ],
               "title": "Unique Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rotation",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Rotation",
+              "type": "integer"
             }
           }
         ],
@@ -15046,7 +15056,7 @@
     },
     "/camera-preview/{index}": {
       "get": {
-        "description": "MJPEG preview stream of a camera attached to the *server* machine.\n\nThe browser's getUserMedia only sees the *viewing* machine's cameras, and\nit identifies them by ``deviceId`` — which the frontend can only match to a\ncv2 index by localizedName. Two cameras of the same model share that name,\nso the match is a coin flip and the preview can show the wrong device (and\nswap between refreshes). Streaming from the backend by cv2 index removes\nthe browser from the loop: the tile shows exactly what the recorder will\nopen. It is also the only preview that works at all on a headless host.\n\n``unique_id`` (AVFoundation uniqueID, from /available-cameras) re-anchors\nthe index to the physical device before opening: cv2 resolves indices\nagainst this process's device snapshot, which diverges from the\nfresh-subprocess enumeration after a replug — without the re-anchor the\nstream can silently show a different camera (see makermodslab/camera_identity.py).\nThe identity is also what the preview registry shares captures by, so the\nresolver hands back both: the index to open and the key to file it under.\nKeying by the bare index aliased two different cameras onto one handle\nwhenever the device set renumbered mid-session.\n\nReturns 409 while recording or inference is active (they own the cv2\ndevices) and 503 when the camera can't be opened. Teleoperation drives the\nserial bus and opens no cv2 cameras, so a preview during teleop does not\ncontend — it is allowed.",
+        "description": "MJPEG preview stream of a camera attached to the *server* machine.\n\nThe browser's getUserMedia only sees the *viewing* machine's cameras, and\nit identifies them by ``deviceId`` — which the frontend can only match to a\ncv2 index by localizedName. Two cameras of the same model share that name,\nso the match is a coin flip and the preview can show the wrong device (and\nswap between refreshes). Streaming from the backend by cv2 index removes\nthe browser from the loop: the tile shows exactly what the recorder will\nopen. It is also the only preview that works at all on a headless host.\n\n``unique_id`` (AVFoundation uniqueID, from /available-cameras) re-anchors\nthe index to the physical device before opening: cv2 resolves indices\nagainst this process's device snapshot, which diverges from the\nfresh-subprocess enumeration after a replug — without the re-anchor the\nstream can silently show a different camera (see makermodslab/camera_identity.py).\nThe identity is also what the preview registry shares captures by, so the\nresolver hands back both: the index to open and the key to file it under.\nKeying by the bare index aliased two different cameras onto one handle\nwhenever the device set renumbered mid-session.\n\n``rotation`` is the camera's saved rotation (0 or 180), applied here so\nthe tile shows the picture the session will record.\n\nReturns 409 while recording or inference is active (they own the cv2\ndevices) and 503 when the camera can't be opened. Teleoperation drives the\nserial bus and opens no cv2 cameras, so a preview during teleop does not\ncontend — it is allowed.",
         "operationId": "camera_preview_stream_camera_preview__index__get",
         "parameters": [
           {
@@ -15072,6 +15082,16 @@
                 }
               ],
               "title": "Unique Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rotation",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Rotation",
+              "type": "integer"
             }
           }
         ],

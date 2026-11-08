@@ -501,12 +501,13 @@ def _build_camera_configs(cameras: dict, default_backend) -> dict:
             width=camera_data.get("width"),
             height=camera_data.get("height"),
             fourcc=fourcc,
+            rotation=camera_data.get("rotation", 0),
         )
         logger.info(
             f"✅ CAMERA CONFIG: {camera_name} -> OpenCVCameraConfig("
             f"index={camera_data.get('camera_index')}, backend={backend.name}, "
             f"{camera_data.get('width')}x{camera_data.get('height')}@{camera_data.get('fps')}fps, "
-            f"fourcc={fourcc})"
+            f"fourcc={fourcc}, rotation={camera_data.get('rotation', 0)})"
         )
     return camera_configs
 

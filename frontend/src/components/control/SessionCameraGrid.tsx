@@ -31,7 +31,7 @@ export default function SessionCameraGrid({
               <div className="mt-1 truncate text-xs text-muted-foreground" title={camera.name}>{camera.name}</div>
             </div>
           ) : (
-            <CameraFeed key={camera.id} cameraIndex={camera.camera_index} uniqueId={camera.unique_id} label={camera.name} />
+            <CameraFeed key={camera.id} cameraIndex={camera.camera_index} uniqueId={camera.unique_id} rotation={camera.rotation} label={camera.name} />
           ))}
         </div>
       ) : <p className="text-sm text-muted-foreground">{t(robot ? "shared.camera.none" : "shared.camera.loadingRobot")}</p>}

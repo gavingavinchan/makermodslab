@@ -1935,6 +1935,23 @@ independent. Placement/glass estimates are unchanged. Local follow-up to
 1e5282b5 only, no ports/services, installed state, frontend edits, network or
 push; the original subsection above is retained as history.
 
+### Upside-down camera: a per-camera 180° flip (2026-11-07, goals A and B2)
+
+Gavin installed a USB camera ("USB Camera", uniqueID `0x1300000c45636b`) that
+is mounted upside down, and asked for it to be flipped "when we do the preview
+in the gui and when we do physical ai autonomous stuff". Each camera in a
+robot record can now carry `rotation: 180`, set with the **Flip 180°** button on
+the camera's card in Robot settings. The flip is applied by lerobot at capture
+(`OpenCVCameraConfig.rotation`), so recordings, local inference, remote
+inference and hosting all see the picture upright, and a policy trained on
+flipped recordings sees the same picture at rollout. The server-side preview
+(`/camera-preview?rotation=180`) turns the frames too, so the tile shows what
+gets recorded. Only 0 and 180 are accepted: a quarter turn makes lerobot swap
+the capture width and height, which the record's dims and the policy-binding
+check do not handle yet. Verified on the live camera: the barcode in frame
+reads upright with the flip on. Both Viscous records had no cameras at the
+time, so the camera still has to be added to the robot and flipped in the UI.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.

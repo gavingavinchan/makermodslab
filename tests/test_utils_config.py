@@ -949,6 +949,22 @@ def test_session_camera_config_omits_absent_keys_and_defaults_type() -> None:
     assert config == {"type": "opencv", "camera_index": 0}
 
 
+def test_session_camera_config_forwards_an_upside_down_mount() -> None:
+    """180 reaches lerobot's OpenCVCameraConfig.rotation, so the dataset and
+    the policy see the picture upright; upright (0) is left to lerobot's
+    default rather than forwarded."""
+    assert cfg.session_camera_config(_camera_entry("wrist", rotation=180))["rotation"] == 180
+    assert "rotation" not in cfg.session_camera_config(_camera_entry("wrist", rotation=0))
+
+
+@pytest.mark.parametrize("rotation", [90, -90, 270, "180", True])
+def test_session_camera_config_refuses_an_unsupported_rotation(rotation) -> None:
+    """A quarter turn would make lerobot swap the capture dims behind the
+    record's back; recording unflipped instead would be silent bad data."""
+    with pytest.raises(cfg.CameraResolutionError):
+        cfg.session_camera_config(_camera_entry("wrist", rotation=rotation))
+
+
 def test_record_cameras_by_name_keys_on_the_camera_name() -> None:
     cameras = cfg.record_cameras_by_name([_camera_entry("wrist"), _camera_entry("top", camera_index=2)])
 

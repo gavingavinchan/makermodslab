@@ -7,6 +7,8 @@ interface CameraFeedProps {
   cameraIndex?: number;
   /** Stable device identity, so the server re-anchors the index across replugs. */
   uniqueId?: string;
+  /** Saved rotation, applied server-side (CameraConfig.rotation). */
+  rotation?: number;
   /** Optional caption shown under the feed. */
   label?: string;
 }
@@ -22,6 +24,7 @@ interface CameraFeedProps {
 const CameraFeed: React.FC<CameraFeedProps> = ({
   cameraIndex,
   uniqueId,
+  rotation,
   label,
 }) => {
   return (
@@ -31,6 +34,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({
           <BackendCameraStream
             cameraIndex={cameraIndex}
             uniqueId={uniqueId}
+            rotation={rotation}
             className="w-full h-full object-contain"
           />
         ) : (

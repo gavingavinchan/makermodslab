@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
-import { Camera, Plus, Trash2, VideoOff, RefreshCw, ChevronRight } from "lucide-react";
+import { Camera, Plus, Trash2, VideoOff, RefreshCw, ChevronRight, RotateCw } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -84,6 +84,11 @@ export interface CameraConfig {
   fps?: number;
   fourcc?: string; // 4-char OpenCV pixel format (e.g. "MJPG"); undefined = auto-detect
   backend?: string; // Cv2Backends name (e.g. "AVFOUNDATION"); undefined = platform default
+  // Degrees, as lerobot's Cv2Rotation: 180 for a camera mounted upside down;
+  // undefined = upright. lerobot turns the frames at capture, so recordings,
+  // policies and previews all see the corrected picture. The server accepts
+  // 0 and 180 only (utils/config.SUPPORTED_CAMERA_ROTATIONS).
+  rotation?: number;
 }
 
 interface CameraConfigurationProps {
@@ -533,6 +538,7 @@ const CameraConfiguration: React.FC<CameraConfigurationProps> = ({
 interface CameraStreamBoxProps {
   cameraIndex?: number;
   uniqueId?: string;
+  rotation?: number;
   paused: boolean;
   /** Shown when there's no index to stream. Distinguishes "nothing picked yet"
    * (dropdown preview) from "this configured camera is gone" (camera card). */
@@ -559,6 +565,7 @@ interface CameraStreamBoxProps {
 const CameraStreamBox: React.FC<CameraStreamBoxProps> = ({
   cameraIndex,
   uniqueId,
+  rotation,
   paused,
   emptyLabel,
   aspectClassName = "aspect-[4/3]",
@@ -574,6 +581,7 @@ const CameraStreamBox: React.FC<CameraStreamBoxProps> = ({
         <BackendCameraStream
           cameraIndex={cameraIndex}
           uniqueId={uniqueId}
+          rotation={rotation}
           className="w-full h-full object-cover"
         />
       ) : (
@@ -612,6 +620,7 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({
       <CameraStreamBox
         cameraIndex={connected ? camera.camera_index : undefined}
         uniqueId={camera.unique_id}
+        rotation={camera.rotation}
         paused={paused}
         emptyLabel={t("recording.cameras.disconnected")}
       />
@@ -620,15 +629,32 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({
       <div className="p-3 space-y-2">
         <div className="flex items-center justify-between">
           <h5 className="font-medium text-foreground truncate">{camera.name}</h5>
-          <Button
-            onClick={onRemove}
-            size="sm"
-            variant="ghost"
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 p-1"
-            aria-label={t("recording.cameras.removeLabel")}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            {/* An upside-down mount. Stored on the camera so every session
+                (recording, inference, hosting) flips it the same way. */}
+            <Button
+              onClick={() =>
+                onUpdate({ rotation: camera.rotation === 180 ? undefined : 180 })
+              }
+              size="sm"
+              variant={camera.rotation === 180 ? "secondary" : "ghost"}
+              className="h-7 gap-1 px-2 text-xs"
+              aria-pressed={camera.rotation === 180}
+              title={t("recording.cameras.flipTooltip")}
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+              {t("recording.cameras.flipLabel")}
+            </Button>
+            <Button
+              onClick={onRemove}
+              size="sm"
+              variant="ghost"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 p-1"
+              aria-label={t("recording.cameras.removeLabel")}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         <Collapsible>
@@ -855,6 +881,7 @@ export const SessionCameraList: React.FC<SessionCameraListProps> = ({
                       : undefined
                   }
                   uniqueId={camera.unique_id}
+                  rotation={camera.rotation}
                   paused={isPaused}
                   emptyLabel={t("recording.cameras.disconnectedSettings")}
                 />
@@ -869,6 +896,9 @@ export const SessionCameraList: React.FC<SessionCameraListProps> = ({
                     {camera.width}×{camera.height}
                     {camera.fps ? ` · ${camera.fps} fps` : ""}
                     {camera.fourcc ? ` · ${camera.fourcc}` : ""}
+                    {camera.rotation === 180
+                      ? ` · ${t("recording.cameras.flippedNote")}`
+                      : ""}
                   </p>
                 </div>
               </div>

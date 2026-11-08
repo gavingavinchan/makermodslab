@@ -123,7 +123,7 @@ class CameraPreviewManager:
         # I/O (open/read/release happen under the per-camera lock instead).
         self._registry_lock = threading.Lock()
 
-    def open_stream(self, index: int, key: str | int | None = None):
+    def open_stream(self, index: int, key: str | int | None = None, rotation: int = 0):
         """Open (or share) a camera's capture and return a frame generator.
 
         ``index`` is what cv2 opens; ``key`` is the camera's identity, as
@@ -136,9 +136,14 @@ class CameraPreviewManager:
         generator yields ``multipart/x-mixed-replace`` JPEG parts (boundary
         ``frame``) at ~TARGET_FPS and drops its reference on exit — client
         disconnect, :meth:`stop_all`, or the device dying mid-stream.
+
+        ``rotation`` (0 or 180) turns this client's frames the way the session
+        will (a camera mounted upside down), so the preview shows what gets
+        recorded. It is per client, not per capture: two tiles of one camera
+        may disagree while the user is changing the setting.
         """
         entry = self._acquire(index, index if key is None else key)
-        return self._frames(entry)
+        return self._frames(entry, rotation)
 
     def stop_all(self, timeout: float = 1.0) -> None:
         """Stop every preview stream and release every capture.
@@ -225,7 +230,7 @@ class CameraPreviewManager:
                 entry.cap = None
                 logger.info("Released camera %d preview capture (last client detached)", entry.index)
 
-    def _frames(self, entry: _SharedCapture):
+    def _frames(self, entry: _SharedCapture, rotation: int = 0):
         """Yield multipart JPEG parts from a shared capture until stopped."""
         interval = 1.0 / TARGET_FPS
         try:
@@ -238,6 +243,8 @@ class CameraPreviewManager:
                 if not ok:
                     logger.warning("Camera %d stopped producing frames; ending preview", entry.index)
                     break
+                if rotation == 180:
+                    frame = cv2.rotate(frame, cv2.ROTATE_180)
                 ok, jpeg = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
                 if not ok:
                     continue

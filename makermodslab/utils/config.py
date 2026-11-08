@@ -1255,7 +1255,14 @@ _SESSION_CAMERA_KEYS = (
     "fps",
     "fourcc",
     "backend",
+    "rotation",
 )
+
+# Rotations a camera entry may carry, in degrees, as lerobot's Cv2Rotation
+# values. Only the upside-down mount (180) is offered: a quarter turn makes
+# lerobot swap the capture width and height, which the record's dims and the
+# policy-binding dimension check do not account for yet.
+SUPPORTED_CAMERA_ROTATIONS = (0, 180)
 
 
 def session_camera_config(entry: dict) -> dict:
@@ -1271,6 +1278,18 @@ def session_camera_config(entry: dict) -> dict:
     """
     config = {key: entry[key] for key in _SESSION_CAMERA_KEYS if entry.get(key) is not None}
     config.setdefault("type", "opencv")
+    # A camera mounted upside down is flipped by lerobot at capture time, so
+    # the dataset, the policy and the session preview all see it upright. An
+    # unsupported value refuses the session rather than recording unflipped.
+    rotation = config.pop("rotation", 0)
+    if rotation not in SUPPORTED_CAMERA_ROTATIONS or isinstance(rotation, bool):
+        raise CameraResolutionError(
+            f"Camera '{entry.get('name')}' has rotation {rotation!r}; only "
+            f"{', '.join(map(str, SUPPORTED_CAMERA_ROTATIONS))} are supported. "
+            "Fix it in Robot settings."
+        )
+    if rotation:
+        config["rotation"] = rotation
     return config
 
 

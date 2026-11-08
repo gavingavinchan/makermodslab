@@ -322,6 +322,7 @@ from .train import TrainingRequest, wandb_requires_online_credentials
 from .update import handle_run_update, handle_update_check
 from .utils.config import (
     HOME_IS_OVERRIDDEN,
+    SUPPORTED_CAMERA_ROTATIONS,
     add_dismissed_hub_job,
     add_hidden_dataset,
     add_hidden_model,
@@ -5009,7 +5010,7 @@ def recording_camera_preview(camera_name: str):
 
 
 @router.get("/camera-preview/{index}")
-def camera_preview_stream(index: int, unique_id: str | None = None):
+def camera_preview_stream(index: int, unique_id: str | None = None, rotation: int = 0):
     """MJPEG preview stream of a camera attached to the *server* machine.
 
     The browser's getUserMedia only sees the *viewing* machine's cameras, and
@@ -5030,11 +5031,19 @@ def camera_preview_stream(index: int, unique_id: str | None = None):
     Keying by the bare index aliased two different cameras onto one handle
     whenever the device set renumbered mid-session.
 
+    ``rotation`` is the camera's saved rotation (0 or 180), applied here so
+    the tile shows the picture the session will record.
+
     Returns 409 while recording or inference is active (they own the cv2
     devices) and 503 when the camera can't be opened. Teleoperation drives the
     serial bus and opens no cv2 cameras, so a preview during teleop does not
     contend — it is allowed.
     """
+    if rotation not in SUPPORTED_CAMERA_ROTATIONS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported rotation {rotation}; use one of {list(SUPPORTED_CAMERA_ROTATIONS)}.",
+        )
     if record_state.recording_active:
         raise HTTPException(
             status_code=409,
@@ -5068,7 +5077,7 @@ def camera_preview_stream(index: int, unique_id: str | None = None):
         )
     resolved, key = identified
     try:
-        stream = camera_preview_manager.open_stream(resolved, key)
+        stream = camera_preview_manager.open_stream(resolved, key, rotation)
     except CameraOpenError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return StreamingResponse(stream, media_type="multipart/x-mixed-replace; boundary=frame")

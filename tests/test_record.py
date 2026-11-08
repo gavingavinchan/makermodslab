@@ -312,6 +312,20 @@ def test_build_camera_configs_uses_default_backend_when_unset() -> None:
     assert configs["cam"].index_or_path == 0
 
 
+def test_build_camera_configs_passes_rotation_to_lerobot() -> None:
+    from lerobot.cameras.configs import Cv2Backends, Cv2Rotation
+    from makermodslab.record import _build_camera_configs
+
+    cameras = {
+        "flipped": {"type": "opencv", "camera_index": 0, "rotation": 180},
+        "upright": {"type": "opencv", "camera_index": 1},
+    }
+    configs = _build_camera_configs(cameras, Cv2Backends.ANY)
+
+    assert configs["flipped"].rotation == Cv2Rotation.ROTATE_180
+    assert configs["upright"].rotation == Cv2Rotation.NO_ROTATION
+
+
 def test_build_camera_configs_defaults_fourcc_to_mjpg() -> None:
     from lerobot.cameras.configs import Cv2Backends
     from makermodslab.record import _DEFAULT_FOURCC, _build_camera_configs

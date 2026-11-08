@@ -43,6 +43,10 @@ export default {
     disconnectedSettings:
       "Camera disconnected — reconnect it or check Robot settings",
     removeLabel: "Remove camera",
+    flipLabel: "Flip 180°",
+    flipTooltip:
+      "The camera is mounted upside down. Turns the picture 180° in previews, recordings and policy runs.",
+    flippedNote: "flipped 180°",
     configurationToggle: "Configuration",
     resolutionLabel: "Resolution:",
     fpsLabel: "FPS:",

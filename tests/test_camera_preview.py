@@ -154,6 +154,33 @@ def test_preview_requests_thumbnail_resolution_before_first_read(
     assert (camera_preview.PREVIEW_WIDTH, camera_preview.PREVIEW_HEIGHT) == (640, 480)
 
 
+def test_rotation_turns_the_frame_before_encoding(
+    fake_captures: list[FakeVideoCapture], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A camera mounted upside down previews upright, as the session will
+    record it; an upright client of the same camera is left alone."""
+    frame = np.zeros((8, 8, 3), dtype=np.uint8)
+    frame[0, 0] = 255  # a marker in the top-left corner
+    monkeypatch.setattr(FakeVideoCapture, "read", lambda self: (True, frame.copy()))
+    encoded: list[np.ndarray] = []
+
+    def capture_imencode(ext, image, params):
+        encoded.append(image)
+        return True, np.zeros(1, dtype=np.uint8)
+
+    monkeypatch.setattr(camera_preview.cv2, "imencode", capture_imencode)
+    manager = CameraPreviewManager()
+    flipped = manager.open_stream(0, rotation=180)
+    upright = manager.open_stream(0)
+    next(flipped)
+    next(upright)
+    flipped.close()
+    upright.close()
+
+    assert encoded[0][7, 7, 0] == 255 and encoded[0][0, 0, 0] == 0
+    assert encoded[1][0, 0, 0] == 255
+
+
 def test_distinct_indices_get_distinct_captures(fake_captures: list[FakeVideoCapture]) -> None:
     manager = CameraPreviewManager()
     gen_a = manager.open_stream(0)
@@ -369,7 +396,7 @@ def test_camera_preview_allowed_while_teleoperating(
     teleop does not contend — it must NOT 409. (The manager is patched to a
     finite stream so the TestClient request completes.)"""
 
-    def finite_stream(index: int, key: str | int | None = None):
+    def finite_stream(index: int, key: str | int | None = None, rotation: int = 0):
         yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\nfake-jpeg\r\n"
 
     monkeypatch.setattr(teleoperate, "teleoperation_active", True)
@@ -393,7 +420,7 @@ def test_camera_preview_streams_multipart_mjpeg(client: TestClient, monkeypatch:
     a FINITE stream so the TestClient request completes (the real generator is
     endless by design; its behavior is covered by the manager tests above)."""
 
-    def finite_stream(index: int, key: str | int | None = None):
+    def finite_stream(index: int, key: str | int | None = None, rotation: int = 0):
         yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\nfake-jpeg\r\n"
 
     monkeypatch.setattr(server_mod.camera_preview_manager, "open_stream", finite_stream)
@@ -401,6 +428,23 @@ def test_camera_preview_streams_multipart_mjpeg(client: TestClient, monkeypatch:
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("multipart/x-mixed-replace")
     assert b"--frame" in response.content
+
+
+def test_camera_preview_forwards_rotation(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[int] = []
+
+    def finite_stream(index: int, key: str | int | None = None, rotation: int = 0):
+        seen.append(rotation)
+        yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\nfake-jpeg\r\n"
+
+    monkeypatch.setattr(server_mod.camera_preview_manager, "open_stream", finite_stream)
+    assert client.get("/camera-preview/0?rotation=180").status_code == 200
+    assert seen == [180]
+
+
+def test_camera_preview_refuses_an_unsupported_rotation(client: TestClient) -> None:
+    """Only what a session can record (utils/config.SUPPORTED_CAMERA_ROTATIONS)."""
+    assert client.get("/camera-preview/0?rotation=90").status_code == 422
 
 
 # ---------------------------------------------------------------------------
