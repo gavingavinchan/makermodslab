@@ -157,6 +157,25 @@ restore paths in the DAgger runner.
   digest covers the URDF. 29 offline tests. No hardware, camera or billed call.
   Pending: approval, `dreamcli tcp` on the tank model, an overhead camera, the
   inputs check, J5/J6 hand tests, merging the tank guard, credentials.
+- *Status (2026-11-08): J5/J6 signs hand-tested, both confirmed.* Why it was
+  needed: teleop is motor-to-motor and the Lab viewer uses `maker_joint_positions`,
+  so neither ever exercises `motor_to_urdf.json`; only Dream's client IK does, and a
+  wrong wrist sign there would turn the wrist the wrong way under Dream while teleop
+  looked fine. Prediction from FK on the tank URDF (`dream_base`, x forward, hand
+  level along +x): URDF +yaw moves the tcp to -y (right), URDF +roll turns the hand
+  top left (counter-clockwise seen from behind). So "fingertips right" must take the
+  `wrist_yaw` motor DOWN (sign -1) and "roll CCW" must take `wrist_roll` UP (sign +1).
+  Gavin chose to do it **leader only** (follower unplugged): a read-only logger read
+  the Star leader's `get_action()`, which is exactly the follower motor target teleop
+  sends, while he moved the leader's hand step by step. Fingertips right: `wrist_yaw`
+  -3.2 -> -54.2 deg and back. Roll CCW: `wrist_roll` +7.1 -> +51.0 and back, yaw
+  within 0.3 deg. Both match; `motor_to_urdf.json` now says "hand-tested 2026-11-08"
+  for both, so `--live` no longer needs `--ack-unverified-sign`, and `make_tank_arm.py`
+  lists only genuinely unverified joints in the provenance. Caveat: this measures the
+  follower COMMAND for a leader motion; it relies on the follower turning the same
+  physical way as the leader on J5/J6, which teleop use shows and this test did not
+  re-measure. Evidence with a 5 Hz trace:
+  `configs/viscous/viscous_waterproof_01/evidence/j5-j6-sign-test-20261108.json`.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

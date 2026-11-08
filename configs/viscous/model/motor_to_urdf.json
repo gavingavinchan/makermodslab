@@ -31,14 +31,14 @@
     "wrist_yaw": {
       "sign": -1,
       "offset_deg": 0,
-      "status": "photo-inferred 2026-11-07, hand test pending",
-      "source": "Gavin 2026-11-07: top-down photo matches rendering motor wrist_yaw -28.78 as URDF +28.78; no hand test yet"
+      "status": "hand-tested 2026-11-08",
+      "source": "Gavin 2026-11-08, leader-only hand test on viscous_waterproof_01 (configs/viscous/viscous_waterproof_01/evidence/j5-j6-sign-test-20261108.json): fingertips swung right (FK on the tank URDF: URDF +yaw = tcp to -y = right) took the wrist_yaw motor target from -3.2 to -54.2 deg and back, other joints within 7 deg; sign -1 confirmed. Earlier: 2026-11-07 top-down photo matched motor -28.78 as URDF +28.78."
     },
     "wrist_roll": {
       "sign": 1,
       "offset_deg": 0,
-      "status": "assumed (direct mapping, arm_gravity.py:282), unverified",
-      "source": "Direct mapping assumption in makermodslab/arm_gravity.py:282; no physical sign verification"
+      "status": "hand-tested 2026-11-08",
+      "source": "Gavin 2026-11-08, leader-only hand test on viscous_waterproof_01 (configs/viscous/viscous_waterproof_01/evidence/j5-j6-sign-test-20261108.json): rolled counter-clockwise seen from behind (FK on the tank URDF: URDF +roll = hand top to +y = CCW from behind) took the wrist_roll motor target from +7.1 to +51.0 deg and back, wrist_yaw within 0.3 deg; sign +1 confirmed (was the direct-mapping assumption, arm_gravity.py:282)."
     }
   }
 }

@@ -74,8 +74,12 @@ class JointMapTest(unittest.TestCase):
         ik = self.jmap.to_ik(POSE)
         self.assertAlmostEqual(math.degrees(ik[4]), -POSE["wrist_yaw"], places=9)
 
-    def test_unverified_signs_are_j5_and_j6(self):
-        self.assertEqual(self.jmap.unverified(), ["wrist_yaw", "wrist_roll"])
+    def test_every_sign_is_verified(self):
+        # J5/J6 were hand-tested 2026-11-08; any "pending"/"unverified"/"assumed" status re-arms the --live ack.
+        self.assertEqual(self.jmap.unverified(), [])
+        status = dict(self.jmap.status, wrist_roll="assumed, unverified")
+        stale = core.JointMap(self.jmap.sign, self.jmap.offset_deg, status)
+        self.assertEqual(stale.unverified(), ["wrist_roll"])
 
     def test_grip_map_and_clip(self):
         self.assertEqual(core.grip_to_motor(0), core.GRIP_CLOSED_DEG)

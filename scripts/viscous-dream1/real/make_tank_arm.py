@@ -26,8 +26,8 @@ older J1 frame. So this writes a URDF variant:
   the chain and IK pan = motor pan - 180 deg (+182..191 becomes +2..11);
 - the six arm joints' limits from the unit's own follower profile
   (`configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json`),
-  mapped through `configs/viscous/model/motor_to_urdf.json` (J5 sign -1, photo
-  inferred), and pan narrowed to +-90 deg about Dream's forward by default.
+  mapped through `configs/viscous/model/motor_to_urdf.json` (J5 sign -1; J5/J6
+  hand-tested 2026-11-08), and pan narrowed to +-90 deg about Dream's forward by default.
 
 Outputs (scripts/viscous-dream1/real/tank_model/): the URDF, a provenance
 sidecar whose `approval.status` is "pending_gavin_approval" until Gavin edits
@@ -231,8 +231,10 @@ def main() -> int:
             "frame_check": "tool0 in dream_base == Rz(pi) * tool0 in base_link, 200 random profile poses",
         },
         "unverified": {
-            "wrist_yaw": "J5 sign -1 is photo-inferred (motor_to_urdf.json), no hand test: confirm before --live",
-            "wrist_roll": "J6 sign +1 is assumed, unverified",
+            **{
+                m: f"sign {jmap.sign[m]:+.0f}: {jmap.status[m]} (motor_to_urdf.json)"
+                for m in jmap.unverified()
+            },
             "j1_frame": "J1 zero / limits after the 2026-11-05 re-zero work and the 2026-11-07 tank offset 185.8; "
             "the profile's +187.53 upper pan limit may be stale (docs/dream1-tank.md question 7)",
         },
