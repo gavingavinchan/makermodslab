@@ -430,6 +430,16 @@ restore paths in the DAgger runner.
   run). Also: floor buffer 0 (Gavin: "sagging a bit to slide on the bottom ... is ok"),
   and the loop no longer catches up after a slow planning tick (it used to send queued
   substeps back to back, faster than the 15 deg/s plan). 162 targeted tests pass.
+- *Status (2026-11-08, later): first run with the three fixes* (`live-20261108T222518Z`,
+  11 calls, 72 billed today; full suite on gavin-linux clean apart from the 3 failures
+  that predate today). Dream no longer retreats: told the commanded pose, it kept the
+  hand ~45 cm out and 12-15 cm up and drifted slowly in (49 -> 41 cm) and right
+  (-18 -> -54 mm) over calls 1-7, all executed in full (~20 s of uncut Dream control).
+  It never descended (gripper tip never below +62 mm) and never opened the gripper.
+  Call 8 was cut at row 43 and calls 9-11 at row 0 with the forearm on the back-wall
+  limit (0.1 mm slack) even at 41 cm reach, so the new stuck rule ended the run after 3
+  calls; the return reached the rest. The back-wall limit (Gavin's 80 mm + 70 mm forearm
+  clearance) binds whenever the IK folds the elbow up.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
