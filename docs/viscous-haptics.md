@@ -1502,6 +1502,29 @@ file instead.
   after zeroing. Keep FF/haptics off for initial acceptance; preserve the wet
   arm's separate frame/profile. Repaint the left-unit hull envelope before
   hull-near teleop, and synchronise the verified unit-1 release to the Mac.
+- [ ] **Live Viscous 3D view in the Lab** (Gavin, 2026-11-07: "can we make the live
+  viscous arm 3d view just like how makermods labs does it?" then "build that
+  later"). Same shape as Maker/Metal: the URDF under `frontend/public/`, an entry
+  in `frontend/src/lib/urdfConfigs.ts`, the family's `urdf_joint_positions`
+  (`arms/urdf.py`) and `telemetry_kind`. Blocked on verified motor-to-URDF signs:
+  on 2026-11-07 the waterproof arm's read pose rendered with J5 (wrist_yaw) tilted
+  the wrong way against Gavin's photo, and no joint's sign has ever been checked
+  on hardware (teleop is motor-to-motor, so it never exercised the model). Do the
+  hand-push sign test per joint first and use the sign map from the aquarium
+  environment work (`configs/viscous/model/motor_to_urdf.json`).
+- [ ] **Update the fork from makermods-robotics** (Gavin, 2026-11-07: "about time
+  to update our fork ... without breaking the stuff for our viscous arm", then
+  "we can do the updates later"). State on 2026-11-07: `feat/viscous-arm` is 121
+  commits behind `upstream/staging` (merge base `a031174e9`, 2026-09-14) and 182
+  ahead; 17 files changed on both sides (`teleoperate.py`, `sessions.py`,
+  `server.py`, `arms/base.py`, `arms/can_common.py`, `arms/maker.py`,
+  `remote_can.py`, `maker_rest_pose.py`, `record.py`, `api_errors.py`,
+  `schemas/sessions.py`, `sessionApi.ts`, the two contract/registry tests,
+  `openapi.json`, `CLAUDE.md`, `frontend.yml`). The lerobot side needs no merge:
+  our pin `gavingavinchan/lerobot-MakerMods@2a5ea4e` already contains upstream's
+  `5ce2fe41a` plus 16 Viscous commits. Do it in its own worktree, keep the
+  Viscous tests green, and do a powered acceptance run before it replaces the
+  running Lab on either machine.
 
 **Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
 
