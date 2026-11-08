@@ -2073,6 +2073,31 @@ arm was set down. The motion in between was not kept. Gavin: "thats dumb, at
 least record all the positions so an ai agent can review it if needed". Every
 reading now goes to a per-session trace (see tank-measure.md, Trace).
 
+First traced run (trace `tank/viscous_waterproof_01/traces/20261108T044404.111395Z.jsonl`,
+857 readings over 95 s): Gavin traced the floor, then the +y wall, then the -y
+wall. He noticed the base was loose and had slid partway through, and pushed
+it back. The fit uses the extremes of every gripper-mesh vertex, not the tip
+point: on the floor the tip read 0 mm when the gripper pointed straight down
+but 15-22 mm when it was tilted, so a tilted gripper touches with the finger
+edge. Results in the J1 base frame:
+- **+y wall** (the model's "left"): 210 mm from J1, sd 1.7 mm over 237 mm of
+  travel along it, about 1 deg of yaw.
+- **-y wall** (the model's "right"): 224 mm, from the readings that cluster
+  between -218 and -228 mm. The rest of that pass spreads out to -254 mm,
+  which fits the loose base being pushed sideways by up to 30 mm.
+- **Inner width:** 210 + 224 = 434 mm, the nominal width for 8 mm glass. This
+  supports both the -y plateau and the 8 mm glass assumption, but it is not
+  yet confirmed from the box label.
+- **J1** sits about 7 mm toward +y from the tank's centre line.
+- **Floor:** the lowest finger point reached -4 mm (5th percentile; minimum
+  -6), against the model's 0. So the floor is within a few millimetres of
+  where it was assumed.
+- **Back/near wall:** not traced; it remains the 40 mm estimate.
+
+Safety finding: the base slides about 30 mm under a hand push. A powered arm
+can shove it the same way, which would invalidate any measured keep-out.
+Clamp or weight the base before any powered motion in the tank.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
