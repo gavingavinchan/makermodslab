@@ -35,14 +35,14 @@
       "source": "near (80) minus nominal inner length 734 mm; out of reach (furthest collision point ~610 mm)."
     },
     "floor": {
-      "value": -31.0,
-      "status": "bound",
-      "source": "Gavin 2026-11-08: \"i raised the bottom of the arm a bit more than before\". Lying on the glass at rest (shoulder_lift -201.7, elbow 157.9, wrist_flex 55.0, measured by the runner's start gate), wrist_yaw_link's lowest mesh point is at -31 mm, so the floor is there or lower. Was -6 (the 2026-11-08 trace's -6.2 mm, before the base was raised; Gavin then put the true gap at ~15 mm). Floor contact is allowed; floor_press_mm bounds how far below this a command may reach."
+      "value": -28.0,
+      "status": "measured",
+      "source": "Live run 2026-11-08T213138Z: the gripper tip's lowest mesh point plateaued at -27.3..-28.3 mm for the last ~4 s while commands kept asking lower, i.e. the jaws resting on the floor glass (Gavin saw them touch and pressed STOP). Gavin: \"Floor line from -31 to -28 mm\" is fine. Was -31 (the arm lying at rest after the base was raised; the model reads a few mm low there)."
     },
     "rim": {
-      "value": 411.0,
+      "value": 414.0,
       "status": "estimate",
-      "source": "Lowest plausible rim: the floor at -31 mm (base raised 2026-11-08) plus the nominal 442 mm inner height (450 outer - 8 glass). Was 427 with the floor at about -15."
+      "source": "Lowest plausible rim: the floor at -28 mm plus the nominal 442 mm inner height (450 outer - 8 glass)."
     }
   },
   "margins_mm": {

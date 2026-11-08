@@ -143,7 +143,7 @@ def test_floor_press_is_bounded(guard, raw):
     pressing = variant(raw, guard, planes_mm={**raw["planes_mm"], "floor": {"value": lowest + 30.0}})
     verdict = pressing.check_pose(REST)
     assert not verdict.ok and verdict.face == "floor"  # 30 mm into the floor: refused
-    assert floor == -31.0  # measured at rest after the base was raised (2026-11-08)
+    assert floor == -28.0  # the jaws resting on the glass, live run 2026-11-08T213138Z
 
 
 def test_limit_clamps_at_the_wall_and_the_granted_path_is_clear(guard):
