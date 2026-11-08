@@ -55,13 +55,25 @@ with a ruler or calipers.
    LAN. The terminal prints `dreamcli tcp: serving the tool point page; writes arm files to
    .../station/arms` and opens a browser at `http://127.0.0.1:8094/?token=...`. If no
    browser opens, open the address it printed. Leave the terminal open.
-2. **Load the URDF.** Press **Choose folder** and pick
-   `~/Documents/viscous-arm-model/model` (the folder is better than the bare file: the
-   meshes make it look like your arm). It must be this URDF (SHA-256 `c1e6c387...6ff7`,
-   the same file on gavin-linux), the one the sim uses.
-3. **"Is this the end of your arm?"** The page should show base `base_link` (blue) and end
-   `wrist_roll_link` (green), 6 joints. That matches `viscous_arm.json`. If it shows
-   another end link, click `wrist_roll_link`.
+2. **Load the URDF: the TANK model, not the original** (changed 2026-11-07, after the
+   runner was built). The tool point record covers the URDF's exact bytes, and the real
+   runner drives the tank model (the base turned 180 deg so Dream's forward points down
+   the tank, the unit's own joint limits; see `README.md`, "Why a tank model"). So first
+   approve the tank model (`tank_model/viscous_waterproof_tank.provenance.json`,
+   `approval.status`), then export it with its meshes:
+
+   ```bash
+   cd ~/Documents/makermodslab-viscous
+   .venv/bin/python scripts/viscous-dream1/real/make_tank_arm.py --export ~/viscous-dream-real/tank_model
+   ```
+
+   Press **Choose folder** and pick `~/viscous-dream-real/tank_model`. An arm file made on
+   `~/Documents/viscous-arm-model/model` is refused by the runner. If the tank model is
+   ever regenerated (new rest pose does not count; new limits or geometry do), set the
+   tool point again.
+3. **"Is this the end of your arm?"** The page should show base `dream_base` (blue) and end
+   `wrist_roll_link` (green), 6 joints. That matches the tank arm file. If it shows
+   another base or end link, click `dream_base` and `wrist_roll_link`.
 4. **"Does your robot move this joint?"** With no station file, the page asks this for all
    six joints. All six are motorised, so press **Moves** on each, unless you really mean
    to hold one still. Then press **Yes, it ends there**.
@@ -93,7 +105,7 @@ cat station/arms/viscous-arm.json
 .venv/bin/python -I -c "import json,pathlib;from dream import arm_file as a;p=pathlib.Path('station/arms/viscous-arm.json');d=json.loads(p.read_text());print(a.tool_point_problem(d,(p.parent/d['urdf']).read_bytes()) or 'OK: tool point set by a person')"
 ```
 
-The JSON should have `"base": "base_link"`, `"flange": "wrist_roll_link"`, your `tcp`,
+The JSON should have `"base": "dream_base"`, `"flange": "wrist_roll_link"`, your `tcp`,
 `approach` and `jaw`, and `"tcp_calibration": {"status": "calibrated", "at": ..., "digest": ...}`.
 The one-liner should print `OK`. For comparison only: the sim's hand-written file has never
 been confirmed by a person. It put the point 132 mm along `wrist_roll_link` x (the finger-pad
