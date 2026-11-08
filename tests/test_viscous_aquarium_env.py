@@ -176,7 +176,8 @@ class AquariumGeometryTest(unittest.TestCase):
         self.assertEqual(
             {j: m["sign"] for j, m in mapping.items()}, {j: -1 if j == "wrist_yaw" else 1 for j in env.JOINTS}
         )
-        self.assertEqual(mapping["wrist_yaw"]["status"], "photo-inferred 2026-11-07, hand test pending")
+        for j in ("wrist_yaw", "wrist_roll"):
+            self.assertEqual(mapping[j]["status"], "hand-tested 2026-11-08")
         for j in env.JOINTS[:4]:
             self.assertEqual(mapping[j]["status"], "photo-consistent 2026-11-07")
         self.assertTrue(all(m["source"] and m["offset_deg"] == 0 for m in mapping.values()))

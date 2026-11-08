@@ -238,6 +238,20 @@ restore paths in the DAgger runner.
   the dry run is guarded and `--live` no longer lists the guard. The near wall is still
   the keep-out file's 40 mm estimate (the 2026-11-08 trace covered the side walls and
   floor), and runner gaps (a) and (b) above are still open.
+- *Status (2026-11-08, later): near wall set to 80 mm.* Gavin asked whether all of
+  that was needed "to just a simple tank boundary limits": no, the boundary is done;
+  the runner gaps are not boundary issues and wait until a first run shows they
+  matter. Gavin: "lets say the back wall is 8cm from the center of j1". J1's axis is
+  the base_link origin, so the keep-out's `near` plane went 40 -> 80 mm (status
+  "stated", not traced) and `far` 694 -> 654 behind it. The upper-arm heel's near
+  rule went from 0 to 40 mm margin: same heel limit as before (<= 40 mm behind J1),
+  now meaning >= 40 mm from the glass; with 0 margin the moved wall would have let it
+  touch. At the start pose the forearm/elbow now has 74.6 mm spare (was 34.6), the
+  heel 12.8; start pose and folded rest both pass the start gate. `tank.json` and the
+  sim scene keep the old 40 mm estimate (their tests pin it). Also fixed
+  `tests/test_viscous_aquarium_env.py`, which still pinned J5's old "hand test
+  pending" status. Running the full pytest suite on the Mac froze it (all RAM; Gavin
+  had to restart): big jobs run on gavin-linux only.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

@@ -79,7 +79,7 @@ def test_config_loads_with_documented_rules(guard):
     assert all(v is None for v in guard.required["yaw_link"].values())
     assert guard.required["forearm_link"]["left"] == 70.0  # 30 margin + 40 cable padding
     assert guard.required["gripper_left"]["left"] == 30.0  # fingers carry no cables
-    assert guard.required["upper_arm_link"]["near"] == 0.0
+    assert guard.required["upper_arm_link"]["near"] == 40.0
     assert guard.required["forearm_link"]["near"] == 70.0  # the elbow keeps the full near rule
     assert all(guard.required[link]["floor"] == -10.0 for link in guard.links if link != "yaw_link")
 
