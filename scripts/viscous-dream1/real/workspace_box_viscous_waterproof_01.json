@@ -4,18 +4,123 @@
  "frame": "physical J1 base frame of viscous_waterproof_01 (base_link of configs/viscous/model/viscous_arm.urdf), mm; the arm works toward -x",
  "root": "base_link",
  "tank_mm": {
-  "left_wall_y": {"value": 210, "status": "measured", "source": "tank trace 20261108T044404Z, docs/viscous-haptics.md 'First traced run'"},
-  "right_wall_y": {"value": -224, "status": "measured", "source": "same trace (-y plateau)"},
-  "near_wall_x": {"value": 40, "status": "estimate, not traced", "source": "aquarium_landen_75/tank.json"},
-  "far_wall_x": {"value": -694, "status": "estimate, out of reach", "source": "aquarium_landen_75/tank.json"},
-  "floor_z": {"value": -6, "status": "bound (true floor about -15, Gavin)", "source": "trace lowest finger point"},
-  "rim_z": {"value": 427, "status": "estimate", "source": "Gavin's -15 floor + 442"}
+  "left_wall_y": {
+   "value": 210,
+   "status": "measured",
+   "source": "tank trace 20261108T044404Z, docs/viscous-haptics.md 'First traced run'"
+  },
+  "right_wall_y": {
+   "value": -224,
+   "status": "measured",
+   "source": "same trace (-y plateau)"
+  },
+  "near_wall_x": {
+   "value": 80,
+   "status": "stated by Gavin 2026-11-08, not traced",
+   "source": "keepout_viscous_waterproof_01.json"
+  },
+  "far_wall_x": {
+   "value": -694,
+   "status": "estimate, out of reach",
+   "source": "aquarium_landen_75/tank.json"
+  },
+  "floor_z": {
+   "value": -31,
+   "status": "bound",
+   "source": "keepout_viscous_waterproof_01.json, after Gavin raised the base 2026-11-08 (was -6)"
+  },
+  "rim_z": {
+   "value": 411,
+   "status": "estimate",
+   "source": "-31 floor + 442 (was 427)"
+  }
  },
  "rule": "each point must stay inside its box on every commanded substep, else the chunk is refused and the run stops. Wall boxes keep 70 mm (30 margin + 40 for jaws, cables and link width); the tcp keeps 20 mm above the floor bound so a vertical gripper's fingertips (about 34 mm past the tcp) press at most about 8 mm; the hand stays 120 mm in front of J1.",
  "points": {
-  "tcp": {"link": "wrist_roll_link", "offset": "tcp", "box_mm": {"x": [-600, -120], "y": [-154, 140], "z": [20, 300]}},
-  "wrist": {"link": "wrist_roll_link", "offset_m": [0, 0, 0], "box_mm": {"x": [-624, -60], "y": [-154, 140], "z": [20, 330]}},
-  "wrist_pitch": {"link": "wrist_pitch_link", "offset_m": [0, 0, 0], "box_mm": {"x": [-624, -20], "y": [-154, 140], "z": [0, 357]}},
-  "elbow": {"link": "forearm_link", "offset_m": [0, 0, 0], "box_mm": {"x": [-624, -30], "y": [-154, 140], "z": [0, 357]}}
- }
+  "tcp": {
+   "link": "wrist_roll_link",
+   "offset": "tcp",
+   "box_mm": {
+    "x": [
+     -600,
+     -120
+    ],
+    "y": [
+     -154,
+     140
+    ],
+    "z": [
+     -5,
+     284
+    ]
+   }
+  },
+  "wrist": {
+   "link": "wrist_roll_link",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "box_mm": {
+    "x": [
+     -624,
+     -60
+    ],
+    "y": [
+     -154,
+     140
+    ],
+    "z": [
+     -5,
+     314
+    ]
+   }
+  },
+  "wrist_pitch": {
+   "link": "wrist_pitch_link",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "box_mm": {
+    "x": [
+     -624,
+     -20
+    ],
+    "y": [
+     -154,
+     140
+    ],
+    "z": [
+     -25,
+     341
+    ]
+   }
+  },
+  "elbow": {
+   "link": "forearm_link",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "box_mm": {
+    "x": [
+     -624,
+     -30
+    ],
+    "y": [
+     -154,
+     140
+    ],
+    "z": [
+     -25,
+     341
+    ]
+   }
+  }
+ },
+ "z_shift_2026_11_08": "Gavin raised the arm's base: every z lower bound moved down 25 mm with the floor and every upper bound down 16 mm with the rim, so each point keeps the clearance to the glass it was designed with. The first live Dream call (runs/live-20261108T205544Z) asked for tcp z = 16 mm, ~47 mm above the real floor, and the old box refused it."
 }
