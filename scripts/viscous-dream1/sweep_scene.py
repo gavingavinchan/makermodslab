@@ -34,6 +34,28 @@ def fingertip_cad():
 
 
 class SweepEnv(ViscousAppleEnv):
+    def set_arm_physics(self, torque, buoyancy):
+        """Arm actuator limit (gripper unchanged); logs left-arm load per step. Buoyancy is set in the XML."""
+        for side in self.sides:
+            self.model.actuator_forcerange[self.aids[side]] = [-torque, torque]
+        self.torque_limit = torque
+        self.torque_log = dict(steps=0, at_limit=0, above_5nm=0, peak=np.zeros(6))
+        aids = self.aids['left']
+        def observe():
+            force = np.abs(self.data.actuator_force[aids])
+            log = self.torque_log
+            log['steps'] += 1
+            log['at_limit'] += int(force[1] >= torque - 1e-6)
+            log['above_5nm'] += int(force[1] > 5)
+            log['peak'] = np.maximum(log['peak'], force)
+        self.row_observer = observe
+
+    def torque_summary(self):
+        log, dt = self.torque_log, self.model.opt.timestep
+        return dict(limit_nm=self.torque_limit, buoyancy=float(self.model.body_gravcomp.max()),
+                    shoulder_lift_at_limit_s=log['at_limit'] * dt, shoulder_lift_above_5nm_s=log['above_5nm'] * dt,
+                    sim_s=log['steps'] * dt, peak_nm=dict(zip(JOINTS, log['peak'].round(3).tolist())))
+
     def __init__(self, task, config):
         self.wrist = 'maker'
         self.single = config['arms'] == 'single'
@@ -85,6 +107,11 @@ class SweepEnv(ViscousAppleEnv):
             for name, value in [(f'right_joint{i}', q) for i, q in enumerate(PARK[:6], 1)] + [(f'right_finger_{s}', OPEN) for s in (-1, 1)]:
                 ET.SubElement(equality, 'joint', name='park_' + name, joint1=name,
                               polycoef=f'{value} 0 0 0 0', solref='.002 1')
+        if config.get('buoyancy', 0.) and task not in ('flange', 'propeller', 'shackle'):
+            # MuJoCo counts gravcomp bodies at compile time, so this cannot be set on the model.
+            for side in self.sides:
+                for body in root.find(f"worldbody/body[@name='{side}_base_link']").iter('body'):
+                    body.set('gravcomp', str(config['buoyancy']))
         self.model = mujoco.MjModel.from_xml_string(ET.tostring(root, encoding='unicode'))
         self.data = mujoco.MjData(self.model)
         self.renderer = self.wrist_renderer = None
@@ -108,6 +135,8 @@ class SweepEnv(ViscousAppleEnv):
                 point = flange.xpos + flange.xmat.reshape(3, 3) @ np.array(spec['tcp'])
                 self.model.site(side + '_tcp').pos[:] = tool.xmat.reshape(3, 3).T @ (point - tool.xpos)
                 self.model.site_sameframe[self.model.site(side + '_tcp').id] = 0
+        if task not in ('flange', 'propeller', 'shackle'):
+            self.set_arm_physics(config.get('torque', 5), config.get('buoyancy', 0.))
         self.reset()
         if task == 'flange':
             from flange_scene import ThreadModel

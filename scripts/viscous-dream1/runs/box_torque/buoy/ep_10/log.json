@@ -1,0 +1,330 @@
+{
+ "seed": 20271030,
+ "jitter_xy_m": [
+  -0.006763619897286199,
+  0.004619399053791957
+ ],
+ "task": "box",
+ "configuration": {
+  "tcp": "pad",
+  "arms": "both",
+  "rows": 48,
+  "region": "off",
+  "wrist_r": "normal",
+  "torque": 5,
+  "buoyancy": 0.9
+ },
+ "config_name": "buoy",
+ "episode": 10,
+ "calls_used": 20,
+ "success": true,
+ "first_success_call": 19,
+ "confirmed_success_call": 20,
+ "closest_requested_hand_to_object_m": {
+  "left": 0.01730042303666666,
+  "right": 0.255402665842739
+ },
+ "object_to_target_min_m": 0.009173892192290457,
+ "grasped": true,
+ "max_lift_m": 0.04969550513549237,
+ "finger_table_contact_rows": 0,
+ "executed_rows": 960,
+ "calls": [
+  {
+   "call": 1,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1432363801027138,
+    0.10961939905379195,
+    0.774938798433356
+   ],
+   "notices": []
+  },
+  {
+   "call": 2,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1432363801027138,
+    0.10961939905379195,
+    0.7749387984333859
+   ],
+   "notices": []
+  },
+  {
+   "call": 3,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1432363801027138,
+    0.10961939905379195,
+    0.774938798433366
+   ],
+   "notices": []
+  },
+  {
+   "call": 4,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.1432363801027138,
+    0.10961939905379195,
+    0.7749387984333762
+   ],
+   "notices": []
+  },
+  {
+   "call": 5,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.11502929808403592,
+    0.12099543405682987,
+    0.7875675961576843
+   ],
+   "notices": []
+  },
+  {
+   "call": 6,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.11714337645450305,
+    0.10953987687693474,
+    0.7960906016632344
+   ],
+   "notices": []
+  },
+  {
+   "call": 7,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.08117523243834687,
+    0.09567884423851952,
+    0.7961810811157275
+   ],
+   "notices": []
+  },
+  {
+   "call": 8,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.034910942154246526,
+    0.08122582441732198,
+    0.7963119160869483
+   ],
+   "notices": []
+  },
+  {
+   "call": 9,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    0.013856199192550513,
+    0.054979940671588574,
+    0.7945229841373299
+   ],
+   "notices": []
+  },
+  {
+   "call": 10,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.0022681241322834458,
+    0.03559474711190048,
+    0.7867360908397999
+   ],
+   "notices": []
+  },
+  {
+   "call": 11,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.005897470456226018,
+    0.03660226724071903,
+    0.7848973371548
+   ],
+   "notices": []
+  },
+  {
+   "call": 12,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.005547798147709626,
+    0.03532961509261078,
+    0.7849387847906754
+   ],
+   "notices": []
+  },
+  {
+   "call": 13,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.005547801814180262,
+    0.035329604606481546,
+    0.7849387984333721
+   ],
+   "notices": []
+  },
+  {
+   "call": 14,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.005547801814176099,
+    0.035329604606481546,
+    0.7849387984333575
+   ],
+   "notices": []
+  },
+  {
+   "call": 15,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.009011864620220116,
+    0.0379226391054856,
+    0.7859958373286617
+   ],
+   "notices": []
+  },
+  {
+   "call": 16,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.009070289943750183,
+    -0.014627979142904778,
+    0.8237923456914442
+   ],
+   "notices": []
+  },
+  {
+   "call": 17,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.00792924669667592,
+    -0.028448735674702862,
+    0.8103557908680927
+   ],
+   "notices": []
+  },
+  {
+   "call": 18,
+   "rows": 48,
+   "resting_at_target": false,
+   "object_xyz": [
+    -0.007613308530272926,
+    -0.031791065181003796,
+    0.8059529304527955
+   ],
+   "notices": []
+  },
+  {
+   "call": 19,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    -0.008572959045036067,
+    -0.02950619843254834,
+    0.7849387984333728
+   ],
+   "notices": []
+  },
+  {
+   "call": 20,
+   "rows": 48,
+   "resting_at_target": true,
+   "object_xyz": [
+    -0.008572959045031903,
+    -0.02950619843254834,
+    0.7849387984333641
+   ],
+   "notices": []
+  }
+ ],
+ "finished": true,
+ "start_object_xyz": [
+  0.1432363801027138,
+  0.10961939905379195,
+  0.7749387984333752
+ ],
+ "policy": {
+  "checkpoint": "dreamlabs/dream-1-beta",
+  "embodiment": {
+   "state": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "action": {
+    "right_arm": [
+     0,
+     6
+    ],
+    "right_gripper": [
+     6,
+     7
+    ],
+    "left_arm": [
+     7,
+     13
+    ],
+    "left_gripper": [
+     13,
+     14
+    ]
+   },
+   "video": {
+    "overhead": "observation.images.overhead",
+    "wrist_l": "observation.images.wrist_l",
+    "wrist_r": "observation.images.wrist_r"
+   }
+  },
+  "ik": {
+   "arm": "/home/gavin/dreamtrial/confirm_1107/viscous_arm.json",
+   "head": "eef"
+  },
+  "timeout_ms": 45000,
+  "strict": false,
+  "action_hz": 20,
+  "_record": false
+ },
+ "left_arm_torque": {
+  "limit_nm": 5,
+  "buoyancy": 0.9,
+  "shoulder_lift_at_limit_s": 0.0,
+  "shoulder_lift_above_5nm_s": 0.0,
+  "sim_s": 49.65,
+  "peak_nm": {
+   "shoulder_pan": 2.705,
+   "shoulder_lift": 4.244,
+   "elbow_flex": 3.336,
+   "wrist_flex": 1.279,
+   "wrist_yaw": 1.797,
+   "wrist_roll": 0.258
+  }
+ },
+ "termination": "success_two_calls"
+}

@@ -139,6 +139,10 @@ restore paths in the DAgger runner.
 - *Status (2026-10-21):* resolved in sim. With a Maker-style wrist camera the
   Viscous puts the apple in the bowl 6/6, and one arm plus a parked second arm
   also 6/6. Details under "Findings".
+- *Status (2026-11-07):* Grace (World Intelligence) blamed the URDF; it checks out.
+  The box failures come mainly from the sim's 5 Nm shoulder cap (the RS00's
+  continuous rating): at 14 Nm the box goes 7/12 vs 2/12. See "Grace's URDF claim"
+  under "Findings".
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
@@ -1122,6 +1126,44 @@ session, in parallel with a haptics session.
   scrubbing demos or a scripted stroke once the sponge is on the blade. Report
   `runs/propeller_report.md`, code `propeller_*.py`, mesh `assets/propeller/`; only
   `log.json` and three videos are committed (chunks stay on gavin-linux).
+- *Grace's URDF claim and the box: it is shoulder torque, not the URDF (2026-11-07).*
+  Grace (World Intelligence / DreamLabs) said the URDF was why Dream-1 fails. Checked
+  three ways, no URDF fault found: (1) against Dream's `maker_arm_ik.urdf`, frames,
+  q=0 pose and joint senses match except wrist_yaw (opposite to Dream's Maker
+  convention; irrelevant in sim, where IK and MuJoCo share the URDF and joint slots
+  are zero); (2) IK forensics on the logged runs: tracking matches Maker and YAM
+  (~5 mm median), observation equals sim FK, grip mapping identical to Maker's;
+  (3) Grace ran our `viscous-sim-kit` on her Mac (dreamlabs 1.0.37 / client 1.1.3)
+  and B0 apple succeeded at call 15; our rerun on gavin-linux (1.0.1 / 1.0.3, same
+  seed) succeeded at call 10 (`runs/apple_confirm_1107/`). Grace's agent then found
+  the box's real limit: the MJCF caps every arm actuator at 5 Nm, while holding the
+  hand over the square needs 5.7-7 Nm on shoulder_lift, so the hand sags 14-30 mm
+  (`box_torque_hold.py`) against a ~2 cm placement tolerance. The RS00 is ~5 Nm
+  continuous / 14 Nm peak (see Results), so 5 Nm is the honest continuous number.
+  Sweep options added: `t14` (arm actuators at the 14 Nm peak) and `buoy` (5 Nm with
+  `gravcomp=0.9` on every arm body, a stand-in for near-neutral in water; 0.9 is an
+  assumption, not measured; the gravity feedforward subtracts `qfrc_gravcomp`, which
+  is zero otherwise, so B0 is unchanged). Every box episode now logs left-arm torque.
+  12 box episodes each, seeds 20271020+i, beta, 762 billed calls on a fresh ledger in
+  `~/dreamtrial/confirm_1107` (main sweep ledger untouched); logs `runs/box_torque/`:
+
+  | Box, 12 episodes | Placed | Grasped | Shoulder at limit (median) | Shoulder peak | Finger-table rows (median) |
+  |---|---|---|---|---|---|
+  | B0, 5 Nm | 2/12 | 9/12 | 42% of sim time | 5.0 Nm | 180 |
+  | t14, 14 Nm | **7/12** | 12/12 | 0% (above 5 Nm 26%) | 7.2 median, 8.3 max | 0 |
+  | buoy, 5 Nm + 0.9 gravcomp | 4/12 | 12/12 | 0% | 4.0 median | 0 |
+
+  Fisher two-sided: B0 vs t14 p=0.089 alone; pooled with Grace's 6-episode runs (5 Nm
+  1/6, 25 Nm 4/6), 3/18 vs 11/18, p=0.015. So the 5 Nm cap is a real cause of the box
+  failures. buoy grasps every time but 6 of its 8 failures end within 2.25 cm of the
+  square; the last calls show the box still ~1 cm above flat rest, likely not released
+  (the Maker did the same in October). Unconfirmed: needs a frame-by-frame look.
+  Grace's YAM control on the same box got 0/6 (her env, not our `yam_baseline.py`).
+  *Meaning for the real arm:* t14 needs 7-8 Nm on the shoulder for about a quarter of
+  the episode, which the dry RS00 can give only briefly (it heats from 33 to 65 C in
+  under 2 min at 5-6 Nm). Dry, keep work closer to the base or lower; wet, buoyancy
+  removes most of the load. Next: measure the waterproof arm's net weight in water to
+  replace the 0.9 guess, and check buoy's unreleased boxes.
 
 ## Contact-signal bench check (2026-10-20, goals A1 and A1b, next steps 1-2)
 

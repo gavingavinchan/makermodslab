@@ -209,7 +209,8 @@ class ViscousAppleEnv(yam_env.YamEnv):
         for _ in range(50):
             for side, target in commands.items():
                 aids = self.aids[side]
-                self.data.ctrl[aids] = target[:6] + self.data.qfrc_bias[self.vadr[side]] / self.model.actuator_gainprm[aids, 0]
+                # qfrc_gravcomp is zero unless bodies set gravcomp (buoyancy), which already carries that share.
+                self.data.ctrl[aids] = target[:6] + (self.data.qfrc_bias - self.data.qfrc_gravcomp)[self.vadr[side]] / self.model.actuator_gainprm[aids, 0]
                 finger = self.model.actuator(f"{side}_gripper_left_joint_drive").id
                 dofs = [self.model.joint(f"{side}_finger_{s}").dofadr[0] for s in (-1, 1)]
                 self.data.ctrl[finger] = target[6] + sum(self.data.qfrc_bias[dofs]) / self.model.actuator_gainprm[finger, 0]

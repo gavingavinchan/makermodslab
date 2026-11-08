@@ -23,7 +23,9 @@ from cross_scenes import success
 from hand_path_tools import IKTrace, plain, clip_viscous_grips
 
 ROOT = HERE / 'runs/sweep'
-DEFAULT = dict(tcp='pad', arms='both', rows=48, region='off', wrist_r='normal')
+# torque: arm actuator force limit, Nm (5 = RS00 continuous, 14 = RS00 peak).
+# buoyancy: fraction of each arm body's weight offset, as near-neutral in water.
+DEFAULT = dict(tcp='pad', arms='both', rows=48, region='off', wrist_r='normal', torque=5, buoyancy=0.)
 PROMPTS = {'apple': 'put apple into the bowl', 'box': 'pick up the black and white box and put it on the black square'}
 CAPS = {'apple': 18, 'box': 24}
 
@@ -91,7 +93,7 @@ class Ledger:
 def config_name(c):
     if c.get('rig') == 'yam': return 'YAM'
     parts = []
-    for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', c.get('wrist_r', 'normal')), ('rows', 'r24'), ('region', 'table')]:
+    for key, label in [('tcp', 'tip'), ('arms', c['arms']), ('wrist_r', c.get('wrist_r', 'normal')), ('rows', 'r24'), ('region', 'table'), ('torque', 't14'), ('buoyancy', 'buoy')]:
         if c.get(key, DEFAULT[key]) != DEFAULT[key]:
             parts.append(label)
     return '_'.join(parts) or 'B0'
@@ -101,7 +103,7 @@ def parse_config(name):
     c = dict(DEFAULT)
     for part in name.split('_'):
         if part == 'B0': continue
-        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'parked': ('arms', 'parked'), 'copy': ('wrist_r', 'copy'), 'fixedcam': ('wrist_r', 'fixedcam'), 'blind': ('wrist_r', 'blind'), 'r24': ('rows', 24), 'table': ('region', 'table')}[part]
+        key, val = {'tip': ('tcp', 'fingertip'), 'single': ('arms', 'single'), 'parked': ('arms', 'parked'), 'copy': ('wrist_r', 'copy'), 'fixedcam': ('wrist_r', 'fixedcam'), 'blind': ('wrist_r', 'blind'), 'r24': ('rows', 24), 'table': ('region', 'table'), 't14': ('torque', 14), 'buoy': ('buoyancy', .9)}[part]
         c[key] = val
     return c
 
@@ -362,6 +364,8 @@ def episode(task, c, index, live, ledger, dry_root=None, prompt=None, variant=No
         if env.parked:
             metrics['parked_max_joint_deviation_rad'] = env.parked_max_joint_deviation
             metrics['parked_max_solver_deviation_rad'] = env.parked_max_solver_deviation
+        if getattr(env, 'torque_log', None):
+            metrics['left_arm_torque'] = env.torque_summary()
         atomic(log_path, metrics)
 
     try:
@@ -529,7 +533,7 @@ def stages(live, ledger):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table')
+    p.add_argument('--config', default='B0', help='B0 or underscore combination of tip,single,parked,copy,fixedcam,blind,r24,table,t14,buoy')
     p.add_argument('--task', choices=['apple', 'box', 'both', 'propeller', 'flange', 'shackle'], default='both')
     p.add_argument('--episodes', type=int, default=6)
     p.add_argument('--start', choices=['table','pregrasp'], default='table', help='Flange-only pregrasp start')
