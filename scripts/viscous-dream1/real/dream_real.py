@@ -85,8 +85,9 @@ HARD_ARM_SPEED_DEG_S = 15.0
 # MIT (kp, kd) overrides for this runner only (the Lab's defaults are untouched). The follower's shoulder/
 # elbow (30, 2) are untuned soft placeholders: at the start pose, in water, the shoulder sat 9.5 deg and
 # the elbow 5.4 deg below target, the hand ~12 cm under its command, and Dream chased that (live
-# 2026-11-08T211253Z). Gavin approved 60/3 to roughly halve the sag; torque to hold is unchanged.
-FOLLOWER_GAINS = {"shoulder_lift": (60.0, 3.0), "elbow_flex": (60.0, 3.0)}
+# 2026-11-08T211253Z). 60/3 halved it (4.7 / 2.9 deg, hand ~7 cm low, rehearsal 211903Z); Gavin then
+# chose 90/4. Torque to hold is unchanged.
+FOLLOWER_GAINS = {"shoulder_lift": (90.0, 4.0), "elbow_flex": (90.0, 4.0)}
 DEFAULT_HOLD_S = 120.0  # --rehearse: how long to hold at the Dream start pose before stopping by itself
 SCENARIOS = (
     "nominal",

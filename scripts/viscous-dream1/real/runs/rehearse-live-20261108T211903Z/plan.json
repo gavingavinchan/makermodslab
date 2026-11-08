@@ -1,0 +1,270 @@
+{
+ "robot": "viscous_waterproof_01",
+ "follower_port": "/dev/cu.usbmodem2050389538461",
+ "follower_config": "viscous_waterproof_01",
+ "joints_that_move": {
+  "shoulder_pan": {
+   "motor_limits_deg": [
+    -126.85,
+    187.53
+   ],
+   "commanded_within_deg": [
+    -125.85,
+    186.53
+   ],
+   "ik_limits_deg": [
+    -90.0,
+    7.53
+   ],
+   "sign_to_urdf": 1.0,
+   "sign_status": "photo-consistent 2026-11-07"
+  },
+  "shoulder_lift": {
+   "motor_limits_deg": [
+    -199.45,
+    -2.81
+   ],
+   "commanded_within_deg": [
+    -198.45,
+    -3.81
+   ],
+   "ik_limits_deg": [
+    -199.45,
+    -2.81
+   ],
+   "sign_to_urdf": 1.0,
+   "sign_status": "photo-consistent 2026-11-07"
+  },
+  "elbow_flex": {
+   "motor_limits_deg": [
+    2.86,
+    250.04
+   ],
+   "commanded_within_deg": [
+    3.86,
+    249.04
+   ],
+   "ik_limits_deg": [
+    2.86,
+    250.04
+   ],
+   "sign_to_urdf": 1.0,
+   "sign_status": "photo-consistent 2026-11-07"
+  },
+  "wrist_flex": {
+   "motor_limits_deg": [
+    -122.27,
+    82.1
+   ],
+   "commanded_within_deg": [
+    -121.27,
+    81.1
+   ],
+   "ik_limits_deg": [
+    -122.27,
+    82.1
+   ],
+   "sign_to_urdf": 1.0,
+   "sign_status": "photo-consistent 2026-11-07"
+  },
+  "wrist_yaw": {
+   "motor_limits_deg": [
+    -86.06,
+    87.32
+   ],
+   "commanded_within_deg": [
+    -85.06,
+    86.32
+   ],
+   "ik_limits_deg": [
+    -87.32,
+    86.06
+   ],
+   "sign_to_urdf": -1.0,
+   "sign_status": "hand-tested 2026-11-08"
+  },
+  "wrist_roll": {
+   "motor_limits_deg": [
+    -154.99,
+    150.0
+   ],
+   "commanded_within_deg": [
+    -153.99,
+    149.0
+   ],
+   "ik_limits_deg": [
+    -154.99,
+    150.0
+   ],
+   "sign_to_urdf": 1.0,
+   "sign_status": "hand-tested 2026-11-08"
+  },
+  "gripper": {
+   "motor_limits_deg": [
+    -115.11,
+    -0.03
+   ],
+   "commanded_within_deg": [
+    -114.11,
+    -1.03
+   ],
+   "ik_limits_deg": "grip 0..1 -> motor -2.9 (closed) .. -115.1 (open)",
+   "sign_to_urdf": null,
+   "sign_status": "n/a"
+  }
+ },
+ "follower_gains_override": {
+  "shoulder_lift": [
+   60.0,
+   3.0
+  ],
+  "elbow_flex": [
+   60.0,
+   3.0
+  ]
+ },
+ "limits_source": "Lab ViscousFamily config",
+ "right_arm": "none on the rig; reported to Dream parked at the arm file's rest, grip 1 (open); its answers are dropped",
+ "speed": {
+  "arm_target_deg_s": 15.0,
+  "gripper_deg_s": 60.0,
+  "retime": "each row and approach leg split into equal 20 Hz substeps, all joints arriving together",
+  "hard_arm_cap_deg_s": 15.0,
+  "bus_backstop_deg_s": 15.0,
+  "return_deg_s": 15.0,
+  "rows_per_chunk": 48,
+  "max_calls": 10
+ },
+ "arm_file": {
+  "path": "/Users/gavin/Documents/makermodslab-viscous/scripts/viscous-dream1/real/runs/rehearse-live-20261108T211903Z/arm/viscous-waterproof-tank.json",
+  "base": "dream_base",
+  "flange": "wrist_roll_link",
+  "tcp": [
+   0.166308,
+   0.0,
+   -0.027091
+  ],
+  "rest_ik_rad": [
+   -0.059516,
+   -2.14501,
+   1.73381,
+   0.1494,
+   0.15708,
+   -0.069639
+  ],
+  "urdf_sha256": "e4031cb6424c81329bf8b659722ca149feef6059e8a806eced506db1bb3e517e",
+  "tcp_problem": null,
+  "approval_problem": null
+ },
+ "cameras_in_record": {
+  "head": {
+   "camera_index": 0,
+   "unique_id": "0x1130000c45636b",
+   "width": 640,
+   "height": 480,
+   "fps": 30,
+   "rotation": 180
+  }
+ },
+ "dream_slots": {
+  "overhead": "black",
+  "wrist_l": "black",
+  "wrist_r": "black"
+ },
+ "missing_slots": [
+  "overhead (none chosen)",
+  "wrist_l (camera 'wrist' is not in the record)"
+ ],
+ "prompt": "put apple into the bowl",
+ "trips": {
+  "joint_clamp": "every target clipped 1.0 deg inside the motor limits (a notice, not a stop)",
+  "jump": "any arm joint target > 20.0 deg from the last -> refuse chunk, stop",
+  "workspace_box": "workspace_box_viscous_waterproof_01.json: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: the chunk is cut at the last substep inside, the arm holds there, the next call follows",
+  "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (keep-out -> override as above; any other rejection -> stop) and every measured pose through monitor()",
+  "lag": "measured vs commanded > 10.0 deg on any arm joint (20.0 on shoulder_lift) for 2 ticks",
+  "torque": "|torque| > 12.0 Nm for 2 ticks, or > 5.0 Nm for 5.0 s",
+  "temperature": ">= 80.0 C (warn 70.0)",
+  "overspeed": "measured speed of any arm joint > 30.0 deg/s for 2 readings (successive fresh positions over their timestamps; gripper excluded; independent of the commands and the guard), in the loop and on every return leg",
+  "feedback": "no fresh reply / motor fault / camera read error -> stop",
+  "dream": "Dream error or a malformed / non-finite chunk -> stop",
+  "inputs_unchecked": "first request refused locally (nothing sent) unless ~/.dreamlabs/inputs_checked holds its id",
+  "start_gate": "measured rest within 5.0 deg of limits and through the guard; the Dream start pose inside the limits and the box",
+  "speed": "any planned arm substep faster than 15.0 deg/s -> stop",
+  "stop": "every exit (trips, SIGINT/SIGTERM/SIGHUP, stop_button.py): the six arm joints re-anchored at their measured pose (+ standing error, no slew: no spring-back), gripper torque off at once, then the arm joints back to the measured rest leg by leg from the measured pose at the speed cap (guard-checked legs; stopped short within the lag trip = arrived), then all torque off at the rest; never released mid-air: path not clear, overspeed, no fresh reading or a leg ending beyond the lag trip -> re-anchor and HOLD until the second signal, which aborts the return or the hold and releases."
+ },
+ "run": "rehearse: approach, hold at the start pose, stop; no Dream",
+ "approach": {
+  "from": "the measured rest (lying on the tank floor)",
+  "route": "core.approach_waypoints: lift shoulder/fold elbow first, then straight to the start pose",
+  "dream_start_motor_deg": {
+   "shoulder_pan": 176.59,
+   "shoulder_lift": -122.9,
+   "elbow_flex": 99.34,
+   "wrist_flex": 8.56,
+   "wrist_yaw": -9.0,
+   "wrist_roll": -3.99
+  },
+  "gripper": "as measured at the rest"
+ },
+ "box_config_sha256": "c36026fec3194b21048c46e5f0eddeb893f4bf454fd980d5f98015402631b0dd",
+ "box_points_mm": {
+  "tcp": {
+   "x": [
+    -600,
+    -120
+   ],
+   "y": [
+    -154,
+    140
+   ],
+   "z": [
+    -5,
+    284
+   ]
+  },
+  "wrist": {
+   "x": [
+    -624,
+    -60
+   ],
+   "y": [
+    -154,
+    140
+   ],
+   "z": [
+    -5,
+    314
+   ]
+  },
+  "wrist_pitch": {
+   "x": [
+    -624,
+    -20
+   ],
+   "y": [
+    -154,
+    140
+   ],
+   "z": [
+    -25,
+    341
+   ]
+  },
+  "elbow": {
+   "x": [
+    -624,
+    -30
+   ],
+   "y": [
+    -154,
+    140
+   ],
+   "z": [
+    -25,
+    341
+   ]
+  }
+ },
+ "dream_client": "Dream's client from ~/viscous-dream-real/.venv",
+ "plan_id": "e52a11b8ce"
+}
