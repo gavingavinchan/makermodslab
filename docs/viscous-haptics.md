@@ -330,6 +330,17 @@ restore paths in the DAgger runner.
   until the next call instead of ending the run (jumps, bad rows, other faults still
   stop). `--pause-s` holds at the start pose before the first call so Gavin can place
   the ball. Refused chunks are now logged.
+- *Status (2026-11-08, later): first complete Dream-1 run on the real arm*
+  (`runs/live-20261108T210555Z`, prompt "pick up the golf ball", wrist camera only,
+  3 billed calls). Approach, 20 s pause (Gavin placed the ball), call 1's chunk ran in
+  full, call 2 was overridden at row 10 (tcp z -8 < box -5), call 3 at row 0; call cap
+  -> re-anchor, gripper limp, 3 return legs, released at the rest, no problems. Dream
+  kept the gripper closed (0.01-0.04 of 1) and kept reaching down. Findings: the
+  shoulder's sag puts the real hand ~22 mm below its command (measured tcp z -27 mm,
+  4 mm above the floor bound, while commands stayed >= -5), so the box's z limit does
+  not bound the real hand; floor contact is allowed, walls are less affected (the sag
+  is mostly vertical). Peaks: shoulder 5.5 Nm, lag 11.4 deg, speed 20.8 deg/s,
+  shoulder 25 -> 39 C in under a minute (watch heat on longer runs).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
