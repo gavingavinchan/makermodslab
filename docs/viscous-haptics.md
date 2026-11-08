@@ -1817,6 +1817,38 @@ connectors installed: "try to connect to it". Arm on the Mac (CANable
   limit (-115.1); confirm its pose before any powered run.
 - No powered motion yet.
 
+### First teleop in the filled aquarium: J1 swung toward the back wall (2026-11-07)
+
+*Intent:* Gavin: "i pointed the leader arm straight and unfolded, and the
+follower arm started rotating left (like j1 rotating). check the mapping".
+
+- Run: 1:1 posture trial in slow mode (15 deg/s), 17:37 server time. At start the
+  trial's worst error was **shoulder_pan 188 deg**. Lift, elbow and wrist errors
+  fell below 2 deg within 4 s, so they map correctly. Gavin stopped after about
+  60 deg of J1 travel, and the stop path returned the arm to its start pose.
+  Read-only check afterwards: pan **+184.4**, which Gavin calls "straight-ish".
+- Cause: in the tank the follower points straight into the tank at pan about
+  +182 (matches the aquarium model: pan +182 puts tool0 toward -x). The trial
+  maps a straight leader to pan about 0, which points over the base's back edge
+  toward the back wall 40 mm behind J1. The trial has no follower start gate
+  (the warm-up is an indicator, by design), so it slewed toward it.
+- Fix: the Star profile `viscous_profiles/star_viscous_waterproof_01.json`
+  (under MAKERMODSLAB_HOME, not in the repo) now has
+  `joint_offsets.shoulder_pan = 180`. A straight leader maps to pan +180, and
+  ±30 deg on the leader maps to 150-210, inside the trial's J1 limits
+  (-32.4, 282.0). Backup: `backups/star_viscous_waterproof_01.json.before-j1-offset-180-20261107`.
+  Rotation sense is unchanged (sign +1); confirm it with a small leader pan move.
+  180 is nominal; tune it by a few degrees if the arms look offset when both are
+  straight.
+- Not yet verified: why the 2026-10-20 trial worked at offset 0. Either the
+  arm sits in the tank turned half a turn from its bench orientation, or J1's
+  zero moved again (as it did by 94.48 deg on 2026-10-11). If J1's zero moved,
+  the trial's J1 limits are wrong by the same amount; check with Gavin.
+- Non-trial teleop also applies `joint_offsets`, but against the uncorrected
+  profile J1 limits (-126.9, 187.5), so it saturates at 187.5 one way.
+- Open: a start gate that refuses when any mapped joint is far from the
+  follower (here 188 deg) would have stopped this before any motion.
+
 ### Aquarium environment model (2026-11-07)
 
 Offline subtask of A1a/A3 (aquarium contact/haptics) and B4 (sim to real).
