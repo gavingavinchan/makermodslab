@@ -1840,6 +1840,11 @@ follower arm started rotating left (like j1 rotating). check the mapping".
   Rotation sense is unchanged (sign +1); confirm it with a small leader pan move.
   180 is nominal; tune it by a few degrees if the arms look offset when both are
   straight.
+- Same evening, Gavin: "its still rotated a bit to the left" (a render of the
+  read pose showed J1 at +187.4, 7.4 deg toward +y), then "let the current
+  position of j1 be forward". J1 read **+185.8**, so the offset is now
+  **185.8**: a straight leader maps to J1 +185.8. Previous file:
+  `backups/star_viscous_waterproof_01.json.before-j1-offset-185.8-20261107`.
 - Not yet verified: why the 2026-10-20 trial worked at offset 0. Either the
   arm sits in the tank turned half a turn from its bench orientation, or J1's
   zero moved again (as it did by 94.48 deg on 2026-10-11). If J1's zero moved,
