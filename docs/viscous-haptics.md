@@ -128,6 +128,10 @@ restore paths in the DAgger runner.
   officially supports, so Gavin wants Dream-1 to drive it, possibly through "a
   translation layer ... so that ... the Dream One model just pretends that it is
   ... using the maker arm but then in reality it's using my arm" (2026-10-20).
+- *Status (2026-11-07):* first step toward the real arm. Gavin: "can we now
+  build a bounding box to run dream1?" A keep-out box that gates every joint
+  target against the measured tank is built and tested offline; the real-run
+  executor is planned, not built. See [dream1-tank.md](dream1-tank.md).
 - *Status (2026-10-20):* zero-shot MuJoCo trial done; the result is "completely
   stupid ... hopelessly bad, no resemblance of any meaningful actions". Gavin wants
   to find out why. See "Dream-1 trial" below.
@@ -1608,6 +1612,13 @@ file instead.
 
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
+- [ ] **Dream-1 on the real arm in the tank** (Gavin, 2026-11-07: "can we now
+  build a bounding box to run dream1?"). The keep-out box is built and tested
+  offline (`makermodslab/tank_guard.py`, branch `feat/viscous-dream1-tank-box`);
+  no executor and no powered run yet. The plan and Gavin's open questions are in
+  [dream1-tank.md](dream1-tank.md). Before any powered step: base clamped,
+  near wall traced, cameras mounted, and Gavin's go-ahead on the plan.
+
 - [ ] **Aquarium glass protection** (Gavin, 2026-11-07: "do we need anything more
   for protection so the arm does not break the glass of the aquarium?"). Agreed
   and in progress: the torque-off "Measure tank" touch-probe in the Lab GUI,
@@ -2239,6 +2250,26 @@ tank. Until now B3 has run in MuJoCo only.
 Safety finding: the base slides about 30 mm under a hand push. A powered arm
 can shove it the same way, which would invalidate any measured keep-out.
 Clamp or weight the base before any powered motion in the tank.
+
+2026-11-07, the bounding box (this thread, branch `feat/viscous-dream1-tank-box`).
+Gavin: "can we now build a bounding box to run dream1?", with the rule above
+that the floor is the only allowed contact. Built: `makermodslab/tank_guard.py`
+plus `keepout_viscous_waterproof_01.json`, which checks every moving-link mesh
+vertex (with 40 mm default cable padding and the 30 mm margin) against the
+walls and rim, allows the floor with at most a 10 mm press, clips to joint
+limits, refuses jumps over 20 deg (a J1 wrap), and proves the straight path
+between targets clear, not just its ends. Re-fitting the trace with every
+vertex: the arm reached +218.5 and -223..-231 mm, so the accepted 210 / 224
+planes are 3-8 mm conservative. Design calls made without Gavin, to check
+with him: `yaw_link` is exempt (it rides the base, 30-42 mm behind J1 at every
+angle); the upper arm's heel may sit up to the estimated near plane; a start
+up to 5 deg outside the soft limits is accepted (the arm rests outside three
+of them). Offline validation (Codex, independent checker, 562,508 poses)
+found no unsafe grant. It also found that Dream's sim tasks reach 110 mm past
+the +y glass and its folded start fails the box, so the tank run needs its own
+start pose and an object on the tank's centre line. On the +y side the J1
+soft limit (187.5 deg, possibly stale) binds before the glass. Full write-up, validation and the real-run plan with open questions:
+[dream1-tank.md](dream1-tank.md). Nothing drives the arm yet.
 
 ## Working rules for this project
 

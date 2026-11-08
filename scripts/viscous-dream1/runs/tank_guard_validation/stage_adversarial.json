@@ -1,0 +1,8 @@
+{
+  "stage": "adversarial",
+  "wall_seconds": 76.6377022266388,
+  "workers": 12,
+  "script_sha256": "9e5ec5c58498eb857c87e214ce5648f1f46b6358178ab6ae69ac650247946bec",
+  "guard_sha256": "cf0f130fbd3c636d907100604b905960c8539c38d5eb13785581f53a68c5ef92",
+  "config_sha256": "52b37f288817f50eb2f928bb4dc36117054982e81a55c8de87303820614a5c6a"
+}

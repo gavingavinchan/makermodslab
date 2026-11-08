@@ -1,0 +1,2735 @@
+{
+  "runs": [
+    {
+      "run": "flange/dry/B0/flange/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "flange/dry/B0/flange/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1830
+      },
+      "worst_slack_mm": 0.25832115576292836,
+      "violations": []
+    },
+    {
+      "run": "flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1695
+      },
+      "worst_slack_mm": 0.10630422531278327,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G1/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1829
+      },
+      "worst_slack_mm": 0.2697710280100978,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G1/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1707
+      },
+      "worst_slack_mm": 0.12760930316147778,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G2/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1829
+      },
+      "worst_slack_mm": 0.2697710280100978,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G2/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1707
+      },
+      "worst_slack_mm": 0.12760930316147778,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G3/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09131397738644864,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/G3/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1703
+      },
+      "worst_slack_mm": 0.10582205434656089,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/T/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/dry/B0/flange/T/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G1/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1827
+      },
+      "worst_slack_mm": 0.2652113894712329,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G1/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1706
+      },
+      "worst_slack_mm": 0.12398612324039959,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G1/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1783
+      },
+      "worst_slack_mm": 0.24461289038993073,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G1/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1698
+      },
+      "worst_slack_mm": 0.10613448474811094,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G2/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1828
+      },
+      "worst_slack_mm": 0.2679333096666028,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G2/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1706
+      },
+      "worst_slack_mm": 0.12383972864671478,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G2/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1783
+      },
+      "worst_slack_mm": 0.24333226966433585,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G2/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1698
+      },
+      "worst_slack_mm": 0.10496126903979075,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09269216694406168,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1703
+      },
+      "worst_slack_mm": 0.10489027439956544,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09339507640726197,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 99
+      },
+      "samples": {
+        "ramp": 1721
+      },
+      "worst_slack_mm": 0.12009561825203718,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09294008132263798,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 97
+      },
+      "samples": {
+        "ramp": 1689
+      },
+      "worst_slack_mm": 0.13100008423640475,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09270214773459884,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/G3/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 98
+      },
+      "samples": {
+        "ramp": 1701
+      },
+      "worst_slack_mm": 0.10098201410693264,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/T/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09603701779610674,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/T/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09470312237232292,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/T/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09608199629110459,
+      "violations": []
+    },
+    {
+      "run": "flange_dream2/episodes/B0/flange/T/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09485676813159216,
+      "violations": []
+    },
+    {
+      "run": "flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P1/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P1/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P2/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P2/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P3/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P3/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P4/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "propeller/dry/B0/propeller/P4/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09730133394577933,
+      "violations": []
+    },
+    {
+      "run": "replay_ik_smoke_fixed/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0975012699084914,
+      "violations": []
+    },
+    {
+      "run": "replay_ik_smoke_fixed/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09750121661375033,
+      "violations": []
+    },
+    {
+      "run": "replay_yam_path_on_viscous/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1757
+      },
+      "worst_slack_mm": 0.09667737316948433,
+      "violations": []
+    },
+    {
+      "run": "replay_yam_path_on_viscous/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1757
+      },
+      "worst_slack_mm": 0.09743119774168463,
+      "violations": []
+    },
+    {
+      "run": "replay_yam_path_on_viscous_contact_check/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1757
+      },
+      "worst_slack_mm": 0.09667723308422183,
+      "violations": []
+    },
+    {
+      "run": "replay_yam_path_on_viscous_contact_check/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1757
+      },
+      "worst_slack_mm": 0.09743099241802611,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 140,
+        "policy": 19
+      },
+      "samples": {
+        "ramp": 2702,
+        "policy": 38
+      },
+      "worst_slack_mm": 0.008885452131664806,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 140,
+        "policy": 21
+      },
+      "samples": {
+        "ramp": 2703,
+        "policy": 42
+      },
+      "worst_slack_mm": 0.007378685843434596,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 140,
+        "policy": 21
+      },
+      "samples": {
+        "ramp": 2703,
+        "policy": 42
+      },
+      "worst_slack_mm": 0.006843504460562144,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dream/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dry/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "shackle_scene/dry/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09692105887143043,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09588378702238742,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09607477211818605,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09597248700850969,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09601352284926179,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09652234198631504,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09585226943966063,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09661394251298816,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09714708263879857,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09661322545986195,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.095953487121335,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09715792782418475,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09641104266893308,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09596346504247322,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09687847409026062,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09582050818551124,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09677994784567545,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09589761033885225,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09675504274349578,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09597889096738754,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09638318820464065,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09579189957588596,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09660924475161892,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/box/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09611107447113909,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P1/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09640146596086652,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P1/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09691170544590477,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P1/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09644647113043447,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P1/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09707531141384607,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P2/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09711536964675815,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P2/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1760
+      },
+      "worst_slack_mm": 0.08638376463170516,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P2/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09700852756418499,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P2/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1761
+      },
+      "worst_slack_mm": 0.08649967537508019,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09608765726989077,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09569607533705948,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09572812862603541,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09649155072355597,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09585038990502426,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09669106217955914,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09622885838712136,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09648374546134164,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09581890449612729,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P3/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09660660297510049,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P4/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0972870752163999,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P4/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09589078551300645,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P4/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0966425549765404,
+      "violations": []
+    },
+    {
+      "run": "sweep/B0/propeller/P4/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09659039157281768,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09711946367974633,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09736241059312079,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.096745399061831,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09612075010625176,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0970739448004565,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09729324670752248,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09577661473178978,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09701841307196446,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0970566504006456,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09630348261998734,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09618971010883115,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0958491594688553,
+      "violations": []
+    },
+    {
+      "run": "sweep/parked_blind/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09641104266893308,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09596346504247322,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09687847409026062,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09582050818551124,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09677994784567545,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09589761033885225,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09675504274349578,
+      "violations": []
+    },
+    {
+      "run": "sweep/r24/box/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09597889096738754,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09706209684429723,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09711665244617507,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09584838685850627,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09723178931437815,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0959087849912521,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09588149999507323,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09525044982086683,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09576085004852075,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09580205479824144,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09552720145660487,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09569433191410326,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09556855024362676,
+      "violations": []
+    },
+    {
+      "run": "sweep/single/box/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1783
+      },
+      "worst_slack_mm": 0.0954086031694601,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09560211044328071,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09639035496854831,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09421259395338666,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09572031414791127,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09442186263845542,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_copy/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1762
+      },
+      "worst_slack_mm": 0.08964683207756252,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09670136270011653,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09731059441475054,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09722923374516768,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0963668074813313,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09702092234124393,
+      "violations": []
+    },
+    {
+      "run": "sweep/single_fixedcam/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 140,
+        "policy": 25
+      },
+      "samples": {
+        "ramp": 2704,
+        "policy": 50
+      },
+      "worst_slack_mm": 0.009442665126698557,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1775
+      },
+      "worst_slack_mm": 0.10055601775547984,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1766
+      },
+      "worst_slack_mm": 0.11165610919306346,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1836
+      },
+      "worst_slack_mm": 0.13034435434889247,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09576779353943721,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1836
+      },
+      "worst_slack_mm": 0.1293807540284888,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0957312981549876,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 104
+      },
+      "samples": {
+        "ramp": 1836
+      },
+      "worst_slack_mm": 0.12766213032057294,
+      "violations": []
+    },
+    {
+      "run": "sweep/table/box/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09611962979101918,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1786
+      },
+      "worst_slack_mm": 0.10061771814298481,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1786
+      },
+      "worst_slack_mm": 0.09497809633654697,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09675045600846488,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09661975345318297,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09601585352697839,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0969661621098794,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09693730876773543,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.096984404078853,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09661525323292608,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09614508389080356,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09626122111109225,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/apple/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09603313675546588,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_00/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09669574737426956,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_00/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09616892144663325,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_01/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09638293403969556,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_01/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09557713920469268,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_02/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09681626123921205,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_02/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0956667306061263,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_03/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09655778028297846,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_03/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09609321608672872,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_04/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09646137247602837,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_04/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09572714875008614,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_05/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.0966758313010132,
+      "violations": []
+    },
+    {
+      "run": "sweep/tip/box/ep_05/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09629340787068941,
+      "violations": []
+    },
+    {
+      "run": "viscous_apple_makerwrist_live1/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1787
+      },
+      "worst_slack_mm": 0.10286640063344521,
+      "violations": []
+    },
+    {
+      "run": "viscous_apple_makerwrist_live1/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1784
+      },
+      "worst_slack_mm": 0.09391620045687432,
+      "violations": []
+    },
+    {
+      "run": "viscous_apple_vision_live2/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09381351083084155,
+      "violations": []
+    },
+    {
+      "run": "viscous_apple_vision_live2/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1759
+      },
+      "worst_slack_mm": 0.09233348167299482,
+      "violations": []
+    },
+    {
+      "run": "viscous_box_makerwrist_live1/chunks.jsonl",
+      "side": "left",
+      "segments": {
+        "ramp": 101
+      },
+      "samples": {
+        "ramp": 1765
+      },
+      "worst_slack_mm": 0.1030923152137575,
+      "violations": []
+    },
+    {
+      "run": "viscous_box_makerwrist_live1/chunks.jsonl",
+      "side": "right",
+      "segments": {
+        "ramp": 102
+      },
+      "samples": {
+        "ramp": 1778
+      },
+      "worst_slack_mm": 0.10226658824984725,
+      "violations": []
+    }
+  ],
+  "verified_segments": 25019,
+  "samples": 430858,
+  "violations": []
+}
