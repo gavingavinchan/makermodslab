@@ -66,6 +66,7 @@ export default {
   save: "Save measurement",
   saved: "Measurement saved.",
   previous: "Last saved: {{time}}",
+  trace: "Every reading is recorded, saved or not: {{count}} samples in {{path}}",
   change:
     "J1 moved {{distance}} mm toward {{face}}; rotated {{rotation}}° since last save.",
   clearances: "Live link clearances (mm)",

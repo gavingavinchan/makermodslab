@@ -17,6 +17,11 @@ The base moves whenever Gavin removes the arm from the tank. Closed-gripper
 wall touches replace the old estimated placement, including the near/back
 wall that J3 can hit. Cabling and the base tower are optional persistent arm
 extras. Nothing here enables torque, sets zero, or sends a position command.
+
+Every reading is also appended to a per-session JSONL trace under
+tank/<robot>/traces/, saved or not, so the motion between touches can be
+reviewed later (Gavin, 2026-11-07: "at least record all the positions so an
+ai agent can review it if needed").
 """
 
 from __future__ import annotations
@@ -110,6 +115,11 @@ class TankMeasurement:
         self.extras = {}
         self.model = None
         self.tank = None
+        self.trace_lock = threading.Lock()
+        self.trace_file = None
+        self.trace_path = None
+        self.trace_samples = 0
+        self.trace_start = 0.0
 
     def start(self, robot_name: str, *, run_worker=True) -> dict:
         from . import jobs, monitored_can, sessions, wiggle
@@ -161,6 +171,7 @@ class TankMeasurement:
             self.error, self.offsets, self.device = None, None, None
             self.stale = True
             self.last_poll = self.clock()
+            self._open_trace(record)
             self.stop_event = threading.Event()
             self.thread = None
             self.active = True
@@ -174,6 +185,54 @@ class TankMeasurement:
                     notify_session_changed("calibration", False, phase="error")
                     raise
         return self.status()
+
+    def _open_trace(self, record: dict):
+        """Start this session's trace; a disk failure must not block measuring."""
+        with self.trace_lock:
+            self.trace_samples, self.trace_start = 0, self.clock()
+            try:
+                name = self.utcnow().strftime("%Y%m%dT%H%M%S.%fZ") + ".jsonl"
+                path = storage_dir(self.robot_name) / cfg.TANK_TRACE_DIR / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                self.trace_file, self.trace_path = path.open("a", encoding="utf-8"), path
+            except OSError:
+                self.trace_file, self.trace_path = None, None
+        self._trace(
+            "start",
+            robot_name=self.robot_name,
+            arm_type=record.get("arm_type"),
+            follower_port=self.port,
+            follower_config=self.profile,
+            tank_config=str(geo.DEFAULT_TANK.relative_to(geo.ROOT)),
+            units="positions: motor degrees after the full-turn unwrap (raw = as read); mm in the J1 base frame",
+            probe="mean of the closed fingertip patches (tank_geometry.probe_point)",
+            poll_seconds=POLL_SECONDS,
+        )
+
+    def _trace(self, event: str | None = None, **fields):
+        with self.trace_lock:
+            if self.trace_file is None:
+                return
+            line = {"t": round(self.clock() - self.trace_start, 3), "utc": self.utcnow().isoformat()}
+            if event:
+                line["event"] = event
+            line.update(fields)
+            try:
+                self.trace_file.write(json.dumps(line, allow_nan=False) + "\n")
+                self.trace_file.flush()
+                if event is None:
+                    self.trace_samples += 1
+            except (OSError, ValueError):
+                with contextlib.suppress(OSError):
+                    self.trace_file.close()
+                self.trace_file = None
+
+    def _close_trace(self):
+        with self.trace_lock:
+            if self.trace_file is not None:
+                with contextlib.suppress(OSError):
+                    self.trace_file.close()
+                self.trace_file = None
 
     def expired(self) -> bool:
         return self.clock() - self.last_poll >= IDLE_SECONDS
@@ -200,15 +259,27 @@ class TankMeasurement:
                 raise ConnectionError("Every joint must return a fresh finite position")
             if self.offsets is None:
                 self.offsets = full_turn_offsets(raw, self.device.config)
+                self._trace("offsets", offsets_deg=self.offsets)
             positions = {n: raw[n] + self.offsets[n] for n in raw}
-            probe = geo.probe_point(self.model, geo.forward_kinematics(self.model, positions)).tolist()
+            transforms = geo.forward_kinematics(self.model, positions)
+            probe = geo.probe_point(self.model, transforms).tolist()
             with self.lock:
                 self.samples.append((self.clock(), positions, probe))
                 self.stale, self.error = False, None
+            self._trace(
+                positions_deg={n: round(float(v), 3) for n, v in positions.items()},
+                raw_deg={n: round(float(v), 3) for n, v in raw.items()},
+                probe_mm=[round(v, 2) for v in probe],
+                gripper_opening_mm=round(geo.gripper_opening_mm(self.model, positions), 2),
+                link_origins_mm={
+                    n: [round(float(v) * 1000, 1) for v in t] for n, (_, t) in transforms.items()
+                },
+            )
         except Exception as error:
             with self.lock:
                 self.samples.clear()
                 self.stale, self.error = True, str(error)
+            self._trace("read_error", error=str(error))
 
     def _release(self):
         device = self.device
@@ -217,6 +288,9 @@ class TankMeasurement:
                 device.bus.disable_torque()
             with contextlib.suppress(Exception):
                 device.bus.disconnect(False)
+        if self.active:
+            self._trace("stop", touches=len(self.touches), samples=self.trace_samples)
+        self._close_trace()
         with self.lock:
             self.device = None
             self.stale = True
@@ -309,6 +383,8 @@ class TankMeasurement:
                 "tower_box": tower,
                 "paddings": paddings,
                 "idle_deadline": self.last_poll + IDLE_SECONDS if self.active else None,
+                "trace_path": str(self.trace_path) if self.trace_path else None,
+                "trace_samples": self.trace_samples,
             }
 
     def capture(self, label: str) -> dict:
@@ -354,6 +430,9 @@ class TankMeasurement:
                     "timestamp": self.utcnow().isoformat(),
                 }
             )
+            self._trace(
+                "capture", index=len(self.touches) - 1, label=label, point_mm=point, positions_deg=positions
+            )
         return self.status()
 
     def delete(self, index: int) -> dict:
@@ -362,7 +441,8 @@ class TankMeasurement:
                 refuse("Start tank measurement first")
             if index < 0 or index >= len(self.touches):
                 refuse("Touch index does not exist", ErrorCode.REQUEST_VALIDATION, 404)
-            del self.touches[index]
+            removed = self.touches.pop(index)
+            self._trace("delete", index=index, label=removed["label"], point_mm=removed["point_mm"])
         return self.status()
 
     def save(self) -> dict:
@@ -392,6 +472,7 @@ class TankMeasurement:
             cfg._atomic_write_text(
                 str(folder / cfg.TANK_LATEST_FILE), json.dumps(exported, indent=2, allow_nan=False) + "\n"
             )
+            self._trace("save", history=str(history))
         return {"robot_name": self.robot_name, "measurement": exported}
 
 

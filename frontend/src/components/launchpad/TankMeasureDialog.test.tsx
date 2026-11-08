@@ -52,6 +52,8 @@ function fresh(): TankStatus {
     paddings: {},
     tower_box: null,
     idle_deadline: 900,
+    trace_path: null,
+    trace_samples: 0,
   };
 }
 

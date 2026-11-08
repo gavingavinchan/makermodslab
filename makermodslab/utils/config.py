@@ -355,6 +355,8 @@ TANK_MEASURE_PATH = os.path.join(MAKERMODSLAB_HOME, "tank")
 TANK_LATEST_FILE = "latest.json"
 TANK_HISTORY_DIR = "history"
 TANK_ARM_EXTRAS_FILE = "arm_extras.json"
+# Every torque-off reading of every measurement, kept whether or not it is saved.
+TANK_TRACE_DIR = "traces"
 
 GRIPPER_HAPTICS_LOG_DIR = os.path.join(MAKERMODSLAB_HOME, "gripper_haptics")
 

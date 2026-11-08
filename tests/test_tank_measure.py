@@ -160,6 +160,29 @@ def test_capture_averages_unwrapped_joint_angles_and_delete(rig):
         manager.capture("near")
 
 
+def test_every_reading_and_action_is_traced_to_disk_saved_or_not(rig):
+    manager, now, bus, _ = open_rig(rig)
+    fill_still(manager, now)
+    manager.capture("near")
+    manager.delete(0)
+    bus.fail = True
+    manager.poll_once()
+    path = Path(manager.status()["trace_path"])
+    manager.stop()
+    assert path.parent == Path(cfg.TANK_MEASURE_PATH) / "aquarium" / cfg.TANK_TRACE_DIR
+    lines = [json.loads(x) for x in path.read_text().splitlines()]
+    events = [x.get("event") for x in lines]
+    assert events[:2] == ["start", "offsets"]
+    assert events[-4:] == ["capture", "delete", "read_error", "stop"]
+    samples = [x for x in lines if "event" not in x]
+    assert len(samples) == 12 == lines[-1]["samples"]
+    assert samples[0]["positions_deg"]["shoulder_lift"] == pytest.approx(
+        samples[0]["raw_deg"]["shoulder_lift"] - 360
+    )
+    assert len(samples[0]["probe_mm"]) == 3 and "yaw_link" in samples[0]["link_origins_mm"]
+    assert not (Path(cfg.TANK_MEASURE_PATH) / "aquarium" / cfg.TANK_LATEST_FILE).exists()
+
+
 def test_moving_probe_open_gripper_and_invalid_label_refused(rig):
     manager, now, bus, _ = open_rig(rig)
     for i in range(12):

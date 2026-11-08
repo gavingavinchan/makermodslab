@@ -65,6 +65,7 @@ export default {
   save: "保存测量",
   saved: "测量已保存。",
   previous: "上次保存：{{time}}",
+  trace: "无论是否保存，每次读数都会记录：{{path}} 中已有 {{count}} 个采样",
   change:
     "与上次保存相比，J1 向{{face}}移动 {{distance}} mm；旋转 {{rotation}}°。",
   clearances: "实时连杆间隙 (mm)",

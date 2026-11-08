@@ -151,6 +151,24 @@ Fitted width replaces the width used for derived bounds. Nominal far length
 and rim height remain estimates. Store yaw in base_rpy_deg even though today's
 offline loader refuses nonzero rotation; zero-yaw compatibility is tested.
 
+**Trace (added 2026-11-07).** The first real run kept only its two captured
+touches, and Gavin had traced the walls and the floor by hand in between: "thats
+dumb, at least record all the positions so an ai agent can review it if
+needed". Every session now appends to
+`$MAKERMODSLAB_HOME/tank/<robot>/traces/<UTC start>.jsonl` from the moment it
+starts, saved or not. Each line has a session-relative `t` and a `utc` stamp.
+Event lines are `start` (port, profile, tank config, units), `offsets` (the
+full-turn unwrap), `capture`, `delete`, `read_error`, `save` and `stop`. Every
+other line is one 10 Hz reading:
+- `positions_deg`: the unwrapped motor angles.
+- `raw_deg`: the angles as read.
+- `probe_mm`: the closed-fingertip probe in the J1 base frame.
+- `gripper_opening_mm`.
+- `link_origins_mm`: every link origin, for tracking the rest of the arm.
+
+A disk failure ends the trace and leaves measuring running. The dialog shows
+the path and the sample count.
+
 ## Implementation choices and remaining validation
 
 The Viscous family refuses to open its follower for calibration, because there

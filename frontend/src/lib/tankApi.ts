@@ -61,6 +61,8 @@ export interface TankStatus {
   tower_box: TowerBox | null;
   paddings: Record<string, TankPadding>;
   idle_deadline: number | null;
+  trace_path: string | null;
+  trace_samples: number;
   clearances: {
     links: Record<
       string,

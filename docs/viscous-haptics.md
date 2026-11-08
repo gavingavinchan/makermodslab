@@ -2066,6 +2066,13 @@ the one mode the measurement allows. The follower start gate and the J1 wrap
 guard stay at the top of the must-haves. They are parked, not dropped, and
 must be built before the next powered teleop in the tank.
 
+First real measurement, the same evening: Gavin traced both long walls and the
+floor by hand. Only two touches were stored, both auto-captured under the first
+step's "right" label: one wall touch at y +207 mm, and one at the pose where the
+arm was set down. The motion in between was not kept. Gavin: "thats dumb, at
+least record all the positions so an ai agent can review it if needed". Every
+reading now goes to a per-session trace (see tank-measure.md, Trace).
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.

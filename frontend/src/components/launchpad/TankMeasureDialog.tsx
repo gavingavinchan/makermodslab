@@ -483,6 +483,14 @@ export default function TankMeasureDialog({
             </span>
           )}
         </div>
+        {status?.trace_path && (
+          <p className="text-xs text-muted-foreground break-all">
+            {t("tank.trace", {
+              count: status.trace_samples,
+              path: status.trace_path,
+            })}
+          </p>
+        )}
         {(error || status?.error) && (
           <p role="alert" className="text-destructive">
             {error ?? status?.error}

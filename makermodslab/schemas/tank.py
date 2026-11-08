@@ -100,6 +100,8 @@ class TankStatus(BaseModel):
     tower_box: TankTower | None
     paddings: dict[str, TankPadding]
     idle_deadline: float | None
+    trace_path: str | None
+    trace_samples: int
 
 
 class TankLatest(BaseModel):

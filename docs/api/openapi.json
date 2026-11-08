@@ -7804,6 +7804,21 @@
                 "type": "null"
               }
             ]
+          },
+          "trace_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Path"
+          },
+          "trace_samples": {
+            "title": "Trace Samples",
+            "type": "integer"
           }
         },
         "required": [
@@ -7821,7 +7836,9 @@
           "clearances",
           "tower_box",
           "paddings",
-          "idle_deadline"
+          "idle_deadline",
+          "trace_path",
+          "trace_samples"
         ],
         "title": "TankStatus",
         "type": "object"
