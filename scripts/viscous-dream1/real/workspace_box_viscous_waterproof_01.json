@@ -50,7 +50,7 @@
      140
     ],
     "z": [
-     -5,
+     -35,
      284
     ]
    }
@@ -72,7 +72,7 @@
      140
     ],
     "z": [
-     -5,
+     -35,
      314
     ]
    }
@@ -123,5 +123,6 @@
   }
  },
  "z_shift_2026_11_08": "Gavin raised the arm's base: every z lower bound moved down 25 mm with the floor and every upper bound down 16 mm with the rim, so each point keeps the clearance to the glass it was designed with. The first live Dream call (runs/live-20261108T205544Z) asked for tcp z = 16 mm, ~47 mm above the real floor, and the old box refused it.",
- "near_shift_2026_11_08": "Back wall moved from the 40 mm estimate to Gavin's 80 mm: elbow x max -30 -> +10 and wrist_pitch -20 -> +20 (same 70 / 60 mm from the wall as designed; the tank guard still checks every mesh vertex). The elbow limit cut 13 of 17 calls in live 20261108T212338Z while Dream's hand was 32-39 cm out."
+ "near_shift_2026_11_08": "Back wall moved from the 40 mm estimate to Gavin's 80 mm: elbow x max -30 -> +10 and wrist_pitch -20 -> +20 (same 70 / 60 mm from the wall as designed; the tank guard still checks every mesh vertex). The elbow limit cut 13 of 17 calls in live 20261108T212338Z while Dream's hand was 32-39 cm out.",
+ "floor_lowered_2026_11_08": "Gavin: decrease the floor limit by 3 cm. tcp and wrist z min -5 -> -35, so the grasp centre can reach a golf ball's centre on the floor (~-10). The tank guard is then the binding floor limit: every mesh vertex at most 10 mm below the -31 mm floor line (gentle press, ~5 N at the hand with the 90/4 gains)."
 }

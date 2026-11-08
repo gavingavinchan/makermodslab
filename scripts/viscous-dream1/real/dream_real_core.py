@@ -361,11 +361,12 @@ def return_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> l
 
 # --- slide along the limits ----------------------------------------------------
 
-# How far inside the tcp box the hand slides: 2 mm off the floor/rim limits (floor contact is allowed),
-# 100 mm off the side limits and 40 off far/near, because the wrist links are wider than the tcp point (the
+# How far inside the tcp box the hand slides: 0 off the floor/rim limits (floor contact is allowed and the
+# tank guard bounds the press, Gavin 2026-11-08), 100 mm off the side limits and 40 off far/near, because
+# the wrist links are wider than the tcp point (the
 # wrist_roll_link mesh reaches ~90 mm past it toward a side wall, dry run 2026-11-08) and the tank
 # guard keeps their mesh 70 mm off the glass (a hand on the box's side edge gets cut there).
-SLIDE_MARGIN_MM = {"x": 40.0, "y": 100.0, "z": 2.0}
+SLIDE_MARGIN_MM = {"x": 40.0, "y": 100.0, "z": 0.0}
 
 
 def tcp_box_mm(box_file: Path) -> dict:
