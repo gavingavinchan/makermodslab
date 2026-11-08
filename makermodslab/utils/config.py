@@ -351,6 +351,11 @@ STATION_FILE = os.path.join(MAKERMODSLAB_HOME, "station.json")
 
 # One gzipped CSV per teleop session run with gripper haptics on
 # (gripper_haptics.py): the tick log the haptic feel is tuned from.
+TANK_MEASURE_PATH = os.path.join(MAKERMODSLAB_HOME, "tank")
+TANK_LATEST_FILE = "latest.json"
+TANK_HISTORY_DIR = "history"
+TANK_ARM_EXTRAS_FILE = "arm_extras.json"
+
 GRIPPER_HAPTICS_LOG_DIR = os.path.join(MAKERMODSLAB_HOME, "gripper_haptics")
 
 # Tag stamped on every dataset pushed to the Hub from MakerMods Lab, so we can later

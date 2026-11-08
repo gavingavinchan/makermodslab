@@ -4,6 +4,7 @@ import { Gamepad2, Radio, RadioTower, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import TankMeasureDialog from "./TankMeasureDialog";
 import TeleopDialog from "@/components/dialogs/TeleopDialog";
 import HostingDialog from "@/components/dialogs/HostingDialog";
 import StationRobotDialog from "@/components/dialogs/StationRobotDialog";
@@ -46,6 +47,7 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
   const discoversTeleopUsb = !!family?.capabilities.teleop_usb_discovery;
   const supportsGripperHaptics = !!family?.capabilities.supports_gripper_haptics &&
     selectedRecord?.mode !== "bimanual";
+  const [tankOpen, setTankOpen] = useState(false);
   const [gripperHaptics, setGripperHaptics] = useState(false);
   const [slowTeleop, setSlowTeleop] = useState(true);
   const [postureMapping, setPostureMapping] = useState(true);
@@ -315,6 +317,10 @@ const RobotControls: React.FC<RobotControlsProps> = ({ onOpenSettings, onCreateR
           )}
         </DialogContent>
       </Dialog>
+      {family?.capabilities.supports_tank_measurement && selectedRecord && <>
+        <Button size="sm" variant="secondary" className="h-7 rounded-full" onClick={() => setTankOpen(true)}>{t("tank.button")}</Button>
+        <TankMeasureDialog key={selectedRecord.name} open={tankOpen} onOpenChange={setTankOpen} robotName={selectedRecord.name} />
+      </>}
       <TeleopDialog
         open={teleopOpen}
         onOpenChange={setTeleopOpen}

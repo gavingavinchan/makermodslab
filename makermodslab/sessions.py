@@ -1202,6 +1202,11 @@ def _dispatch_stop(kind: str) -> dict[str, Any]:
         # Stopping is never owner-gated and the tracker only knows the KIND,
         # not which manager is live — so stop whichever one actually is
         # (mirroring the auto_calibration arm just below).
+        from . import tank_measure
+
+        if tank_measure.tank_measurement_is_active():
+            tank_measure.manager.stop()
+            return {"success": True, "message": "Tank measurement stopped"}
         if step_calibrate.step_calibration_is_active():
             return step_calibrate.step_calibration_manager.stop()
         return calibrate.calibration_manager.stop_calibration_process()

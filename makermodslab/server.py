@@ -67,6 +67,7 @@ from . import (
     rollout as rollout_state,
     session_events,
     sfu,
+    tank_measure,
 )
 
 # Import our custom calibration functionality
@@ -300,6 +301,7 @@ from .schemas.system import (
     UpdateStatus,
     WandbCredentialsStatus,
 )
+from .schemas.tank import TankCapture, TankLatest, TankStart, TankStatus
 from .sessions import (
     handle_coaching_command_for_session,
     handle_current_session,
@@ -5609,9 +5611,56 @@ def _v1_operation_id(route: APIRoute) -> str:
     return route.name
 
 
-# Flat mount first (default operation ids), then /api/v1 with clean ids.
-# Both precede the SPA mount below: starlette matches in registration order,
-# so anything registered after the "/" mount would be unreachable.
+# Tank probing is a v1-only, torque-off calibration session.
+@v1_router.post(
+    "/tank-measure/start", response_model=TankStatus, tags=["system"], response_model_exclude_unset=True
+)
+def start_tank_measurement(request: TankStart):
+    return tank_measure.manager.start(request.robot_name)
+
+
+@v1_router.get(
+    "/tank-measure/status", response_model=TankStatus, tags=["system"], response_model_exclude_unset=True
+)
+def get_tank_measurement_status():
+    return tank_measure.manager.status()
+
+
+@v1_router.post(
+    "/tank-measure/capture", response_model=TankStatus, tags=["system"], response_model_exclude_unset=True
+)
+def capture_tank_touch(request: TankCapture):
+    return tank_measure.manager.capture(request.label)
+
+
+@v1_router.delete(
+    "/tank-measure/touches/{index}",
+    response_model=TankStatus,
+    tags=["system"],
+    response_model_exclude_unset=True,
+)
+def delete_tank_touch(index: int):
+    return tank_measure.manager.delete(index)
+
+
+@v1_router.post("/tank-measure/save", response_model=TankLatest, tags=["system"])
+def save_tank_measurement():
+    return tank_measure.manager.save()
+
+
+@v1_router.post(
+    "/tank-measure/stop", response_model=TankStatus, tags=["system"], response_model_exclude_unset=True
+)
+def stop_tank_measurement():
+    return tank_measure.manager.stop()
+
+
+@v1_router.get("/tank-measure/latest", response_model=TankLatest, tags=["system"])
+def get_latest_tank_measurement(robot_name: str):
+    return tank_measure.latest(robot_name)
+
+
+# Flat mount first, then v1; both must precede the SPA mount below.
 app.include_router(router)
 # v1-only surface: included ONCE, versioned — never on the flat mount. It
 # joins /api/v1 BEFORE the shared router does, and that order is load-bearing:

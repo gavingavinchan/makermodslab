@@ -1,3 +1,4 @@
+import tank from "./tank";
 import common from "./common";
 import launchpad from "./launchpad";
 import onboarding from "./onboarding";
@@ -25,6 +26,7 @@ import shared from "./shared";
  * migration PR touches exactly one catalog file per language.
  */
 export default {
+  tank,
   common,
   launchpad,
   onboarding,

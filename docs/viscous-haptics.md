@@ -1480,6 +1480,15 @@ file instead.
 
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
+- [ ] **Aquarium glass protection** (Gavin, 2026-11-07: "do we need anything more
+  for protection so the arm does not break the glass of the aquarium?"). Agreed
+  and in progress: the torque-off "Measure tank" touch-probe in the Lab GUI,
+  branch `feat/viscous-tank-measure`. Proposed, awaiting Gavin's pick: the follower
+  start gate and J1 wrap guard (top priority: today's start targets drive the arm
+  through or across the glass), force cap, tank limits, clamp off the glass, tank
+  support, keep-out check. See "Aquarium glass protection and the tank
+  measurement (2026-11-07)".
+
 - [x] **2026-11-05 offline left-mount preparation (A5a):** URDF/plate audit,
   top/three-quarter PNGs, pending unit assignment, candidate limits, and
   motor-1-only operator tool with hardware-free default/dry-run and fake-bus
@@ -1951,6 +1960,104 @@ the capture width and height, which the record's dims and the policy-binding
 check do not handle yet. Verified on the live camera: the barcode in frame
 reads upright with the flip on. Both Viscous records had no cameras at the
 time, so the camera still has to be added to the robot and flipped in the UI.
+
+### Aquarium glass protection and the tank measurement (2026-11-07)
+
+Subtask of A (piloting the arm safely) in the aquarium, and of B4's aquarium
+layout. Gavin, with the waterproof arm in the rimless LANDEN tank and about to
+fill it: "we already have the slow speed mode as protection. but do we need
+anything more for protection so the arm does not break the glass of the
+aquarium? give some suggestions."
+
+*What the slow mode is and is not* (`makermodslab/can_speed_limit.py`): it caps
+how fast each arm joint's **target** moves (≤30 deg/s, 15 on the monitored
+arm) and seeds targets from a fresh reading before torque. It does not cap
+force (MIT stiffness pushes up to the RS00's 14 N m peak against a blocked
+joint; J1 at kp 60 gets there after ~13° of error), does not limit where the
+arm goes (only the full mechanical soft limits, J1's still in the old frame),
+does not stop on contact (the 10° lag trip lives only in bench scripts), and
+does not rate-limit the gripper. Slow lowers impact energy, not the final push.
+
+*Hazards found while answering* (the readiness thread's read-only checks):
+- No follower start gate. Lab teleop connects the Star with `calibrate=False`,
+  so even the leader-near-zero check never runs. With the arm stretched in the
+  tank (pan +182) and the Star folded, the normal-mode start target puts the
+  gripper ~145 mm **through the near glass**; the 1:1 posture mode wraps J1
+  +182 → −178, clamps to −32.4 and swings the extended arm ~214°.
+- The arm is mounted ~180° from the 2026-10-18 aquarium neutral.
+- The bar clamp squeezes the rimless tank's polished top edge; the base tower's
+  reaction loads and any tug on the tether lever on it. Uneven support under
+  ~135–170 kg filled is the classic way rimless tanks fail.
+
+*Proposed protection list (Claude, ranked; only the tank measurement below is
+agreed so far, the rest awaits Gavin's pick):* must-have before water: a
+follower-vs-first-target start gate (≤~10° per joint, refuse on a clip or an
+out-of-limit start), a J1 wrap guard plus a J1 mapping that fits this mount;
+a force cap (leash target-minus-measured to a few degrees, hold and end on
+persistent error; keep gravity feedforward off in water, the dry fit
+over-lifts under buoyancy); tank joint limits; the clamp off the glass (a
+weighted freestanding base); full flat support and a levelling mat; the power
+switch within reach of the leader hand; the tether strain-relieved to the table.
+Should-have: the all-link keep-out check against the measured walls, a leader
+jump filter, a gripper rate limit, soft bumpers, the contact-signal stop after
+the wet fit (A1a). Nice-to-have: a live distance-to-wall readout, the RobStride
+firmware torque limit as a backstop (unverified in MIT mode), sacrificial liner
+sheets. Geometry: the arm's furthest collision point reaches ~0.61 m, so the far
+end wall (~0.69 m) is out of reach; the long walls are the real hazard (J1 only
+about ±16° either side of straight at full stretch with a 50 mm margin).
+
+*The tank measurement (agreed, being built).* Gavin's design, in his words:
+- "i manually move the torque off of the arm and you with the urdf figure out
+  the size of the aquairum (its rectangular), and the position of the base of
+  the arm relative to the aquarium. cuz everytime i take the arm in and out of
+  the aquarium, the position may shift a bit. so i want a way to do it quickly
+  (like i might do this once a day)"
+- "there are a lot of cabling sticking out of the side of the arms, and not
+  represented in the urdf. so ill mostly use the grippers tip to trace the
+  aquarium. but you might want to track the rest of the arm as well."
+- "lets also measure where the back wall is from the arm as j3 can easily hit
+  it." (his back wall = the near face, +x, behind J1)
+- "ya, there is the base tower as well. anyways, build this into the gui, and
+  record down the intentions of the feature as well, especially the stuff
+  coming from me"
+
+How it follows from that:
+- **Torque off, read-only**, opened exactly like zero calibration (no
+  energizing handshake, explicit disable); it holds the bus as a calibration
+  does, so every existing mutex refuses while it runs.
+- **The gripper tip is the probe** (closed gripper), because cables stick out of
+  the links and are not in the URDF. Touches are recorded when the arm is held
+  still for ~1 s, with a beep, so no free hand is needed.
+- **Daily walls:** 2 touches on each long wall (≥150 mm apart, so the base's yaw
+  is well conditioned), 2 on the near/back wall (the elbow's hazard), 1 on the
+  floor, 1 check touch. The fit returns the base's position and yaw in the tank
+  and the inner width, refuses to save on a bad fit (residual > 3 mm, width off
+  the expected ~434 mm), and reports how far the base moved since last time.
+  The far wall is out of reach, so it is placed from the listed length and
+  marked estimated.
+- **Base tower, once:** front, top and sides touched with the tip; it is rigid
+  with the base, so it is stored in the base frame.
+- **"Track the rest of the arm":** after re-cabling, each link's cable side is
+  pressed against an already-measured wall; the gap between the link's URDF
+  surface and the wall is its cable padding. Unmeasured links get a 40 mm
+  default. Live per-link clearance is shown during the measurement.
+- **Output** is a `tank.json`-shaped file under `MAKERMODSLAB_HOME`, so the
+  offline aquarium tool above can load it, and it replaces that model's
+  estimated placement (which put yaw_link ~9 mm from an assumed near wall).
+- **Measurement only.** Nothing in teleop reads it yet; the keep-out check and
+  the start gate are the next steps and will.
+
+Status 2026-11-07: implemented on branch `feat/viscous-tank-measure` (worktree
+`../makermodslab-viscous-tank`, kept apart from the readiness work in the main
+checkout); not merged, no hardware run. Codex wrote it from Claude's brief;
+Claude reviewed it and changed one thing: the Viscous family's refusal to open
+its follower for calibration (the re-zero guard) stays untouched, and the
+measurement opens the bus through its own torque-off opener instead.
+[tank-measure.md](tank-measure.md) has the operator sequence, the mesh-derived
+closed-gripper probe, the FK cross-check (0.0 mm against the offline aquarium
+script), the fit gates, the tower/cable extras, API and storage, the
+never-energize contract and the follow-ups. It measures and displays only;
+teleop still has no tank keep-out or start gate.
 
 ## Working rules for this project
 

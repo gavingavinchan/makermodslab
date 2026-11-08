@@ -72,6 +72,8 @@ outputs/
 # ledger and review reports, which are the team's shared record of what we have
 # and have not taken from leLab.
 docs/*
+# Aquarium measurement method, operator flow and offline validation evidence.
+!docs/tank-measure.md
 !docs/upstream/
 # ... the DRTC remote-inference design record (makermodslab/drtc)
 !docs/drtc/

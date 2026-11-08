@@ -20,7 +20,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import RobotControls from "./RobotControls";
 
 const mocks = vi.hoisted(() => ({
-  start: vi.fn(), toast: vi.fn(), armType: "viscous", discovery: true as boolean | undefined,
+  tankMeasure: false, start: vi.fn(), toast: vi.fn(), armType: "viscous", discovery: true as boolean | undefined,
 }));
 vi.mock("@/contexts/ApiContext", () => ({ useApi: () => ({ baseUrl: "http://test", fetchWithHeaders: vi.fn() }) }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
@@ -29,11 +29,13 @@ vi.mock("@/hooks/useRobots", () => ({ useRobots: () => ({ selectedRecord: {
   follower_config: "viscous_01", leader_config: "star_viscous", leader_ready: true,
 } }) }));
 vi.mock("@/hooks/useArms", () => ({ useArms: () => ({ byId: () => ({ capabilities: {
+  supports_tank_measurement: mocks.tankMeasure,
   supports_teleop_speed_limit: true, teleop_usb_discovery: mocks.discovery,
 } }) }) }));
 vi.mock("@/hooks/useHostingStatus", () => ({ useHostingStatus: () => ({ status: null, refresh: vi.fn() }) }));
 vi.mock("@/hooks/useStationStatus", () => ({ useStationStatus: () => ({ status: null }) }));
 vi.mock("@/lib/sessionApi", () => ({ startSession: mocks.start, formatSessionHeld: () => null }));
+vi.mock("./TankMeasureDialog", () => ({ default: ({ open }: { open: boolean }) => open ? <div data-testid="tank-measure-dialog" /> : null }));
 vi.mock("@/components/dialogs/TeleopDialog", () => ({ default: ({ open }: { open: boolean }) => open ? <div data-testid="live-teleop" /> : null }));
 vi.mock("@/components/dialogs/HostingDialog", () => ({ default: () => null }));
 vi.mock("@/components/dialogs/StationRobotDialog", () => ({ default: () => null }));
@@ -42,7 +44,7 @@ vi.mock("@/components/dialogs/RemoteExtraInstallDialog", () => ({ default: () =>
 
 beforeEach(() => {
   mocks.start.mockReset(); mocks.toast.mockReset();
-  mocks.armType = "viscous"; mocks.discovery = true;
+  mocks.armType = "viscous"; mocks.discovery = true; mocks.tankMeasure = false;
 });
 afterEach(cleanup);
 
@@ -92,4 +94,17 @@ it("physical faults show the plain sentence and secondary details without overri
   expect(await screen.findByRole("alert")).toHaveTextContent("Unplug the extra arm connection.");
   expect(screen.queryByRole("button", { name: "Continue anyway" })).toBeNull();
   expect(screen.getByText("Details").closest("details")).not.toHaveAttribute("open");
+});
+
+
+it.each([true, false])("offers Measure tank only when manifest capability=%s", (supported) => {
+  mocks.tankMeasure = supported;
+  mount();
+  const button = screen.queryByRole("button", { name: "Measure tank" });
+  if (supported) {
+    expect(button).toBeEnabled();
+    fireEvent.click(button!);
+    expect(screen.getByTestId("tank-measure-dialog")).toBeInTheDocument();
+  } else expect(button).toBeNull();
+  expect(mocks.start).not.toHaveBeenCalled();
 });

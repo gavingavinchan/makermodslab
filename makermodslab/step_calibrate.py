@@ -564,7 +564,7 @@ def _other_feature_busy() -> dict[str, Any] | None:
             "message": "Inference is currently active. Stop it first.",
             "code": ErrorCode.ROBOT_BUSY_INFERENCE,
         }
-    if _calibrate.calibration_manager.status.calibration_active:
+    if _calibrate.calibration_is_active():
         return {
             "success": False,
             "message": "Calibration is currently active. Stop it first.",

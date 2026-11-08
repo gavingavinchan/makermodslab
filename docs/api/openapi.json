@@ -156,6 +156,11 @@
             "title": "Supports Remote Inference",
             "type": "boolean"
           },
+          "supports_tank_measurement": {
+            "default": false,
+            "title": "Supports Tank Measurement",
+            "type": "boolean"
+          },
           "supports_teleop_speed_limit": {
             "default": false,
             "title": "Supports Teleop Speed Limit",
@@ -7345,6 +7350,545 @@
         "title": "SupplyVoltageResponse",
         "type": "object"
       },
+      "TankCapture": {
+        "properties": {
+          "label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label"
+        ],
+        "title": "TankCapture",
+        "type": "object"
+      },
+      "TankChange": {
+        "properties": {
+          "rotation_deg": {
+            "title": "Rotation Deg",
+            "type": "number"
+          },
+          "toward": {
+            "title": "Toward",
+            "type": "string"
+          },
+          "translation_mm": {
+            "title": "Translation Mm",
+            "type": "number"
+          }
+        },
+        "required": [
+          "translation_mm",
+          "toward",
+          "rotation_deg"
+        ],
+        "title": "TankChange",
+        "type": "object"
+      },
+      "TankClearances": {
+        "properties": {
+          "floor_informational": {
+            "title": "Floor Informational",
+            "type": "boolean"
+          },
+          "links": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TankLinkClearance"
+            },
+            "title": "Links",
+            "type": "object"
+          },
+          "margins_mm": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Margins Mm",
+            "type": "object"
+          },
+          "probe_mm": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Probe Mm",
+            "type": "object"
+          },
+          "tower_method": {
+            "title": "Tower Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "links",
+          "probe_mm",
+          "margins_mm",
+          "floor_informational",
+          "tower_method"
+        ],
+        "title": "TankClearances",
+        "type": "object"
+      },
+      "TankFit": {
+        "properties": {
+          "change": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TankChange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failures": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "far_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Far Status"
+          },
+          "j1_distances_mm": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "J1 Distances Mm"
+          },
+          "max_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Mm"
+          },
+          "offsets_mm": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offsets Mm"
+          },
+          "residuals": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TankResidual"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residuals"
+          },
+          "rms_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rms Mm"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "width_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width Mm"
+          },
+          "yaw_deg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yaw Deg"
+          }
+        },
+        "required": [
+          "valid",
+          "failures"
+        ],
+        "title": "TankFit",
+        "type": "object"
+      },
+      "TankLatest": {
+        "properties": {
+          "measurement": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement"
+          },
+          "robot_name": {
+            "title": "Robot Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "robot_name",
+          "measurement"
+        ],
+        "title": "TankLatest",
+        "type": "object"
+      },
+      "TankLinkClearance": {
+        "properties": {
+          "distances_mm": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Distances Mm",
+            "type": "object"
+          },
+          "padding_mm": {
+            "title": "Padding Mm",
+            "type": "number"
+          },
+          "padding_status": {
+            "title": "Padding Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "padding_mm",
+          "padding_status",
+          "distances_mm"
+        ],
+        "title": "TankLinkClearance",
+        "type": "object"
+      },
+      "TankPadding": {
+        "properties": {
+          "padding_mm": {
+            "title": "Padding Mm",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "padding_mm",
+          "status"
+        ],
+        "title": "TankPadding",
+        "type": "object"
+      },
+      "TankResidual": {
+        "properties": {
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "residual_mm": {
+            "title": "Residual Mm",
+            "type": "number"
+          }
+        },
+        "required": [
+          "index",
+          "label",
+          "residual_mm"
+        ],
+        "title": "TankResidual",
+        "type": "object"
+      },
+      "TankStart": {
+        "properties": {
+          "robot_name": {
+            "minLength": 1,
+            "title": "Robot Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "robot_name"
+        ],
+        "title": "TankStart",
+        "type": "object"
+      },
+      "TankStatus": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "clearances": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TankClearances"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "fit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TankFit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gripper_opening_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gripper Opening Mm"
+          },
+          "idle_deadline": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idle Deadline"
+          },
+          "link_origins_mm": {
+            "additionalProperties": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Link Origins Mm",
+            "type": "object"
+          },
+          "paddings": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TankPadding"
+            },
+            "title": "Paddings",
+            "type": "object"
+          },
+          "positions": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Positions"
+          },
+          "probe_mm": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Probe Mm"
+          },
+          "robot_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Robot Name"
+          },
+          "stale": {
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "still": {
+            "title": "Still",
+            "type": "boolean"
+          },
+          "touches": {
+            "items": {
+              "$ref": "#/components/schemas/TankTouch"
+            },
+            "title": "Touches",
+            "type": "array"
+          },
+          "tower_box": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TankTower"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "active",
+          "robot_name",
+          "error",
+          "positions",
+          "stale",
+          "still",
+          "probe_mm",
+          "gripper_opening_mm",
+          "link_origins_mm",
+          "touches",
+          "fit",
+          "clearances",
+          "tower_box",
+          "paddings",
+          "idle_deadline"
+        ],
+        "title": "TankStatus",
+        "type": "object"
+      },
+      "TankTouch": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "point_mm": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Point Mm",
+            "type": "array"
+          },
+          "positions": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Positions",
+            "type": "object"
+          },
+          "timestamp": {
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "point_mm",
+          "positions",
+          "timestamp"
+        ],
+        "title": "TankTouch",
+        "type": "object"
+      },
+      "TankTower": {
+        "properties": {
+          "max_mm": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Max Mm",
+            "type": "array"
+          },
+          "min_mm": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Min Mm",
+            "type": "array"
+          },
+          "rear_status": {
+            "title": "Rear Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "min_mm",
+          "max_mm",
+          "rear_status"
+        ],
+        "title": "TankTower",
+        "type": "object"
+      },
       "TeleoperateRequest": {
         "properties": {
           "allow_unit_override": {
@@ -14435,6 +14979,235 @@
           }
         },
         "summary": "Get Wandb Credentials",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/capture": {
+      "post": {
+        "operationId": "capture_tank_touch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankCapture"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Capture Tank Touch",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/latest": {
+      "get": {
+        "operationId": "get_latest_tank_measurement",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "robot_name",
+            "required": true,
+            "schema": {
+              "title": "Robot Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankLatest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Latest Tank Measurement",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/save": {
+      "post": {
+        "operationId": "save_tank_measurement",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankLatest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Save Tank Measurement",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/start": {
+      "post": {
+        "operationId": "start_tank_measurement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankStart"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Tank Measurement",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/status": {
+      "get": {
+        "operationId": "get_tank_measurement_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Tank Measurement Status",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/stop": {
+      "post": {
+        "operationId": "stop_tank_measurement",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Stop Tank Measurement",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/tank-measure/touches/{index}": {
+      "delete": {
+        "operationId": "delete_tank_touch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "index",
+            "required": true,
+            "schema": {
+              "title": "Index",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Tank Touch",
         "tags": [
           "system"
         ]

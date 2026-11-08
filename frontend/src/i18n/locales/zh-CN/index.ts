@@ -1,3 +1,4 @@
+import tank from "./tank";
 import common from "./common";
 import launchpad from "./launchpad";
 import onboarding from "./onboarding";
@@ -19,6 +20,7 @@ import shared from "./shared";
 /** Simplified Chinese catalog. Key tree must match `locales/en` exactly —
  * enforced by `src/i18n/catalogs.test.ts`. */
 export default {
+  tank,
   common,
   launchpad,
   onboarding,
