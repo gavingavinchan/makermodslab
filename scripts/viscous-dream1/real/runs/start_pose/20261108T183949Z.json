@@ -1,0 +1,45 @@
+{
+ "what": "Dream-1 start pose, recorded from Lab teleop's joint broadcast",
+ "recorded_utc": "20261108T183949Z",
+ "motor_deg": {
+  "shoulder_pan": 176.59,
+  "shoulder_lift": -122.9,
+  "elbow_flex": 99.34,
+  "wrist_flex": 8.56,
+  "wrist_yaw": -9.0,
+  "wrist_roll": -3.99,
+  "gripper": -0.45
+ },
+ "ik_rest_rad": [
+  -0.059516,
+  -2.14501,
+  1.73381,
+  0.1494,
+  0.15708,
+  -0.069639
+ ],
+ "box_positions_mm": {
+  "tcp": [
+   -461.5,
+   -0.3,
+   143.3
+  ],
+  "wrist": [
+   -339.6,
+   -14.1,
+   197.7
+  ],
+  "wrist_pitch": [
+   -236.5,
+   -14.1,
+   244.1
+  ],
+  "elbow": [
+   -86.8,
+   -5.2,
+   245.3
+  ]
+ },
+ "box_violations": [],
+ "make_tank_arm": ".venv/bin/python scripts/viscous-dream1/real/make_tank_arm.py --rest-motor-deg '{\"shoulder_pan\": 176.59, \"shoulder_lift\": -122.9, \"elbow_flex\": 99.34, \"wrist_flex\": 8.56, \"wrist_yaw\": -9.0, \"wrist_roll\": -3.99}'"
+}

@@ -67,8 +67,8 @@ it, and prints the 12-hex **inputs id**. Never run `python -m dream.check` on th
 1. **Tank model approved (Gavin).** Review `tank_model/` (frame, limits, rest). Then in
    `viscous_waterproof_tank.provenance.json` set `approval.status` to `approved`, `by`, `at`, and
    `urdf_sha256_normalized` to the hash the file names. Regenerate first if the rest pose or limits
-   change (`--rest-motor-deg` with the hand-placed tank start pose: the current rest is Dream's sim pose,
-   a placeholder).
+   change (`--rest-motor-deg`). The rest is Gavin's teleoped tank start pose (2026-11-08,
+   `runs/start_pose/20261108T183949Z.json`).
 2. **Tool point on the approved model (Gavin), `dreamcli tcp`.** The `tcp_calibration` digest covers
    the URDF's bytes and base/flange/tcp/approach/jaw, so it must be set **on the tank model**, not on
    the original URDF: `make_tank_arm.py --export ~/viscous-dream-real/tank_model`, then in `dreamcli tcp`
@@ -85,10 +85,10 @@ it, and prints the 12-hex **inputs id**. Never run `python -m dream.check` on th
    `~/viscous-dream-real/.venv/bin/python -m dream.input_check <id>`. The live preflight builds the
    observation with the real cameras before any CAN traffic and refuses unless that id is recorded;
    Dream's own reminder is printed, never suppressed. The runner never records it.
-5. **Joint signs.** J5 (`wrist_yaw`, sign -1) is photo-inferred and J6 (`wrist_roll`) assumed. Hand
-   test with torque off: turn each joint by hand in the motor's + direction and confirm the model's
-   pose turns the same way. Until `motor_to_urdf.json` says so, `--live` needs
-   `--ack-unverified-sign wrist_yaw --ack-unverified-sign wrist_roll`.
+5. **Joint signs.** J5 (`wrist_yaw`, sign -1) and J6 (`wrist_roll`, sign +1) were hand-tested
+   2026-11-08 (`configs/viscous/viscous_waterproof_01/evidence/j5-j6-sign-test-20261108.json`). If a
+   status in `motor_to_urdf.json` ever says pending/unverified/assumed again, `--live` needs
+   `--ack-unverified-sign <joint>` for it.
 6. **Tank guard merged.** `makermodslab/tank_guard.py` (branch `feat/viscous-dream1-tank-box`) gates
    every substep at mesh-vertex level; `--live` refuses without it. Its hardware items too: clamp or
    weight the base (it slides about 30 mm), trace the near wall.
@@ -101,8 +101,8 @@ it, and prints the 12-hex **inputs id**. Never run `python -m dream.check` on th
 Live, with Gavin at the power switch, backgrounded and relayed phase by phase:
 
 ```bash
-.venv/bin/python scripts/viscous-dream1/real/dream_real.py --live --arm-file ~/viscous-dream-real/station/arms/viscous-arm.json \
-  --overhead <camera> --plan-id <id> --ack-unverified-sign wrist_yaw --ack-unverified-sign wrist_roll \
+.venv/bin/python scripts/viscous-dream1/real/dream_real.py --live --arm-file ~/viscous-dream-real/station/arms/viscous-waterproof-tank.json \
+  --overhead <camera> --plan-id <id> \
   --max-calls 10 --pid-file /tmp/dream_real.pid
 kill -TERM "$(cat /tmp/dream_real.pid)"   # stop; a second signal aborts the return and releases
 ```
@@ -151,6 +151,7 @@ second signal, so a person can support it before torque goes off.
 - At the tank trace pose (tcp 526 mm out, nearly straight), a 2 cm hand move made the elbow swing
   about 40 deg per chunk in the dry run: near full stretch the arm is kinematically sensitive. Start
   with the hand closer in (the box keeps the tcp 120-600 mm out).
-- The rest pose in the tank model is Dream's sim pose (placeholder) and steers the IK; set it to the
-  hand-placed start pose.
+- The rest pose in the tank model (it steers the IK) is Gavin's teleoped start pose from 2026-11-08:
+  motor pan 176.59, lift -122.9, elbow 99.34, flex 8.56, yaw -9.0, roll -3.99; tcp 462 mm out, 143 mm
+  up, inside the box. Re-record with `record_start_pose.py` and regenerate if the scene changes.
 - Gripper mapping (closed -2.9, open -115.1) follows the Maker convention; confirm on the arm.

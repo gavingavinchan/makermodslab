@@ -176,6 +176,24 @@ restore paths in the DAgger runner.
   physical way as the leader on J5/J6, which teleop use shows and this test did not
   re-measure. Evidence with a 5 Hz trace:
   `configs/viscous/viscous_waterproof_01/evidence/j5-j6-sign-test-20261108.json`.
+- *Status (2026-11-08, later): tank start pose recorded and applied.* Why: the tank
+  model's `rest` was Dream's sim pose, a placeholder, and the rest steers Dream's
+  client IK, so it had to be a pose the real arm actually starts from in the tank.
+  Gavin teleoped the follower (session started from chat at his request, lease
+  heartbeated, stopped through the normal return-to-rest + torque-off) and said
+  "record now"; the pose was taken from the follower broadcast with
+  `record_start_pose.py`'s own snapshot/record (median of 0.5 s, spread < 0.3 deg):
+  motor pan 176.59, lift -122.9, elbow 99.34, flex 8.56, yaw -9.0, roll -3.99, tcp
+  462 mm out, centred, 143 mm up, no box violation
+  (`scripts/viscous-dream1/real/runs/start_pose/20261108T183949Z.json`). Gavin: "i like
+  this pose". `make_tank_arm.py --rest-motor-deg ...` rewrote only `rest` (arm file,
+  provenance); the URDF bytes and its normalized hash 8975766e...cef7f are unchanged,
+  so the station arm file `viscous-waterproof-tank.json` from `dreamcli tcp` stays
+  valid (untouched). The dry run with that arm file and `--overhead head` puts the new
+  rest in its run-local arm copy. Remaining live blockers: tank-model approval, the
+  `wrist_l` slot, the inputs check, the tank guard merge. Noticed: the dry run's plan
+  id (01054fd58f) was the same before and after the rest change, so the plan id does
+  not cover the rest.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
