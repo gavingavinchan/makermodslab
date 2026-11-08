@@ -2090,8 +2090,12 @@ edge. Results in the J1 base frame:
   yet confirmed from the box label.
 - **J1** sits about 7 mm toward +y from the tank's centre line.
 - **Floor:** the lowest finger point reached -4 mm (5th percentile; minimum
-  -6), against the model's 0. So the floor is within a few millimetres of
-  where it was assumed.
+  -6), against the model's 0. Gavin confirmed the arm is mounted slightly
+  raised above the glass ("the true floor is indeed below the bottom of the
+  base of the arm as i mounted the arm slightly up (issues with the
+  mounting"). The fingers cannot pass through the glass, so the floor is at
+  -6 mm or lower. In tank.json that is `base_spacer_height_mm` of about 6
+  (floor_z_mm about -6), and it should be checked with a ruler.
 - **Back/near wall:** not traced; it remains the 40 mm estimate.
 
 Safety finding: the base slides about 30 mm under a hand push. A powered arm
