@@ -2096,6 +2096,16 @@ edge. Results in the J1 base frame:
   mounting"). The fingers cannot pass through the glass, so the floor is at
   -6 mm or lower. In tank.json that is `base_spacer_height_mm` of about 6
   (floor_z_mm about -6), and it should be checked with a ruler.
+  Later: "lets go with this for now, the true gap is more like 15mm, but
+  whatever, the floor of the aquarium is the only part of the aquarium the arm
+  is allowed to touch anyways". So: floor about 15 mm below the base bottom
+  (the trace's -6 mm is an upper bound). The floor is the one allowed contact
+  surface; the walls and rim are keep-out.
+
+Next (Gavin, same evening): "can we now build a bounding box to run dream1?",
+in a new thread. Build a workspace box from these numbers that gates every
+command sent to the real arm, so Dream-1 can run on the real Viscous in the
+tank. Until now B3 has run in MuJoCo only.
 - **Back/near wall:** not traced; it remains the 40 mm estimate.
 
 Safety finding: the base slides about 30 mm under a hand push. A powered arm
