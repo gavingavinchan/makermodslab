@@ -440,6 +440,15 @@ restore paths in the DAgger runner.
   limit (0.1 mm slack) even at 41 cm reach, so the new stuck rule ended the run after 3
   calls; the return reached the rest. The back-wall limit (Gavin's 80 mm + 70 mm forearm
   clearance) binds whenever the IK folds the elbow up.
+- *Status (2026-11-08, later): two cameras.* A rehearsal hold showed the wrist camera
+  does see the golf ball from the start pose (upper left, near the far glass, likely
+  beyond 42 cm). Gavin then mounted an overhead camera: the record's cameras are now
+  `left` = the wrist camera (0x1130000c45636b, rotation 180, formerly `head`) and `head`
+  = the new overhead (0x1120000c45636b, rotation 0, pending Gavin's upright check);
+  backup `backups/viscous_waterproof_01.before-two-cameras-20261108.json`. Runs use
+  `--overhead head --wrist-l left --wrist-r black`. The inputs id stays 9430f986ab69
+  (Dream's id covers slot names and frame sizes, which did not change). Both ids are
+  USB-port based: swapping the cameras' ports swaps them.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
