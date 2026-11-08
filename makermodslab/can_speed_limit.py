@@ -178,6 +178,34 @@ class RateLimitedRobstrideBus:
                     )
                     self._last_log = now
 
+    def rebase(self, offsets, *, max_offset_deg=10.0):
+        """Re-anchor motors' hold targets at their FRESH measured positions plus a bounded offset.
+
+        Not a motion: the motors are already there (the offset is the standing error a joint holds
+        against its load, so the arm stays put), so it is written at once rather than slewed from the
+        last sent target. That is the point: a stop after the arm was pushed away must not be pulled
+        back by the old target. The pose comes from the motors, never from the caller, and every
+        reading is validated before the first write, so this cannot authorize a jump. Returns the
+        measured positions in robot coordinates (with the full-turn correction).
+        """
+        with self._lock:
+            names = {self._name(motor): float(offset) for motor, offset in offsets.items()}
+            for name, offset in names.items():
+                if not math.isfinite(offset) or abs(offset) > max_offset_deg:
+                    raise ValueError(
+                        f"Rebase offset for {name} must be finite and within {max_offset_deg} deg"
+                    )
+                if name not in self._last:
+                    raise RuntimeError("Slow teleop was not initialized from a fresh measured pose")
+            present = {name: self._fresh_position(name) for name in names}
+            now = self._clock()
+            for name, value in present.items():
+                target = value + names[name]
+                self._base.write("Goal_Position", name, target)
+                self._last[name], self._last_time[name] = target, now
+            turns = getattr(self._robot, "_turn_offset", {})
+            return {name: value + turns.get(name, 0.0) for name, value in present.items()}
+
     def sync_write(self, data_name, values, *args, **kwargs):
         if data_name == "Goal_Position":
             with self._lock:
@@ -199,3 +227,13 @@ def install(robot, speed_deg_s: float) -> None:
 
     for arm, _label in maker_follower_arms(robot):
         arm.bus = RateLimitedRobstrideBus(arm, speed_deg_s)
+
+
+def rebase(robot, offsets: dict[str, float], *, max_offset_deg: float = 10.0) -> dict[str, float]:
+    """`RateLimitedRobstrideBus.rebase` on a single follower that `install` wrapped."""
+    from .maker_rest_pose import maker_follower_arms
+
+    arms = maker_follower_arms(robot)
+    if len(arms) != 1 or not isinstance(arms[0][0].bus, RateLimitedRobstrideBus):
+        raise RuntimeError("rebase needs a single follower with the slew limit installed")
+    return arms[0][0].bus.rebase(offsets, max_offset_deg=max_offset_deg)

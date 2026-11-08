@@ -31,9 +31,10 @@ Three modes (README.md has the preconditions):
              stop signal or --hold-s, then the stop path. Alone (or with --dry-run): the same on FakeArm.
 
 Start: the arm lies flat on the tank floor (its rest). After engage it lifts the elbow and goes to the
-Dream start pose (core.approach_waypoints) before the first Dream call. Stop, on every exit: gripper
-torque off at once (it may drop what it holds), arm joints back along the route to the measured rest,
-then all torque off. stop_button.py is the big red button (SIGTERM to the --pid-file's pid).
+Dream start pose (core.approach_waypoints) before the first Dream call. Stop, on every exit: the arm
+joints' goals re-anchored at their measured pose (no spring-back), gripper torque off at once (it may
+drop what it holds), arm joints back along the route to the measured rest from where they are, then all
+torque off. stop_button.py is the big red button (SIGTERM to the --pid-file's pid).
 
 Never run `python -m dream.check` on this arm: it moves it (hand circles, 10 deg joint moves).
 Run with the repo venv; Dream's client comes from --dream-venv (default ~/viscous-dream-real/.venv):
@@ -82,7 +83,25 @@ START_LIMIT_TOLERANCE_DEG = 5.0  # the arm rests a few degrees outside soft limi
 # commands (Dream substeps, the approach, every return leg) and the bus backstop under it are capped here.
 HARD_ARM_SPEED_DEG_S = 15.0
 DEFAULT_HOLD_S = 120.0  # --rehearse: how long to hold at the Dream start pose before stopping by itself
-SCENARIOS = ("nominal", "jump", "workspace", "lag", "torque", "sustained", "temperature", "stale", "signal")
+SCENARIOS = (
+    "nominal",
+    "jump",
+    "workspace",
+    "lag",
+    "torque",
+    "sustained",
+    "temperature",
+    "stale",
+    "signal",
+    "overspeed",
+    "push",
+    "far",
+)
+# The shoulder's standing error holding the Dream start pose (powered rehearsal, 2026-11-08).
+START_POSE_SAG = {"shoulder_lift": 7.45}
+# The stop path re-anchors each arm joint's goal at its measured pose plus at most this much standing
+# error (core.HoldError); can_speed_limit.rebase refuses more.
+REANCHOR_MAX_OFFSET_DEG = 10.0
 # The pose the tank-measure trace last read (2026-11-08T04:44Z, torque off): the dry run's fake start.
 TRACE_POSE = {
     "shoulder_pan": 189.03,
@@ -281,36 +300,79 @@ def synthetic_frame(name: str, t: float) -> np.ndarray:
 
 
 class FakeArm:
-    """Tracks targets with a first-order lag; scenarios inject faults. No hardware."""
+    """Tracks targets with a first-order lag; scenarios inject faults. No hardware.
 
-    def __init__(self, start, cameras, clock, scenario="nominal"):
+    `overspeed`: shoulder_lift loses its hold (the 2026 dry-shoulder failure) and falls at 45 deg/s, in
+    the loop and on through the return. `push`: a visitor pushes shoulder_pan away at 18 deg/s (under
+    the speed trip) until the lag trip (or the tank guard); the stop's re-anchor is where they let go.
+    `lag`: elbow_flex droops at 12 deg/s (under the speed trip). `far` (with sag=START_POSE_SAG): the arm
+    settles short of its goals as the real one does, and the run stops far from the start pose. A return leg that starts with a joint's
+    goal more than 5 deg (half the lag trip) from where it is records a SPRING-BACK (a real arm would
+    snap toward it).
+    """
+
+    FALL_DEG_PER_TICK = 2.25  # 45 deg/s at 20 Hz
+    PUSH_DEG_PER_TICK = 0.9  # 18 deg/s
+
+    # A real MIT-held joint settles short of its goal by its standing error: `sag` (deg, per arm joint)
+    # is that error, e.g. {"shoulder_lift": 7.45} as measured at the start pose on 2026-11-08.
+    def __init__(self, start, cameras, clock, scenario="nominal", sag=None):
         self.pos = dict(start)
         self.target = dict(start)
+        self.sag = dict.fromkeys(core.MOTORS, 0.0) | dict(sag or {})
+        self.home = dict(start)  # lying on the tank floor, supported: no sag there
         self.cameras, self.clock, self.scenario = list(cameras), clock, scenario
         self.ticks = 0
         self.events = []
         self.energized = False
         self.gripper_limp = False
+        self.limp = set()  # arm joints that lost their hold
+        self.pushing = scenario == "push"
+        self.stopping = False  # from the re-anchor on, injected faults stop (a lost hold does not)
         self.returns = []  # (pose, speed) per return leg
+        self.leg_starts = []  # the measured pose each return leg started from
 
     def connect(self):
         self.events.append("connect (fake: no port opened)")
+
+    def _pushed(self):
+        return self.pushing and self.ticks > 70
+
+    def _drooping(self):
+        return self.scenario == "lag" and self.ticks > 70 and not self.stopping
+
+    def _settle(self, m, goal):
+        """Where a joint held at `goal` comes to rest: short by its sag, phased in over the first 20 deg
+        away from the floor rest (lying there it is supported)."""
+        return goal - self.sag[m] * min(1.0, abs(goal - self.home[m]) / 20.0)
 
     def read(self) -> Reading:
         self.ticks += 1
         if self.scenario == "stale" and self.ticks > 70:
             raise ConnectionError("No fresh feedback from motor 'elbow_flex' within 50 ms (fake)")
         if self.energized:
+            if self.scenario == "overspeed" and self.ticks > 70:
+                self.limp.add("shoulder_lift")
             for m in core.ARM if self.gripper_limp else core.MOTORS:
-                self.pos[m] += 0.6 * (self.target[m] - self.pos[m])
-            if self.scenario == "lag" and self.ticks > 70:
-                self.pos["elbow_flex"] -= 0.8 * (self.ticks - 70)  # the joint sags away from its target
+                if (
+                    m in self.limp
+                    or (m == "shoulder_pan" and self._pushed())
+                    or (m == "elbow_flex" and self._drooping())
+                ):
+                    continue
+                self.pos[m] += 0.6 * (self._settle(m, self.target[m]) - self.pos[m])
+            if "shoulder_lift" in self.limp:
+                self.pos["shoulder_lift"] -= self.FALL_DEG_PER_TICK
+            if self._pushed():
+                self.pos["shoulder_pan"] -= self.PUSH_DEG_PER_TICK  # the visitor overpowers the joint
+            if self._drooping():
+                self.pos["elbow_flex"] -= 0.6  # cannot follow (weak or blocked): droops at 12 deg/s
         torque = {m: 0.4 + 0.1 * math.sin(self.ticks / 7 + i) for i, m in enumerate(core.MOTORS)}
         temp = dict.fromkeys(core.MOTORS, 31.0 + 0.002 * self.ticks)
         if self.scenario == "torque" and self.ticks > 70:
-            torque["shoulder_lift"] = 6.2
+            torque["shoulder_lift"] = 12.8  # over the 12 Nm instant tier
         if self.scenario == "sustained" and self.ticks > 70:
-            torque["shoulder_lift"] = 4.1
+            torque["shoulder_lift"] = 5.5  # over the 5 Nm sustained tier, for 5 s
         if self.scenario == "temperature" and self.ticks > 50:
             temp["shoulder_lift"] = 31.0 + (self.ticks - 50)
         return Reading(
@@ -332,17 +394,56 @@ class FakeArm:
         )
         return None
 
-    def return_to_rest(self, pose, abort, speed):
+    def reanchor(self, offsets):
+        """can_speed_limit.rebase on the fake: the goal becomes the measured pose plus the offset, at once."""
+        if any(abs(offsets[m]) > REANCHOR_MAX_OFFSET_DEG for m in core.ARM):
+            raise ValueError("re-anchor offset too large")
+        self.pushing = False  # the visitor lets go: nothing is left to pull the arm back
+        self.stopping = True
+        moved = max(abs(self.target[m] - self.pos[m] - offsets[m]) for m in core.ARM)
+        for m in core.ARM:
+            self.target[m] = self.pos[m] + offsets[m]
+            if self.sag[m]:  # where the joint settles under that goal: still where it is
+                self.pos[m] = self._settle(m, self.target[m])
+        self.events.append(
+            f"re-anchor: arm goals at the measured pose (moved {moved:.1f} deg from the old goals)"
+        )
+        return {m: self.pos[m] for m in core.ARM}
+
+    def return_to_rest(self, pose, abort, speed, watch=None):
+        """A straight ramp from the MEASURED pose at `speed`, 20 Hz, each step's pose through `watch`
+        (the stop path's speed trip): a trip ends the leg where it is. Limp joints keep falling."""
         if "gripper" in pose:
             raise AssertionError("the return must leave the (limp) gripper alone")
-        travel = max(abs(self.pos[m] - pose[m]) for m in pose)
+        start = {m: self.pos[m] for m in pose}
+        self.leg_starts.append(dict(start))
+        if spring := [m for m in pose if abs(self._settle(m, self.target[m]) - self.pos[m]) > 5.0]:
+            self.events.append(f"SPRING-BACK: {', '.join(spring)} goal far from where the arm is")
+        travel = max(abs(start[m] - pose[m]) for m in pose)
         self.returns.append((dict(pose), speed))
-        for m, v in pose.items():
-            self.pos[m] = self.target[m] = v
+        steps = max(1, math.ceil(travel / (speed * core.ROW_DT_S)))
+        for i in range(1, steps + 1):
+            if hasattr(self.clock, "sleep"):
+                self.clock.sleep(core.ROW_DT_S)
+            for m, v in pose.items():
+                if m in self.limp:
+                    self.pos[m] -= self.FALL_DEG_PER_TICK
+                else:
+                    self.target[m] = start[m] + (v - start[m]) * i / steps
+                    self.pos[m] = start[m] + (self._settle(m, v) - start[m]) * i / steps
+            if watch is not None and (trips := watch(dict(self.pos))):
+                self.events.append(f"return leg: ended by {trips[0].name} after {i}/{steps} steps")
+                return False, f"{trips[0].name}: {trips[0].detail}"
         self.events.append(
             f"return leg: {travel:.1f} deg max travel at {speed:.0f} deg/s, gripper limp: {self.gripper_limp}"
         )
-        return True, "fake arm arrived"
+        # The Lab helper's verdict (maker_rest_pose): within 2 deg arrived, within 6 settled, else short.
+        motor, off = max(((m, abs(self.pos[m] - v)) for m, v in pose.items()), key=lambda kv: kv[1])
+        if off <= 2.0:
+            return True, ""
+        if off <= 6.0:
+            return True, "settled"
+        return False, f"{motor} still {off:.1f} deg away"
 
     def release(self):
         self.energized = False
@@ -470,27 +571,70 @@ class LabArm:
             problems.append(f"gripper disable failed: {error}")
         return "; ".join(problems) or None
 
-    def return_to_rest(self, pose, abort, speed):
+    def reanchor(self, offsets) -> dict:
+        """The six arm joints' goals to their fresh measured pose plus `offsets` (each joint's standing
+        error, core.HoldError), written at once: can_speed_limit.rebase reads the motors itself, refuses
+        an offset over REANCHOR_MAX_OFFSET_DEG, and rebases the bus backstop's last-sent target so the
+        return slews from here, never from the old goal. Returns the measured arm pose."""
+        from makermodslab import can_speed_limit
+
+        return can_speed_limit.rebase(
+            self.robot, {m: offsets[m] for m in core.ARM}, max_offset_deg=REANCHOR_MAX_OFFSET_DEG
+        )
+
+    def return_to_rest(self, pose, abort, speed, watch=None):
+        """maker_rest_pose.return_maker_to_pose on fresh CAN feedback. It plans each leg from its own
+        fresh reading (the measured pose, not the cached command). The adapter also reads the arm before
+        every setpoint and hands it to `watch` (the stop path's measured-speed trip): a trip raises, which
+        the helper (never-raises) turns into a leg that did not arrive, so the stop releases there. A
+        missed reply before a setpoint is skipped, not raised: ending the ramp on one lost frame would
+        release torque mid-air."""
         from makermodslab import remote_can
         from makermodslab.maker_rest_pose import MAKER_RETURN_CEILING_S, return_maker_to_pose
 
         robot = self.robot
         speed = min(speed, HARD_ARM_SPEED_DEG_S)  # never the helper's 30 deg/s default
+        tripped = []
 
         class Fresh:  # the rest-return helper on fresh CAN feedback (remote_can's pattern)
+            def _read(self):
+                if tripped:
+                    raise TripStopError(tripped)
+                obs = remote_can.get_observation(robot)
+                if watch is not None and (trips := watch({m: float(obs[f"{m}.pos"]) for m in core.ARM})):
+                    tripped.extend(trips)
+                    raise TripStopError(trips)
+                return obs
+
             def get_observation(self):
-                return remote_can.get_observation(robot)
+                for attempt in range(3):  # the helper's first read plans the leg: a miss there releases
+                    try:
+                        return self._read()
+                    except TripStopError:
+                        raise
+                    except Exception:  # noqa: BLE001
+                        if attempt == 2:
+                            raise
+                return None
 
             def send_action(self, action):
+                try:
+                    self._read()
+                except TripStopError:
+                    raise
+                except Exception:  # noqa: BLE001 - a missed reply: the next setpoint reads again
+                    pass
                 return robot.send_action(action)
 
         spans = [hi - lo for lo, hi in robot.config.joint_limits.values()]
+        # Doubled: every ramp step now reads seven motors as well, and a ramp cut by the ceiling ends
+        # the return (torque off) wherever it is. The second signal still ends it at once.
         return return_maker_to_pose(
             Fresh(),
             pose,
             abort_event=abort,
             speed_deg_s=speed,
-            ceiling_s=max(MAKER_RETURN_CEILING_S, max(spans) / speed + 3),
+            ceiling_s=max(MAKER_RETURN_CEILING_S, 2 * max(spans) / speed + 3),
         )
 
     def release(self):
@@ -778,6 +922,8 @@ class Episode:
         )
         self.say = say
         self.monitor = core.TripMonitor(settings.trips, clock)
+        self.hold_error = core.HoldError(limit_deg=min(settings.trips.lag_deg, REANCHOR_MAX_OFFSET_DEG))
+        self.measured = None  # the last fresh reading's positions
         if arm_rest is None:
             arm_file = (
                 json.loads(Path(dream.config["ik"]["arm"]).read_text()) if hasattr(dream, "config") else None
@@ -954,6 +1100,10 @@ class Episode:
                 trips = self.monitor.update(reading.pos, self.commanded, reading.torque, reading.temp)
                 if g := self.guard.monitor(reading.pos):
                     trips.append(core.Trip("tank_guard_measured", g))
+                if not any(t.name == "bad_reading" for t in trips):
+                    self.measured = dict(reading.pos)
+                if not trips:  # the tick that trips (a push, a drop) must not teach the stop its error
+                    self.hold_error.update(reading.pos, self.commanded, now)
                 self._write(
                     self.ticks,
                     {
@@ -1048,6 +1198,7 @@ class Episode:
             peak_torque_nm=self.monitor.peak_torque,
             peak_temp_c=self.monitor.peak_temp,
             peak_lag_deg=self.monitor.peak_lag,
+            peak_speed_deg_s=self.monitor.speed.peak,
             guard=dict(self.summary["guard"]),
         )
         return self.summary
@@ -1060,13 +1211,49 @@ class Episode:
             return list(reversed(self.trail))
         return [self.dream_start, *core.return_waypoints(self.start_pose, self.dream_start)]
 
+    def legs_from(self, here) -> list[dict]:
+        """return_legs() from the MEASURED pose `here`. An arm holding a leg end sits off it by its
+        standing sag (7.4 deg on the shoulder at the start pose), and a leg back up to it would stop
+        short of it (the return helper settles within 6 deg) and release there, so within the lag trip
+        of the first leg end counts as at it. The last leg (to the rest) always runs."""
+        legs = self.return_legs()
+        if len(legs) > 1 and max(abs(legs[0][m] - here[m]) for m in core.ARM) <= self.s.trips.lag_deg:
+            legs = legs[1:]
+        return legs
+
+    def reanchor(self, out) -> dict:
+        """Before any return motion: every arm joint's goal to its fresh measured pose plus its standing
+        error (HoldError), written at once and rebased in the bus backstop. Whatever tripped, a pushed or
+        blocked arm is then held where it is, never pulled back by the old goal's error. Returns the GOAL
+        the motors now hold (measured + offset): the guard judges targets (the measured pose, which sags
+        below its goal, is policed by monitor() with its tracking allowance), so the return's path checks
+        and leg choice start from it. On failure the old goal is still held: the command."""
+        offsets = self.hold_error.value()
+        self._phase("stop: re-anchor", "arm goals to the measured pose (+ standing error), no slew")
+        try:
+            measured = self.arm.reanchor(offsets)
+            goal = {m: float(measured[m]) + offsets[m] for m in core.ARM}
+            out["reanchor"] = {
+                "measured": {m: round(measured[m], 2) for m in core.ARM},
+                "offset_deg": {m: round(offsets[m], 2) for m in core.ARM},
+                "goal": {m: round(goal[m], 2) for m in core.ARM},
+            }
+            return goal
+        except Exception as error:  # noqa: BLE001 - the return and the release follow regardless
+            out["reanchor"] = f"{error.__class__.__name__}: {error}"
+            return {m: float(self.commanded[m]) for m in core.ARM}
+
     def stop(self, reason) -> dict:
-        """Every exit: (a) gripper torque off at once, (b) the six arm joints back to the measured rest
-        leg by leg, at the speed cap on fresh feedback, each leg's straight path checked by the guard
-        (not clear: HOLD, torque on, until the second signal), (c) all torque off. A second signal
-        aborts the return and releases."""
+        """Every exit: (a) re-anchor the six arm joints at their measured pose (no spring-back), (b)
+        gripper torque off at once, (c) the arm joints back to the measured rest leg by leg, from the
+        measured pose, at the speed cap on fresh feedback, each leg's straight path checked by the guard
+        and every reading through the measured-speed trip; a leg that stops short within the lag trip
+        counts as arrived, (d) all torque off, at the rest. NEVER a mid-air release: a path not clear, an
+        overspeed, no fresh reading or a leg ending beyond the lag trip HOLDS (re-anchored, torque on)
+        until the second signal. A second signal aborts the return (or the hold) and releases."""
         out = {
             "reason": reason,
+            "reanchor": None,
             "gripper_release": None,
             "legs": [],
             "returned": None,
@@ -1074,52 +1261,124 @@ class Episode:
         }
         try:
             if self.energized:
+                here = self.reanchor(out)  # the goal now held: path checks and the leg choice start here
                 self._phase("stop: gripper torque off")
                 try:
                     out["gripper_release"] = self.arm.release_gripper() or "ok"
                 except Exception as error:  # noqa: BLE001 - the return and the release follow regardless
                     out["gripper_release"] = f"{error.__class__.__name__}: {error}"
                 grip = self.commanded["gripper"]  # where the limp gripper was last held, for the guard
-                here = dict(self.commanded)
-                legs = self.return_legs()
-                if max(abs(legs[0][m] - here[m]) for m in core.ARM) < 1e-6:
-                    legs = legs[1:]  # stopped exactly at a leg end: nothing to travel on the first
+                here = {**here, "gripper": grip}
+                legs = self.legs_from(here)
+                # A fresh speed monitor: motion before the re-anchor must not end the return.
+                lim = self.s.trips
+                speed = core.SpeedMonitor(lim.overspeed_deg_s, lim.overspeed_ticks)
+                return_trips = []
+
+                def watch(pos):
+                    trips = speed.update(pos, self.clock())
+                    return_trips.extend(trips)
+                    return trips
+
                 out["returned"] = "at the rest"
                 for k, leg in enumerate(legs, 1):
                     target = {**{m: float(leg[m]) for m in core.ARM}, "gripper": grip}
+                    last = k == len(legs)
                     if self.abort_event.is_set():
                         out["returned"] = f"aborted by the second signal before leg {k}"
                         break
                     if not self.guard.path_clear(here, target):
-                        print(
-                            f"RETURN LEG {k}/{len(legs)} NOT CLEAR of the tank keep-out: HOLDING (gripper already "
-                            "limp). Support the arm, then press the stop button again (or Ctrl-C / kill -TERM) "
-                            "to release all torque.",
-                            flush=True,
-                        )
-                        while not self.abort_event.is_set():
-                            self.sleep(0.1)
-                        out["returned"] = f"held before leg {k}, released on the second signal"
+                        self._hold_mid_air(out, f"before leg {k}: its path is not clear of the tank keep-out")
                         break
                     travel = max(abs(target[m] - here[m]) for m in core.ARM)
                     self._phase(
                         f"return leg {k}/{len(legs)}", f"{travel:.1f} deg max at {self.s.speed_deg_s:g} deg/s"
                     )
                     ok, message = self.arm.return_to_rest(
-                        {m: target[m] for m in core.ARM}, self.abort_event, self.s.speed_deg_s
+                        {m: target[m] for m in core.ARM}, self.abort_event, self.s.speed_deg_s, watch
                     )
-                    out["legs"].append({"leg": k, "ok": ok, "message": message})
-                    if not ok:
-                        # A cut-short (second signal) or a leg that did not arrive: the next leg's checked
-                        # path would start from somewhere else, so stop the return and release here.
-                        out["returned"] = f"leg {k} ended early ({message}); released there"
+                    if return_trips:  # the helper reports a raised trip as a plain failure
+                        ok, message = False, "; ".join(f"{t.name}: {t.detail}" for t in return_trips)
+                        out["return_trips"] = [dataclasses.asdict(t) for t in return_trips]
+                    entry = {"leg": k, "ok": ok, "message": message}
+                    out["legs"].append(entry)
+                    if self.abort_event.is_set():  # the second signal (the helper reports "cut-short")
+                        out["returned"] = f"leg {k} cut short by the second signal; released there"
                         break
-                    here = target
+                    if return_trips:
+                        self._hold_mid_air(out, f"during leg {k}: {message}", reanchor=True)
+                        break
+                    pos = self._fresh_arm(watch)  # where the arm really is, for the verdict and the next leg
+                    if return_trips:
+                        self._hold_mid_air(out, f"after leg {k}: {return_trips[0].detail}", reanchor=True)
+                        break
+                    if pos is None and ok and last:
+                        # The helper judged arrival at the rest on its own fresh readings (within 6 deg):
+                        # lying there, torque off is the end the return was for.
+                        out["returned"] = "at the rest (the helper's verdict; no reading after it)"
+                        break
+                    if pos is None:
+                        self._hold_mid_air(out, f"after leg {k}: no fresh reading", reanchor=True)
+                        break
+                    off = max(abs(pos[m] - target[m]) for m in core.ARM)
+                    if off > self.s.trips.lag_deg:
+                        # Further off than the lag trip (whatever the helper said): never a mid-air release.
+                        why = f"leg {k} ended {off:.1f} deg off its target ({message or 'helper: arrived'})"
+                        self._hold_mid_air(out, why, reanchor=True)
+                        break
+                    if not ok:
+                        # Stopped short within the lag trip: the standing sag under load (7.4 deg on the
+                        # shoulder at the start pose) is more than the helper's 6 deg settle band. Arrived.
+                        entry["arrived"] = f"within the lag trip ({off:.1f} deg off)"
+                        if last:
+                            out["returned"] = f"at the rest ({off:.1f} deg off)"
+                    # The next leg's guard check starts from the goal this reading implies (it sags below).
+                    offsets = self.hold_error.value()
+                    here = {**target, **{m: pos[m] + offsets[m] for m in core.ARM}}
         finally:
             self._phase("release all torque")
             out["release_problems"] = self.arm.release()
             self.energized = False
         return out
+
+    def _fresh_arm(self, watch, attempts: int = 3) -> dict | None:
+        """A fresh reading of the arm joints (retried: one lost frame is not a failed read), through the
+        speed watch; None when no fresh reading can be had."""
+        for _ in range(attempts):
+            try:
+                pos = self.arm.read().pos
+            except Exception:  # noqa: BLE001
+                continue
+            watch(pos)
+            return {m: float(pos[m]) for m in core.ARM}
+        return None
+
+    def _hold_mid_air(self, out, why: str, reanchor: bool = False) -> None:
+        """Never release an arm that is up: HOLD (torque on, gripper already limp) until the second
+        signal. With `reanchor`, the goals go to the fresh measured pose plus the hold error first, so the
+        arm is held where it is (a ramp cut short leaves its goal elsewhere); while no fresh reading can be
+        had the last goal is held and the re-anchor retried. The second signal is the only mid-air release."""
+        self._phase("stop: HOLDING", why)
+        print(
+            f"RETURN HELD ({why}): HOLDING (gripper already limp). Support the arm, then press the stop "
+            "button again (or Ctrl-C / kill -TERM) to release all torque.",
+            flush=True,
+        )
+        anchored, attempts = not reanchor, 0
+        while not self.abort_event.is_set():
+            if not anchored:
+                attempts += 1
+                try:
+                    measured = self.arm.reanchor(self.hold_error.value())
+                    anchored = True
+                    out["hold_reanchor"] = {
+                        "measured": {m: round(float(measured[m]), 2) for m in core.ARM},
+                        "attempts": attempts,
+                    }
+                except Exception as error:  # noqa: BLE001 - keep holding the last goal, retry
+                    out["hold_reanchor"] = f"attempt {attempts}: {error.__class__.__name__}: {error}"
+            self.sleep(0.1)
+        out["returned"] = f"held {why}; released on the second signal"
 
 
 def effective_arm_file(source: Path, keep_rest: bool, out: Path) -> tuple[Path, str]:
@@ -1239,15 +1498,21 @@ def build_plan(
             "torque": f"|torque| > {settings.trips.torque_trip_nm} Nm for {settings.trips.torque_trip_ticks} ticks, or > "
             f"{settings.trips.torque_cap_nm} Nm for {settings.trips.torque_cap_s} s",
             "temperature": f">= {settings.trips.temp_trip_c} C (warn {settings.trips.temp_warn_c})",
+            "overspeed": f"measured speed of any arm joint > {settings.trips.overspeed_deg_s} deg/s for "
+            f"{settings.trips.overspeed_ticks} readings (successive fresh positions over their timestamps; "
+            "gripper excluded; independent of the commands and the guard), in the loop and on every return leg",
             "feedback": "no fresh reply / motor fault / camera read error -> stop",
             "dream": "Dream error or a malformed / non-finite chunk -> stop",
             "inputs_unchecked": "first request refused locally (nothing sent) unless ~/.dreamlabs/inputs_checked holds its id",
             "start_gate": f"measured rest within {START_LIMIT_TOLERANCE_DEG} deg of limits and through the guard; "
             "the Dream start pose inside the limits and the box",
             "speed": f"any planned arm substep faster than {HARD_ARM_SPEED_DEG_S} deg/s -> stop",
-            "stop": "every exit (trips, SIGINT/SIGTERM/SIGHUP, stop_button.py): gripper torque off at once, then the "
-            "six arm joints back to the measured rest leg by leg at the speed cap (guard-checked legs; not clear "
-            "-> hold), then all torque off; a second signal aborts the return and releases.",
+            "stop": "every exit (trips, SIGINT/SIGTERM/SIGHUP, stop_button.py): the six arm joints re-anchored at "
+            "their measured pose (+ standing error, no slew: no spring-back), gripper torque off at once, then "
+            "the arm joints back to the measured rest leg by leg from the measured pose at the speed cap "
+            "(guard-checked legs; stopped short within the lag trip = arrived), then all torque off at the rest; "
+            "never released mid-air: path not clear, overspeed, no fresh reading or a leg ending beyond the lag "
+            "trip -> re-anchor and HOLD until the second signal, which aborts the return or the hold and releases.",
         },
         "run": "rehearse: approach, hold at the start pose, stop; no Dream"
         if args.rehearse
@@ -1344,6 +1609,22 @@ def jump_mutation(rows):
     return rows
 
 
+def far_mutation():
+    """Scenario `far`: the first chunk also turns wrist_roll 12 deg (0.25 deg a row), so the run stops
+    more than the lag trip from the Dream start pose and the stop's first leg goes back to it."""
+    done = []
+
+    def mutate(rows):
+        if done:
+            return rows
+        done.append(True)
+        rows = rows.copy()
+        rows[:, 5] += np.linspace(0.0, math.radians(12.0), len(rows))
+        return rows
+
+    return mutate
+
+
 def run_dry(args, ctx) -> int:
     deny_network()  # after the read-only Lab check: nothing below may reach the network
     results = []
@@ -1356,7 +1637,7 @@ def run_dry(args, ctx) -> int:
         cameras = (
             [] if args.rehearse else [c["name"] for c in ctx["record"].get("cameras") or []] + ["(fake)"]
         )
-        arm = FakeArm(start, cameras, clock, scenario)
+        arm = FakeArm(start, cameras, clock, scenario, sag=START_POSE_SAG if scenario == "far" else None)
         if args.rehearse:
             dream = None
         elif ctx["dream_problem"] is None and not args.internal_stub:
@@ -1365,16 +1646,21 @@ def run_dry(args, ctx) -> int:
         else:
             dream = DreamInternalStub(ctx["jmap"], scenario)
         stop_event, abort_event = threading.Event(), threading.Event()
+        # `far` stops at the call cap right after its rolled chunk (> 10 deg from the start pose).
+        settings = dataclasses.replace(ctx["settings"], max_calls=1) if scenario == "far" else ctx["settings"]
         worker = (
-            Worker(dream, clock, threaded=False, latency_s=1.5, max_calls=ctx["settings"].max_calls)
+            Worker(dream, clock, threaded=False, latency_s=1.5, max_calls=settings.max_calls)
             if dream is not None
             else None
         )
 
-        def sleep(dt, clock=clock, stop_event=stop_event, scenario=scenario):
+        def sleep(dt, clock=clock, stop_event=stop_event, abort_event=abort_event, scenario=scenario):
             clock.sleep(dt)
             if scenario == "signal" and clock.t > 1006.0:
                 stop_event.set()
+            if clock.t > 1900.0:  # a dry run never waits forever (a held return): the fake RELEASE ALL
+                stop_event.set()
+                abort_event.set()
 
         episode = Episode(
             arm,
@@ -1384,13 +1670,13 @@ def run_dry(args, ctx) -> int:
             ctx["limits"],
             ctx["box"],
             ctx["guard"],
-            ctx["settings"],
+            settings,
             clock,
             sleep,
             out,
             stop_event,
             abort_event,
-            mutate=jump_mutation if scenario == "jump" else None,
+            mutate={"jump": jump_mutation, "far": far_mutation()}.get(scenario),
             arm_rest=ctx["arm"]["rest"],
             say=print if args.rehearse else None,
         )
@@ -1412,15 +1698,19 @@ def run_dry(args, ctx) -> int:
             f"clipped {s['clipped']}, guard {s['guard'] or 'n/a'}"
         )
         print(f"    phases: {' > '.join(s['phases'])}")
+        anchor = stop.get("reanchor")
+        if isinstance(anchor, dict):
+            anchor = "ok, offsets " + ", ".join(f"{m} {v:+.1f}" for m, v in anchor["offset_deg"].items())
         print(
-            f"    stop path: gripper {stop['gripper_release']}; legs {len(stop['legs'])} "
+            f"    stop path: re-anchor {anchor}; gripper {stop['gripper_release']}; legs {len(stop['legs'])} "
             f"({', '.join(str(leg['ok']) for leg in stop['legs']) or 'none'}); {stop['returned']}; "
             f"release problems: {stop['release_problems']}"
         )
         print(f"    fake arm: {' | '.join(e.split(':')[0] for e in s['fake_arm_events'])}")
         print(
             f"    peak lag {max(s['peak_lag_deg'].values()):.1f} deg, peak torque "
-            f"{max(s['peak_torque_nm'].values()):.2f} Nm, peak temp {max(s['peak_temp_c'].values()):.1f} C"
+            f"{max(s['peak_torque_nm'].values()):.2f} Nm, peak temp {max(s['peak_temp_c'].values()):.1f} C, "
+            f"peak measured arm speed {max(s['peak_speed_deg_s'].values()):.1f} deg/s"
         )
     if results and results[0][1].get("inputs_id"):
         print(
@@ -1733,10 +2023,11 @@ def main(argv=None) -> int:
     p.add_argument("--max-jump-deg", type=float, default=20.0)
     p.add_argument("--limit-margin-deg", type=float, default=1.0)
     p.add_argument("--lag-trip-deg", type=float, default=10.0)
-    p.add_argument("--torque-trip-nm", type=float, default=5.0)
-    p.add_argument("--torque-cap-nm", type=float, default=4.5)
-    p.add_argument("--torque-cap-s", type=float, default=2.0)
+    p.add_argument("--torque-trip-nm", type=float, default=12.0, help="instant tier (2 ticks), at most 14")
+    p.add_argument("--torque-cap-nm", type=float, default=5.0, help="sustained tier, with --torque-cap-s")
+    p.add_argument("--torque-cap-s", type=float, default=5.0)
     p.add_argument("--temp-trip-c", type=float, default=80.0)
+    p.add_argument("--overspeed-deg-s", type=float, default=30.0, help="measured arm joint speed trip")
     p.add_argument(
         "--scenario", default="nominal", choices=(*SCENARIOS, "all"), help="dry run: fault to inject"
     )
@@ -1802,8 +2093,12 @@ def main(argv=None) -> int:
         torque_cap_nm=args.torque_cap_nm,
         torque_cap_s=args.torque_cap_s,
         temp_trip_c=args.temp_trip_c,
+        overspeed_deg_s=args.overspeed_deg_s,
     )
-    trips.check()
+    try:
+        trips.check()
+    except ValueError as error:
+        p.error(str(error))
     settings = Settings(
         args.prompt,
         args.rows,

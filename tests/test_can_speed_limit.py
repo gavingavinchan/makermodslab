@@ -119,6 +119,48 @@ def test_missing_start_reply_prevents_all_preloads_and_enables():
     assert base.events == [("read", "a"), ("read", "b")]
 
 
+def test_rebase_holds_the_measured_pose_at_once_and_slews_from_there():
+    # A pushed-away arm: last sent 10, the motor now reads 30. The rebase writes the measured pose plus
+    # the bounded offset immediately (not a motion, so not slewed), and later writes slew from it.
+    bus, base, robot, now = setup()
+    bus.enable_torque()
+    base.positions["a"] = 30.0
+    robot._turn_offset["a"] = -360
+    now[0] = 0.5
+    assert bus.rebase({"a": 2.0}) == {"a": pytest.approx(-330.0)}  # robot coordinates
+    assert base.events[-2:] == [("read", "a"), ("Goal_Position", "a", 32.0)]
+    now[0] = 0.52
+    bus.write("Goal_Position", "a", -80)
+    assert base.events[-1][2] == pytest.approx(32.0 - 0.15)
+    assert bus._last["b"] == -10.0  # a motor not named is left alone
+
+
+def test_rebase_refuses_before_any_write():
+    bus, base, _, _ = setup()
+    with pytest.raises(RuntimeError, match="fresh measured pose"):
+        bus.rebase({"a": 0.0})  # never initialized
+    bus.enable_torque()
+    count = len(base.events)
+    for bad in ({"a": 10.5}, {"a": float("nan")}):
+        with pytest.raises(ValueError, match="offset"):
+            bus.rebase(bad)
+    base.failed_read = "b"
+    with pytest.raises(ConnectionError, match="fresh"):
+        bus.rebase({"a": 0.0, "b": 0.0})
+    assert [e for e in base.events[count:] if e[0] == "Goal_Position"] == []
+
+
+def test_module_rebase_needs_the_installed_limiter():
+    from makermodslab import can_speed_limit
+
+    bus, base, robot, _ = setup()
+    with pytest.raises(RuntimeError, match="slew limit"):
+        can_speed_limit.rebase(robot, {"a": 0.0})  # robot.bus is the raw bus
+    robot.bus = bus
+    bus.enable_torque()
+    assert can_speed_limit.rebase(robot, {"a": 0.0}) == {"a": 10.0}
+
+
 @pytest.mark.parametrize("start", [92.9, 120.0])
 def test_start_outside_a_limit_eases_inside_without_a_jump(start):
     bus, base, _, now = setup()

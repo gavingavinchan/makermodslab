@@ -1,0 +1,68 @@
+{
+ "trips": [],
+ "calls": 0,
+ "rows_planned": 0,
+ "approach_substeps": 112,
+ "substeps_sent": 0,
+ "clipped": 0,
+ "guard": {
+  "ok": 112
+ },
+ "stretched_rows": 0,
+ "phases": [
+  "connect",
+  "start gate",
+  "engage",
+  "approach",
+  "hold",
+  "stop: gripper torque off",
+  "return leg 1/2",
+  "return leg 2/2",
+  "release all torque"
+ ],
+ "stop": {
+  "reason": "stop signal",
+  "gripper_release": "ok",
+  "legs": [
+   {
+    "leg": 1,
+    "ok": true,
+    "message": "settled"
+   },
+   {
+    "leg": 2,
+    "ok": true,
+    "message": ""
+   }
+  ],
+  "returned": "at the rest",
+  "release_problems": null
+ },
+ "reason": "stop signal",
+ "peak_torque_nm": {
+  "shoulder_pan": 0.3042735042735032,
+  "shoulder_lift": 3.976068376068376,
+  "elbow_flex": 1.9042735042735046,
+  "wrist_flex": 0.9401709401709404,
+  "wrist_yaw": 0.2632478632478641,
+  "wrist_roll": 0.2564102564102555,
+  "gripper": 0.04444444444444429
+ },
+ "peak_temp_c": {
+  "shoulder_pan": 22.0,
+  "shoulder_lift": 25.0,
+  "elbow_flex": 23.0,
+  "wrist_flex": 22.0,
+  "wrist_yaw": 22.0,
+  "wrist_roll": 22.0,
+  "gripper": 22.0
+ },
+ "peak_lag_deg": {
+  "shoulder_pan": 0.32820914749524377,
+  "shoulder_lift": 8.377909252017133,
+  "elbow_flex": 3.433155371067542,
+  "wrist_flex": 1.8480291306809846,
+  "wrist_yaw": 0.5436002979974193,
+  "wrist_roll": 0.6726549458401596
+ }
+}

@@ -28,6 +28,7 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -200,22 +201,40 @@ class TripMonitorTest(unittest.TestCase):
         self.assertEqual([t.name for t in self.update(lagging)], ["lag"])
         self.assertEqual(self.update(dict(POSE, gripper=POSE["gripper"] - 50)), [])
 
-    def test_torque_instant_and_sustained(self):
-        self.assertEqual(self.update(torque=dict(zeros(0.5), shoulder_lift=6.0)), [])
-        self.assertIn("torque", [t.name for t in self.update(torque=dict(zeros(0.5), shoulder_lift=-6.0))])
-        # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08): under the cap.
-        hold = core.TripMonitor(core.TripLimits(), self.clock)
-        for t in (0.0, 1.0, 2.0, 5.0):
-            self.clock.t = t
-            self.assertEqual(hold.update(POSE, self.cmd, dict(zeros(0.5), shoulder_lift=3.9), zeros(30)), [])
-        self.clock.t = 0.0
+    def tick(self, mon, t, torque):
+        self.clock.t = t
+        return [x.name for x in mon.update(POSE, self.cmd, torque, zeros(30))]
+
+    def test_the_tiers_are_gavins(self):
+        lim = core.TripLimits()
+        self.assertEqual((lim.torque_trip_nm, lim.torque_trip_ticks), (12.0, 2))
+        self.assertEqual((lim.torque_cap_nm, lim.torque_cap_s), (5.0, 5.0))
+        self.assertEqual((lim.temp_trip_c, lim.temp_warn_c), (80.0, 70.0))
+        self.assertEqual((lim.overspeed_deg_s, lim.overspeed_ticks), (30.0, 2))
+
+    def test_instant_tier_needs_two_ticks_over_12(self):
         mon = core.TripMonitor(core.TripLimits(), self.clock)
-        over = dict(zeros(0.5), elbow_flex=4.7)
-        self.assertEqual(mon.update(POSE, self.cmd, over, zeros(30)), [])
-        self.clock.t = 1.9
-        self.assertEqual(mon.update(POSE, self.cmd, over, zeros(30)), [])
-        self.clock.t = 2.0
-        self.assertEqual([t.name for t in mon.update(POSE, self.cmd, over, zeros(30))], ["torque_sustained"])
+        self.assertEqual(self.tick(mon, 0.00, dict(zeros(0.5), shoulder_lift=13.0)), [])
+        self.assertEqual(self.tick(mon, 0.05, dict(zeros(0.5), shoulder_lift=11.9)), [])  # resets the count
+        self.assertEqual(self.tick(mon, 0.10, dict(zeros(0.5), shoulder_lift=-12.5)), [])
+        self.assertIn("torque", self.tick(mon, 0.15, dict(zeros(0.5), shoulder_lift=12.5)))
+
+    def test_a_visitor_may_push_10_nm_for_5_s(self):
+        # Gavin: visitors push to feel how strong it is, ~10 Nm for at least 5 s. The sustained tier
+        # (> 5 Nm for 5 s) ends it at 5 s; nothing trips before.
+        mon = core.TripMonitor(core.TripLimits(), self.clock)
+        push = dict(zeros(0.5), shoulder_pan=10.0)
+        for i in range(100):  # 4.95 s of 20 Hz ticks
+            self.assertEqual(self.tick(mon, i * 0.05, push), [], i)
+        self.assertEqual(self.tick(mon, 5.0, push), ["torque_sustained"])
+
+    def test_holding_the_start_pose_never_trips(self):
+        # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08); 4.9 Nm too.
+        mon = core.TripMonitor(core.TripLimits(), self.clock)
+        for i in range(1200):  # 60 s
+            self.assertEqual(
+                self.tick(mon, i * 0.05, dict(zeros(0.5), shoulder_lift=4.9, elbow_flex=1.9)), []
+            )
 
     def test_temperature_and_bad_reading(self):
         self.assertEqual(
@@ -226,9 +245,184 @@ class TripMonitorTest(unittest.TestCase):
         )
 
     def test_limits_refuse_unsafe_settings(self):
-        for bad in ({"temp_trip_c": 85}, {"torque_trip_nm": 15}, {"lag_deg": 25}, {"torque_cap_nm": 6}):
-            with self.assertRaises(ValueError):
+        core.TripLimits().check()
+        for bad in (
+            {"temp_trip_c": 85},
+            {"torque_trip_nm": 15},
+            {"lag_deg": 25},
+            {"torque_cap_nm": 13},
+            {"torque_cap_s": 0},
+            {"overspeed_deg_s": 15},
+            {"overspeed_deg_s": 50},
+            {"overspeed_ticks": 0},
+        ):
+            with self.assertRaises(ValueError, msg=bad):
                 core.TripLimits(**bad).check()
+
+    def test_overspeed_runs_inside_the_monitor_on_the_reading_clock(self):
+        # The command follows the joint exactly (no lag), so only the measured speed can catch it.
+        mon = core.TripMonitor(core.TripLimits(), self.clock)
+        names = []
+        for i in range(3):  # 2 deg per 50 ms on wrist_flex: 40 deg/s for two readings
+            pos = dict(POSE, wrist_flex=POSE["wrist_flex"] + 2.0 * i)
+            self.clock.t = i * 0.05
+            names.append([t.name for t in mon.update(pos, pos, zeros(0.5), zeros(30))])
+        self.assertEqual(names, [[], [], ["overspeed"]])
+        self.assertGreater(mon.speed.peak["wrist_flex"], 30)
+
+
+def rehearsal_logs():
+    return sorted((REAL / "runs").glob("rehearse-live-*/ticks.jsonl"))
+
+
+class SpeedMonitorTest(unittest.TestCase):
+    def mon(self):
+        return core.SpeedMonitor(30.0, 2)
+
+    def test_two_readings_over_trip_and_one_does_not(self):
+        mon = self.mon()
+        self.assertEqual(mon.update(POSE, 0.0), [])
+        self.assertEqual(mon.update(dict(POSE, elbow_flex=POSE["elbow_flex"] + 2.0), 0.05), [])  # 40 deg/s
+        self.assertEqual(mon.update(dict(POSE, elbow_flex=POSE["elbow_flex"] + 2.5), 0.10), [])  # 10: reset
+        self.assertEqual(mon.update(dict(POSE, elbow_flex=POSE["elbow_flex"] + 4.5), 0.15), [])
+        trips = mon.update(dict(POSE, elbow_flex=POSE["elbow_flex"] + 6.5), 0.20)
+        self.assertEqual([t.name for t in trips], ["overspeed"])
+        self.assertIn("elbow_flex", trips[0].detail)
+
+    def test_uses_the_timestamps_not_an_assumed_50_ms(self):
+        mon = self.mon()
+        mon.update(POSE, 0.0)
+        for i in (1, 2):  # 2 deg per reading, but 100 ms apart: 20 deg/s
+            self.assertEqual(mon.update(dict(POSE, shoulder_pan=POSE["shoulder_pan"] + 2.0 * i), 0.1 * i), [])
+        self.assertAlmostEqual(mon.peak["shoulder_pan"], 20.0)
+
+    def test_close_samples_are_merged_not_compared(self):
+        mon = self.mon()
+        mon.update(POSE, 0.0)
+        # 0.2 deg 5 ms later would read as 40 deg/s: kept out, the 0.0 sample stays the reference.
+        self.assertEqual(mon.update(dict(POSE, wrist_roll=POSE["wrist_roll"] + 0.2), 0.005), [])
+        self.assertEqual(mon.peak["wrist_roll"], 0.0)
+        mon.update(dict(POSE, wrist_roll=POSE["wrist_roll"] + 0.5), 0.05)
+        self.assertAlmostEqual(mon.peak["wrist_roll"], 10.0)
+
+    def test_the_gripper_is_excluded(self):
+        mon = self.mon()
+        for i in range(5):  # 60 deg/s jaws, and the limp gripper dropping on a stop
+            self.assertEqual(mon.update(dict(POSE, gripper=POSE["gripper"] - 3.0 * i), 0.05 * i), [])
+
+    @unittest.skipUnless(rehearsal_logs(), "no powered rehearsal logs in this checkout")
+    def test_the_powered_rehearsals_never_trip(self):
+        # 2026-11-08, the real arm at <= 15 deg/s commanded: the worst single reading was 20.3 deg/s
+        # (elbow_flex, approach), the worst held over two readings 18.0 (wrist_flex).
+        peak = 0.0
+        for path in rehearsal_logs():
+            mon = self.mon()
+            for line in path.read_text().splitlines():
+                tick = json.loads(line)
+                self.assertEqual(mon.update(tick["pos"], tick["t"]), [], path.parent.name)
+            peak = max(peak, *mon.peak.values())
+        self.assertGreater(peak, 15.0)
+        self.assertLess(peak, 21.0)
+
+
+class HoldErrorTest(unittest.TestCase):
+    def test_learns_the_standing_sag_and_a_short_push_barely_moves_it(self):
+        hold = core.HoldError(tau_s=1.0, limit_deg=10.0)
+        cmd = dict(POSE)
+        sag = dict(POSE, shoulder_lift=POSE["shoulder_lift"] - 7.45)  # the rehearsal's start-pose sag
+        for i in range(100):
+            hold.update(sag, cmd, i * 0.05)
+        self.assertAlmostEqual(hold.value()["shoulder_lift"], 7.45, places=6)
+        pushed = dict(sag, shoulder_pan=POSE["shoulder_pan"] - 9.0)
+        for i in range(100, 106):  # 0.3 s of a 9 deg push
+            hold.update(pushed, cmd, i * 0.05)
+        self.assertLess(hold.value()["shoulder_pan"], 2.0 * 0.3 + 1e-9)  # the estimate moves <= 2 deg/s
+        self.assertAlmostEqual(hold.value()["shoulder_lift"], 7.45, places=6)
+
+    def test_clipped_to_the_limit(self):
+        hold = core.HoldError(limit_deg=10.0)
+        hold.update(dict(POSE, elbow_flex=POSE["elbow_flex"] + 25), POSE, 0.0)
+        self.assertEqual(hold.value()["elbow_flex"], -10.0)
+
+    @unittest.skipUnless(rehearsal_logs(), "no powered rehearsal logs in this checkout")
+    def test_tracks_the_real_standing_error_of_the_rehearsals(self):
+        # A stop at the end of each powered rehearsal would re-anchor within ~1 deg of the error the
+        # arm really held (shoulder_lift ~7.45 deg at the start pose).
+        for path in rehearsal_logs():
+            ticks = [json.loads(line) for line in path.read_text().splitlines()]
+            hold = core.HoldError()
+            for tick in ticks:
+                hold.update(tick["pos"], tick["cmd"], tick["t"])
+            true = {m: ticks[-1]["cmd"][m] - ticks[-1]["pos"][m] for m in core.ARM}
+            for m in core.ARM:
+                self.assertLess(abs(hold.value()[m] - true[m]), 1.1, (path.parent.name, m))
+            self.assertGreater(hold.value()["shoulder_lift"], 7.0)
+
+
+class FakeCanRobot:
+    """Just enough of a RobStride follower for remote_can.get_observation and the return helper: no bus.
+    Tracks each sent action at once; `fall` deg drop on shoulder_lift per observation; `miss` = the
+    observation calls (by count) whose motor query gets no reply."""
+
+    def __init__(self, fall=0.0, miss=()):
+        self.pos = dict(POSE)
+        self.fall, self.miss, self.reads, self.sent = fall, set(miss), 0, []
+        self.config = SimpleNamespace(joint_limits=LIMITS)
+        self.action_features = {f"{m}.pos": float for m in core.MOTORS}
+        self.bus = SimpleNamespace(
+            motors=list(core.MOTORS),
+            _query_status_via_clear_fault=self._query,
+            _decode_motor_state=lambda data: None,
+        )
+
+    def _query(self, motor, timeout):
+        if motor == core.MOTORS[0]:
+            self.reads += 1
+        return False, None if self.reads in self.miss else SimpleNamespace(data=bytes(8))
+
+    def get_observation(self):
+        self.pos["shoulder_lift"] -= self.fall
+        return {f"{m}.pos": v for m, v in self.pos.items()}
+
+    def send_action(self, action):
+        self.sent.append(dict(action))
+        lost = {"shoulder_lift"} if self.fall else set()  # a joint that lost its hold does not follow
+        self.pos.update({m: v for k, v in action.items() if (m := k.removesuffix(".pos")) not in lost})
+
+
+class LabArmReturnTest(unittest.TestCase):
+    """LabArm's return adapter around the Lab's return helper, on a fake robot (no CAN, no ports)."""
+
+    def leg(self, robot, watch=None):
+        arm = dream_real.LabArm(Path("."), {}, 15.0)
+        arm.robot = robot
+        pose = {m: POSE[m] for m in core.ARM} | {"elbow_flex": POSE["elbow_flex"] - 3.0}  # 0.2 s at 15
+        return arm.return_to_rest(pose, threading.Event(), 15.0, watch)
+
+    def test_a_falling_joint_ends_the_leg(self):
+        import time
+
+        robot = FakeCanRobot(fall=2.0)  # ~2 deg per ~35 ms read: far over 30 deg/s
+        speed = core.SpeedMonitor(30.0, 2)
+        trips = []
+
+        def watch(pos):
+            trips.extend(found := speed.update(pos, time.monotonic()))
+            return found
+
+        ok, message = self.leg(robot, watch)
+        self.assertFalse(ok)
+        self.assertEqual(trips[0].name, "overspeed")
+        self.assertIn("shoulder_lift", message)
+        # 30 Hz reads merge into >= 40 ms windows, so two over-speed readings take ~4 setpoints (~0.14 s).
+        self.assertLessEqual(len(robot.sent), 5)
+
+    def test_missed_replies_do_not_end_the_leg(self):
+        # The planning read misses once (retried); a read before a setpoint misses (skipped, not raised).
+        robot = FakeCanRobot(miss=(1, 4))
+        ok, message = self.leg(robot, lambda pos: [])
+        self.assertTrue(ok, message)
+        self.assertAlmostEqual(robot.pos["elbow_flex"], POSE["elbow_flex"] - 3.0)
 
 
 def tool_digest(arm, urdf):
@@ -398,10 +592,15 @@ class EpisodeOnFakesTest(unittest.TestCase):
         rehearse=False,
         hold_s=5.0,
         arm_rest=None,
+        sag=None,
+        mutate=None,
+        patch=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
-        arm = dream_real.FakeArm(start or POSE, ["wrist"], clock, scenario)
+        arm = dream_real.FakeArm(start or POSE, ["wrist"], clock, scenario, sag=sag)
+        if patch:
+            patch(arm)
         self.sent = []
         send = arm.send
         arm.send = lambda target, previous: (self.sent.append(dict(target)), send(target, previous))
@@ -418,9 +617,19 @@ class EpisodeOnFakesTest(unittest.TestCase):
         tcp = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["tcp"]
         box = core.WorkspaceBox.load(dream_real.BOX_FILE, dream_real.SRC_URDF, jmap, tcp)
         stop, abort = threading.Event(), threading.Event()
+        release = arm.release
+        self.release_after_abort = None  # whether all torque went off only after the second signal
+
+        def released():
+            self.release_after_abort = abort.is_set()
+            return release()
+
+        arm.release = released
 
         def sleep(dt):
             clock.sleep(dt)
+            if clock.t > 4000:  # an unexpected hold (waiting for a second signal no test sends): fail fast
+                raise AssertionError("virtual clock passed 3000 s: the stop is holding for a second signal")
             if after:
                 after(clock, stop, abort)
 
@@ -439,19 +648,22 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 Path(tmp),
                 stop,
                 abort,
+                mutate=mutate,
                 arm_rest=arm_rest,
             )
             return self.ep.run(), arm
 
     def assert_stopped_safely(self, arm, returned=True):
-        """After engage: the gripper released first, then the return legs, then all torque off."""
+        """After engage: the arm re-anchored at its measured pose, the gripper released, then the return
+        legs (none starting with a goal far from the arm: no spring-back), then all torque off."""
         names = [e.split(":")[0] for e in arm.events]
         self.assertEqual(names[-1], "release")
+        self.assertNotIn("SPRING-BACK", names)
         stop = names[names.index("engage") + 1 :]
-        self.assertEqual(stop[0], "release gripper")
+        self.assertEqual(stop[:2], ["re-anchor", "release gripper"])
         if returned:
             self.assertGreaterEqual(stop.count("return leg"), 1)
-            self.assertEqual(set(stop[1:-1]), {"return leg"})
+            self.assertEqual(set(stop[2:-1]), {"return leg"})
             # The arm joints end at the measured rest; the limp gripper was never driven back.
             last_pose, _ = arm.returns[-1]
             self.assertEqual(last_pose, {m: POSE[m] for m in core.ARM})
@@ -485,12 +697,25 @@ class EpisodeOnFakesTest(unittest.TestCase):
             self.assertAlmostEqual(start[m], core.JointMap.load().to_motor(self.ep.right_rest)[m])
         self.assertEqual(start["gripper"], POSE["gripper"])
 
-    def test_stop_past_the_approach_goes_to_the_start_then_back_along_the_route(self):
-        _, arm = self.episode(max_calls=1)  # one chunk: the arm stops away from the start pose
+    def test_stop_past_the_approach_goes_back_along_the_route(self):
+        _, arm = self.episode(max_calls=1)  # one chunk: the arm stops ~2 deg from the start pose
         start = self.ep.dream_start
         legs = [pose for pose, _ in arm.returns]
         route = [start, *core.return_waypoints(POSE, start)]
-        self.assertEqual(legs, [{m: wp[m] for m in core.ARM} for wp in route])
+        # Within the lag trip of the start pose counts as at it (the leg back up would stop short).
+        self.assertEqual(legs, [{m: wp[m] for m in core.ARM} for wp in route[1:]])
+
+    def test_leg_selection_is_from_the_measured_pose(self):
+        self.episode(max_calls=1)
+        start = self.ep.dream_start
+        route = [start, *core.return_waypoints(POSE, start)]
+        sagged = dict(start, shoulder_lift=start["shoulder_lift"] - 7.45)  # the start-pose sag
+        self.assertEqual(self.ep.legs_from(sagged), route[1:])
+        away = dict(start, elbow_flex=start["elbow_flex"] + 12.0)
+        self.assertEqual(self.ep.legs_from(away), route)
+        self.ep.phase = "approach"  # the last leg (to the rest) always runs, however close
+        self.ep.trail = [dict(POSE)]
+        self.assertEqual(self.ep.legs_from(dict(POSE)), [POSE])
 
     def test_stop_mid_approach_retraces_the_legs_travelled(self):
         # Leg 1 (the elbow lift) takes about 3 s; stop during leg 2.
@@ -514,11 +739,110 @@ class EpisodeOnFakesTest(unittest.TestCase):
             ("stale", "feedback"),
             ("temperature", "temperature"),
             ("workspace", "workspace"),
+            ("push", "lag"),
         ):
             summary, arm = self.episode(scenario, max_calls=5)
             self.assertIn(trip, [t["name"] for t in summary["trips"]], scenario)
             self.assert_stopped_safely(arm)
             self.assertEqual(summary["stop"]["gripper_release"], "ok")
+            self.assertIsInstance(summary["stop"]["reanchor"], dict, scenario)
+
+    def test_a_pushed_arm_is_held_where_it_is_and_returns_from_there(self):
+        guard = NoGuard()
+        summary, arm = self.episode("push", max_calls=5, guard=guard)
+        self.assertEqual([t["name"] for t in summary["trips"]], ["lag"])  # 18 deg/s: under the speed trip
+        measured = summary["stop"]["reanchor"]["measured"]
+        commanded = self.ep.commanded
+        self.assertGreater(commanded["shoulder_pan"] - measured["shoulder_pan"], 10.0)  # pushed > 10 deg
+        # The 18 deg/s push leaks ~1.3 deg into the hold-error estimate (1 s average, moving <= 2 deg/s):
+        # the goal lands that close to where the arm was let go, instead of springing back > 10 deg.
+        self.assertLess(abs(summary["stop"]["reanchor"]["offset_deg"]["shoulder_pan"]), 2.0)
+        # The guard checks the re-anchored goal; the leg itself starts physically from the measured pose.
+        first_from, _ = guard.paths[0]  # the guard judges the re-anchored goal (measured + hold error)
+        self.assertAlmostEqual(
+            first_from["shoulder_pan"], summary["stop"]["reanchor"]["goal"]["shoulder_pan"], 1
+        )
+        self.assertAlmostEqual(arm.leg_starts[0]["shoulder_pan"], measured["shoulder_pan"], places=2)
+        self.assert_stopped_safely(arm)
+
+    @staticmethod
+    def second_signal_at(t):
+        return lambda clock, stop, abort: abort.set() if clock.t > t else None
+
+    def assert_held_until_the_second_signal(self, summary, arm, why):
+        stop = summary["stop"]
+        self.assertTrue(stop["returned"].startswith(f"held {why}"), stop["returned"])
+        self.assertTrue(stop["returned"].endswith("released on the second signal"))
+        self.assertIn("stop: HOLDING", summary["phases"])
+        self.assertTrue(self.release_after_abort)  # never released mid-air before the second signal
+        self.assert_stopped_safely(arm, returned=False)
+
+    def test_a_joint_losing_its_hold_trips_overspeed_then_holds(self):
+        summary, arm = self.episode("overspeed", max_calls=5, after=self.second_signal_at(1030))
+        self.assertEqual([t["name"] for t in summary["trips"]], ["overspeed"])  # before the lag trip
+        stop = summary["stop"]
+        self.assertEqual([t["name"] for t in stop["return_trips"]], ["overspeed"])
+        self.assertEqual(len(arm.returns), 1)
+        self.assert_held_until_the_second_signal(summary, arm, "during leg 1: overspeed")
+        self.assertEqual(stop["hold_reanchor"]["attempts"], 1)  # held where it is, not at the old goal
+        self.assertEqual([e.split(":")[0] for e in arm.events].count("re-anchor"), 2)
+
+    def test_a_sagging_arm_stopped_far_from_the_start_reaches_the_rest_before_release(self):
+        # The real shoulder settles 7.45 deg short at the start pose: more than the return helper's 6 deg,
+        # less than the 10 deg lag trip. A Dream stop > 10 deg from the start pose must not release there.
+        summary, arm = self.episode(
+            max_calls=1, sag=dream_real.START_POSE_SAG, mutate=dream_real.far_mutation()
+        )
+        start = self.ep.dream_start
+        stop = summary["stop"]
+        self.assertGreater(abs(stop["reanchor"]["measured"]["wrist_roll"] - start["wrist_roll"]), 10.0)
+        self.assertAlmostEqual(stop["reanchor"]["offset_deg"]["shoulder_lift"], 7.45, delta=0.5)
+        route = [start, *core.return_waypoints(POSE, start)]
+        self.assertEqual([pose for pose, _ in arm.returns], [{m: wp[m] for m in core.ARM} for wp in route])
+        self.assertEqual([leg["ok"] for leg in stop["legs"]], [False, False, True])  # short, short, there
+        self.assertTrue(all("within the lag trip" in leg["arrived"] for leg in stop["legs"][:2]))
+        self.assertEqual(stop["returned"], "at the rest")
+        self.assertNotIn("stop: HOLDING", summary["phases"])
+        self.assertFalse(self.release_after_abort)  # released by itself, at the rest
+        self.assert_stopped_safely(arm)
+
+    def test_a_leg_ending_beyond_the_lag_trip_holds(self):
+        def patch(arm):
+            back = arm.return_to_rest
+
+            def stuck(pose, abort, speed, watch=None):
+                back(pose, abort, speed, watch)
+                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 15.0  # caught on something, 15 deg short
+                arm.limp.add("shoulder_lift")
+                arm.FALL_DEG_PER_TICK = 0.0  # stays there
+                return False, "shoulder_lift still 15.0 deg away"
+
+            arm.return_to_rest = stuck
+
+        summary, arm = self.episode(max_calls=1, patch=patch, after=self.second_signal_at(1040))
+        self.assert_held_until_the_second_signal(summary, arm, "leg 1 ended 15.0 deg off its target")
+        self.assertEqual(len(arm.returns), 1)
+
+    def test_no_fresh_reading_after_a_leg_holds_the_last_goal_and_retries(self):
+        calls = []
+
+        def patch(arm):
+            reanchor = arm.reanchor
+
+            def flaky(offsets):
+                calls.append(1)
+                if 2 <= len(calls) <= 4:  # the stop's first re-anchor works; then the bus goes quiet
+                    raise ConnectionError("No fresh valid starting pose for shoulder_lift (fake)")
+                return reanchor(offsets)
+
+            arm.reanchor = flaky
+            arm.return_to_rest = lambda pose, abort, speed, watch=None: (False, "unreadable")
+            read = arm.read
+            arm.read = lambda: read() if not calls else (_ for _ in ()).throw(ConnectionError("stale (fake)"))
+
+        summary, arm = self.episode(max_calls=1, patch=patch, after=self.second_signal_at(1040))
+        self.assert_held_until_the_second_signal(summary, arm, "after leg 1: no fresh reading")
+        self.assertEqual(summary["stop"]["hold_reanchor"]["attempts"], 4)  # retried until a reading came
 
     def test_signal_stops(self):
         summary, arm = self.episode(after=lambda c, s, a: s.set() if c.t > 1009 else None)
@@ -533,7 +857,10 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 abort.set()
 
         summary, arm = self.episode(guard=NoGuard(clear=False), after=after)
-        self.assertEqual(summary["stop"]["returned"], "held before leg 1, released on the second signal")
+        self.assertEqual(
+            summary["stop"]["returned"],
+            "held before leg 1: its path is not clear of the tank keep-out; released on the second signal",
+        )
         self.assertTrue(arm.gripper_limp)  # released before the hold
         self.assert_stopped_safely(arm, returned=False)
 
@@ -696,6 +1023,7 @@ class NoGuard:
         return None
 
     def path_clear(self, a, b):
+        self.paths = [*getattr(self, "paths", []), (dict(a), dict(b))]
         return self.clear
 
 

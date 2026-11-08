@@ -47,7 +47,7 @@ All from the repo root with the repo venv. Dream's client is loaded from `~/visc
 ```bash
 # Dry run: the plan, its plan id, live readiness, and the loop on fakes. No port, camera, network, billed call.
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py
-# Every safety trip fired once on the fake arm, each ending with gripper off, return legs, then torque off:
+# Every safety trip fired once on the fake arm, each ending with re-anchor, gripper off, return legs, then torque off:
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --scenario all
 # Rehearsal on the fake arm (no Dream): every phase printed as it starts, then the stop path:
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse [--hold-s 120]
@@ -151,13 +151,26 @@ fold the elbow first, then straight to the start), each leg retimed into 20 Hz s
 speed. Frames go to Dream, but no call is made until the start pose is reached. 7. Loop at 20 Hz:
 fresh feedback, trips, 5 Hz frames to Dream; one billed call at a time (ledger first), executing each
 48-row chunk, holding while the next call is in flight. 8. **Every exit** (trips, signals, the
-button, the call cap): (a) the gripper's torque goes off at once, and it may drop what it holds (a
-zero-effort MIT frame, then the RobStride disable for that one motor; the other six keep holding);
-(b) the six arm joints return to the measured rest leg by leg at the arm speed on fresh feedback.
-Past the approach that means straight to the start pose, then `core.return_waypoints` (the approach
-reversed). Mid-approach it means back along the legs travelled. Each leg's straight path is checked
-by the guard first; (c) `remote_can.release` (zero effort, torque off, cameras closed). A leg that
-does not arrive ends the return there and releases.
+button, the call cap): (a) **re-anchor**: the six arm joints' goals go at once to their fresh measured
+pose plus each joint's standing error (`core.HoldError`, see Safety layers), and the bus backstop's
+last-sent target is rebased there (`can_speed_limit.rebase`), so a pushed or blocked arm is held where
+it is and never pulled back by the old goal; (b) the gripper's torque goes off at once, and it may drop
+what it holds (a zero-effort MIT frame, then the RobStride disable for that one motor; the other six
+keep holding); (c) the six arm joints return to the measured rest leg by leg at the arm speed on fresh
+feedback, every leg planned from the measured pose (the return helper's own fresh reading; the guard
+check and the leg choice use the re-anchor's reading). Past the approach that means to the start pose
+(skipped when the arm is within the 10 deg lag trip of it: it holds there with its sag), then
+`core.return_waypoints` (the approach reversed). Mid-approach it means back along the legs travelled.
+Each leg's straight path is checked by the guard first, and every reading during the legs goes
+through the measured-speed trip. A leg that stops short but within the 10 deg lag trip of its target
+on every arm joint (a fresh reading after it) counts as arrived and the return goes on: the shoulder
+holds the start pose 7.45 deg short, more than the helper's 6 deg settle band; (d) `remote_can.release`
+(zero effort, torque off, cameras closed), at the rest. **The arm is never released mid-air** except by
+the second signal: a leg that ends further off than the lag trip, an overspeed during the return, a
+failed or missing fresh reading, or a path the guard does not clear all HOLD: the goals re-anchored at
+the fresh measured pose (+ standing error; with no fresh reading, the last goal held and the re-anchor
+retried every 0.1 s), torque on, `RETURN HELD (...): HOLDING ... Support the arm, then press the stop
+button again`, until the second signal (the button's RELEASE ALL).
 
 Per row: IK radians to motor degrees (J1 + 180, J5 sign), grip 0..1 to motor -2.9 (closed) ..
 -115.1 (open), jump check, clamp 1 deg inside the limits, then **retimed** into equal 20 Hz substeps so
@@ -165,7 +178,7 @@ no arm joint exceeds 15 deg/s (gripper 60) and all joints arrive together (the g
 proof needs that), each substep through the box and the tank guard. The whole chunk is planned before
 any of it runs, so a refusal stops the arm before the chunk starts.
 
-## Trips (every one ends in gripper off, return legs to the rest, then torque off)
+## Trips (every one ends in re-anchor, gripper off, return legs to the rest, then torque off)
 
 | Trip | Default |
 |---|---|
@@ -173,18 +186,60 @@ any of it runs, so a refusal stops the arm before the chunk starts.
 | Workspace box | tcp / wrist / wrist_pitch / elbow outside their boxes on any substep: chunk refused |
 | Tank guard | substep rejected, or measured pose into the keep-out beyond its allowance |
 | Lag | measured vs commanded > 10 deg on an arm joint for 2 ticks (gripper excluded) |
-| Torque | > 5 Nm for 2 ticks, or > 4.5 Nm for 2 s (was 3.5; the start pose holds at ~3.9 Nm on the shoulder; speed, not torque, is what breaks glass, so 15 deg/s stays hard) |
+| Torque | > 12 Nm for 2 ticks (instant; RS00 peak 14), or > 5 Nm for 5 s (sustained; RS00 continuous ~5). Visitors may push about 10 Nm for up to 5 s; the start pose holds at ~3.9 Nm on the shoulder. Was 5 Nm / 4.5 Nm for 2 s |
+| Overspeed | any arm joint's MEASURED speed (successive fresh positions over their timestamps) > 30 deg/s for 2 readings, gripper excluded; in the loop and during every return leg (there it ends the return and HOLDS until the second signal). The 2026-11-08 rehearsals peaked at 20.3 deg/s on one reading, 18.0 over two, at <= 15 deg/s commanded |
 | Temperature | >= 80 C (warn 70; the driver stops at 85) |
 | Feedback | no fresh reply, motor fault, camera read error |
 | Dream | error, malformed or non-finite chunk; inputs not checked (refused locally, not billed) |
 | Start gate | rest more than 5 deg outside a limit or refused by the guard; Dream start pose outside the limits or the box; approach substep rejected by the guard: never energized |
 | Speed | a planned arm substep faster than 15 deg/s (cannot happen by construction; checked before every send) |
-| Stop | `stop_button.py`, SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them): gripper torque off at once, return legs to the rest at <= 15 deg/s, then all torque off. A second press / signal aborts the return and releases everything |
+| Stop | `stop_button.py`, SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them): re-anchor at the measured pose, gripper torque off at once, return legs to the rest at <= 15 deg/s, then all torque off at the rest (anything that keeps the arm from the rest holds instead). A second press / signal aborts the return or the hold and releases everything |
 | Billing | `--max-calls` (<= 20) per run and `runs/ledger.json` (cap 100, raised only by editing it) |
 
-If the guard says a return leg's straight path is not clear, the arm holds (torque on, gripper
-already limp) and waits for a second signal (the button's RELEASE ALL), so a person can support it
-before torque goes off.
+If the guard says a return leg's straight path is not clear, or anything else keeps the return from
+the rest (above), the arm holds (torque on, gripper already limp) and waits for a second signal (the
+button's RELEASE ALL), so a person can support it before torque goes off.
+
+## Safety layers (Gavin: "not impact with momentum onto glass in any circumstances")
+
+Each layer stands alone: none relies on the tank guard's boundaries or on another layer.
+
+1. **Commanded speed <= 15 deg/s** (runner): every Dream substep, approach and return leg is retimed
+   to it and checked before it is sent (`speed` trip). Catches a planner or Dream asking for fast motion.
+2. **Bus backstop at 15 deg/s** (`makermodslab/can_speed_limit.py`): every arm `Goal_Position` write is
+   slewed from the last one sent, whatever code sent it. Catches a runner bug that skips layer 1.
+3. **Tank guard and workspace box**: every substep and every measured pose checked against the keep-out
+   at mesh-vertex level, and the box. Catches a path into the glass at any speed.
+4. **Measured-speed trip** (30 deg/s for 2 readings): from fresh positions only, so it does not trust
+   the commands or the guard. Catches what commands cannot: a push, a spring-back, a joint losing its
+   hold or a controller misbehaving, in the loop and during the return.
+5. **Lag trip** (10 deg for 2 ticks): the arm far from where it was told. Catches blocking, a push, a
+   weak joint. With kp 30 Nm/rad a 10 deg error is ~5 Nm, so on most joints this ends a visitor's push
+   before the torque tiers do.
+6. **Torque tiers** (12 Nm instant, 5 Nm for 5 s) and **heat** (80 C trip, 70 C warning): the sustained
+   tier is the heat guard, since heat comes from sustained torque (the dry shoulder ran 33 -> 65 C in under
+   2 min at 5-6 Nm); the 80 C trip is the backstop.
+7. **No spring-back on any stop** (the re-anchor, step 8a above): the goal moves to where the arm is,
+   so the position controller's stored error cannot throw a pushed-away arm back. It keeps each joint's
+   standing error (MIT position control holds the arm up with a position error: shoulder_lift kp 30
+   Nm/rad at 3.85 Nm = 7.4 deg, measured 7.45), or the shoulder would drop ~7 deg on every stop. That
+   error is a 1 s average moving at most 2 deg/s: a 12-18 deg/s push leaks ~1-1.5 deg into it, a slow
+   push (<= ~5 deg/s) leaks most of itself, so the re-anchor still lets a slowly pushed arm move back by
+   up to a few degrees.
+8. **Return from the measured pose**: the return plans every leg from a fresh reading, never the
+   cached command.
+9. **No mid-air release**: torque goes off by itself only at the rest. A return that cannot get there
+   (stopped beyond the lag trip, overspeed, no fresh reading, guard) holds where it is, re-anchored,
+   until a person presses RELEASE ALL.
+10. **People**: the red button (stop; then RELEASE ALL), and Gavin at the power switch.
+
+**The honest gap: a motor suddenly losing its hold** (the dry shoulder lost its hold at ~5.6 Nm, hot,
+with no fault logged) is mitigated by the torque and heat limits, not prevented. If it happens, the
+measured-speed trip sees the joint falling within about 0.1-0.15 s; the return stops and the other
+joints hold, re-anchored where they are, until the second signal. But the failed joint is already
+falling: nothing here can hold a motor that is not making torque, so the arm swings about it under
+gravity with the momentum of that fall. Supporting the arm before pressing RELEASE ALL is the person's
+job.
 
 ## Known limits and findings
 

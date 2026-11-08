@@ -299,6 +299,24 @@ restore paths in the DAgger runner.
   impact with the momentum that can break glass". Sustained cap 3.5 -> 4.5 Nm; the
   5 Nm instant trip and the hard 15 deg/s stay. Logs:
   `scripts/viscous-dream1/real/runs/rehearse-live-20261108T1947{01,24}Z/`.
+- *Status (2026-11-08, later): independent anti-impact layers.* Gavin: "make sure not
+  impact with momentum onto glass in any circumstances, like independent/dont rely on
+  the boundary limits, should be separate layers of safety". A third rehearsal
+  (19:52:11Z) reached the hold at 3.98 Nm and stopped cleanly on the button. Added
+  (subagent, reviewed): torque tiers 12 Nm instant / 5 Nm for 5 s (Gavin: visitors
+  will push, "10nm for at least 5sec"); temperature trip stays 80 C (Gavin); a
+  measured-speed trip, 30 deg/s for 2 readings on the arm joints, in the loop and on
+  every return leg (rehearsal peaks 18-20 deg/s); a no-spring-back re-anchor before
+  every return (`can_speed_limit.rebase`: goal = fresh measured pose + the standing
+  sag, ~7.4 deg on the shoulder, without slewing); and **no mid-air release**: a leg
+  short by <= the 10 deg lag trip counts as arrived and the return goes on; any other
+  failure (path not clear, overspeed, no reading, a leg far off) re-anchors and HOLDS
+  until the second press. Review found a real bug fixed here: the 6 deg arrival rule
+  would have released the arm at start-pose height after a Dream stop. Lag trip stays
+  10 deg (Gavin chose A), so visitors feel ~5 Nm before a stop (the arm deflects
+  ~19 deg at 10 Nm). Cameras: the `head` camera's unique id changed after the restart
+  (0x1300000c45636b -> 0x1130000c45636b, a different USB port), record updated with a
+  backup; `--overhead black` is now a deliberate wrist-only setup.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

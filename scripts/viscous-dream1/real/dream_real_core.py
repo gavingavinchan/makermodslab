@@ -418,23 +418,37 @@ class WorkspaceBox:
 class TripLimits:
     lag_deg: float = 10.0  # the bench rule; 25 was far too late
     lag_ticks: int = 2
-    torque_trip_nm: float = 5.0  # RS00 continuous rating, instantaneous
+    # Two torque tiers (RS00: ~5 Nm continuous, 14 Nm peak). Visitors push the arm to feel how strong
+    # it is (Gavin: allow about 10 Nm for at least 5 s), so the instant trip sits above that, under the
+    # peak. Heat is the sustained tier's job: the dry shoulder went 33 -> 65 C in under 2 min at 5-6 Nm
+    # and then lost its hold at ~5.6 Nm (docs/viscous-haptics.md), so more than 5 Nm for 5 s trips.
+    # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08): under both.
+    torque_trip_nm: float = 12.0
     torque_trip_ticks: int = 2
-    # Sustained cap. Was the dry-arm planning cap 3.5; holding the start pose takes ~3.9 Nm on the
-    # shoulder (rehearsal 2026-11-08). Gavin: "torque alone cant break glass, its impact with the
-    # momentum", so the cap rose and the 15 deg/s speed limit stays hard. Under the 5 Nm trip.
-    torque_cap_nm: float = 4.5
-    torque_cap_s: float = 2.0
+    torque_cap_nm: float = 5.0
+    torque_cap_s: float = 5.0
     temp_warn_c: float = 70.0
     temp_trip_c: float = 80.0  # driver stops at 85, scripts abort below 82 and cool at 80
+    # Measured joint speed, independent of what was commanded and of the tank guard. Every command is
+    # <= 15 deg/s; the 2026-11-08 rehearsals measured at most 20.3 deg/s on a single tick (elbow_flex,
+    # approach) and 18.0 deg/s held over two ticks, so 30 is 1.5x the worst normal tracking and 2x the
+    # command cap. Faster than that is a push, a spring-back or a joint losing its hold.
+    overspeed_deg_s: float = 30.0
+    overspeed_ticks: int = 2
 
     def check(self) -> None:
         if not 0 < self.lag_deg <= 20:
             raise ValueError("lag trip must be in (0, 20] deg")
         if not 0 < self.torque_cap_nm <= self.torque_trip_nm <= 14:
             raise ValueError("need 0 < torque cap <= torque trip <= 14 Nm (RS00 peak)")
+        if not 0 < self.torque_cap_s <= 10:
+            raise ValueError("sustained torque window must be in (0, 10] s")
         if not 0 < self.temp_trip_c <= 82:
             raise ValueError("temperature trip must be at most 82 C")
+        if not 15 < self.overspeed_deg_s <= 45 or not 1 <= self.overspeed_ticks <= 3:
+            raise ValueError(
+                "overspeed trip must be above the 15 deg/s command cap, at most 45, for 1..3 ticks"
+            )
 
 
 @dataclass(frozen=True)
@@ -443,11 +457,90 @@ class Trip:
     detail: str
 
 
-class TripMonitor:
-    """Per-tick checks of the measured arm against the commanded target.
+# Two samples closer than this are not compared: over a few ms, position noise reads as speed. The
+# runner's 20 Hz ticks are 45-55 ms apart (rehearsal logs); the stop path's reads come at ~30 Hz, so
+# some of its intervals merge into one ~70 ms window.
+SPEED_MIN_DT_S = 0.04
 
-    Clock injected; never sleeps. The gripper is left out of the lag trip (it
-    stalls on whatever it holds) but not out of torque or temperature.
+
+class SpeedMonitor:
+    """Measured speed of the six arm joints from successive fresh positions and their timestamps.
+
+    Independent of the commanded target (a stuck command cannot hide a moving joint) and of the tank
+    guard. The gripper is left out: it may move at 60 deg/s and goes limp on every stop.
+    """
+
+    def __init__(self, limit_deg_s: float, ticks: int, min_dt_s: float = SPEED_MIN_DT_S):
+        self.limit, self.ticks, self.min_dt = float(limit_deg_s), int(ticks), float(min_dt_s)
+        self._last: tuple[float, dict] | None = None
+        self._count = dict.fromkeys(ARM, 0)
+        self.peak = dict.fromkeys(ARM, 0.0)
+
+    def update(self, measured: Mapping[str, float], t: float) -> list[Trip]:
+        if self._last is None:
+            self._last = (t, {m: float(measured[m]) for m in ARM})
+            return []
+        t0, before = self._last
+        dt = t - t0
+        if dt < self.min_dt:
+            return []  # keep the older sample as the reference
+        self._last = (t, {m: float(measured[m]) for m in ARM})
+        trips = []
+        for m in ARM:
+            speed = abs(float(measured[m]) - before[m]) / dt
+            self.peak[m] = max(self.peak[m], speed)
+            self._count[m] = self._count[m] + 1 if speed > self.limit else 0
+            if self._count[m] >= self.ticks:
+                trips.append(
+                    Trip(
+                        "overspeed",
+                        f"{m} measured at {speed:.0f} deg/s (> {self.limit:g} for {self.ticks} readings)",
+                    )
+                )
+        return trips
+
+
+class HoldError:
+    """Slow average of commanded - measured per arm joint: the error a joint holds against its load.
+
+    MIT position control makes torque from position error (kp * error), so holding the arm up takes a
+    standing error: shoulder_lift kp 30 Nm/rad at 3.85 Nm is 7.4 deg (measured 7.45 at the rehearsal's
+    start pose). The stop path re-anchors each joint's goal at its measured pose PLUS this error, so the
+    arm holds where it is: without it the shoulder would drop ~7 deg, and with the full instantaneous
+    error a pushed-away arm would spring back. A 1 s time constant, and the estimate itself moving at
+    most 2 deg/s, keep a push or droop of 12-18 deg/s to ~1-1.5 deg of it, while the rehearsal logs'
+    real standing error is tracked to within 2.4 deg (approach) / 2.0 deg (hold). A SLOW push (<= ~5 deg/s)
+    is indistinguishable from load and is mostly learned. Clipped to +-limit: the re-anchor never sets
+    a goal further than that from the measured pose.
+    """
+
+    def __init__(self, tau_s: float = 1.0, rate_deg_s: float = 2.0, limit_deg: float = 10.0):
+        self.tau, self.rate, self.limit = float(tau_s), float(rate_deg_s), float(limit_deg)
+        self._t: float | None = None
+        self._error = dict.fromkeys(ARM, 0.0)
+
+    def update(self, measured: Mapping[str, float], commanded: Mapping[str, float], t: float) -> None:
+        error = {m: float(commanded[m]) - float(measured[m]) for m in ARM}
+        if self._t is None:
+            self._error = error
+        else:
+            dt = max(0.0, t - self._t)
+            alpha, step = 1.0 - math.exp(-dt / self.tau), self.rate * dt
+            self._error = {
+                m: self._error[m] + max(-step, min(step, alpha * (error[m] - self._error[m]))) for m in ARM
+            }
+        self._t = t
+
+    def value(self) -> dict:
+        return {m: max(-self.limit, min(self.limit, v)) for m, v in self._error.items()}
+
+
+class TripMonitor:
+    """Per-tick checks of the measured arm against the commanded target, and of its measured speed.
+
+    Clock injected; never sleeps; update() is called right after each fresh read, so the clock is
+    the reading's timestamp. The gripper is left out of the lag and speed trips (it stalls on
+    whatever it holds, and moves fast) but not out of torque or temperature.
     """
 
     def __init__(self, limits: TripLimits, clock: Callable[[], float]):
@@ -457,6 +550,7 @@ class TripMonitor:
         self._lag = dict.fromkeys(ARM, 0)
         self._torque = dict.fromkeys(MOTORS, 0)
         self._over_cap_since: dict[str, float | None] = dict.fromkeys(MOTORS, None)
+        self.speed = SpeedMonitor(limits.overspeed_deg_s, limits.overspeed_ticks)
         self.peak_torque = dict.fromkeys(MOTORS, 0.0)
         self.peak_temp = dict.fromkeys(MOTORS, 0.0)
         self.peak_lag = dict.fromkeys(ARM, 0.0)
@@ -471,6 +565,7 @@ class TripMonitor:
                     trips.append(Trip("bad_reading", f"{m} {name} is {v!r}"))
         if trips:
             return trips
+        trips += self.speed.update(measured, now)
         for m in ARM:
             lag = abs(measured[m] - commanded[m])
             self.peak_lag[m] = max(self.peak_lag[m], lag)
@@ -720,10 +815,14 @@ def slot_frames(frames_by_camera: Mapping[str, np.ndarray], slots: Mapping[str, 
 
 
 def resolve_slots(camera_names, overhead: str | None, wrist_l: str | None, wrist_r: str) -> tuple[dict, list]:
-    """Slot map and the slots no camera feeds. wrist_r: black | copy | camera:<name>."""
+    """Slot map and the slots no camera feeds. wrist_r: black | copy | camera:<name>.
+    overhead / wrist_l may be "black" on purpose (Gavin 2026-11-08: the record's only camera, `head`,
+    is the wrist camera, and Grace at DreamLabs wants to try wrist-only), which is not "missing"."""
     names, slots, missing = set(camera_names), {}, []
     for slot, name in (("overhead", overhead), ("wrist_l", wrist_l)):
-        if name and name in names:
+        if name == "black":
+            slots[slot] = "black"
+        elif name and name in names:
             slots[slot] = name
         else:
             slots[slot] = "black"
