@@ -1,0 +1,175 @@
+{
+ "trips": [],
+ "calls": 10,
+ "rows_planned": 480,
+ "approach_substeps": 123,
+ "substeps_sent": 321,
+ "clipped": 0,
+ "guard": {
+  "ok": 463,
+  "clamped": 4
+ },
+ "stretched_rows": 21,
+ "phases": [
+  "connect",
+  "start gate",
+  "engage",
+  "approach",
+  "pause",
+  "dream",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "slide",
+  "slide",
+  "slide",
+  "stop: re-anchor",
+  "stop: gripper torque off",
+  "return leg 1/3",
+  "return leg 2/3",
+  "return leg 3/3",
+  "release all torque"
+ ],
+ "slid": [
+  {
+   "call": 1,
+   "rows": 34
+  },
+  {
+   "call": 2,
+   "rows": 3
+  },
+  {
+   "call": 3,
+   "rows": 14
+  },
+  {
+   "call": 4,
+   "rows": 2
+  },
+  {
+   "call": 5,
+   "rows": 23
+  },
+  {
+   "call": 6,
+   "rows": 4
+  },
+  {
+   "call": 7,
+   "rows": 3
+  },
+  {
+   "call": 8,
+   "rows": 2
+  }
+ ],
+ "overrides": [
+  {
+   "call": 1,
+   "why": "row 14: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 2,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 3,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 4,
+   "why": "row 0: tank keep-out (cut at the line)"
+  }
+ ],
+ "stop": {
+  "reason": "stop signal",
+  "reanchor": {
+   "measured": {
+    "shoulder_pan": 175.47,
+    "shoulder_lift": -96.83,
+    "elbow_flex": 52.04,
+    "wrist_flex": -4.3,
+    "wrist_yaw": 4.45,
+    "wrist_roll": -3.09
+   },
+   "offset_deg": {
+    "shoulder_pan": 0.05,
+    "shoulder_lift": 1.1,
+    "elbow_flex": 0.63,
+    "wrist_flex": -0.4,
+    "wrist_yaw": 0.15,
+    "wrist_roll": 0.13
+   },
+   "goal": {
+    "shoulder_pan": 175.52,
+    "shoulder_lift": -95.73,
+    "elbow_flex": 52.66,
+    "wrist_flex": -4.7,
+    "wrist_yaw": 4.6,
+    "wrist_roll": -2.96
+   }
+  },
+  "gripper_release": "ok",
+  "legs": [
+   {
+    "leg": 1,
+    "ok": true,
+    "message": "settled"
+   },
+   {
+    "leg": 2,
+    "ok": true,
+    "message": "settled"
+   },
+   {
+    "leg": 3,
+    "ok": true,
+    "message": ""
+   }
+  ],
+  "returned": "at the rest",
+  "release_problems": null
+ },
+ "reason": "stop signal",
+ "peak_torque_nm": {
+  "shoulder_pan": 0.4205128205128208,
+  "shoulder_lift": 6.711111111111112,
+  "elbow_flex": 4.201709401709401,
+  "wrist_flex": 2.30769230769231,
+  "wrist_yaw": 0.29059829059828957,
+  "wrist_roll": 0.3042735042735032,
+  "gripper": 0.28376068376068453
+ },
+ "peak_temp_c": {
+  "shoulder_pan": 23.0,
+  "shoulder_lift": 39.0,
+  "elbow_flex": 29.0,
+  "wrist_flex": 24.0,
+  "wrist_yaw": 23.0,
+  "wrist_roll": 23.0,
+  "gripper": 23.0
+ },
+ "peak_lag_deg": {
+  "shoulder_pan": 0.42226081503784485,
+  "shoulder_lift": 4.627419451756452,
+  "elbow_flex": 2.4710706853309716,
+  "wrist_flex": 4.619409559475724,
+  "wrist_yaw": 0.8991575827295262,
+  "wrist_roll": 0.6124233106105788
+ },
+ "peak_speed_deg_s": {
+  "shoulder_pan": 4.1565793647505975,
+  "shoulder_lift": 19.88812276125365,
+  "elbow_flex": 18.05282997827107,
+  "wrist_flex": 25.16427735156958,
+  "wrist_yaw": 11.254501340458427,
+  "wrist_roll": 3.523867994912425
+ }
+}

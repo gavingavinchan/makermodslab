@@ -376,6 +376,16 @@ restore paths in the DAgger runner.
   checked: Dream and the runner both use 0 closed, 1 open). Fixed: elbow x max
   -30 -> +10 and wrist_pitch -20 -> +20 (the wall is 80 mm, not the 40 estimate), and
   the run stops after 3 calls in a row that execute nothing. 31 billed calls today.
+- *Status (2026-11-08, later): Dream reaches the ball area, never opens.* Floor
+  limit lowered 3 cm (tcp/wrist z min -5 -> -35, slide margin 0 at the floor; the
+  tank guard's 10 mm press stays the real floor limit), Gavin's call. Live 213138Z
+  (90/4 gains, stopped by Gavin after call 10, 41 billed calls today): call 1 cut by
+  the guard at row 14, calls 2-4 one substep each, then calls 5-10 full chunks: a
+  steady descent of the hand target 98 -> -19 mm at 31-41 cm out, 4-5 cm right; the
+  real hand reached -26 mm (floor -31). Dream kept the gripper at 0.00-0.03 in every
+  call. Open questions: overhead camera (wrist-only is the condition Grace wanted
+  tested; Dream approaches but never opens), and the physical gripper direction
+  (README: closed -2.9, open -115.1, never confirmed on the arm).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
