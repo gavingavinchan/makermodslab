@@ -287,6 +287,18 @@ restore paths in the DAgger runner.
   and a return may end exactly at the run's start rest. 113 targeted tests pass.
   Only a powered run shows: the gripper really limp while the six hold, its feedback
   still answering (the same clear-fault query reads torque-off motors today).
+- *Status (2026-11-08, later): first powered rehearsals, stop path works.* Two
+  `--rehearse --live` runs on the real arm, no Dream. Run 1 (19:47:01Z): the approach
+  completed, then the hold tripped `torque_sustained` (shoulder_lift ~3.85 Nm for 2 s
+  vs the 3.5 Nm cap) and the stop path ran: gripper off ok, both return legs arrived,
+  back at rest, all torque off, no release problems. Run 2 (19:47:24Z): Gavin pressed
+  STOP mid-approach; the same clean return. Peak temp 25 C; peak lag 8.4 deg (the
+  shoulder sags ~7 deg under load in MIT position control, near the 10 deg lag trip).
+  Holding the start pose needs ~3.9 Nm on the shoulder, so Gavin: "increase the torque
+  cap, just make sure the speed is limited, cuz the torque alone cant break glass, its
+  impact with the momentum that can break glass". Sustained cap 3.5 -> 4.5 Nm; the
+  5 Nm instant trip and the hard 15 deg/s stay. Logs:
+  `scripts/viscous-dream1/real/runs/rehearse-live-20261108T1947{01,24}Z/`.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

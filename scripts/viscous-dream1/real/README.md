@@ -173,7 +173,7 @@ any of it runs, so a refusal stops the arm before the chunk starts.
 | Workspace box | tcp / wrist / wrist_pitch / elbow outside their boxes on any substep: chunk refused |
 | Tank guard | substep rejected, or measured pose into the keep-out beyond its allowance |
 | Lag | measured vs commanded > 10 deg on an arm joint for 2 ticks (gripper excluded) |
-| Torque | > 5 Nm for 2 ticks, or > 3.5 Nm (dry planning cap) for 2 s |
+| Torque | > 5 Nm for 2 ticks, or > 4.5 Nm for 2 s (was 3.5; the start pose holds at ~3.9 Nm on the shoulder; speed, not torque, is what breaks glass, so 15 deg/s stays hard) |
 | Temperature | >= 80 C (warn 70; the driver stops at 85) |
 | Feedback | no fresh reply, motor fault, camera read error |
 | Dream | error, malformed or non-finite chunk; inputs not checked (refused locally, not billed) |

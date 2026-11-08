@@ -1734,7 +1734,7 @@ def main(argv=None) -> int:
     p.add_argument("--limit-margin-deg", type=float, default=1.0)
     p.add_argument("--lag-trip-deg", type=float, default=10.0)
     p.add_argument("--torque-trip-nm", type=float, default=5.0)
-    p.add_argument("--torque-cap-nm", type=float, default=3.5)
+    p.add_argument("--torque-cap-nm", type=float, default=4.5)
     p.add_argument("--torque-cap-s", type=float, default=2.0)
     p.add_argument("--temp-trip-c", type=float, default=80.0)
     p.add_argument(

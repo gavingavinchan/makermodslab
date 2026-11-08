@@ -203,8 +203,14 @@ class TripMonitorTest(unittest.TestCase):
     def test_torque_instant_and_sustained(self):
         self.assertEqual(self.update(torque=dict(zeros(0.5), shoulder_lift=6.0)), [])
         self.assertIn("torque", [t.name for t in self.update(torque=dict(zeros(0.5), shoulder_lift=-6.0))])
+        # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08): under the cap.
+        hold = core.TripMonitor(core.TripLimits(), self.clock)
+        for t in (0.0, 1.0, 2.0, 5.0):
+            self.clock.t = t
+            self.assertEqual(hold.update(POSE, self.cmd, dict(zeros(0.5), shoulder_lift=3.9), zeros(30)), [])
+        self.clock.t = 0.0
         mon = core.TripMonitor(core.TripLimits(), self.clock)
-        over = dict(zeros(0.5), elbow_flex=4.0)
+        over = dict(zeros(0.5), elbow_flex=4.7)
         self.assertEqual(mon.update(POSE, self.cmd, over, zeros(30)), [])
         self.clock.t = 1.9
         self.assertEqual(mon.update(POSE, self.cmd, over, zeros(30)), [])

@@ -1,0 +1,73 @@
+{
+ "trips": [
+  {
+   "name": "torque_sustained",
+   "detail": "shoulder_lift over 3.5 Nm for 2.0 s"
+  }
+ ],
+ "calls": 0,
+ "rows_planned": 0,
+ "approach_substeps": 112,
+ "substeps_sent": 0,
+ "clipped": 0,
+ "guard": {
+  "ok": 112
+ },
+ "stretched_rows": 0,
+ "phases": [
+  "connect",
+  "start gate",
+  "engage",
+  "approach",
+  "hold",
+  "stop: gripper torque off",
+  "return leg 1/2",
+  "return leg 2/2",
+  "release all torque"
+ ],
+ "stop": {
+  "reason": "trip: torque_sustained: shoulder_lift over 3.5 Nm for 2.0 s",
+  "gripper_release": "ok",
+  "legs": [
+   {
+    "leg": 1,
+    "ok": true,
+    "message": "settled"
+   },
+   {
+    "leg": 2,
+    "ok": true,
+    "message": ""
+   }
+  ],
+  "returned": "at the rest",
+  "release_problems": null
+ },
+ "reason": "trip: torque_sustained: shoulder_lift over 3.5 Nm for 2.0 s",
+ "peak_torque_nm": {
+  "shoulder_pan": 0.33846153846153726,
+  "shoulder_lift": 3.9623931623931625,
+  "elbow_flex": 1.815384615384616,
+  "wrist_flex": 0.6188034188034184,
+  "wrist_yaw": 0.2564102564102573,
+  "wrist_roll": 0.24957264957264869,
+  "gripper": 0.03760683760683747
+ },
+ "peak_temp_c": {
+  "shoulder_pan": 22.0,
+  "shoulder_lift": 25.0,
+  "elbow_flex": 23.0,
+  "wrist_flex": 22.0,
+  "wrist_yaw": 22.0,
+  "wrist_roll": 22.0,
+  "gripper": 22.0
+ },
+ "peak_lag_deg": {
+  "shoulder_pan": 0.31612169483844355,
+  "shoulder_lift": 8.352548477733947,
+  "elbow_flex": 3.433155371067542,
+  "wrist_flex": 1.7634932164038588,
+  "wrist_yaw": 0.5026103362493419,
+  "wrist_roll": 0.6971703609805369
+ }
+}

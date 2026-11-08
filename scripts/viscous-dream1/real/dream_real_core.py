@@ -420,7 +420,10 @@ class TripLimits:
     lag_ticks: int = 2
     torque_trip_nm: float = 5.0  # RS00 continuous rating, instantaneous
     torque_trip_ticks: int = 2
-    torque_cap_nm: float = 3.5  # the dry-arm planned-load cap
+    # Sustained cap. Was the dry-arm planning cap 3.5; holding the start pose takes ~3.9 Nm on the
+    # shoulder (rehearsal 2026-11-08). Gavin: "torque alone cant break glass, its impact with the
+    # momentum", so the cap rose and the 15 deg/s speed limit stays hard. Under the 5 Nm trip.
+    torque_cap_nm: float = 4.5
     torque_cap_s: float = 2.0
     temp_warn_c: float = 70.0
     temp_trip_c: float = 80.0  # driver stops at 85, scripts abort below 82 and cool at 80
