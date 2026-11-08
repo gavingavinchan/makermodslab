@@ -49,6 +49,7 @@ export interface ArmCapabilities {
   /** Local Teleop can push back on the Star leader's gripper when the
    * follower's jaws meet an object. Absent on older servers. */
   supports_gripper_haptics?: boolean;
+  supports_tank_measurement?: boolean;
 }
 
 /**

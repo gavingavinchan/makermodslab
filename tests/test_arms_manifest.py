@@ -621,6 +621,7 @@ SO101_ENTRY = {
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
         "supports_gripper_haptics": False,
+        "supports_tank_measurement": False,
     },
     "robot_types": ["so101_follower", "bi_so_follower"],
     "robot_type_markers": ["so100", "so101", "so-100", "so-101", "so_follower", "so_leader"],
@@ -678,6 +679,7 @@ METAL_ENTRY = {
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
         "supports_gripper_haptics": False,
+        "supports_tank_measurement": False,
     },
     "robot_types": ["metal_follower", "bi_metal_follower"],
     "robot_type_markers": ["metal"],
@@ -906,3 +908,9 @@ def test_manifest_route_is_v1_only_in_the_system_namespace(client) -> None:
     assert route.endpoint.__name__ == "list_arm_families"
     assert route.tags == ["system"]
     assert route.response_model is ArmFamiliesResponse
+
+
+def test_only_viscous_supports_tank_measurement():
+    from makermodslab.arms.manifest import arms_manifest
+
+    assert {f["id"] for f in arms_manifest() if f["capabilities"]["supports_tank_measurement"]} == {"viscous"}

@@ -307,6 +307,7 @@ class ArmCapabilities(BaseModel):
     teleop_usb_discovery: bool = False
     # Local Teleop can render grasp contact on the Star leader's gripper.
     supports_gripper_haptics: bool = False
+    supports_tank_measurement: bool = False
 
 
 class LeaderOptionInfo(BaseModel):

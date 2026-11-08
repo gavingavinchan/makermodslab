@@ -22,6 +22,7 @@ class ViscousFamily(CanArmFamily):
     label = "Viscous Arm v1"
     short_label = "Viscous"
     indefinite_label = "a Viscous arm"
+    supports_tank_measurement = True
     supports_bimanual = False
     supports_teleop_speed_limit = True
     teleop_usb_discovery = True

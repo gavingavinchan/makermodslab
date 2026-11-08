@@ -265,6 +265,8 @@ class CalibrationManager:
 
     def start_calibration(self, request: CalibrationRequest) -> dict[str, Any]:
         """Start calibration process"""
+        from .tank_measure import tank_measurement_is_active
+
         try:
             # The "already active?" check and the claim (calibration_active =
             # True below) must be atomic: held under one lock acquisition, not
@@ -272,7 +274,7 @@ class CalibrationManager:
             # read calibration_active as False before either sets it True, and
             # both spawn a worker thread against the same arm.
             with self._status_lock:
-                if self.status.calibration_active:
+                if self.status.calibration_active or tank_measurement_is_active():
                     return {
                         "success": False,
                         "message": "Calibration already active",
@@ -911,5 +913,11 @@ def calibration_is_active() -> bool:
     no new ``robot.busy.*`` discriminant to register.
     """
     from .step_calibrate import step_calibration_is_active
+    from .tank_measure import tank_measurement_is_active
 
-    return calibration_manager.status.calibration_active or step_calibration_is_active()
+    # Torque-off tank probing owns the same follower bus as the step wizard.
+    return (
+        calibration_manager.status.calibration_active
+        or step_calibration_is_active()
+        or tank_measurement_is_active()
+    )

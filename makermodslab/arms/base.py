@@ -287,6 +287,7 @@ class ArmFamily(ABC):
     # number a bimanual robot doubles, and the number a trained checkpoint's
     # observation.state must match.
     joints_per_arm: int
+    supports_tank_measurement: bool = False
     supports_bimanual: bool
 
     def urdf_joint_positions(self, degrees: dict[str, float]) -> dict[str, float]:

@@ -202,16 +202,26 @@ class CanArmFamily(ArmFamily):
                 device.bus.disconnect(False)
             raise
 
+    def open_follower_torque_off(self, port: str, config_id: str) -> Any:
+        """Open the follower's bus with torque OFF, for reading it while a person moves it.
+
+        The bus-only open behind follower calibration, kept separate so a
+        read-only user (the tank measurement) does not go through
+        ``open_for_calibration``, which a family may refuse for its follower
+        (the Viscous arm refuses re-zeroing there).
+        """
+        from lerobot.robots import make_robot_from_config
+
+        device = make_robot_from_config(self.single_follower_config(port, config_id))
+        self._open_can_bus_torque_off(device, f"{self.short_label} follower arm")
+        return device
+
     def open_for_calibration(
         self, device_type: str, port: str, config_id: str, leader_kind: str | None = None
     ) -> Any:
         """Open ONE device's bus with torque OFF, ready for the user to pose the arm."""
         if device_type == "robot":
-            from lerobot.robots import make_robot_from_config
-
-            device = make_robot_from_config(self.single_follower_config(port, config_id))
-            self._open_can_bus_torque_off(device, f"{self.short_label} follower arm")
-            return device
+            return self.open_follower_torque_off(port, config_id)
 
         from lerobot.teleoperators import make_teleoperator_from_config
 
