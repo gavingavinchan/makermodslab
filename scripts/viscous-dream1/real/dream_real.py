@@ -709,24 +709,53 @@ def deny_network():
     sys.addaudithook(hook)
 
 
+def make_floor_slide(arm: dict) -> tuple[core.FloorSlide | None, str | None]:
+    """The floor slide for this arm file's tool point, on the tank guard's own mesh and floor line."""
+    try:
+        from makermodslab import tank_guard
+
+        model = tank_guard.TankGuard.from_file().model
+    except Exception as error:  # noqa: BLE001 - the plan reports it; the guard's own absence refuses --live
+        return None, f"no tank model ({error.__class__.__name__}: {error})"
+    if arm.get("flange") != "wrist_roll_link":
+        return None, f"flange {arm.get('flange')!r} is not the tank model's wrist_roll_link"
+    return (
+        core.FloorSlide(
+            core.HandMesh.from_model(model),
+            core.tool_rotation(arm["approach"], arm["jaw"]),
+            np.asarray(arm["tcp"], float),
+            core.keepout_floor_mm(),
+        ),
+        None,
+    )
+
+
 class SlideTransport:
-    """Wraps the client's transport: clips Dream's left hand targets into the tcp box (core.clamp_eef_rows)
-    BEFORE the client's IK, so the hand slides along the limits instead of the chunk being cut there."""
+    """Wraps the client's transport: BEFORE the client's IK, clips Dream's left hand targets into the tcp box
+    (core.clamp_eef_rows), then raises any whose hand would come lower than the floor slide allows
+    (core.FloorSlide), so the hand slides along the limits instead of the chunk being cut there."""
 
     KEY = "action.left_eef_xyz"
+    ROT = "action.left_eef_rot6"
+    GRIP = "action.left_grip"
 
-    def __init__(self, real, box_mm):
-        self.real, self.box_mm = real, box_mm
+    def __init__(self, real, box_mm, floor: core.FloorSlide | None = None):
+        self.real, self.box_mm, self.floor = real, box_mm, floor
         self.last_exchange = getattr(real, "last_exchange", None)
         self.clamped_rows = []  # per reply: rows whose hand target was moved onto a limit
+        self.lifts_mm = []  # per reply: each row's floor lift (mm), [] without a floor slide
 
     def request(self, request, headers, **kwargs):
         reply = self.real.request(request, headers, **kwargs)
         per_key = (reply or {}).get("actions", {}).get("per_key") if isinstance(reply, dict) else None
         if per_key and self.KEY in per_key:
             rows, changed = core.clamp_eef_rows(per_key[self.KEY], self.box_mm)
+            lift = np.zeros(len(rows))
+            if self.floor is not None:
+                rows, lift = self.floor.lift_rows(rows, per_key[self.ROT], per_key[self.GRIP])
             per_key[self.KEY] = rows.tolist()
             self.clamped_rows.append(changed)
+            self.lifts_mm.append(lift.tolist())
         return reply
 
     def __getattr__(self, name):
@@ -781,7 +810,8 @@ class DreamReal:
         else:
             self.client.policy(self.config)
             self.stub = None
-        self.slide = SlideTransport(self.client._policy._transport, core.tcp_box_mm(BOX_FILE))
+        floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()))
+        self.slide = SlideTransport(self.client._policy._transport, core.tcp_box_mm(BOX_FILE), floor)
         self.client._policy._transport = self.slide
         self.inputs_id = None
         self.inputs_checked = None
@@ -1231,13 +1261,21 @@ class Episode:
                     self.summary["calls"] += 1
                     slide = getattr(self.dream, "slide", None)
                     slid = slide.clamped_rows[-1] if slide is not None and slide.clamped_rows else 0
-                    if slid:
+                    lifts = slide.lifts_mm[-1] if slide is not None and slide.lifts_mm else []
+                    lifted = sum(v > 0 for v in lifts)
+                    if slid or lifted:
                         self.summary.setdefault("slid", []).append(
-                            {"call": self.summary["calls"], "rows": slid}
+                            {
+                                "call": self.summary["calls"],
+                                "rows": slid,
+                                "floor_rows": lifted,
+                                "max_floor_lift_mm": round(max(lifts, default=0.0), 1),
+                            }
                         )
                         self._phase(
                             "slide",
-                            f"call {self.summary['calls']}: {slid} hand targets moved onto the limits",
+                            f"call {self.summary['calls']}: {slid} hand targets moved onto the box, {lifted} "
+                            f"raised off the floor (up to {max(lifts, default=0.0):.0f} mm)",
                         )
                     try:
                         plan = self.plan_chunk(reply)
@@ -1261,6 +1299,7 @@ class Episode:
                             "per_key": {
                                 k: np.asarray(v).tolist() for k, v in (reply.get("per_key") or {}).items()
                             },
+                            "floor_lift_mm": [round(v, 1) for v in lifts],
                             "substeps": plan,
                         },
                     )
@@ -1577,6 +1616,15 @@ def build_plan(
         "trips": {
             "joint_clamp": f"every target clipped {settings.limit_margin_deg} deg inside the motor limits (a notice, not a stop)",
             "jump": f"any arm joint target > {settings.max_jump_deg} deg from the last -> refuse chunk, stop",
+            "slide": "BEFORE Dream's client IK, every row of Dream's left hand target: the tcp clipped into the "
+            f"box's tcp limits {core.SLIDE_MARGIN_MM} mm inside (core.clamp_eef_rows), then its z raised just "
+            "enough that the lowest mesh vertex of " + "/".join(core.HAND_LINKS) + " (at Dream's requested "
+            "rot6 and grip; wrist_yaw_link bounded over every roll) sits at the keep-out floor line "
+            f"({core.keepout_floor_mm():g} mm) + {core.FLOOR_BUFFER_MM:g} mm + the predicted sag "
+            f"{core.SAG_MM_PER_M2:g} mm/m^2 x tcp reach^2 (core.FloorSlide); x, y, orientation and grip as Dream "
+            "asked, so the hand follows Dream down to the floor line, then slides along it"
+            if guard.available
+            else f"box clip only; NO floor slide: {guard.problem}",
             "workspace_box": f"{BOX_FILE.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: "
             "the chunk is cut at the last substep inside, the arm holds there, the next call follows",
             "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (keep-out -> override as "

@@ -386,6 +386,23 @@ restore paths in the DAgger runner.
   call. Open questions: overhead camera (wrist-only is the condition Grace wanted
   tested; Dream approaches but never opens), and the physical gripper direction
   (README: closed -2.9, open -115.1, never confirmed on the arm).
+- *Status (2026-11-08, later): jaws on the glass; floor -28; orientation-aware slide.*
+  Gavin pressed STOP in 213138Z because the jaws hit the glass: the tip's lowest mesh
+  point plateaued at -27.3..-28.3 mm while commands kept going lower, so the floor is
+  -28 (keep-out updated, Gavin approved). Gavin then asked that the arm follow Dream down
+  to the limit and keep going forward/sideways rather than give up. A subagent built
+  `core.FloorSlide` (pre-IK, in `SlideTransport`): each row's tcp z is raised just
+  enough that the hand's lowest mesh point (fingers at the row's grip, wrist_roll,
+  wrist_yaw at worst roll) stays at floor + 10 mm + 224 mm/m^2 x reach^2 (a sag fit on
+  1520 ticks at 90/4, sd 2 mm, max 8.9; re-fit if the gains change); x, y, rot6 and grip
+  untouched. Dream's eef_rot6 = flange rotation x the arm file's tool axes (z approach,
+  x jaw), residual median 0.6 deg on well-tracked rows. Corrections to what I had told
+  Gavin: none of 213138Z's cuts were the floor (call 1: forearm vs the back wall; calls
+  2-4: wrist_pitch vs the rim, both from the elbow folding up and back when the hand
+  comes close to the base), the tcp is AT the fingertips (not ~3 cm above), and the
+  sag at the hand is 27-53 mm off the glass, not 5-7. Offline replay of 213138Z through
+  Dream's real IK: no floor cuts; calls 9-10 (reach ~310 mm) still cut by the forearm
+  vs the back wall. 154 targeted tests pass.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

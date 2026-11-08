@@ -178,6 +178,23 @@ no arm joint exceeds 15 deg/s (gripper 60) and all joints arrive together (the g
 proof needs that), each substep through the box and the tank guard. The whole chunk is planned before
 any of it runs, so a refusal stops the arm before the chunk starts.
 
+**Before the IK, the slide** (`SlideTransport`; Gavin: when Dream asks for the hand below the floor it
+should go down until it reaches the limit, stop going down there, and still go forward when asked, and
+the jaws must not press on the glass). Each row of Dream's left hand target is first clipped into the
+box's tcp limits (`core.clamp_eef_rows`, 40 mm inside far/near, 100 mm inside the sides). Then
+`core.FloorSlide` raises the row's tcp z just enough that the hand's lowest mesh vertex (wrist_roll_link,
+both fingers at the row's grip, and wrist_yaw_link swept over every roll angle, at the orientation Dream
+asked for) sits at the keep-out floor line + 10 mm + the predicted sag. x, y, orientation and grip stay as
+Dream asked, so the hand follows Dream down, then slides along the floor. Dream's `eef_rot6` is the flange
+rotation times the arm file's tool axes (z = approach, x = jaw), re-fit from logged replies against FK of
+their own joint rows (`tests/test_viscous_dream_slots.py`). The sag term is there because the arm hangs
+below its command by more than the buffer: with the 90/4 shoulder/elbow gains, 27-37 mm at 350-390 mm reach
+and 53 mm at 490 mm (fit 224 mm/m^2 x reach^2, residual sd 2 mm); in live 20261108T213138Z the commanded
+lowest point stayed 6-10 mm above the floor line and the jaws still lay on the glass, the glass carrying
+the arm's weight. Re-fit `core.SAG_MM_PER_M2` whenever `FOLLOWER_GAINS` change. The box and the tank guard
+still check every substep after the IK and cut the chunk where it would leave them; `chunks.jsonl` logs
+each row's floor lift (`floor_lift_mm`, beside the per_key AS SOLVED, i.e. after the slide).
+
 ## Trips (every one ends in re-anchor, gripper off, return legs to the rest, then torque off)
 
 | Trip | Default |

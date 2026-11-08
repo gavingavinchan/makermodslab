@@ -397,6 +397,160 @@ def clamp_eef_rows(rows_m, box_mm: Mapping, margin_mm: Mapping = SLIDE_MARGIN_MM
     return rows, changed
 
 
+# --- floor slide: the hand's lowest mesh point rides above the glass -----------
+
+# Gavin 2026-11-08: when Dream asks for the hand below the floor, it should go down until it reaches the limit,
+# then stop going down while still following everything else ("if dream 1 asks it to go forward as well it should
+# go forward without going down more"), and the jaws must not press on the glass. The tcp box alone cannot do that:
+# what touches the glass is the hand's lowest mesh vertex, which depends on the tool orientation and the grip.
+#
+# The arm sags below its command, and the sag grows with reach: quasi-static, unsupported ticks of the three
+# 90/4-gain runs (live 20261108T212338Z and T213138Z, rehearse-live T212220Z; 1520 ticks, tcp reach 350-510 mm)
+# put the hand's lowest point 27-37 mm under its command at 350-390 mm reach and 53-54 mm at 470-510 mm
+# (shoulder 2-3 deg, elbow ~2 deg, wrist_flex 2-4 deg of standing error). A least-squares sag = k * reach^2 gives
+# k = 224 mm/m^2 (residual sd 2.0 mm, max 8.9). In live T213138Z the command's lowest point stayed 6-10 mm ABOVE the
+# floor line and the jaws still lay on the glass for 4 s (measured -28 mm, shoulder torque falling from 3.5 to
+# ~1 Nm as the glass took the arm's weight): a buffer that ignores the sag cannot keep them off it.
+SAG_MM_PER_M2 = 224.0  # measured with FOLLOWER_GAINS shoulder/elbow 90/4: re-fit when the gains change
+# The clearance the hand's lowest point keeps above the keep-out floor line after the predicted sag: covers the sag
+# fit's worst residual (8.9 mm) so it does not land on the glass, and leaves the fingertips well under a golf
+# ball's equator (21 mm up), so the grasp still closes around the ball.
+FLOOR_BUFFER_MM = 10.0
+# The links whose mesh the slide keeps off the floor: the flange, its fingers and, swept over every roll angle,
+# the link the roll turns against. The tank guard still checks every link of every substep after the IK.
+HAND_LINKS = ("wrist_roll_link", "gripper_left", "gripper_right", "wrist_yaw_link")
+
+
+def tool_rotation(approach, jaw) -> np.ndarray:
+    """Dream's eef frame in the flange frame (`dream_ik.specs._tool_axes`): columns x = jaw made orthogonal to
+    the approach, y = z cross x, z = approach. Dream's `eef_rot6` is flange rotation @ this (fit on live
+    20261108T213138Z's replies against FK of their own joint rows; tests/test_viscous_dream_slots.py)."""
+    z = np.asarray(approach, float) / np.linalg.norm(approach)
+    x = np.asarray(jaw, float) - (np.asarray(jaw, float) @ z) * z
+    x = x / np.linalg.norm(x)
+    return np.stack([x, np.cross(z, x), z], axis=1)
+
+
+def rot6_to_matrix(rot6) -> np.ndarray:
+    """(..., 6) rotation 6D (the first two columns, as dream_ik.decode) -> (..., 3, 3), Gram-Schmidt."""
+    x = np.asarray(rot6, float)
+    b1 = x[..., :3] / np.linalg.norm(x[..., :3], axis=-1, keepdims=True)
+    a2 = x[..., 3:6] - (b1 * x[..., 3:6]).sum(-1, keepdims=True) * b1
+    b2 = a2 / np.linalg.norm(a2, axis=-1, keepdims=True)
+    return np.stack([b1, b2, np.cross(b1, b2)], axis=-1)
+
+
+@dataclass(frozen=True)
+class HandMesh:
+    """The hand's collision vertices in the flange frame (metres), for the floor slide.
+
+    `rigid` is fixed to the flange; each finger slides along its axis by `slide_open_m` times the grip's
+    opening fraction (the tank guard's own motor -> slide mapping); `swept` is the link the roll joint turns
+    against, at roll 0, bounded over every roll angle about `roll_axis` (through the flange origin), since the
+    roll the IK will pick is not known before the IK.
+    """
+
+    rigid: np.ndarray
+    fingers: tuple
+    slide_open_m: float
+    grip_closed_deg: float
+    grip_open_deg: float
+    swept: np.ndarray
+    roll_axis: np.ndarray
+
+    @classmethod
+    def from_model(cls, model, flange: str = "wrist_roll_link") -> HandMesh:
+        """From the tank guard's arm model (`makermodslab.tank_geometry.ArmModel`, duck-typed)."""
+        by_child = {j.child: j for j in model.joints}
+        roll = by_child[flange]
+        rigid = [model.vertices[flange]]
+        fingers = []
+        for j in model.joints:
+            if j.parent != flange or j.child not in model.vertices:
+                continue
+            v = np.einsum("ij,kj->ik", model.vertices[j.child], np.asarray(j.r)) + np.asarray(j.t)
+            if j.kind == "prismatic":
+                axis = np.asarray(j.r) @ np.asarray(j.axis, float)
+                fingers.append((v, axis / np.linalg.norm(axis)))
+            elif j.kind == "fixed":
+                rigid.append(v)
+            else:
+                raise ValueError(f"{j.child} moves on the flange by a {j.kind} joint")
+        axis = np.asarray(roll.axis, float)
+        return cls(
+            rigid=np.concatenate(rigid),
+            fingers=tuple(fingers),
+            slide_open_m=float(model.gripper_slide_open_m),
+            grip_closed_deg=float(model.gripper_motor_closed_deg),
+            grip_open_deg=float(model.gripper_motor_open_deg),
+            swept=np.einsum(
+                "ij,jk->ik", model.vertices[roll.parent] - np.asarray(roll.t), np.asarray(roll.r)
+            ),
+            roll_axis=axis / np.linalg.norm(axis),
+        )
+
+    def slide_m(self, grip) -> np.ndarray:
+        motor = np.array([grip_to_motor(g) for g in np.asarray(grip, float).reshape(-1)])
+        fraction = (motor - self.grip_closed_deg) / (self.grip_open_deg - self.grip_closed_deg)
+        return np.clip(fraction, 0.0, 1.0) * self.slide_open_m
+
+    def hang_mm(self, flange_rot, tcp_m, grip) -> np.ndarray:
+        """Per row, how far the hand's lowest vertex sits below the tcp (mm; negative = above it), for flange
+        rotations `flange_rot` (rows, 3, 3) in a frame whose z is up and grips 0 closed .. 1 open."""
+        # einsum, not @: numpy's Accelerate matmul raises spurious FP warnings here (as in tank_guard).
+        up = np.asarray(flange_rot, float)[:, 2, :]  # each row's world z axis in the flange frame
+        tcp = np.asarray(tcp_m, float)
+        low = np.einsum("vj,rj->vr", self.rigid - tcp, up).min(axis=0)
+        slide = self.slide_m(grip)
+        for vertices, axis in self.fingers:
+            z = np.einsum("vj,rj->vr", vertices - tcp, up).min(axis=0)
+            low = np.minimum(low, z + slide * np.einsum("rj,j->r", up, axis))
+        along = np.einsum("vj,j->v", self.swept, self.roll_axis)
+        across = np.linalg.norm(self.swept - along[:, None] * self.roll_axis, axis=1)
+        u = np.einsum("rj,j->r", up, self.roll_axis)
+        swept = along[:, None] * u - across[:, None] * np.sqrt(np.clip(1.0 - u * u, 0.0, None))
+        low = np.minimum(low, swept.min(axis=0) - np.einsum("j,rj->r", tcp, up))
+        return -low * 1000.0
+
+
+@dataclass(frozen=True)
+class FloorSlide:
+    """Raise each of Dream's hand targets just enough that the hand's lowest mesh vertex, after the predicted
+    sag, stays `buffer_mm` above the keep-out floor line; x, y, orientation and grip stay as Dream asked."""
+
+    hand: HandMesh
+    tool_rot: np.ndarray  # tool_rotation(approach, jaw)
+    tcp_m: np.ndarray  # the arm file's tcp, flange frame
+    floor_mm: float  # the keep-out floor line (base frame z, the same in dream_base)
+    buffer_mm: float = FLOOR_BUFFER_MM
+    sag_mm_per_m2: float = SAG_MM_PER_M2
+
+    def lowest_mm(self, xyz_m, rot6, grip) -> np.ndarray:
+        """The hand's lowest vertex (z, mm) at each requested tcp pose."""
+        xyz = np.asarray(xyz_m, float)
+        rot = np.einsum("rij,kj->rik", rot6_to_matrix(rot6), self.tool_rot)  # flange = eef @ tool_rot^T
+        return xyz[:, 2] * 1000.0 - self.hand.hang_mm(rot, self.tcp_m, grip)
+
+    def sag_mm(self, xyz_m) -> np.ndarray:
+        xyz = np.asarray(xyz_m, float)
+        return self.sag_mm_per_m2 * (xyz[:, 0] ** 2 + xyz[:, 1] ** 2)  # tcp reach from the J1 axis
+
+    def lift_rows(self, xyz_m, rot6, grip):
+        """Dream's `eef_xyz` rows (dream_base metres, rows of its `eef_rot6` and `grip` beside them) with z raised
+        where needed. Returns (rows, lift per row in mm)."""
+        rows = np.array(xyz_m, float, copy=True)
+        line = self.floor_mm + self.buffer_mm + self.sag_mm(rows)
+        lift = np.maximum(0.0, line - self.lowest_mm(rows, rot6, grip))
+        rows[:, 2] += lift / 1000.0
+        return rows, lift
+
+
+def keepout_floor_mm(path: Path = KEEPOUT_FILE) -> float:
+    """The keep-out's floor line (base frame z, mm): the same number the tank guard checks."""
+    floor = json.loads(Path(path).read_text())["planes_mm"]["floor"]
+    return float(floor["value"] if isinstance(floor, dict) else floor)
+
+
 # --- workspace box -----------------------------------------------------------
 
 
