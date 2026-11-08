@@ -252,6 +252,21 @@ restore paths in the DAgger runner.
   `tests/test_viscous_aquarium_env.py`, which still pinned J5's old "hand test
   pending" status. Running the full pytest suite on the Mac froze it (all RAM; Gavin
   had to restart): big jobs run on gavin-linux only.
+- *Status (2026-11-08, later): tank model approved (provisional), cameras, rehearsal.*
+  Gavin: "lets approve the tank model for now, i have not really checked it but as
+  long as we go slow, must keep the 15deg/s limits". The sidecar now says approved by
+  Gavin with that note, hash 8975766e...cef7f, which matches the station arm file's
+  URDF copy. Hence a hard 15 deg/s on every live motion (chunks, approach, return),
+  being added with the stop work. Base: "it is clamped good enough fro now". Cameras:
+  "the 'head' camera is the wrist camera, but grace from dreamlabs wants to try it",
+  so the first runs feed `head` as Dream's wrist view with black overhead/right-wrist
+  slots (the runner needs an explicit setting for that). Stop/start (Gavin): "one big
+  red button to stop. when stop, use the gradually return to the current rest
+  position, (lying flat on the bottom), but you need to immediately release torque on
+  the grippers. for start position, you probably need to lift the elbow up first";
+  and "we should do one rehearsal": a powered run with no Dream calls (rest -> start
+  pose -> hold -> red button -> back to rest -> torque off) before the first billed
+  call, because the runner's hardware path has never moved the real arm.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

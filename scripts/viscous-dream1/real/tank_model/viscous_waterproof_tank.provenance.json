@@ -4,11 +4,12 @@
  "generated_by": "scripts/viscous-dream1/real/make_tank_arm.py",
  "generated_utc": "2026-11-08T18:40:02Z",
  "approval": {
-  "status": "pending_gavin_approval",
-  "by": null,
-  "at": null,
-  "urdf_sha256_normalized": null,
-  "how": "Gavin reviews this file and the URDF, then sets status 'approved', by, at, and urdf_sha256_normalized = 8975766e6fde4e8fcacb7ae151ef3c0b69f6939383f43f7293125b7dbc5cef7f (the URDF's sha256 ignoring trailing newlines). dream_real.py refuses --live until then. Then run dreamcli tcp on the exported folder (README, order of operations)."
+  "status": "approved",
+  "by": "Gavin",
+  "at": "2026-11-08",
+  "urdf_sha256_normalized": "8975766e6fde4e8fcacb7ae151ef3c0b69f6939383f43f7293125b7dbc5cef7f",
+  "how": "Gavin reviews this file and the URDF, then sets status 'approved', by, at, and urdf_sha256_normalized = 8975766e6fde4e8fcacb7ae151ef3c0b69f6939383f43f7293125b7dbc5cef7f (the URDF's sha256 ignoring trailing newlines). dream_real.py refuses --live until then. Then run dreamcli tcp on the exported folder (README, order of operations).",
+  "note": "Gavin 2026-11-08: \"lets approve the tank model for now, i have not really checked it but as long as we go slow, must keep the 15deg/s limits\". Provisional: not reviewed in detail; every live arm motion must stay <= 15 deg/s."
  },
  "urdf": {
   "file": "viscous_waterproof_tank.urdf",
