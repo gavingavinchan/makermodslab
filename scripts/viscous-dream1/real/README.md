@@ -216,7 +216,7 @@ each row's floor lift (`floor_lift_mm`, beside the per_key AS SOLVED, i.e. after
 | Workspace box | tcp / wrist / wrist_pitch / elbow outside their boxes on any substep: chunk refused |
 | Tank guard | substep rejected, or measured pose into the keep-out beyond its allowance |
 | Lag | measured vs commanded > 10 deg on an arm joint for 2 ticks (gripper excluded) |
-| Torque | > 12 Nm for 2 ticks (instant; RS00 peak 14), or > 5 Nm for 5 s (sustained; RS00 continuous ~5). Visitors may push about 10 Nm for up to 5 s; the start pose holds at ~3.9 Nm on the shoulder. Was 5 Nm / 4.5 Nm for 2 s |
+| Torque | > 12 Nm for 2 ticks (instant; RS00 peak 14), or > 6.5 Nm for 5 s (sustained; the approach lift holds ~6 Nm for 5-6 s). Visitors may push about 10 Nm for up to 5 s; the start pose holds at ~3.9 Nm on the shoulder. Was 5 Nm / 4.5 Nm for 2 s |
 | Overspeed | any arm joint's MEASURED speed (successive fresh positions over their timestamps) > 30 deg/s for 2 readings, gripper excluded; in the loop and during every return leg (there it ends the return and HOLDS until the second signal). The 2026-11-08 rehearsals peaked at 20.3 deg/s on one reading, 18.0 over two, at <= 15 deg/s commanded |
 | Temperature | >= 80 C (warn 70; the driver stops at 85) |
 | Feedback | no fresh reply, motor fault, camera read error |
@@ -246,7 +246,7 @@ Each layer stands alone: none relies on the tank guard's boundaries or on anothe
 5. **Lag trip** (10 deg for 2 ticks): the arm far from where it was told. Catches blocking, a push, a
    weak joint. With kp 30 Nm/rad a 10 deg error is ~5 Nm, so on most joints this ends a visitor's push
    before the torque tiers do.
-6. **Torque tiers** (12 Nm instant, 5 Nm for 5 s) and **heat** (80 C trip, 70 C warning): the sustained
+6. **Torque tiers** (12 Nm instant, 6.5 Nm for 5 s) and **heat** (80 C trip, 70 C warning): the sustained
    tier is the heat guard, since heat comes from sustained torque (the dry shoulder ran 33 -> 65 C in under
    2 min at 5-6 Nm); the 80 C trip is the backstop.
 7. **No spring-back on any stop** (the re-anchor, step 8a above): the goal moves to where the arm is,

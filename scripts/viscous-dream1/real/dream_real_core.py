@@ -620,9 +620,11 @@ class TripLimits:
     # peak. Heat is the sustained tier's job: the dry shoulder went 33 -> 65 C in under 2 min at 5-6 Nm
     # and then lost its hold at ~5.6 Nm (docs/viscous-haptics.md), so more than 5 Nm for 5 s trips.
     # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08): under both.
+    # Lifting the arm off the floor in the approach holds 5.3-6.2 Nm for 5-6 s and tripped the old 5 Nm tier
+    # (live 20261108T224555Z); Gavin approved 6.5 Nm, still about half the instant tier, heat under 80 C.
     torque_trip_nm: float = 12.0
     torque_trip_ticks: int = 2
-    torque_cap_nm: float = 5.0
+    torque_cap_nm: float = 6.5
     torque_cap_s: float = 5.0
     temp_warn_c: float = 70.0
     temp_trip_c: float = 80.0  # driver stops at 85, scripts abort below 82 and cool at 80

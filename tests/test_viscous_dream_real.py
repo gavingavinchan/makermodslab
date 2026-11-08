@@ -209,7 +209,7 @@ class TripMonitorTest(unittest.TestCase):
     def test_the_tiers_are_gavins(self):
         lim = core.TripLimits()
         self.assertEqual((lim.torque_trip_nm, lim.torque_trip_ticks), (12.0, 2))
-        self.assertEqual((lim.torque_cap_nm, lim.torque_cap_s), (5.0, 5.0))
+        self.assertEqual((lim.torque_cap_nm, lim.torque_cap_s), (6.5, 5.0))
         self.assertEqual((lim.temp_trip_c, lim.temp_warn_c), (80.0, 70.0))
         self.assertEqual((lim.overspeed_deg_s, lim.overspeed_ticks), (30.0, 2))
 
@@ -222,7 +222,7 @@ class TripMonitorTest(unittest.TestCase):
 
     def test_a_visitor_may_push_10_nm_for_5_s(self):
         # Gavin: visitors push to feel how strong it is, ~10 Nm for at least 5 s. The sustained tier
-        # (> 5 Nm for 5 s) ends it at 5 s; nothing trips before.
+        # (> 6.5 Nm for 5 s) ends it at 5 s; nothing trips before.
         mon = core.TripMonitor(core.TripLimits(), self.clock)
         push = dict(zeros(0.5), shoulder_pan=10.0)
         for i in range(100):  # 4.95 s of 20 Hz ticks
@@ -230,11 +230,12 @@ class TripMonitorTest(unittest.TestCase):
         self.assertEqual(self.tick(mon, 5.0, push), ["torque_sustained"])
 
     def test_holding_the_start_pose_never_trips(self):
-        # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08); 4.9 Nm too.
+        # Holding the start pose takes ~3.9 Nm on the shoulder (rehearsal 2026-11-08); the approach's lift
+        # holds up to ~6.2 Nm for several seconds (live 224555Z): neither trips.
         mon = core.TripMonitor(core.TripLimits(), self.clock)
         for i in range(1200):  # 60 s
             self.assertEqual(
-                self.tick(mon, i * 0.05, dict(zeros(0.5), shoulder_lift=4.9, elbow_flex=1.9)), []
+                self.tick(mon, i * 0.05, dict(zeros(0.5), shoulder_lift=6.2, elbow_flex=1.9)), []
             )
 
     def test_temperature_and_bad_reading(self):

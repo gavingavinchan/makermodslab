@@ -2249,7 +2249,7 @@ def main(argv=None) -> int:
     p.add_argument("--lag-trip-deg", type=float, default=10.0)
     p.add_argument("--shoulder-lag-trip-deg", type=float, default=20.0)
     p.add_argument("--torque-trip-nm", type=float, default=12.0, help="instant tier (2 ticks), at most 14")
-    p.add_argument("--torque-cap-nm", type=float, default=5.0, help="sustained tier, with --torque-cap-s")
+    p.add_argument("--torque-cap-nm", type=float, default=6.5, help="sustained tier, with --torque-cap-s")
     p.add_argument("--torque-cap-s", type=float, default=5.0)
     p.add_argument("--temp-trip-c", type=float, default=80.0)
     p.add_argument("--overspeed-deg-s", type=float, default=30.0, help="measured arm joint speed trip")
