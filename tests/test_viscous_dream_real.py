@@ -766,6 +766,16 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertEqual([q for q in dream_part if self.ep.box.violations(q)], [])
         self.assert_stopped_safely(arm)
 
+    def test_calls_that_execute_nothing_stop_the_run(self):
+        # 13 of 17 billed calls in live 20261108T212338Z executed nothing; three in a row now end the run.
+        from unittest import mock
+
+        with mock.patch.object(dream_real.Episode, "plan_chunk", lambda self, reply: []):
+            summary, arm = self.episode(max_calls=20)
+        self.assertEqual(summary["calls"], 3)
+        self.assertTrue(summary["reason"].startswith("stuck"), summary["reason"])
+        self.assert_stopped_safely(arm)
+
     def test_a_pushed_arm_is_held_where_it_is_and_returns_from_there(self):
         guard = NoGuard()
         summary, arm = self.episode("push", max_calls=5, guard=guard)

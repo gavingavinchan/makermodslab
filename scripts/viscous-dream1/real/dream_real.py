@@ -919,6 +919,7 @@ class Settings:
     slots: dict
     hold_s: float = DEFAULT_HOLD_S
     pause_s: float = 0.0  # hold at the start pose before the first Dream call (Gavin places the object)
+    max_stuck_calls: int = 3  # stop after this many calls in a row that execute nothing (each one is billed)
 
 
 class Episode:
@@ -1116,6 +1117,7 @@ class Episode:
         reason = "finished"
         hold_until = None
         dream_after = 0.0
+        stuck = 0
         self._phase("connect")
         self.arm.connect()
         try:
@@ -1263,6 +1265,10 @@ class Episode:
                         },
                     )
                     queue.extend(plan)
+                    stuck = 0 if plan else stuck + 1
+                    if stuck >= self.s.max_stuck_calls:
+                        reason = f"stuck: {stuck} calls in a row executed nothing (each is billed)"
+                        break
                 next_tick += core.ROW_DT_S
                 self.sleep(max(0.0, next_tick - self.clock()))
         except TripStopError as stop:
@@ -2112,6 +2118,12 @@ def main(argv=None) -> int:
         default=0.0,
         help="hold at the start pose this long before the first Dream call",
     )
+    p.add_argument(
+        "--max-stuck-calls",
+        type=int,
+        default=3,
+        help="stop after this many calls in a row that execute nothing",
+    )
     p.add_argument("--rows", type=int, default=48)
     p.add_argument("--speed-deg-s", type=float, default=HARD_ARM_SPEED_DEG_S, help="arm cap, at most 15")
     p.add_argument("--grip-deg-s", type=float, default=60.0)
@@ -2208,6 +2220,7 @@ def main(argv=None) -> int:
         slots,
         args.hold_s,
         args.pause_s,
+        args.max_stuck_calls,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     guard = Guard()

@@ -362,6 +362,20 @@ restore paths in the DAgger runner.
   37 to 34 cm out, ~1.5 cm right. Dream never opened the gripper (0.00-0.04 of 1 in
   every call) and kept asking below the floor limit. Next: raise the ball 3-4 cm,
   loosen the elbow's back limit, ask Grace about grip behaviour with wrist-only input.
+- *Status (2026-11-08, later): sag, gains, elbow limit.* Gavin saw the arm "go back
+  to rest" mid-run: it was (a) Dream's call 1 pulling the hand up and back (46 -> 23
+  cm out, 17 cm up) and (b) my STOP. Cause of (a): sag, much larger than I first said.
+  At the start pose, in water (holding torque still ~4.9 Nm), the soft 30/2 gains left
+  the shoulder 9.5 deg and elbow 5.4 deg low, the hand ~12 cm under its command, so
+  Dream saw a hand near the floor and lifted it. Runner-only gains 60/3 -> hand 7 cm
+  low (rehearsal 211903Z); 90/4 -> shoulder 3.2, elbow 2.0 deg, hand ~5.4 cm low
+  (212220Z), Gavin's choices. The plan id now also covers the gains and the keep-out.
+  Live 212338Z (90/4, 20-call cap, stopped by me at call 17 on a fresh log check): 13
+  of 17 calls executed nothing, cut by the workspace box's elbow x <= -30 limit while
+  Dream's hand was 32-39 cm out; Dream again never opened the gripper (convention
+  checked: Dream and the runner both use 0 closed, 1 open). Fixed: elbow x max
+  -30 -> +10 and wrist_pitch -20 -> +20 (the wall is 80 mm, not the 40 estimate), and
+  the run stops after 3 calls in a row that execute nothing. 31 billed calls today.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
