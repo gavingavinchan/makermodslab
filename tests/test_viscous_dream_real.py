@@ -672,6 +672,8 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertEqual(names[-1], "release")
         self.assertNotIn("SPRING-BACK", names)
         stop = names[names.index("engage") + 1 :]
+        self.assertEqual(stop[0], "drop cameras")  # the return reads the motors only (live 225249Z)
+        stop = stop[1:]
         self.assertEqual(stop[:2], ["re-anchor", "release gripper"])
         if returned:
             self.assertGreaterEqual(stop.count("return leg"), 1)
@@ -888,6 +890,26 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertEqual(len(pressed), 1)
         self.assertIn("held", summary["stop"]["returned"])
         self.assertFalse(arm.energized)
+
+    def test_a_dead_camera_still_lets_the_arm_return_to_rest(self):
+        # Live 2026-11-08T225249Z: the overhead camera failed mid-run; every reading (motors + cameras) then
+        # failed and the arm held mid-air. The stop now drops the cameras first and returns on motors only.
+        def patch(arm):
+            read, count = arm.read, [0]
+
+            def flaky():
+                count[0] += 1
+                if arm.cameras and count[0] > 200:  # well into the run
+                    raise RuntimeError("OpenCVCamera(0) frame width=640 or height=360 do not match")
+                return read()
+
+            arm.read = flaky
+
+        summary, arm = self.episode(max_calls=20, patch=patch)
+        self.assertEqual([t["name"] for t in summary["trips"]], ["feedback"])
+        self.assertEqual(summary["stop"]["returned"], "at the rest")
+        self.assertIn("drop cameras: the return reads the motors only", arm.events)
+        self.assert_stopped_safely(arm)
 
     def test_a_pushed_arm_is_held_where_it_is_and_returns_from_there(self):
         guard = NoGuard()

@@ -481,6 +481,19 @@ restore paths in the DAgger runner.
   behaviour on the real arm. Gripper tip lowest 6.5 mm under the -28 floor line (the
   guard allows 10). Return: three legs settled, released at the rest. Peaks 6.1 Nm,
   41 C, 23 deg/s.
+- *Status (2026-11-08, later): camera bandwidth, and a stop that must not need cameras.*
+  Gavin stopped 224827Z because Dream kept folding back and grasping short of the ball,
+  which was further forward. Likely cause: our wrist camera (0C45:636B, narrow field of
+  view) is not the Maker's KD-USB fisheye (2C7F:4A60, ~110 deg, mounted above/behind the
+  jaws looking along the fingers); the 2026-10-20 sim found wrist-camera match decisive
+  (6/6 only with the Maker camera). Live 225249Z then tripped 3 s into the pause: the
+  overhead camera fell to 640x360. Both cameras share one USB 2.0 hub with MJPG refused
+  (uncompressed 640x480 at 30 fps each, ~300 Mbit/s), and neither accepts 15 fps or
+  320x240 through OpenCV on macOS. Worse, the return read the robot's full observation
+  (motors + cameras), so the dead camera made every reading fail and the arm HELD
+  mid-air (Gavin supported it; one press released it). Fixed: every stop now closes the
+  cameras first and returns on motor readings only (test: a camera dying mid-run still
+  reaches the rest). Hardware fix pending: one camera on a different USB port.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

@@ -393,6 +393,10 @@ class FakeArm:
     def send(self, target, previous):
         self.target = dict(target)
 
+    def drop_cameras(self):
+        self.events.append("drop cameras: the return reads the motors only")
+        self.cameras = []
+
     def release_gripper(self):
         self.gripper_limp = True
         self.events.append(
@@ -530,13 +534,23 @@ class LabArm:
 
         obs = remote_can.get_observation(self.robot)  # raises on a stale or faulted motor
         names = [c["name"] for c in self.record.get("cameras") or []] if self.use_cameras else []
-        frames = {n: obs[n] for n in names}
+        frames = {n: obs[n] for n in names if n in obs}  # none after drop_cameras (the stop path)
         return Reading(
             {m: float(obs[f"{m}.pos"]) for m in core.MOTORS},
             {m: float(obs[f"{m}.torque"]) for m in core.MOTORS},
             {m: float(obs[f"{m}.temp"]) for m in core.MOTORS},
             frames,
         )
+
+    def drop_cameras(self):
+        """Close the cameras and take them off the robot, so every later observation is motors only."""
+        for camera in list((getattr(self.robot, "cameras", None) or {}).values()):
+            with contextlib.suppress(Exception):
+                if camera.is_connected:
+                    camera.disconnect()
+        if self.robot is not None:
+            self.robot.cameras = {}
+        self.use_cameras = False
 
     def engage(self):
         from makermodslab import remote_can
@@ -1434,6 +1448,11 @@ class Episode:
         }
         try:
             if self.energized:
+                # The return needs only the motors. A camera that dies mid-run (live 2026-11-08T225249Z: the
+                # overhead fell to 640x360 on a saturated USB bus) made every reading fail, so the arm held
+                # mid-air instead of coming home. Close the cameras before the re-anchor and the legs.
+                with contextlib.suppress(Exception):
+                    self.arm.drop_cameras()
                 here = self.reanchor(out)  # the goal now held: path checks and the leg choice start here
                 self._phase("stop: gripper torque off")
                 try:
