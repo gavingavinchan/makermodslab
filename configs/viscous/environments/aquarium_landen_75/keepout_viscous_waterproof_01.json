@@ -66,8 +66,8 @@
       "why": "Rides on the base and turns with J1 only: its extent behind J1 is 30-42.5 mm at every J1 angle (never further), so it cannot approach a wall it does not already touch. It is part of the base footprint, like the base itself."
     },
     "upper_arm_link": {
-      "faces": {"near": {"margin": 0.0, "padding": 10.0}},
-      "why": "Its heel (around the J2 axis) sits a constant 28 mm behind J1 whenever J2 <= -100 deg, so it cannot keep the full 70 mm off a near wall estimated at 40 mm. This rule lets the heel stay where it is and forbids the upper arm from tipping back past roughly vertical. Links beyond the elbow (J3, the hazard Gavin named) keep the full near margin and padding."
+      "faces": {"near": {"margin": 0.0, "padding": 0.0}},
+      "why": "Its heel (around the J2 axis) sits 28 mm behind J1 whenever J2 <= -100 deg and reached 36.9 mm in the trace, so it cannot keep the full 70 mm off a near wall estimated at 40 mm. Until the near wall is traced this rule only keeps the heel's mesh behind the estimated plane, which still forbids the upper arm tipping back past about vertical (the heel reaches 58 mm at J2 = -80). Links beyond the elbow (J3, the hazard Gavin named) keep the full near margin and padding."
     }
   },
   "joint_limits_deg": {
@@ -82,6 +82,11 @@
     },
     "status": "measured",
     "source": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json follower joint_limits. Note the arm rests at J1 182-191 in the tank, so a start at J1 > 187.53 is refused until it is moved inside by hand."
+  },
+  "start_limit_tolerance_deg": {
+    "value": 5.0,
+    "status": "design",
+    "source": "The arm rests in the tank outside three soft limits (trace: J1 191 vs 187.5, J2 -201.7 vs -199.4, gripper -0.5 vs -2.9). A start this far outside is accepted, as the Lab's slow mode already does; the first target is clipped into the limits along a checked path."
   },
   "max_jump_deg": {
     "value": 20.0,

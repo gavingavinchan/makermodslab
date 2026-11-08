@@ -100,12 +100,14 @@ class TankGuard:
         self.max_jump_deg = float(_value(config["max_jump_deg"]))
         self.sweep_tol_mm = float(_value(config["sweep_tolerance_mm"]))
         self.tracking_allowance_mm = float(_value(config["tracking_allowance_mm"]))
+        self.start_tolerance_deg = float(_value(config.get("start_limit_tolerance_deg", 0.0)))
         if set(self.limits) != set(MOTORS) or any(lo >= hi for lo, hi in self.limits.values()):
             raise ValueError("joint_limits_deg must give a positive range for all seven motors")
         values = [*self.planes.values(), *margins.values(), press, self.max_jump_deg, self.sweep_tol_mm]
         if not all(math.isfinite(v) for v in values):
             raise ValueError("Keep-out numbers must be finite")
-        if min(*margins.values(), press, self.tracking_allowance_mm) < 0 or self.sweep_tol_mm <= 0:
+        floors = (*margins.values(), press, self.tracking_allowance_mm, self.start_tolerance_deg)
+        if min(floors) < 0 or not math.isfinite(self.start_tolerance_deg) or self.sweep_tol_mm <= 0:
             raise ValueError("Margins, press and allowances must be nonnegative; sweep tolerance positive")
         p = self.planes
         if not (p["far"] < 0 < p["near"] and p["right"] < 0 < p["left"] and p["floor"] < p["rim"]):
@@ -221,12 +223,22 @@ class TankGuard:
 
     # --- decisions ------------------------------------------------------
 
-    def in_limits(self, q: dict) -> list[str]:
-        return [m for m in MOTORS if not self.limits[m][0] <= q[m] <= self.limits[m][1]]
+    def outside_limits(self, q: dict, tolerance_deg: float = 0.0) -> list[str]:
+        return [
+            m
+            for m in MOTORS
+            if not self.limits[m][0] - tolerance_deg <= q[m] <= self.limits[m][1] + tolerance_deg
+        ]
 
     def start_gate(self, measured: dict) -> Verdict:
-        """A run may start only from a pose that is inside limits and the box."""
-        if out := self.in_limits(measured):
+        """A run may start only from a pose inside the box and (nearly) inside limits.
+
+        The arm rests in the tank a few degrees outside some soft limits, as
+        the Lab's slow mode already allows; limit() then clips the first
+        target inside along a checked path.
+        """
+        _check_positions(measured)
+        if out := self.outside_limits(measured, self.start_tolerance_deg):
             return Verdict(False, -math.inf, None, "joint_limit:" + ",".join(out))
         return self.check_pose(measured)
 
