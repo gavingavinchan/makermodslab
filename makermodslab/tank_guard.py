@@ -255,11 +255,13 @@ class TankGuard:
         """
         _check_positions(previous)
         _check_positions(requested)
+        # Judge a jump on the REQUEST: a wild target (a J1 wrap, an IK flip)
+        # is refused outright, never clipped to a limit and partly executed.
+        jumps = [m for m in ARM if abs(requested[m] - previous[m]) > self.max_jump_deg]
+        if jumps:
+            return Decision("rejected", dict(previous), "jump:" + ",".join(jumps), 0.0)
         target = {m: min(max(requested[m], self.limits[m][0]), self.limits[m][1]) for m in MOTORS}
         clipped = tuple(m for m in MOTORS if target[m] != requested[m])
-        jumps = [m for m in ARM if abs(target[m] - previous[m]) > self.max_jump_deg]
-        if jumps:
-            return Decision("rejected", dict(previous), "jump:" + ",".join(jumps), 0.0, None, clipped)
         start = self.check_pose(previous)
         if not start.ok:
             return Decision("rejected", dict(previous), "previous_unsafe", 0.0, start, clipped)

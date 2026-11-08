@@ -104,14 +104,14 @@ def test_first_target_from_rest_is_clipped_into_limits(guard):
 
 
 def test_walls_refuse_but_floor_allows_contact(guard):
-    # Swinging J1 toward +y at reach ends at the left wall.
-    toward_left = {**WORK, "shoulder_pan": 160.0}
-    verdict = guard.check_pose({**WORK, "shoulder_pan": 120.0})
-    assert not verdict.ok
-    assert guard.check_pose(toward_left).ok or guard.check_pose(toward_left).face in ("left", "right")
-    # The resting gripper touches the floor: allowed.
-    slack = guard.clearances(REST)
-    assert slack[("gripper_right", "floor")] < 15  # within 15 mm of the floor bound
+    # J1 up swings the hand toward +y (left), down toward -y (right).
+    assert guard.check_pose(WORK).ok
+    assert guard.check_pose({**WORK, "shoulder_pan": 200.0}).face == "left"
+    assert guard.check_pose({**WORK, "shoulder_pan": 160.0}).face == "right"
+    assert not guard.check_pose({**WORK, "shoulder_pan": 160.0}).ok
+    # Resting on the floor, as at the end of the trace: allowed.
+    floor_slack = min(v for (link, face), v in guard.clearances(REST).items() if face == "floor")
+    assert floor_slack < 20  # the lowest vertex is within ~5 mm of the floor bound
     assert guard.check_pose(REST).ok
 
 
@@ -151,6 +151,7 @@ def test_path_through_the_keepout_is_caught_between_clear_endpoints(raw, guard):
     # at J1 135 and 235 is clear, but at 185 (straight down the tank) it is not.
     planes = {
         **raw["planes_mm"],
+        "near": {"value": 500.0},
         "far": {"value": -500.0},
         "left": {"value": 2000.0},
         "right": {"value": -2000.0},
@@ -194,7 +195,8 @@ def test_accepted_segments_are_dense_clear(guard):
 
 
 def test_unsafe_previous_and_bad_inputs_are_refused(guard):
-    inside_wall = {**WORK, "shoulder_pan": 120.0}
+    inside_wall = {**WORK, "shoulder_pan": 170.0}
+    assert not guard.check_pose(inside_wall).ok
     assert guard.limit(inside_wall, WORK).reason == "previous_unsafe"
     with pytest.raises(ValueError):
         guard.check_pose({k: v for k, v in WORK.items() if k != "gripper"})
@@ -223,6 +225,7 @@ def test_guarded_targets_tracks_the_last_accepted_target(guard):
     run = tg.GuardedTargets(guard, WORK)
     first = run.step({**WORK, "elbow_flex": WORK["elbow_flex"] + 2})
     assert first.status == "ok" and run.target == first.target
-    run.step({**WORK, "shoulder_pan": WORK["shoulder_pan"] + 300})
+    wild = run.step({**WORK, "shoulder_pan": WORK["shoulder_pan"] + 300})
+    assert wild.reason == "jump:shoulder_pan"  # judged before limit clipping
     assert run.counts == {"ok": 1, "clamped": 0, "rejected": 1}
     assert run.target == first.target
