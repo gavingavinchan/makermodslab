@@ -417,6 +417,19 @@ restore paths in the DAgger runner.
   from it (it currently freezes), report the commanded rather than the sagged pose to
   Dream (its first move "corrects" the ~5 cm sag by lifting and folding back), and
   count near-empty calls as stuck.
+- *Status (2026-11-08, later): three fixes for the stuck runs (subagent, reviewed).*
+  (1) Dream is now told the COMMANDED arm pose (gripper still measured), so the ~5 cm
+  sag no longer looks to Dream like the hand dropping (`--dream-state`, default
+  commanded); every safety check still uses the measured pose. (2) The tank guard walks
+  each segment with the motion bound (a sample with worst slack m proves +-m/B around
+  it) instead of demanding the 2 mm sweep clearance at sample 0, so a pose clamped onto
+  a limit can move away from it but never closer; replay of 215535Z: 12 of 19 later
+  chunks now get past row 0 (the other 7 put the forearm past the back wall in Dream's
+  own row 0), and all three stop legs from the final held pose are clear (the old guard
+  held the arm). (3) Calls that execute <= 2 substeps count as stuck (3 in a row stop the
+  run). Also: floor buffer 0 (Gavin: "sagging a bit to slide on the bottom ... is ok"),
+  and the loop no longer catches up after a slow planning tick (it used to send queued
+  substeps back to back, faster than the 15 deg/s plan). 162 targeted tests pass.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

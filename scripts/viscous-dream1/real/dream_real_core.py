@@ -412,10 +412,12 @@ def clamp_eef_rows(rows_m, box_mm: Mapping, margin_mm: Mapping = SLIDE_MARGIN_MM
 # floor line and the jaws still lay on the glass for 4 s (measured -28 mm, shoulder torque falling from 3.5 to
 # ~1 Nm as the glass took the arm's weight): a buffer that ignores the sag cannot keep them off it.
 SAG_MM_PER_M2 = 224.0  # measured with FOLLOWER_GAINS shoulder/elbow 90/4: re-fit when the gains change
-# The clearance the hand's lowest point keeps above the keep-out floor line after the predicted sag: covers the sag
-# fit's worst residual (8.9 mm) so it does not land on the glass, and leaves the fingertips well under a golf
-# ball's equator (21 mm up), so the grasp still closes around the ball.
-FLOOR_BUFFER_MM = 10.0
+# The clearance the hand's lowest point keeps above the keep-out floor line after the predicted sag. Was 10 mm (the
+# sag fit's worst residual, 8.9 mm, so the jaws hovered ~1 cm off the glass). Gavin 2026-11-08: "sagging a bit to
+# slide on the bottom of the aquarium is ok, it's kinda inevitable": 0, so after the predicted sag the jaws reach
+# the glass and slide on it lightly; the tank guard's floor press (10 mm under the floor line, padding ignored) is
+# still the bound on how hard a command can push into it.
+FLOOR_BUFFER_MM = 0.0
 # The links whose mesh the slide keeps off the floor: the flange, its fingers and, swept over every roll angle,
 # the link the roll turns against. The tank guard still checks every link of every substep after the IK.
 HAND_LINKS = ("wrist_roll_link", "gripper_left", "gripper_right", "wrist_yaw_link")

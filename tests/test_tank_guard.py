@@ -249,3 +249,72 @@ def test_guarded_targets_tracks_the_last_accepted_target(guard):
     assert wild.reason == "jump:shoulder_pan"  # judged before limit clipping
     assert run.counts == {"ok": 1, "clamped": 0, "rejected": 1}
     assert run.target == first.target
+
+
+def on_the_line(guard, q, joint, blocked):
+    """q with `joint` moved toward `blocked` (a value inside the keep-out) until it sits on the line."""
+    clear, inside = q[joint], blocked
+    for _ in range(80):
+        mid = (clear + inside) / 2
+        clear, inside = (mid, inside) if guard.check_pose({**q, joint: mid}).ok else (clear, mid)
+    return {**q, joint: clear}
+
+
+def face_slack(guard, q, face):
+    return min(v for (_link, f), v in guard.clearances(q).items() if f == face)
+
+
+def test_a_pose_on_a_wall_line_can_move_away_but_not_closer(guard):
+    # Live 215535Z: a target clamped onto the back-wall line froze the arm, because the grid asked even
+    # the starting sample to clear by the gap it covered (up to 2 mm), whichever way the segment went.
+    line = on_the_line(guard, WORK, "shoulder_pan", 160.0)
+    verdict = guard.check_pose(line)
+    assert verdict.face == "right" and 0 <= verdict.slack_mm < 1e-6
+    away = {**line, "shoulder_pan": line["shoulder_pan"] + 4.0}
+    assert guard.check_segment(line, away).ok
+    decision = guard.limit(line, away)
+    assert decision.status == "ok" and decision.target == away
+    assert dense_ok(guard, line, away)
+    closer = {**line, "shoulder_pan": line["shoulder_pan"] - 1.0}
+    assert not guard.check_segment(line, closer).ok
+    decision = guard.limit(line, closer)
+    assert decision.status == "rejected" and decision.reason == "keepout" and decision.target == line
+
+
+def test_a_mixed_move_leaves_one_face_toward_another_clear_one(guard):
+    # Away from the right wall the hand swings toward the left one, which stays clear; the wrist moves too.
+    line = on_the_line(guard, WORK, "shoulder_pan", 160.0)
+    mixed = {**line, "shoulder_pan": line["shoulder_pan"] + 6.0, "wrist_flex": line["wrist_flex"] - 5.0}
+    assert face_slack(guard, mixed, "right") > face_slack(guard, line, "right")
+    assert 0 < face_slack(guard, mixed, "left") < face_slack(guard, line, "left")
+    assert guard.check_segment(line, mixed).ok
+    assert guard.limit(line, mixed).status == "ok"
+    assert dense_ok(guard, line, mixed)
+    # Away from the right wall but INTO the rim: cut short of the rim, never past it.
+    up = {**line, "shoulder_pan": line["shoulder_pan"] + 6.0, "shoulder_lift": line["shoulder_lift"] + 19.0}
+    assert guard.check_pose(up).face == "rim" and not guard.check_pose(up).ok
+    decision = guard.limit(line, up)
+    assert decision.status == "clamped" and 0 < decision.fraction < 1
+    assert dense_ok(guard, line, decision.target)
+
+
+def test_guarded_targets_slide_off_a_wall_they_were_clamped_onto(guard):
+    run = tg.GuardedTargets(guard, WORK)
+    toward = {**WORK, "shoulder_pan": WORK["shoulder_pan"] - 19.0}
+    first = run.step(toward)
+    assert first.status == "clamped" and first.reason == "keepout"
+    on_line = dict(run.target)
+    assert 0 <= guard.check_pose(on_line).slack_mm < 1.0
+    again = run.step(toward)  # pressing on: nothing (or a sliver) more, never past the line
+    assert again.fraction < 0.05 and guard.check_pose(run.target).ok
+    back = run.step({**run.target, "shoulder_pan": run.target["shoulder_pan"] + 3.0})
+    assert back.status == "ok" and back.fraction == 1.0
+
+
+def test_a_start_inside_a_requirement_is_still_refused(guard):
+    # No sample can prove a pose already inside a margin does not first get worse (the bound lets every
+    # vertex move toward the glass from s = 0), so the stop path holds from there, as it did before.
+    inside = {**WORK, "shoulder_pan": 165.0}
+    assert guard.check_pose(inside).face == "right" and not guard.check_pose(inside).ok
+    away = {**inside, "shoulder_pan": 170.0}
+    assert not guard.check_segment(inside, away).ok

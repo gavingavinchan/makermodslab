@@ -949,7 +949,13 @@ class Settings:
     slots: dict
     hold_s: float = DEFAULT_HOLD_S
     pause_s: float = 0.0  # hold at the start pose before the first Dream call (Gavin places the object)
-    max_stuck_calls: int = 3  # stop after this many calls in a row that execute nothing (each one is billed)
+    max_stuck_calls: int = 3  # stop after this many stuck calls in a row (each one is billed)
+    # A call is stuck when it executes at most this many substeps: in live 215535Z every call was cut at row 0
+    # after ONE substep, so a count of empty calls only never fired and 19 billed calls went by in ~12 s.
+    stuck_substeps: int = 2
+    # What Dream is told the arm is at (see Episode.dream_pose): "commanded" (the last target, gripper as
+    # measured) or "measured" (the reading, as before 2026-11-08).
+    dream_state: str = "commanded"
 
 
 class Episode:
@@ -1030,6 +1036,18 @@ class Episode:
         self.summary["phases"].append(name)
         if self.say:
             self.say(f"[{self.clock() - self.t0:6.1f} s] phase: {name}{f' - {detail}' if detail else ''}")
+
+    def dream_pose(self, measured) -> dict:
+        """The pose Dream is told the arm is at (its state, and the row the call carries). With "commanded":
+        the six arm joints at the last commanded target, the gripper as measured. The arm sags under its
+        command (the hand ~5 cm low at the start pose with 90/4 gains), and told the measured joints Dream
+        "corrected" that sag with its first move every run, lifting the hand and folding the arm back toward
+        the back wall (live 215535Z); the gripper is measured so Dream sees a grasp that blocks the jaws.
+        Only what Dream is told: every trip, the lag, the guard monitor, the start gate and the stop keep
+        using the measured pose."""
+        if self.s.dream_state == "measured":
+            return dict(measured)
+        return {**{m: float(self.commanded[m]) for m in core.ARM}, "gripper": float(measured["gripper"])}
 
     def start_target(self, rest) -> dict:
         return {**self.jmap.to_motor(self.right_rest), "gripper": float(rest["gripper"])}
@@ -1206,7 +1224,9 @@ class Episode:
                     raise TripStopError(trips)
                 if self.dream is not None and now >= next_frame:
                     frames = core.slot_frames(reading.frames, self.s.slots)
-                    state = core.dream_state(reading.pos, self.jmap, self.right_rest, self.s.prompt)
+                    state = core.dream_state(
+                        self.dream_pose(reading.pos), self.jmap, self.right_rest, self.s.prompt
+                    )
                     self.dream.set_observation(frames, state, now)
                     frames_fed += 1
                     next_frame += core.FRAME_PERIOD_S
@@ -1251,7 +1271,12 @@ class Episode:
                     if self.worker.calls >= self.s.max_calls:
                         reason = f"call cap {self.s.max_calls} reached"
                         break
-                    row = core.motor_to_ik_row(self.commanded, self.jmap)
+                    # The client reads only the arm joints of this row (the IK seed and the seam join), and
+                    # they are the command in either mode; with "commanded" the grip is Dream's state's too.
+                    told = (
+                        self.commanded if self.s.dream_state == "measured" else self.dream_pose(reading.pos)
+                    )
+                    row = core.motor_to_ik_row(told, self.jmap)
                     self.worker.start({"q_l_chunk": row, "q_r_chunk": [*self.right_rest, 1.0]})
                 result = self.worker.take() if self.phase == "dream" else None
                 if result is not None:
@@ -1304,11 +1329,18 @@ class Episode:
                         },
                     )
                     queue.extend(plan)
-                    stuck = 0 if plan else stuck + 1
+                    stuck = 0 if len(plan) > self.s.stuck_substeps else stuck + 1
                     if stuck >= self.s.max_stuck_calls:
-                        reason = f"stuck: {stuck} calls in a row executed nothing (each is billed)"
+                        reason = (
+                            f"stuck: {stuck} calls in a row executed <= {self.s.stuck_substeps} substeps "
+                            "(each is billed)"
+                        )
                         break
                 next_tick += core.ROW_DT_S
+                # Never catch up: after a slow tick (planning a chunk takes up to ~160 ms) the loop would send
+                # the queued substeps back to back, faster than the 15 deg/s the plan was retimed for. Restart
+                # the 20 Hz clock instead, so every substep keeps its 50 ms.
+                next_tick = max(next_tick, self.clock())
                 self.sleep(max(0.0, next_tick - self.clock()))
         except TripStopError as stop:
             reason = "trip: " + str(stop)
@@ -1585,6 +1617,10 @@ def build_plan(
         "follower_gains_override": {m: list(g) for m, g in FOLLOWER_GAINS.items()},
         "limits_source": limits_source,
         "right_arm": "none on the rig; reported to Dream parked at the arm file's rest, grip 1 (open); its answers are dropped",
+        "dream_state": "the six arm joints at the last COMMANDED target (the arm sags ~5 cm under it), the gripper "
+        "as measured; every trip, the guard monitor, the start gate and the stop use the measured pose"
+        if settings.dream_state == "commanded"
+        else "the measured joints and gripper",
         "speed": {
             "arm_target_deg_s": settings.speed_deg_s,
             "gripper_deg_s": settings.grip_deg_s,
@@ -1683,6 +1719,7 @@ def build_plan(
             "box_config_sha256",
             "run",
             "approach",
+            "dream_state",
         )
     }
     safety["arm_urdf"] = plan["arm_file"]["urdf_sha256"]
@@ -1705,6 +1742,7 @@ def print_plan(plan):
             f"sign {j['sign_to_urdf']} ({j['sign_status']})"
         )
     print(f"Right arm: {plan['right_arm']}")
+    print(f"Dream state: {plan['dream_state']}")
     sp = plan["speed"]
     print(
         f"Speed: arm targets <= {sp['arm_target_deg_s']} deg/s, gripper <= {sp['gripper_deg_s']} deg/s "
@@ -2174,7 +2212,19 @@ def main(argv=None) -> int:
         "--max-stuck-calls",
         type=int,
         default=3,
-        help="stop after this many calls in a row that execute nothing",
+        help="stop after this many stuck calls in a row (see --stuck-substeps)",
+    )
+    p.add_argument(
+        "--stuck-substeps",
+        type=int,
+        default=2,
+        help="a call that executes at most this many substeps counts as stuck",
+    )
+    p.add_argument(
+        "--dream-state",
+        choices=("commanded", "measured"),
+        default="commanded",
+        help="the arm joints Dream is told: the last command (default; the arm sags under it) or the reading",
     )
     p.add_argument("--rows", type=int, default=48)
     p.add_argument("--speed-deg-s", type=float, default=HARD_ARM_SPEED_DEG_S, help="arm cap, at most 15")
@@ -2221,6 +2271,8 @@ def main(argv=None) -> int:
         p.error(f"--speed-deg-s must be in (0, {HARD_ARM_SPEED_DEG_S:g}]: the hard arm speed cap")
     if not 0 < args.grip_deg_s <= 90 or not 0 < args.max_jump_deg <= 20 or not 0 < args.hold_s <= 600:
         p.error("--grip-deg-s (0, 90], --max-jump-deg (0, 20], --hold-s (0, 600]")
+    if args.max_stuck_calls < 1 or args.stuck_substeps < 0:
+        p.error("--max-stuck-calls >= 1 and --stuck-substeps >= 0")
     if args.rehearse and args.preview:
         p.error("--rehearse goes with --dry-run (the default) or --live, not --preview")
     kind = "live" if args.live else "preview" if args.preview else "dry"
@@ -2273,6 +2325,8 @@ def main(argv=None) -> int:
         args.hold_s,
         args.pause_s,
         args.max_stuck_calls,
+        stuck_substeps=args.stuck_substeps,
+        dream_state=args.dream_state,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     guard = Guard()

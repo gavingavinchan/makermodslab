@@ -32,9 +32,11 @@ What it checks, for a target AND the straight joint-space path to it:
   accepted one is refused, never slid toward (J1 wrap, IK branch flips).
 
 The path is proven clear, not sampled hopefully: each joint's motion is
-bounded by the furthest downstream vertex's distance from its axis, so the
-segment is subdivided until no point moves more than sweep_tolerance_mm
-between samples, and each sample must clear by that much.
+bounded by the furthest downstream vertex's distance from its axis, so a
+sample's slack proves the path clear for as far either side as no point can
+move that far, and the samples walk the path until those intervals cover it
+(_scan has the argument). A pose that sits on a line can therefore leave it;
+it cannot be moved closer.
 
 The path proof holds for the straight joint-space path between consecutive
 targets. A per-joint slew limiter downstream bends that path (joints finish
@@ -61,7 +63,12 @@ MOTORS = (*ARM, "gripper")
 FACES = ("near", "far", "left", "right", "floor", "rim")
 WALL_FACES = ("near", "far", "left", "right", "rim")
 DEFAULT_CONFIG = geo.ENV_DIR / "keepout_viscous_waterproof_01.json"
-REFINE_STEPS = 6  # within one <= 4 mm sample gap: under 0.1 mm
+# _scan: a walk that has not proven the whole path ends at a sample this close to a line (and closer than its
+# start), or after this many samples (~0.35 ms each). A Dream substep is ~10 mm of motion: a few samples clear, a
+# few dozen leaving a line; a long stop leg sliding 1 mm off a wall needs a few hundred.
+SETTLE_MM = 0.05
+RESOLUTION_MM = 1e-9  # a step no point can move further than this proves nothing (FK noise is ~1e-13 mm)
+MAX_SAMPLES = 1000
 
 
 def _value(entry):
@@ -100,6 +107,7 @@ class TankGuard:
         rules = config.get("link_rules", {})
         self.limits = {m: tuple(map(float, v)) for m, v in _value(config["joint_limits_deg"]).items()}
         self.max_jump_deg = float(_value(config["max_jump_deg"]))
+        # Validated, no longer used: the grid it spaced became _scan's walk (2026-11-08).
         self.sweep_tol_mm = float(_value(config["sweep_tolerance_mm"]))
         self.tracking_allowance_mm = float(_value(config["tracking_allowance_mm"]))
         self.start_tolerance_deg = float(_value(config.get("start_limit_tolerance_deg", 0.0)))
@@ -213,26 +221,87 @@ class TankGuard:
 
     def check_segment(self, q0: dict, q1: dict) -> Verdict:
         """Prove the straight joint-space path q0 -> q1 clear, or say where not."""
-        return self._scan(q0, q1)[0]
+        return self._scan(q0, q1, to_violation=False)[0]
 
-    def _scan(self, q0: dict, q1: dict) -> tuple[Verdict, float]:
-        """Walk the samples in order; also return the proven-clear fraction.
+    def _scan(self, q0: dict, q1: dict, *, to_violation: bool = True) -> tuple[Verdict, float]:
+        """Prove q0 -> q1 clear by a walk along it; also return the proven-clear fraction.
 
-        Samples 0..k-1 passing proves the path up to sample k-1, because the
-        clearance requirement at each sample covers half the gap either side.
+        Why a walk (2026-11-08, live 215535Z): the fixed grid this replaced asked
+        every sample, sample 0 (the accepted previous pose) included, to clear by
+        the gap it covers (up to the 2 mm sweep tolerance). A target the guard
+        had clamped onto a line has ~0 slack, so every segment from it failed at
+        sample 0, even one moving straight away, and the arm froze on the line.
+
+        The proof. q(s) = q0 + s (q1 - q0), s in [0, 1]; B = motion_bound_mm
+        (q0, q1). Joint i turns by |dq_i| |s - s'| between q(s) and q(s'), which
+        moves a point at most its distance from the axis (<= reach_i) times that
+        angle, plus the finger slide's mm/deg times the gripper's change; the
+        sum is B |s - s'|, and no mesh vertex moves further. Each slack (one
+        link against one face) is a plane distance of the link's extreme vertex
+        along a unit tank axis minus a constant, so it moves at most as far as
+        the furthest vertex does:
+
+            |slack(q(s)) - slack(q(s'))| <= B |s - s'|   for every link/face.
+
+        So a sample at s whose worst slack is m >= 0 proves every link/face
+        clear on [s - m/B, s + m/B]. The walk keeps a proven prefix [0, c]
+        (sample 0 proves [0, m0/B]) and extends it with a sample at s > c only
+        when that sample's interval reaches back to c (m(s) >= B (s - c)), then
+        c = s + m(s)/B; otherwise it tries again halfway to c. The fixed grid is
+        the special case of spacing 1/N with m >= B/(2N) everywhere.
+
+        What this grants: the requirement is the guard's own everywhere (every
+        slack >= 0 along the whole path), so a pose on a line can leave it when
+        its slack grows, and a mixed move (away from one face, toward another
+        that stays clear) passes; a move closer to the line it sits on cannot
+        be proven and is cut there. It is also "never closer than the start":
+        a link/face whose start slack is s0 >= 0 must stay >= min(0, s0) = 0.
+        A start INSIDE a requirement (slack < 0, never an accepted target; the
+        stop path's re-anchored goal can be) is refused as before: the bound
+        lets any vertex move toward the glass at B from s = 0 on, so no finite
+        set of samples can prove that slack does not first get worse.
+
+        Ends: clear as soon as the prefix covers [0, 1]; cut, before that, when
+        a connecting sample comes within SETTLE_MM of a line and closer than
+        the start (an approach: proving the last few hundredths of a mm toward
+        a line costs samples and buys nothing), when halving would leave a step
+        of under RESOLUTION_MM of motion, or after MAX_SAMPLES. With
+        `to_violation` (limit()) a violating sample only narrows the search
+        toward c, whose prefix is still granted; without it (check_segment) the
+        first violating sample ends the walk. The proven fraction returned is
+        the furthest SAMPLE whose interval connected (its pose was evaluated
+        exactly, slack >= 0), so a clamp lands on a checked pose.
         """
         bound = self.motion_bound_mm(q0, q1)
-        steps = max(1, math.ceil(bound / (2 * self.sweep_tol_mm)))
-        need = bound / (2 * steps)  # <= sweep tolerance; covers between samples
-        worst, clear = None, 0.0
-        for k in range(steps + 1):
-            v = self.check_pose(_lerp(q0, q1, k / steps), need_mm=need)
-            if worst is None or v.slack_mm < worst.slack_mm:
+        v = self.check_pose(q0)
+        if not v.ok or bound <= 0:
+            return Verdict(v.ok, v.slack_mm, v.link, v.face, 1), 1.0 if v.ok else 0.0
+        settle = min(SETTLE_MM, v.slack_mm)  # never a cut at the slack the start already has
+        worst, samples = v, 1
+        granted, proven = 0.0, v.slack_mm / bound  # the furthest connected sample; the proven prefix
+        probe = proven + v.slack_mm / bound  # where an equal slack would just reach back to `proven`
+        while proven < 1.0 and samples < MAX_SAMPLES:
+            probe = min(1.0, probe)
+            v = self.check_pose(_lerp(q0, q1, probe))
+            samples += 1
+            if v.slack_mm < worst.slack_mm:
                 worst = v
-            if not v.ok:
+            if not v.ok and not to_violation:
                 break
-            clear = k / steps
-        return Verdict(worst.ok, worst.slack_mm, worst.link, worst.face, steps + 1), clear
+            if v.ok and probe - v.slack_mm / bound <= proven:  # its interval reaches back to the prefix
+                reach = probe + v.slack_mm / bound
+                if reach < 1.0 and v.slack_mm < settle:
+                    break  # approaching a line: cut at the last connected sample
+                granted, proven = probe, reach
+                probe = proven + v.slack_mm / bound
+            elif (probe - proven) * bound / 2 < RESOLUTION_MM:
+                break  # no provable step left (a pose on a line moving closer): cut where proven
+            else:
+                probe = proven + (probe - proven) / 2
+        if proven >= 1.0:
+            return Verdict(True, worst.slack_mm, worst.link, worst.face, samples), 1.0
+        cut = worst if worst.slack_mm < 0 else v  # a violation, else where the walk stopped
+        return Verdict(False, cut.slack_mm, cut.link, cut.face, samples), granted
 
     # --- decisions ------------------------------------------------------
 
@@ -294,17 +363,10 @@ class TankGuard:
         if whole.ok:
             status = "clamped" if clipped else "ok"
             return Decision(status, target, "joint_limit" if clipped else "", 1.0, whole, clipped)
-        # [0, lo] is proven; refine into the next sample gap by checking only
-        # the short piece from the proven point, never the whole prefix again.
-        steps = whole.samples - 1
-        hi = min(1.0, lo + 1.0 / steps)
-        for _ in range(REFINE_STEPS):
-            mid = (lo + hi) / 2
-            if self.check_segment(_lerp(previous, target, lo), _lerp(previous, target, mid)).ok:
-                lo = mid
-            else:
-                hi = mid
-        if lo == 0.0:
+        # [0, lo] is proven and the walk already ran up to the line (_scan), so
+        # the cut needs no refining. Nothing (or no motion a point could show)
+        # provable: moving closer to a line the previous target sits on.
+        if lo * self.motion_bound_mm(previous, target) < RESOLUTION_MM:
             return Decision("rejected", dict(previous), "keepout", 0.0, whole, clipped)
         return Decision("clamped", _lerp(previous, target, lo), "keepout", lo, whole, clipped)
 

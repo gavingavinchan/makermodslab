@@ -150,7 +150,14 @@ rest). 6. **Approach**: rest to the start pose along `core.approach_waypoints` (
 fold the elbow first, then straight to the start), each leg retimed into 20 Hz substeps at the arm
 speed. Frames go to Dream, but no call is made until the start pose is reached. 7. Loop at 20 Hz:
 fresh feedback, trips, 5 Hz frames to Dream; one billed call at a time (ledger first), executing each
-48-row chunk, holding while the next call is in flight. 8. **Every exit** (trips, signals, the
+48-row chunk, holding while the next call is in flight. Dream is told the six arm joints at the last
+COMMANDED target and the gripper as MEASURED (`--dream-state commanded`, the default, in the plan id):
+the arm sags ~5 cm under its command at the start pose, and told the measured joints Dream "corrected"
+that by lifting the hand and folding the arm back toward the back wall at the start of every run (live
+20261108T215535Z); the measured gripper shows a grasp that blocks the jaws. Every trip, the guard
+monitor, the start gate and the stop still use the measured pose (`--dream-state measured` = the old
+behaviour). The run stops after `--max-stuck-calls` (3) calls in a row that each execute at most
+`--stuck-substeps` (2) substeps (215535Z burned 19 calls at one substep each). 8. **Every exit** (trips, signals, the
 button, the call cap): (a) **re-anchor**: the six arm joints' goals go at once to their fresh measured
 pose plus each joint's standing error (`core.HoldError`, see Safety layers), and the bus backstop's
 last-sent target is rebased there (`can_speed_limit.rebase`), so a pushed or blocked arm is held where
@@ -176,7 +183,11 @@ Per row: IK radians to motor degrees (J1 + 180, J5 sign), grip 0..1 to motor -2.
 -115.1 (open), jump check, clamp 1 deg inside the limits, then **retimed** into equal 20 Hz substeps so
 no arm joint exceeds 15 deg/s (gripper 60) and all joints arrive together (the guard's straight-path
 proof needs that), each substep through the box and the tank guard. The whole chunk is planned before
-any of it runs, so a refusal stops the arm before the chunk starts.
+any of it runs, so a refusal stops the arm before the chunk starts. The guard proves each substep by a
+walk along it (`tank_guard._scan`): a pose that sits on a line (where the guard cut the last chunk) can
+move away from it or along another face that stays clear, never closer; the stop's leg check is the
+same proof. Before 2026-11-08 it could not: every segment from a pose on a line failed at its first
+sample, which froze the arm folded against the back wall in 215535Z.
 
 **Before the IK, the slide** (`SlideTransport`; Gavin: when Dream asks for the hand below the floor it
 should go down until it reaches the limit, stop going down there, and still go forward when asked, and
@@ -184,10 +195,12 @@ the jaws must not press on the glass). Each row of Dream's left hand target is f
 box's tcp limits (`core.clamp_eef_rows`, 40 mm inside far/near, 100 mm inside the sides). Then
 `core.FloorSlide` raises the row's tcp z just enough that the hand's lowest mesh vertex (wrist_roll_link,
 both fingers at the row's grip, and wrist_yaw_link swept over every roll angle, at the orientation Dream
-asked for) sits at the keep-out floor line + 10 mm + the predicted sag. x, y, orientation and grip stay as
-Dream asked, so the hand follows Dream down, then slides along the floor. Dream's `eef_rot6` is the flange
-rotation times the arm file's tool axes (z = approach, x = jaw), re-fit from logged replies against FK of
-their own joint rows (`tests/test_viscous_dream_slots.py`). The sag term is there because the arm hangs
+asked for) sits at the keep-out floor line + `core.FLOOR_BUFFER_MM` (0 since Gavin's "sagging a bit to
+slide on the bottom of the aquarium is ok, it's kinda inevitable", 2026-11-08; was 10) + the predicted
+sag, so the jaws reach the glass and slide on it lightly; the tank guard's 10 mm floor press bounds the
+push. x, y, orientation and grip stay as Dream asked, so the hand follows Dream down, then slides along
+the floor. Dream's `eef_rot6` is the flange rotation times the arm file's tool axes (z = approach,
+x = jaw), re-fit from logged replies against FK of their own joint rows (`tests/test_viscous_dream_slots.py`). The sag term is there because the arm hangs
 below its command by more than the buffer: with the 90/4 shoulder/elbow gains, 27-37 mm at 350-390 mm reach
 and 53 mm at 490 mm (fit 224 mm/m^2 x reach^2, residual sd 2 mm); in live 20261108T213138Z the commanded
 lowest point stayed 6-10 mm above the floor line and the jaws still lay on the glass, the glass carrying

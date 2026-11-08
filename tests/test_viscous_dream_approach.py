@@ -209,11 +209,12 @@ def test_guard_stream_never_rejects(guard, name):
     assert all(targets.target[m] == pytest.approx(START[m]) for m in core.ARM)
 
 
-def test_trace_first_reading_rest_needs_the_guards_partial_grant(guard):
-    # The trace's first torque-off reading (pan 191.2, yaw 18.1) sits 0.66 mm
-    # inside the left wall's requirement, so no straight leg from it can pass
-    # check_segment's sample allowance. The guard still grants partial steps
-    # ("keepout" clamps) and is clear within a dozen substeps: never rejected.
+def test_trace_first_reading_rest_leaves_the_left_wall_line_without_a_cut(guard):
+    # The trace's first torque-off reading (pan 191.2, yaw 18.1) has only 0.66 mm
+    # of slack to the left wall's requirement. The fixed-grid guard asked every
+    # sample, the start included, to clear by up to 2 mm, so it granted only
+    # partial steps ("keepout" clamps) for the first dozen substeps. The walk
+    # (tank_guard._scan, 2026-11-08) proves each step away from the line in full.
     rest = {
         "shoulder_pan": 191.209,
         "shoulder_lift": -201.738,
@@ -226,11 +227,7 @@ def test_trace_first_reading_rest_needs_the_guards_partial_grant(guard):
     route = [rest, *core.approach_waypoints(rest, START)]
     targets, decisions, _ = stream(guard, route)
     assert targets.counts["rejected"] == 0
-    keepout = [i for i, d in enumerate(decisions) if d.reason == "keepout"]
-    # Within the first ~0.75 s: pan now eases inward at the leg's pace instead of
-    # snapping to its limit (tank_guard, 2026-11-08), so the partial grants last
-    # longer than with the old snap, but they still end early and never reject.
-    assert keepout and max(keepout) < 15
+    assert [i for i, d in enumerate(decisions) if d.reason == "keepout"] == []
     assert all(targets.target[m] == pytest.approx(START[m]) for m in core.ARM)
 
 

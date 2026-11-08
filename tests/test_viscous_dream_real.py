@@ -20,6 +20,7 @@ Run: .venv/bin/python -m pytest tests/test_viscous_dream_real.py -q
 """
 
 import base64
+import dataclasses
 import io
 import json
 import math
@@ -570,11 +571,16 @@ class ImageTest(unittest.TestCase):
 
 
 class RecordingStub(dream_real.DreamInternalStub):
-    """The internal stub, remembering the commanded row of every request."""
+    """The internal stub, remembering the commanded row of every request and every state it was fed."""
 
     def __init__(self, *args):
         super().__init__(*args)
         self.commanded = []
+        self.states = []
+
+    def set_observation(self, frames, state, t):
+        self.states.append(state)
+        super().set_observation(frames, state, t)
 
     def request(self, commanded):
         self.commanded.append(commanded)
@@ -597,6 +603,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         sag=None,
         mutate=None,
         patch=None,
+        settings_changes=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -616,6 +623,8 @@ class EpisodeOnFakesTest(unittest.TestCase):
         settings = dream_real.Settings(
             "put apple into the bowl", 48, max_calls, 15.0, 60.0, 20.0, 1.0, core.TripLimits(), slots, hold_s
         )
+        if settings_changes:
+            settings = dataclasses.replace(settings, **settings_changes)
         tcp = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["tcp"]
         box = core.WorkspaceBox.load(dream_real.BOX_FILE, dream_real.SRC_URDF, jmap, tcp)
         stop, abort = threading.Event(), threading.Event()
@@ -774,6 +783,82 @@ class EpisodeOnFakesTest(unittest.TestCase):
             summary, arm = self.episode(max_calls=20)
         self.assertEqual(summary["calls"], 3)
         self.assertTrue(summary["reason"].startswith("stuck"), summary["reason"])
+        self.assert_stopped_safely(arm)
+
+    def test_calls_that_execute_one_or_two_substeps_count_as_stuck(self):
+        # Live 215535Z: calls 2-20 were each cut at row 0 after ONE substep, so a count of empty calls never
+        # fired and 19 billed calls went by in ~12 s. At most --stuck-substeps (2) now counts as stuck.
+        from unittest import mock
+
+        def executes(n):
+            return lambda ep, reply: [dict(ep.commanded) for _ in range(n)]
+
+        with mock.patch.object(dream_real.Episode, "plan_chunk", executes(2)):
+            summary, arm = self.episode(max_calls=20)
+        self.assertEqual(summary["calls"], 3)
+        self.assertEqual(summary["reason"], "stuck: 3 calls in a row executed <= 2 substeps (each is billed)")
+        self.assert_stopped_safely(arm)
+        with mock.patch.object(dream_real.Episode, "plan_chunk", executes(3)):
+            summary, _ = self.episode(max_calls=5)
+        self.assertEqual(summary["reason"], "call cap 5 reached")
+        with mock.patch.object(dream_real.Episode, "plan_chunk", executes(2)):
+            summary, _ = self.episode(max_calls=5, settings_changes={"stuck_substeps": 1})
+        self.assertEqual(summary["reason"], "call cap 5 reached")
+
+    def spy_dream_pose(self, **kwargs):
+        """Run an episode recording, for every pose Dream is told, (measured, commanded, told)."""
+        from unittest import mock
+
+        told = []
+        real = dream_real.Episode.dream_pose
+
+        def spy(ep, measured):
+            out = real(ep, measured)
+            told.append((dict(measured), dict(ep.commanded), out))
+            return out
+
+        with mock.patch.object(dream_real.Episode, "dream_pose", spy):
+            summary, arm = self.episode(**kwargs)
+        return summary, arm, told
+
+    def test_dream_is_told_the_commanded_arm_and_the_measured_gripper(self):
+        # The arm sags under its command (the hand ~5 cm low at the start pose); told the measured joints,
+        # Dream's first move every run lifted the hand and folded the arm back (live 215535Z). The gripper
+        # stays measured, so a grasp that blocks the jaws shows. The 10 deg gripper sag stands in for a ball.
+        sag = {"shoulder_lift": 7.45, "elbow_flex": 3.0, "gripper": 10.0}
+        summary, arm, told = self.spy_dream_pose(sag=sag, max_calls=3)
+        self.assertEqual(summary["reason"], "call cap 3 reached")
+        jmap = core.JointMap.load()
+        for measured, commanded, out in told:
+            self.assertEqual({m: out[m] for m in core.ARM}, {m: commanded[m] for m in core.ARM})
+            self.assertEqual(out["gripper"], measured["gripper"])
+        # The sag is really there, and the gripper's too, so the two sources differ.
+        self.assertGreater(max(abs(c["shoulder_lift"] - m["shoulder_lift"]) for m, c, _ in told), 5.0)
+        self.assertGreater(max(abs(c["gripper"] - m["gripper"]) for m, c, _ in told), 5.0)
+        # What the stub received is exactly that pose: the state every frame, and the arm row every call.
+        fed = [s for s in self.dream.states if s["prompt"]]
+        self.assertEqual(len(fed), len(told) - len(self.dream.commanded))
+        last = fed[-1]
+        np.testing.assert_allclose(last["state.left_arm"], jmap.to_ik(told[-1][2]), atol=1e-12)
+        self.assertEqual(last["state.left_grip"], [core.motor_to_grip(told[-1][0]["gripper"])])
+        for request in self.dream.commanded:  # each call's row is one of those poses, grip included
+            row = request["q_l_chunk"]
+            match = [o for _, _, o in told if np.allclose(row, core.motor_to_ik_row(o, jmap), atol=1e-12)]
+            self.assertTrue(match, row)
+        # Every safety check keeps the measured pose: the run's lag peak is the sag, not zero.
+        self.assertGreater(summary["peak_lag_deg"]["shoulder_lift"], 5.0)
+        self.assert_stopped_safely(arm)
+
+    def test_dream_state_measured_keeps_the_old_behaviour(self):
+        summary, arm, told = self.spy_dream_pose(
+            sag={"shoulder_lift": 7.45}, max_calls=2, settings_changes={"dream_state": "measured"}
+        )
+        self.assertTrue(told)
+        for measured, _, out in told:
+            self.assertEqual(out, measured)
+        # The call's row is still the command (the client's IK seed and seam join), as before.
+        start = core.motor_to_ik_row(self.ep.dream_start, core.JointMap.load())
+        np.testing.assert_allclose(self.dream.commanded[0]["q_l_chunk"], start, atol=1e-9)
         self.assert_stopped_safely(arm)
 
     def test_a_hold_after_a_trip_releases_on_the_first_press(self):

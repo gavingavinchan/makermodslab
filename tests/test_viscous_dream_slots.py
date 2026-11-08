@@ -193,4 +193,6 @@ def test_the_runner_builds_the_floor_slide_on_the_guard_mesh():
     floor, problem = dream_real.make_floor_slide(arm)
     assert problem is None
     assert floor.floor_mm == core.keepout_floor_mm()
+    # Gavin 2026-11-08: the jaws may sag onto the glass and slide on it; the guard's floor press bounds it.
+    assert floor.buffer_mm == core.FLOOR_BUFFER_MM == 0.0
     assert {len(f[0]) for f in floor.hand.fingers} and len(floor.hand.fingers) == 2
