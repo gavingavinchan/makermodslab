@@ -417,6 +417,9 @@ class WorkspaceBox:
 @dataclass
 class TripLimits:
     lag_deg: float = 10.0  # the bench rule; 25 was far too late
+    # shoulder_lift carries the arm: it sags ~9 deg at 4.8 Nm (Kp 30 Nm/rad) and ran 10.2 deg behind while
+    # lifting from the raised-base rest (live 2026-11-08T205156Z). Gavin: "make it 20deg".
+    shoulder_lag_deg: float = 20.0
     lag_ticks: int = 2
     # Two torque tiers (RS00: ~5 Nm continuous, 14 Nm peak). Visitors push the arm to feel how strong
     # it is (Gavin: allow about 10 Nm for at least 5 s), so the instant trip sits above that, under the
@@ -436,9 +439,12 @@ class TripLimits:
     overspeed_deg_s: float = 30.0
     overspeed_ticks: int = 2
 
+    def lag_for(self, motor: str) -> float:
+        return self.shoulder_lag_deg if motor == "shoulder_lift" else self.lag_deg
+
     def check(self) -> None:
-        if not 0 < self.lag_deg <= 20:
-            raise ValueError("lag trip must be in (0, 20] deg")
+        if not 0 < self.lag_deg <= self.shoulder_lag_deg <= 20:
+            raise ValueError("need 0 < lag trip <= shoulder lag trip <= 20 deg")
         if not 0 < self.torque_cap_nm <= self.torque_trip_nm <= 14:
             raise ValueError("need 0 < torque cap <= torque trip <= 14 Nm (RS00 peak)")
         if not 0 < self.torque_cap_s <= 10:
@@ -569,9 +575,9 @@ class TripMonitor:
         for m in ARM:
             lag = abs(measured[m] - commanded[m])
             self.peak_lag[m] = max(self.peak_lag[m], lag)
-            self._lag[m] = self._lag[m] + 1 if lag > lim.lag_deg else 0
+            self._lag[m] = self._lag[m] + 1 if lag > lim.lag_for(m) else 0
             if self._lag[m] >= lim.lag_ticks:
-                trips.append(Trip("lag", f"{m} {lag:.1f} deg behind its target (> {lim.lag_deg})"))
+                trips.append(Trip("lag", f"{m} {lag:.1f} deg behind its target (> {lim.lag_for(m)})"))
         for m in MOTORS:
             tau = abs(torque[m])
             self.peak_torque[m] = max(self.peak_torque[m], tau)

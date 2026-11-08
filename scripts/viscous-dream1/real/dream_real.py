@@ -1322,7 +1322,7 @@ class Episode:
                         self._hold_mid_air(out, f"after leg {k}: no fresh reading", reanchor=True)
                         break
                     off = max(abs(pos[m] - target[m]) for m in core.ARM)
-                    if off > self.s.trips.lag_deg:
+                    if any(abs(pos[m] - target[m]) > self.s.trips.lag_for(m) for m in core.ARM):
                         # Further off than the lag trip (whatever the helper said): never a mid-air release.
                         why = f"leg {k} ended {off:.1f} deg off its target ({message or 'helper: arrived'})"
                         self._hold_mid_air(out, why, reanchor=True)
@@ -1495,7 +1495,8 @@ def build_plan(
             "every measured pose through monitor()"
             if guard.available
             else f"NOT AVAILABLE: {guard.problem}",
-            "lag": f"measured vs commanded > {settings.trips.lag_deg} deg on any arm joint for {settings.trips.lag_ticks} ticks",
+            "lag": f"measured vs commanded > {settings.trips.lag_deg} deg on any arm joint "
+            f"({settings.trips.shoulder_lag_deg} on shoulder_lift) for {settings.trips.lag_ticks} ticks",
             "torque": f"|torque| > {settings.trips.torque_trip_nm} Nm for {settings.trips.torque_trip_ticks} ticks, or > "
             f"{settings.trips.torque_cap_nm} Nm for {settings.trips.torque_cap_s} s",
             "temperature": f">= {settings.trips.temp_trip_c} C (warn {settings.trips.temp_warn_c})",
@@ -2024,6 +2025,7 @@ def main(argv=None) -> int:
     p.add_argument("--max-jump-deg", type=float, default=20.0)
     p.add_argument("--limit-margin-deg", type=float, default=1.0)
     p.add_argument("--lag-trip-deg", type=float, default=10.0)
+    p.add_argument("--shoulder-lag-trip-deg", type=float, default=20.0)
     p.add_argument("--torque-trip-nm", type=float, default=12.0, help="instant tier (2 ticks), at most 14")
     p.add_argument("--torque-cap-nm", type=float, default=5.0, help="sustained tier, with --torque-cap-s")
     p.add_argument("--torque-cap-s", type=float, default=5.0)
@@ -2090,6 +2092,7 @@ def main(argv=None) -> int:
     )
     trips = core.TripLimits(
         lag_deg=args.lag_trip_deg,
+        shoulder_lag_deg=args.shoulder_lag_trip_deg,
         torque_trip_nm=args.torque_trip_nm,
         torque_cap_nm=args.torque_cap_nm,
         torque_cap_s=args.torque_cap_s,

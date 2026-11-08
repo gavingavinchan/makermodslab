@@ -1,0 +1,108 @@
+{
+ "trips": [
+  {
+   "name": "lag",
+   "detail": "shoulder_lift 10.2 deg behind its target (> 10.0)"
+  }
+ ],
+ "calls": 0,
+ "rows_planned": 0,
+ "approach_substeps": 96,
+ "substeps_sent": 0,
+ "clipped": 0,
+ "guard": {
+  "ok": 122
+ },
+ "stretched_rows": 0,
+ "phases": [
+  "connect",
+  "start gate",
+  "engage",
+  "approach",
+  "stop: re-anchor",
+  "stop: gripper torque off",
+  "return leg 1/2",
+  "return leg 2/2",
+  "release all torque"
+ ],
+ "stop": {
+  "reason": "trip: lag: shoulder_lift 10.2 deg behind its target (> 10.0)",
+  "reanchor": {
+   "measured": {
+    "shoulder_pan": 179.38,
+    "shoulder_lift": -149.34,
+    "elbow_flex": 101.18,
+    "wrist_flex": 27.05,
+    "wrist_yaw": -5.88,
+    "wrist_roll": -7.48
+   },
+   "offset_deg": {
+    "shoulder_pan": -0.18,
+    "shoulder_lift": 8.8,
+    "elbow_flex": 2.7,
+    "wrist_flex": 0.26,
+    "wrist_yaw": -0.22,
+    "wrist_roll": 0.29
+   },
+   "goal": {
+    "shoulder_pan": 179.2,
+    "shoulder_lift": -140.53,
+    "elbow_flex": 103.89,
+    "wrist_flex": 27.3,
+    "wrist_yaw": -6.1,
+    "wrist_roll": -7.2
+   }
+  },
+  "gripper_release": "ok",
+  "legs": [
+   {
+    "leg": 1,
+    "ok": false,
+    "message": "shoulder_lift still 6.7 deg away",
+    "arrived": "within the lag trip (6.7 deg off)"
+   },
+   {
+    "leg": 2,
+    "ok": true,
+    "message": ""
+   }
+  ],
+  "returned": "at the rest",
+  "release_problems": null
+ },
+ "reason": "trip: lag: shoulder_lift 10.2 deg behind its target (> 10.0)",
+ "peak_torque_nm": {
+  "shoulder_pan": 0.3247863247863254,
+  "shoulder_lift": 5.09059829059829,
+  "elbow_flex": 2.280341880341883,
+  "wrist_flex": 0.9880341880341881,
+  "wrist_yaw": 0.2632478632478641,
+  "wrist_roll": 0.21538461538461462,
+  "gripper": 0.03760683760683747
+ },
+ "peak_temp_c": {
+  "shoulder_pan": 22.0,
+  "shoulder_lift": 25.0,
+  "elbow_flex": 23.0,
+  "wrist_flex": 22.0,
+  "wrist_yaw": 22.0,
+  "wrist_roll": 23.0,
+  "gripper": 22.0
+ },
+ "peak_lag_deg": {
+  "shoulder_pan": 0.3207636783428427,
+  "shoulder_lift": 10.227370766631537,
+  "elbow_flex": 3.9703837173335472,
+  "wrist_flex": 1.011049534754079,
+  "wrist_yaw": 0.5132570811241925,
+  "wrist_roll": 0.5337855120605592
+ },
+ "peak_speed_deg_s": {
+  "shoulder_pan": 3.6097874933391654,
+  "shoulder_lift": 14.16686634642305,
+  "elbow_flex": 20.385763831444333,
+  "wrist_flex": 19.0442165598392,
+  "wrist_yaw": 6.442032314668315,
+  "wrist_roll": 4.603440446983187
+ }
+}

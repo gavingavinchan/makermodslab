@@ -812,15 +812,15 @@ class EpisodeOnFakesTest(unittest.TestCase):
 
             def stuck(pose, abort, speed, watch=None):
                 back(pose, abort, speed, watch)
-                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 15.0  # caught on something, 15 deg short
+                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0  # caught on something, past its 20 deg lag trip
                 arm.limp.add("shoulder_lift")
                 arm.FALL_DEG_PER_TICK = 0.0  # stays there
-                return False, "shoulder_lift still 15.0 deg away"
+                return False, "shoulder_lift still 25.0 deg away"
 
             arm.return_to_rest = stuck
 
         summary, arm = self.episode(max_calls=1, patch=patch, after=self.second_signal_at(1040))
-        self.assert_held_until_the_second_signal(summary, arm, "leg 1 ended 15.0 deg off its target")
+        self.assert_held_until_the_second_signal(summary, arm, "leg 1 ended 25.0 deg off its target")
         self.assertEqual(len(arm.returns), 1)
 
     def test_no_fresh_reading_after_a_leg_holds_the_last_goal_and_retries(self):
