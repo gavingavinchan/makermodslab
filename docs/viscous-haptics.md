@@ -143,6 +143,20 @@ restore paths in the DAgger runner.
   The box failures come mainly from the sim's 5 Nm shoulder cap (the RS00's
   continuous rating): at 14 Nm the box goes 7/12 vs 2/12. See "Grace's URDF claim"
   under "Findings".
+- *Status (2026-11-07, later): real-arm runner built, offline only.*
+  `scripts/viscous-dream1/real/dream_real.py` (README beside it) lets Dream-1 drive
+  the waterproof arm through Dream's own client and IK and the Lab's CAN machinery
+  (`remote_can`, `maker_rest_pose`). `--dry-run` runs the loop on a fake arm with
+  Dream's real client offline and fires every trip once; `--preview` (Gavin) opens
+  only the cameras and prints the inputs id for `python -m dream.input_check`;
+  `--live` refuses without the `dreamcli tcp` record, the recorded inputs id, an
+  approved tank model, acknowledged J5/J6 signs, the dry run's plan id, the tank
+  guard and an idle Lab. A tank IK model (`real/tank_model/`, root turned 180 deg,
+  IK pan = motor - 180, the unit's profile limits) is generated with provenance and
+  **pending Gavin's approval**; the tool point must be set on that model, since the
+  digest covers the URDF. 29 offline tests. No hardware, camera or billed call.
+  Pending: approval, `dreamcli tcp` on the tank model, an overhead camera, the
+  inputs check, J5/J6 hand tests, merging the tank guard, credentials.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

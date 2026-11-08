@@ -1,0 +1,124 @@
+{
+ "_copyright": "Copyright 2026 MakerMods. All rights reserved. Apache-2.0.",
+ "what": "Tank IK model of the waterproof Viscous arm (viscous_waterproof_01) for Dream-1's client IK.",
+ "generated_by": "scripts/viscous-dream1/real/make_tank_arm.py",
+ "generated_utc": "2026-11-08T06:18:03Z",
+ "approval": {
+  "status": "pending_gavin_approval",
+  "by": null,
+  "at": null,
+  "urdf_sha256_normalized": null,
+  "how": "Gavin reviews this file and the URDF, then sets status 'approved', by, at, and urdf_sha256_normalized = 8975766e6fde4e8fcacb7ae151ef3c0b69f6939383f43f7293125b7dbc5cef7f (the URDF's sha256 ignoring trailing newlines). dream_real.py refuses --live until then. Then run dreamcli tcp on the exported folder (README, order of operations)."
+ },
+ "urdf": {
+  "file": "viscous_waterproof_tank.urdf",
+  "sha256": "e4031cb6424c81329bf8b659722ca149feef6059e8a806eced506db1bb3e517e",
+  "sha256_normalized": "8975766e6fde4e8fcacb7ae151ef3c0b69f6939383f43f7293125b7dbc5cef7f"
+ },
+ "sources": {
+  "urdf": {
+   "path": "configs/viscous/model/viscous_arm.urdf",
+   "sha256": "c1e6c3876a67ce2a2e229bdd8a80960e68f085e08833d699536b1feddefb6ff7"
+  },
+  "joint_limits_motor_deg": {
+   "path": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json",
+   "sha256": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
+   "value": {
+    "shoulder_pan": [
+     -126.85285584196426,
+     187.52908634631845
+    ],
+    "shoulder_lift": [
+     -199.44660848503955,
+     -2.807493196141034
+    ],
+    "elbow_flex": [
+     2.8647889756541165,
+     250.03878179509124
+    ],
+    "wrist_flex": [
+     -122.26919348091766,
+     82.10485204224697
+    ],
+    "wrist_yaw": [
+     -86.05826082864965,
+     87.31876797793745
+    ],
+    "wrist_roll": [
+     -154.98508358288768,
+     150.00035076524952
+    ],
+    "gripper": [
+     -115.10722104178238,
+     -2.9220847551671985
+    ]
+   }
+  },
+  "motor_to_urdf": {
+   "path": "configs/viscous/model/motor_to_urdf.json",
+   "sha256": "620214fa1c1b79d24844c3d4c3dc3b7106549faae9bb014bae7ce48929cc04bd",
+   "status": {
+    "shoulder_pan": "photo-consistent 2026-11-07",
+    "shoulder_lift": "photo-consistent 2026-11-07",
+    "elbow_flex": "photo-consistent 2026-11-07",
+    "wrist_flex": "photo-consistent 2026-11-07",
+    "wrist_yaw": "photo-inferred 2026-11-07, hand test pending",
+    "wrist_roll": "assumed (direct mapping, arm_gravity.py:282), unverified"
+   }
+  },
+  "tool_keys": {
+   "path": "scripts/viscous-dream1/viscous_arm.json",
+   "note": "tcp/approach/jaw copied unchanged into the dry-run arm file only. Never confirmed with dreamcli tcp; the live arm file comes from dreamcli tcp."
+  }
+ },
+ "changes": {
+  "root": "new link dream_base; fixed joint dream_base_to_base_link dream_base->base_link rpy 0 0 pi",
+  "shoulder_pan_origin": "rpy 0 0 0 -> 0 0 pi (cancels the root turn in the chain)",
+  "ik_shoulder_pan": "IK = motor - 180 deg; one unwrapped branch, never wrapped",
+  "joint_limits_ik_deg": {
+   "shoulder_pan": [
+    -90.0,
+    7.5291
+   ],
+   "shoulder_lift": [
+    -199.4466,
+    -2.8075
+   ],
+   "elbow_flex": [
+    2.8648,
+    250.0388
+   ],
+   "wrist_flex": [
+    -122.2692,
+    82.1049
+   ],
+   "wrist_yaw": [
+    -87.3188,
+    86.0583
+   ],
+   "wrist_roll": [
+    -154.9851,
+    150.0004
+   ]
+  },
+  "pan_window_deg": 90.0,
+  "rest_ik_rad": [
+   0.0,
+   -1.895,
+   2.094,
+   -1.608,
+   0.0,
+   0.0
+  ],
+  "rest_source": "PLACEHOLDER: scripts/viscous-dream1/viscous_arm.json rest (Dream's sim work pose, in IK numbers = motor pan 180). docs/dream1-tank.md says Dream's folded rest fails the tank box; regenerate with --rest-motor-deg set to the hand-placed tank start pose."
+ },
+ "checks": {
+  "frame_check_max_error": 1.1587952819525071e-15,
+  "frame_check": "tool0 in dream_base == Rz(pi) * tool0 in base_link, 200 random profile poses"
+ },
+ "unverified": {
+  "wrist_yaw": "J5 sign -1 is photo-inferred (motor_to_urdf.json), no hand test: confirm before --live",
+  "wrist_roll": "J6 sign +1 is assumed, unverified",
+  "j1_frame": "J1 zero / limits after the 2026-11-05 re-zero work and the 2026-11-07 tank offset 185.8; the profile's +187.53 upper pan limit may be stale (docs/dream1-tank.md question 7)"
+ }
+}
