@@ -1817,6 +1817,56 @@ connectors installed: "try to connect to it". Arm on the Mac (CANable
   limit (-115.1); confirm its pose before any powered run.
 - No powered motion yet.
 
+### Aquarium environment model (2026-11-07)
+
+Offline subtask of A1a/A3 (aquarium contact/haptics) and B4 (sim to real).
+Gavin: "create a new environment for the aquarium, aka something like urdf for
+simulations ... so that you know the limits of the aquarium walls. we may or may
+not need to put up real time boundary limits to the follower arm. lets see".
+
+- Added `configs/viscous/environments/aquarium_landen_75/`: `tank.json` geometry
+  source with provenance/status, measurement README, relative-mesh MuJoCo
+  `aquarium_scene.xml`, `offline-validation.json` and three small read-pose
+  PNG previews. `scripts/viscous_aquarium_env.py` provides importable numpy-only
+  exact collision-vertex/plane clearance plus `clearance`, `sweep`, `scene`,
+  `render`; `tests/test_viscous_aquarium_env.py` has 14 offline geometry tests,
+  including independent Pinocchio FK. No live boundary or Lab changes.
+- **Estimated:** nominal LANDEN 750 × 450 × 450 mm, unconfirmed 8 mm glass,
+  near inner face x=+40, J1 centred laterally, aligned axes, no mat/spacer.
+  Derived inner bounds (mm): x=[−694,40], y=[−217,217], z=[0,442]. Floor is
+  base collision minimum; top subtracts one bottom pane. Water 283 mm and margin
+  30 mm are design values. Gavin supplied motor readback; no new tape measurements
+  or hardware reads. README lists exact J1-to-glass, glass, spacer and support
+  tower measurements needed; tower/wiring/fixtures are not modelled.
+- Read tool0=(−526.041,−65.063,42.820) mm; folded=(185.167,125.275,148.941).
+  Full-arm read clearances (mm): near 0/base, far 112.647/right jaw, left
+  142.000/base, right 87.732/left jaw, floor 0/base, rim 301.038/yaw link,
+  water 142.038/yaw link. **Base touches floor and near wall by construction**;
+  strictly positive clearance on every wall is impossible. All moving links
+  are positive (near 8.979, floor 4.551). Folded target penetrates near half-space
+  by **174.529 mm**, right jaw. MuJoCo 3.16.0 loads: 0 read-pose arm/glass
+  contacts, 32 folded-target near-pane contacts; tool FK matches both models.
+- Strict **30 mm all-link sweep: none for J1–J6** (base tangencies). Diagnostic
+  **0 mm** sampled intervals, motor deg, all other joints fixed at read:
+  J1 [173.02,187.53], J2 [−199.45,−160.83], J3 [170.96,237.96],
+  J4 [38.42,82.10], J5 [−86.06,54.22], J6 [−16.46,14.54]. Uses committed
+  waterproof `evidence/lab-hardware-profile.json` follower limits, 1° samples
+  plus endpoints, no automatic exclusions. Read lift −201.83 and gripper −117.9
+  are below profile limits; scans flag this and are **geometry only**, not
+  hardware permission or a continuous path proof. Water is optional visual/
+  submersion headroom, excluded from the default glass sweep; rim is not a lid.
+- Initial clearance timing: **0.464 ms median, 0.482 ms p95**, 1,000 calls on
+  gavin-linux, 9,624 distinct vertices, no geometric decimation. Fits the 2 ms
+  target; measurements and mount-contact policy still precede a live guard.
+- Re-run from repo root: `.venv/bin/python scripts/viscous_aquarium_env.py
+  clearance --pose read` (or `--pose folded`), `sweep` (or `--margin-mm 0`);
+  use `-o /tmp/result.json` for reports. Tests: `.venv/bin/python -m unittest
+  discover -s tests -p test_viscous_aquarium_env.py -v`. Scene: use
+  `~/dreamtrial/.venv/bin/python scripts/viscous_aquarium_env.py scene`, then
+  the same Python with `MUJOCO_GL=egl` and `render`. MuJoCo is isolated from Lab.
+  Offline only; local commit requested, **no push**, no service/session or
+  installed-state changes, overriding the usual synchronisation rule below.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.

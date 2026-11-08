@@ -1,0 +1,130 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "schema_version": 1,
+  "name": "aquarium_landen_75",
+  "frame": "base_link",
+  "units": "mm",
+  "arm_urdf": "configs/viscous/model/viscous_arm.urdf",
+  "outer_dimensions_mm": {
+    "value": {
+      "length": 750.0,
+      "width": 450.0,
+      "height": 450.0
+    },
+    "source": "Gavin brief 2026-11-07: LANDEN Amazon listing 37Gal W29.5×D17.7×H17.7 in (75x45x45cm); nominal, not tape measured",
+    "status": "estimate"
+  },
+  "glass_thickness_mm": {
+    "value": 8.0,
+    "source": "Gavin brief: UNCONFIRMED third-party LANDEN 75H listing; uniform panes assumed",
+    "status": "estimate"
+  },
+  "placement": {
+    "near_inner_x_mm": {
+      "value": 40.0,
+      "source": "docs/shackle-sim2real.md aquarium layout: wall at base back edge, 40 mm behind J1; arm extends toward -x",
+      "status": "estimate"
+    },
+    "j1_y_from_inner_midline_mm": {
+      "value": 0.0,
+      "source": "Gavin brief: J1 assumed centred across inner width; +y is left in this model",
+      "status": "estimate"
+    },
+    "base_rpy_deg": {
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source": "Gavin brief: base/tank axes assumed aligned; long axis -x, width y, height z",
+      "status": "estimate"
+    },
+    "floor_z_mm": {
+      "value": 0.0,
+      "source": "Minimum z of all base_link collision-mesh vertices in configs/viscous/model/viscous_arm.urdf; assumes base directly on glass",
+      "status": "estimate"
+    },
+    "base_spacer_height_mm": {
+      "value": 0.0,
+      "source": "Gavin brief: assumes no mat/spacer; if measured height is h, floor_z_mm = base mesh minimum z - h",
+      "status": "estimate"
+    }
+  },
+  "water_height_mm": {
+    "value": 283.0,
+    "source": "docs/shackle-sim2real.md 2026-11-06/07 layout; height above inner glass floor, tank not filled; null disables",
+    "status": "design"
+  },
+  "default_safety_margin_mm": {
+    "value": 30.0,
+    "source": "Gavin aquarium brief 2026-11-07; future boundary design target",
+    "status": "design"
+  },
+  "rim_z_mm": {
+    "value": 442.0,
+    "source": "derived: placement.floor_z_mm + outer height - glass thickness; no physical lid",
+    "status": "estimate"
+  },
+  "derived_inner_bounds_mm": {
+    "value": {
+      "x_min": -694.0,
+      "x_max": 40.0,
+      "y_min": -217.0,
+      "y_max": 217.0,
+      "z_min": 0.0,
+      "z_max": 442.0
+    },
+    "source": "derived from outer_dimensions_mm, glass_thickness_mm and placement; regenerate after measuring",
+    "status": "estimate"
+  },
+  "joint_mapping": {
+    "arm": {
+      "value": "motor degrees directly to URDF radians",
+      "source": "Gavin brief and makermodslab/arm_gravity.py; no encoder offset or wrapping applied",
+      "status": "measured"
+    },
+    "gripper": {
+      "value": {
+        "motor_closed_deg": 0.0,
+        "motor_open_deg": -115.0,
+        "slide_open_mm": 52.4
+      },
+      "source": "Gavin brief: APPROXIMATE linear mapping, clamp to [0,52.4] mm per finger; URDF upper limit is 52.4125 mm",
+      "status": "estimate"
+    }
+  },
+  "reference_poses_motor_deg": {
+    "read": {
+      "value": {
+        "shoulder_pan": 182.02,
+        "shoulder_lift": -201.83,
+        "elbow_flex": 171.96,
+        "wrist_flex": 41.42,
+        "wrist_yaw": -28.78,
+        "wrist_roll": -7.46,
+        "gripper": -117.9
+      },
+      "source": "Gavin supplied read pose 2026-11-07; no hardware read performed by this model",
+      "status": "measured"
+    },
+    "folded": {
+      "value": {
+        "shoulder_pan": -27.8,
+        "shoulder_lift": -2.8,
+        "elbow_flex": 2.9,
+        "wrist_flex": 2.4,
+        "wrist_yaw": -8.1,
+        "wrist_roll": -2.7,
+        "gripper": 0.0
+      },
+      "source": "Gavin supplied Lab normal-teleop target with Star leader folded; offline target",
+      "status": "design"
+    }
+  },
+  "soft_limits_file": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json",
+  "unmodelled_obstacles": [
+    "Black rim-clamped support tower near base: footprint and height unmeasured",
+    "Cables, fixtures, shackle and any mat/spacer are absent"
+  ]
+}
