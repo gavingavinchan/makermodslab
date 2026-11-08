@@ -1,0 +1,150 @@
+{
+  "ruff_check": {
+    "command": [
+      "/tmp/tankbox/lint-deps/bin/ruff",
+      "check",
+      "--output-format",
+      "concise",
+      "/home/gavin/Documents/makermodslab-viscous-tankbox/scripts/viscous-dream1/tank_guard_validation"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  "ruff_format_check": {
+    "command": [
+      "/tmp/tankbox/lint-deps/bin/ruff",
+      "format",
+      "--check",
+      "/home/gavin/Documents/makermodslab-viscous-tankbox/scripts/viscous-dream1/tank_guard_validation"
+    ],
+    "exit_code": 0,
+    "stdout": "5 files already formatted\n",
+    "stderr": ""
+  },
+  "git_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "protected_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "--",
+      "makermodslab/tank_guard.py",
+      "makermodslab/tank_geometry.py",
+      "configs/viscous/environments/aquarium_landen_75/keepout_viscous_waterproof_01.json",
+      "tests/test_tank_guard.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "pytest": {
+    "command": "PYTHONPATH=. ~/Documents/makermodslab-viscous/.venv/bin/python -m pytest -q tests/test_tank_guard.py",
+    "exit_code": 0,
+    "summary": "======================= 15 passed, 12 warnings in 4.41s ========================"
+  },
+  "protected_sha256": {
+    "makermodslab/tank_guard.py": "cf0f130fbd3c636d907100604b905960c8539c38d5eb13785581f53a68c5ef92",
+    "makermodslab/tank_geometry.py": "fb5cedfdc7b18894e55cbbbcfcf1219e3e47093bf671c811843f0d78d0036033",
+    "configs/viscous/environments/aquarium_landen_75/keepout_viscous_waterproof_01.json": "52b37f288817f50eb2f928bb4dc36117054982e81a55c8de87303820614a5c6a",
+    "tests/test_tank_guard.py": "60070fcd6b4fb96766d7adf00109935e8c2777d8ab30d8e5fb1c3903447ebd24"
+  },
+  "protected_matches_HEAD": true,
+  "trace_repo_copy": {
+    "path": "configs/viscous/viscous_waterproof_01/evidence/tank-trace-20261108T044404Z.jsonl",
+    "sha256": "2b7a460f44ba1976323711f7d9c8d5099f02aa1f4aebb922761343d671421f5b",
+    "matches_tmp_input": true
+  },
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "executable": "/home/gavin/Documents/makermodslab-viscous/.venv/bin/python",
+    "numpy": "2.2.6",
+    "host": "gavindesktop",
+    "logical_cpus": 24,
+    "branch": "feat/viscous-dream1-tank-box",
+    "head": "3864e6005c3441267baa30ff076d8a4d7123bda8"
+  },
+  "script_sha256": {
+    "scripts/viscous-dream1/tank_guard_validation/directed.py": "42cfb1f90384a59ffcefa6f9aa6c917bd2167d7d5898dbbb9124ad86e80acfc6",
+    "scripts/viscous-dream1/tank_guard_validation/hull_counts.py": "b93d9e84a7909e03db3fe4622fec31ee7dc6f45384f1f09fde4e05d1c94a1062",
+    "scripts/viscous-dream1/tank_guard_validation/report.py": "f73f54c54783bced10655bf6bbca99d34314d2b7789934d7f35279a507dbe515",
+    "scripts/viscous-dream1/tank_guard_validation/validate.py": "c40d9e08f86856a74b33327419444c9f06fda82ef8da2a3e3bd0ad669b95c6a7",
+    "scripts/viscous-dream1/tank_guard_validation/verify_sims.py": "e9532743ba04e8c0870c0bfbcc6313c9f05a8ec1640fdc3991076b71ac3e88f2"
+  },
+  "authorization": {
+    "hardware_connections": 0,
+    "DreamLabs_calls": 0,
+    "billed_calls": 0,
+    "api_keys_read": false,
+    "commits": 0,
+    "pushes": 0,
+    "changes": "new validation scripts and outputs only; pre-existing tracked binary edits left alone"
+  },
+  "offline_dependencies": {
+    "method": "uv pip install --offline --python <shared interpreter> --target <temporary directory>; local wheel cache only",
+    "plotting": "/tmp/tankbox/plot-deps; matplotlib 3.11.1",
+    "lint": "/tmp/tankbox/lint-deps; ruff 0.17.4",
+    "hull_counts": "/tmp/tankbox/analysis-deps; scipy 1.18.1",
+    "shared_venv_modified": false
+  },
+  "source_geometry_sha256": {
+    "configs/viscous/environments/aquarium_landen_75/tank.json": "428f12410cc2ce5c4e74d830bc0f2d5a52a47bc33296f87889a6d7009f6da715",
+    "configs/viscous/model/motor_to_urdf.json": "620214fa1c1b79d24844c3d4c3dc3b7106549faae9bb014bae7ce48929cc04bd"
+  },
+  "output_file_sizes_bytes": {
+    "trace_extremes.png": 119974,
+    "sim_summary.json": 900809,
+    "stage_trace.json": 338,
+    "report.md": 14099,
+    "stage_workspace.json": 342,
+    "stage_benchmark.json": 341,
+    "trace_summary.json": 12761,
+    "pose_pool.json": 295301,
+    "stage_sims.json": 335,
+    "adversarial_summary.json": 62472,
+    "sim_runs.md": 71176,
+    "directed_summary.json": 16628,
+    "sim_inventory.json": 13437,
+    "verification.json": 4825,
+    "sim_independent_verification.json": 58869,
+    "workspace_summary.json": 722845,
+    "profile_wall_clamp.json": 2243,
+    "benchmark.json": 1205,
+    "trace_series.json": 57152,
+    "workspace_topdown.png": 1801441,
+    "performance_proposal.json": 1041,
+    "stage_adversarial.json": 342
+  },
+  "checks_of_deliverables": {
+    "json_parse": true,
+    "markdown_local_links": true,
+    "largest_output_below_3_MB": true,
+    "figures_visually_inspected": true
+  },
+  "final_checks": {
+    "ruff": {
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    "format": {
+      "exit_code": 0,
+      "stdout": "5 files already formatted\n",
+      "stderr": ""
+    },
+    "diff": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}

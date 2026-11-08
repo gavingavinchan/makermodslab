@@ -1,0 +1,55 @@
+{
+  "isolation": "one process, no other validation workers; 10 warmups then 150 repeats per case",
+  "cases": {
+    "hold": {
+      "step_ms": {
+        "mean": 1.4446406600000001,
+        "median": 1.439079,
+        "p99": 1.52077379,
+        "max": 1.530137
+      },
+      "status": "ok",
+      "reason": ""
+    },
+    "small_1deg": {
+      "step_ms": {
+        "mean": 2.39595296,
+        "median": 2.395857,
+        "p99": 2.47516124,
+        "max": 2.665504
+      },
+      "status": "ok",
+      "reason": ""
+    },
+    "multi_joint_10deg": {
+      "step_ms": {
+        "mean": 33.91127949333333,
+        "median": 33.744706,
+        "p99": 35.30667504,
+        "max": 36.800375
+      },
+      "status": "ok",
+      "reason": ""
+    },
+    "wall_clamp": {
+      "step_ms": {
+        "mean": 257.18045523999996,
+        "median": 256.241873,
+        "p99": 262.51039269,
+        "max": 263.619029
+      },
+      "status": "clamped",
+      "reason": "keepout"
+    },
+    "jump": {
+      "step_ms": {
+        "mean": 0.0019271533333333334,
+        "median": 0.001904,
+        "p99": 0.00224959,
+        "max": 0.002284
+      },
+      "status": "rejected",
+      "reason": "jump:shoulder_pan"
+    }
+  }
+}

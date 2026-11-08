@@ -1,0 +1,310 @@
+{
+  "source_root": "/home/gavin/dreamtrial/viscous_sim/runs",
+  "selected": [
+    "flange/dry/B0/flange/ep_00/chunks.jsonl",
+    "flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+    "flange_dream2/dry/B0/flange/G1/ep_00/chunks.jsonl",
+    "flange_dream2/dry/B0/flange/G2/ep_00/chunks.jsonl",
+    "flange_dream2/dry/B0/flange/G3/ep_00/chunks.jsonl",
+    "flange_dream2/dry/B0/flange/T/ep_00/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G1/ep_00/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G1/ep_01/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G2/ep_00/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G2/ep_01/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G3/ep_00/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G3/ep_01/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G3/ep_02/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/G3/ep_03/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/T/ep_00/chunks.jsonl",
+    "flange_dream2/episodes/B0/flange/T/ep_01/chunks.jsonl",
+    "flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+    "propeller/dry/B0/propeller/P1/ep_00/chunks.jsonl",
+    "propeller/dry/B0/propeller/P2/ep_00/chunks.jsonl",
+    "propeller/dry/B0/propeller/P3/ep_00/chunks.jsonl",
+    "propeller/dry/B0/propeller/P4/ep_00/chunks.jsonl",
+    "replay_ik_smoke_fixed/chunks.jsonl",
+    "replay_yam_path_on_viscous/chunks.jsonl",
+    "replay_yam_path_on_viscous_contact_check/chunks.jsonl",
+    "shackle_scene/dream/ep_00/chunks.jsonl",
+    "shackle_scene/dream/ep_01/chunks.jsonl",
+    "shackle_scene/dream/ep_02/chunks.jsonl",
+    "shackle_scene/dry/ep_00/chunks.jsonl",
+    "sweep/B0/apple/ep_00/chunks.jsonl",
+    "sweep/B0/apple/ep_01/chunks.jsonl",
+    "sweep/B0/apple/ep_02/chunks.jsonl",
+    "sweep/B0/apple/ep_03/chunks.jsonl",
+    "sweep/B0/apple/ep_04/chunks.jsonl",
+    "sweep/B0/apple/ep_05/chunks.jsonl",
+    "sweep/B0/box/ep_00/chunks.jsonl",
+    "sweep/B0/box/ep_01/chunks.jsonl",
+    "sweep/B0/box/ep_02/chunks.jsonl",
+    "sweep/B0/box/ep_03/chunks.jsonl",
+    "sweep/B0/box/ep_04/chunks.jsonl",
+    "sweep/B0/box/ep_05/chunks.jsonl",
+    "sweep/B0/propeller/P1/ep_00/chunks.jsonl",
+    "sweep/B0/propeller/P1/ep_01/chunks.jsonl",
+    "sweep/B0/propeller/P2/ep_00/chunks.jsonl",
+    "sweep/B0/propeller/P2/ep_01/chunks.jsonl",
+    "sweep/B0/propeller/P3/ep_00/chunks.jsonl",
+    "sweep/B0/propeller/P3/ep_01/chunks.jsonl",
+    "sweep/B0/propeller/P3/ep_02/chunks.jsonl",
+    "sweep/B0/propeller/P3/ep_03/chunks.jsonl",
+    "sweep/B0/propeller/P3/ep_04/chunks.jsonl",
+    "sweep/B0/propeller/P4/ep_00/chunks.jsonl",
+    "sweep/B0/propeller/P4/ep_01/chunks.jsonl",
+    "sweep/parked/apple/ep_00/chunks.jsonl",
+    "sweep/parked/apple/ep_01/chunks.jsonl",
+    "sweep/parked/apple/ep_02/chunks.jsonl",
+    "sweep/parked/apple/ep_03/chunks.jsonl",
+    "sweep/parked/apple/ep_04/chunks.jsonl",
+    "sweep/parked/apple/ep_05/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_00/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_01/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_02/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_03/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_04/chunks.jsonl",
+    "sweep/parked_blind/apple/ep_05/chunks.jsonl",
+    "sweep/r24/box/ep_00/chunks.jsonl",
+    "sweep/r24/box/ep_01/chunks.jsonl",
+    "sweep/r24/box/ep_02/chunks.jsonl",
+    "sweep/r24/box/ep_03/chunks.jsonl",
+    "sweep/single/apple/ep_00/chunks.jsonl",
+    "sweep/single/apple/ep_01/chunks.jsonl",
+    "sweep/single/apple/ep_02/chunks.jsonl",
+    "sweep/single/apple/ep_03/chunks.jsonl",
+    "sweep/single/apple/ep_04/chunks.jsonl",
+    "sweep/single/apple/ep_05/chunks.jsonl",
+    "sweep/single/box/ep_00/chunks.jsonl",
+    "sweep/single/box/ep_01/chunks.jsonl",
+    "sweep/single/box/ep_02/chunks.jsonl",
+    "sweep/single/box/ep_03/chunks.jsonl",
+    "sweep/single/box/ep_04/chunks.jsonl",
+    "sweep/single/box/ep_05/chunks.jsonl",
+    "sweep/single_copy/apple/ep_00/chunks.jsonl",
+    "sweep/single_copy/apple/ep_01/chunks.jsonl",
+    "sweep/single_copy/apple/ep_02/chunks.jsonl",
+    "sweep/single_copy/apple/ep_03/chunks.jsonl",
+    "sweep/single_copy/apple/ep_04/chunks.jsonl",
+    "sweep/single_copy/apple/ep_05/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_00/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_01/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_02/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_03/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_04/chunks.jsonl",
+    "sweep/single_fixedcam/apple/ep_05/chunks.jsonl",
+    "sweep/table/box/ep_00/chunks.jsonl",
+    "sweep/table/box/ep_01/chunks.jsonl",
+    "sweep/table/box/ep_02/chunks.jsonl",
+    "sweep/table/box/ep_03/chunks.jsonl",
+    "sweep/tip/apple/ep_00/chunks.jsonl",
+    "sweep/tip/apple/ep_01/chunks.jsonl",
+    "sweep/tip/apple/ep_02/chunks.jsonl",
+    "sweep/tip/apple/ep_03/chunks.jsonl",
+    "sweep/tip/apple/ep_04/chunks.jsonl",
+    "sweep/tip/apple/ep_05/chunks.jsonl",
+    "sweep/tip/box/ep_00/chunks.jsonl",
+    "sweep/tip/box/ep_01/chunks.jsonl",
+    "sweep/tip/box/ep_02/chunks.jsonl",
+    "sweep/tip/box/ep_03/chunks.jsonl",
+    "sweep/tip/box/ep_04/chunks.jsonl",
+    "sweep/tip/box/ep_05/chunks.jsonl",
+    "viscous_apple_makerwrist_live1/chunks.jsonl",
+    "viscous_apple_vision_live2/chunks.jsonl",
+    "viscous_box_makerwrist_live1/chunks.jsonl"
+  ],
+  "excluded": [
+    {
+      "path": "astra_flange/validation/legacy/dream2/episode_fixture/B0/flange/stop/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/runs/flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/runs/flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/sweep/dry/parked/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/sweep/dry/parked_blind/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/sweep/dry/single_copy/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/sweep/dry/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "astra_flange/validation/legacy/sweep/validation/episode_fixture/B0/box/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "flange_dream/force_only/chunks.jsonl",
+      "reason": "no explicit Viscous identity in saved metadata"
+    },
+    {
+      "path": "flange_dream/scripted/chunks.jsonl",
+      "reason": "no explicit Viscous identity in saved metadata"
+    },
+    {
+      "path": "flange_dream2/episodes/YAM/flange/G3/ep_02/chunks.jsonl",
+      "reason": "other robot: yam yam"
+    },
+    {
+      "path": "flange_dream2/episodes/YAM/flange/G3/ep_03/chunks.jsonl",
+      "reason": "other robot: yam yam"
+    },
+    {
+      "path": "flange_dream2/scripted/chunks.jsonl",
+      "reason": "no explicit Viscous identity in saved metadata"
+    },
+    {
+      "path": "flange_dream2/validation/episode_fixture/B0/flange/stop/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "flange_dream2/validation/replay/B0/flange/G3/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "flange_dream2/validation/replay/YAM/flange/G3/ep_02/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "maker_apple_vision_live1/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "maker_apple_vision_live2/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "maker_box_vision_live1/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "maker_box_vision_live2/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "metal_apple_vision_live1/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "shackle_scene/layout_v1/dry/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/dream2/episode_fixture/B0/flange/stop/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/runs/flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/runs/flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/sweep/dry/parked/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/sweep/dry/parked_blind/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/sweep/dry/single_copy/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/sweep/dry/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/layout_v1/validation/legacy/sweep/validation/episode_fixture/B0/box/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/dream2/episode_fixture/B0/flange/stop/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/runs/flange_dream/dry_pregrasp/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/runs/flange_v2/dry/B0/flange/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/sweep/dry/parked/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/sweep/dry/parked_blind/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/sweep/dry/single_copy/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/sweep/dry/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "shackle_scene/validation/legacy/sweep/validation/episode_fixture/B0/box/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "sweep/YAM/propeller/P3/ep_02/chunks.jsonl",
+      "reason": "other robot: yam yam"
+    },
+    {
+      "path": "sweep/YAM/propeller/P3/ep_03/chunks.jsonl",
+      "reason": "other robot: yam yam"
+    },
+    {
+      "path": "sweep/YAM/propeller/P3/ep_04/chunks.jsonl",
+      "reason": "other robot: yam yam"
+    },
+    {
+      "path": "sweep/dry/parked/apple/ep_00/chunks.jsonl",
+      "reason": "empty chunk file; zero recorded executed rows"
+    },
+    {
+      "path": "sweep/dry/parked_blind/apple/ep_00/chunks.jsonl",
+      "reason": "empty chunk file; zero recorded executed rows"
+    },
+    {
+      "path": "sweep/dry/single_copy/apple/ep_00/chunks.jsonl",
+      "reason": "empty chunk file; zero recorded executed rows"
+    },
+    {
+      "path": "sweep/dry/single_fixedcam/apple/ep_00/chunks.jsonl",
+      "reason": "empty chunk file; zero recorded executed rows"
+    },
+    {
+      "path": "sweep/validation/episode_fixture/B0/box/ep_00/chunks.jsonl",
+      "reason": "archived or validation copy; primary source replayed instead"
+    },
+    {
+      "path": "yam_box_vision_live1/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    },
+    {
+      "path": "yam_vision_live2/chunks.jsonl",
+      "reason": "other robot in legacy run name"
+    }
+  ],
+  "scope": "all primary Viscous saved chunk runs, both virtual arms separately; includes dry/scripted/replay sources with labels; excludes archived duplicates and YAM/Maker/Metal"
+}

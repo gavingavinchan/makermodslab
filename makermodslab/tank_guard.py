@@ -59,7 +59,7 @@ MOTORS = (*ARM, "gripper")
 FACES = ("near", "far", "left", "right", "floor", "rim")
 WALL_FACES = ("near", "far", "left", "right", "rim")
 DEFAULT_CONFIG = geo.ENV_DIR / "keepout_viscous_waterproof_01.json"
-BISECT_STEPS = 14  # 1/16384 of a segment: well under a millimetre at any reach
+REFINE_STEPS = 6  # within one <= 4 mm sample gap: under 0.1 mm
 
 
 def _value(entry):
@@ -167,7 +167,9 @@ class TankGuard:
                         chain += slide_mm
                     node = joint.parent
                 if below:
-                    best = max(best, chain + float(np.linalg.norm(self.model.vertices[link], axis=1).max()) * 1000)
+                    best = max(
+                        best, chain + float(np.linalg.norm(self.model.vertices[link], axis=1).max()) * 1000
+                    )
             reach[name] = best
         span = abs(self.model.gripper_motor_open_deg - self.model.gripper_motor_closed_deg)
         reach["gripper"] = slide_mm / span  # mm per motor degree, not a radius
@@ -209,17 +211,26 @@ class TankGuard:
 
     def check_segment(self, q0: dict, q1: dict) -> Verdict:
         """Prove the straight joint-space path q0 -> q1 clear, or say where not."""
+        return self._scan(q0, q1)[0]
+
+    def _scan(self, q0: dict, q1: dict) -> tuple[Verdict, float]:
+        """Walk the samples in order; also return the proven-clear fraction.
+
+        Samples 0..k-1 passing proves the path up to sample k-1, because the
+        clearance requirement at each sample covers half the gap either side.
+        """
         bound = self.motion_bound_mm(q0, q1)
         steps = max(1, math.ceil(bound / (2 * self.sweep_tol_mm)))
         need = bound / (2 * steps)  # <= sweep tolerance; covers between samples
-        worst = None
+        worst, clear = None, 0.0
         for k in range(steps + 1):
             v = self.check_pose(_lerp(q0, q1, k / steps), need_mm=need)
             if worst is None or v.slack_mm < worst.slack_mm:
                 worst = v
             if not v.ok:
                 break
-        return Verdict(worst.ok, worst.slack_mm, worst.link, worst.face, steps + 1)
+            clear = k / steps
+        return Verdict(worst.ok, worst.slack_mm, worst.link, worst.face, steps + 1), clear
 
     # --- decisions ------------------------------------------------------
 
@@ -265,14 +276,17 @@ class TankGuard:
         start = self.check_pose(previous)
         if not start.ok:
             return Decision("rejected", dict(previous), "previous_unsafe", 0.0, start, clipped)
-        whole = self.check_segment(previous, target)
+        whole, lo = self._scan(previous, target)
         if whole.ok:
             status = "clamped" if clipped else "ok"
             return Decision(status, target, "joint_limit" if clipped else "", 1.0, whole, clipped)
-        lo, hi = 0.0, 1.0
-        for _ in range(BISECT_STEPS):
+        # [0, lo] is proven; refine into the next sample gap by checking only
+        # the short piece from the proven point, never the whole prefix again.
+        steps = whole.samples - 1
+        hi = min(1.0, lo + 1.0 / steps)
+        for _ in range(REFINE_STEPS):
             mid = (lo + hi) / 2
-            if self.check_segment(previous, _lerp(previous, target, mid)).ok:
+            if self.check_segment(_lerp(previous, target, lo), _lerp(previous, target, mid)).ok:
                 lo = mid
             else:
                 hi = mid

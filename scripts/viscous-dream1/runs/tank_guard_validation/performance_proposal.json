@@ -1,0 +1,47 @@
+{
+  "per_link": {
+    "forearm_link": {
+      "all_vertices": 750,
+      "hull_vertices": 408,
+      "exempt_all_faces": false
+    },
+    "gripper_left": {
+      "all_vertices": 919,
+      "hull_vertices": 353,
+      "exempt_all_faces": false
+    },
+    "gripper_right": {
+      "all_vertices": 914,
+      "hull_vertices": 345,
+      "exempt_all_faces": false
+    },
+    "upper_arm_link": {
+      "all_vertices": 358,
+      "hull_vertices": 300,
+      "exempt_all_faces": false
+    },
+    "wrist_pitch_link": {
+      "all_vertices": 1159,
+      "hull_vertices": 329,
+      "exempt_all_faces": false
+    },
+    "wrist_roll_link": {
+      "all_vertices": 1390,
+      "hull_vertices": 222,
+      "exempt_all_faces": false
+    },
+    "wrist_yaw_link": {
+      "all_vertices": 2111,
+      "hull_vertices": 837,
+      "exempt_all_faces": false
+    },
+    "yaw_link": {
+      "all_vertices": 1458,
+      "hull_vertices": 272,
+      "exempt_all_faces": true
+    }
+  },
+  "total_vertices": 9059,
+  "checked_hull_vertices": 2794,
+  "applied": false
+}

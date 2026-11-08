@@ -74,6 +74,8 @@ outputs/
 docs/*
 # Aquarium measurement method, operator flow and offline validation evidence.
 !docs/tank-measure.md
+# Dream-1 in the aquarium: the keep-out box, its validation and the real-run plan.
+!docs/dream1-tank.md
 !docs/upstream/
 # ... the DRTC remote-inference design record (makermodslab/drtc)
 !docs/drtc/

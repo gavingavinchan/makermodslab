@@ -1,0 +1,470 @@
+{
+  "source": "/tmp/tankbox/trace.jsonl",
+  "sha256": "2b7a460f44ba1976323711f7d9c8d5099f02aa1f4aebb922761343d671421f5b",
+  "readings": 857,
+  "time_start_s": 0.122,
+  "time_end_s": 94.807,
+  "counts": {
+    "shipped": {
+      "ok": 540,
+      "outside": 317
+    },
+    "raw": {
+      "ok": 725,
+      "outside": 132
+    }
+  },
+  "per_link_face": {
+    "shipped": {
+      "forearm_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 20.903324807144017
+      },
+      "forearm_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 296.4101735681772
+      },
+      "forearm_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 16.94956243153908
+      },
+      "forearm_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 53.97359462498042
+      },
+      "forearm_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 11.485243191117114
+      },
+      "forearm_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 23.388349257446464
+      },
+      "gripper_left/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 177.586623889195
+      },
+      "gripper_left/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 92.60866313465817
+      },
+      "gripper_left/left": {
+        "violating_readings": 153,
+        "worst_slack_mm": -38.00099708095482
+      },
+      "gripper_left/right": {
+        "violating_readings": 111,
+        "worst_slack_mm": -61.97821921818263
+      },
+      "gripper_left/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 10.309604085549907
+      },
+      "gripper_left/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 99.39236061975862
+      },
+      "gripper_right/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 144.4379414611319
+      },
+      "gripper_right/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 92.2752049324223
+      },
+      "gripper_right/left": {
+        "violating_readings": 154,
+        "worst_slack_mm": -38.50315325584174
+      },
+      "gripper_right/right": {
+        "violating_readings": 111,
+        "worst_slack_mm": -60.68535827971607
+      },
+      "gripper_right/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 9.835765911758273
+      },
+      "gripper_right/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 114.82434563286631
+      },
+      "upper_arm_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 3.0766187084708037
+      },
+      "upper_arm_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 433.20584867209107
+      },
+      "upper_arm_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 48.1557875073309
+      },
+      "upper_arm_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 62.58214266226804
+      },
+      "upper_arm_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 39.073801941827824
+      },
+      "upper_arm_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 157.39467529324543
+      },
+      "wrist_pitch_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 28.989158471960792
+      },
+      "wrist_pitch_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 211.5517204033918
+      },
+      "wrist_pitch_link/left": {
+        "violating_readings": 4,
+        "worst_slack_mm": -15.519760713696655
+      },
+      "wrist_pitch_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 24.50261821825771
+      },
+      "wrist_pitch_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 19.98455695734084
+      },
+      "wrist_pitch_link/rim": {
+        "violating_readings": 30,
+        "worst_slack_mm": -9.167174899976999
+      },
+      "wrist_roll_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 57.559551837738866
+      },
+      "wrist_roll_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 117.92218078695402
+      },
+      "wrist_roll_link/left": {
+        "violating_readings": 118,
+        "worst_slack_mm": -59.99722548190857
+      },
+      "wrist_roll_link/right": {
+        "violating_readings": 118,
+        "worst_slack_mm": -60.40435071142991
+      },
+      "wrist_roll_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 18.86565356001403
+      },
+      "wrist_roll_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 0.07643320069416859
+      },
+      "wrist_yaw_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 79.85247961208839
+      },
+      "wrist_yaw_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 207.31014765819185
+      },
+      "wrist_yaw_link/left": {
+        "violating_readings": 2,
+        "worst_slack_mm": -2.764762262921124
+      },
+      "wrist_yaw_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 28.821928386500446
+      },
+      "wrist_yaw_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 12.17157389451961
+      },
+      "wrist_yaw_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 41.42665112691907
+      }
+    },
+    "raw": {
+      "forearm_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 90.90332480714402
+      },
+      "forearm_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 366.4101735681772
+      },
+      "forearm_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 86.94956243153908
+      },
+      "forearm_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 123.97359462498042
+      },
+      "forearm_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 11.485243191117114
+      },
+      "forearm_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 93.38834925744646
+      },
+      "gripper_left/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 207.586623889195
+      },
+      "gripper_left/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 122.60866313465817
+      },
+      "gripper_left/left": {
+        "violating_readings": 53,
+        "worst_slack_mm": -8.000997080954818
+      },
+      "gripper_left/right": {
+        "violating_readings": 78,
+        "worst_slack_mm": -31.97821921818263
+      },
+      "gripper_left/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 10.309604085549907
+      },
+      "gripper_left/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 129.39236061975862
+      },
+      "gripper_right/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 174.4379414611319
+      },
+      "gripper_right/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 122.2752049324223
+      },
+      "gripper_right/left": {
+        "violating_readings": 54,
+        "worst_slack_mm": -8.503153255841738
+      },
+      "gripper_right/right": {
+        "violating_readings": 69,
+        "worst_slack_mm": -30.68535827971607
+      },
+      "gripper_right/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 9.835765911758273
+      },
+      "gripper_right/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 144.8243456328663
+      },
+      "upper_arm_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 3.0766187084708037
+      },
+      "upper_arm_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 503.20584867209107
+      },
+      "upper_arm_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 118.1557875073309
+      },
+      "upper_arm_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 132.58214266226804
+      },
+      "upper_arm_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 39.073801941827824
+      },
+      "upper_arm_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 227.39467529324543
+      },
+      "wrist_pitch_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 98.98915847196079
+      },
+      "wrist_pitch_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 281.5517204033918
+      },
+      "wrist_pitch_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 54.480239286303345
+      },
+      "wrist_pitch_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 94.50261821825771
+      },
+      "wrist_pitch_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 19.98455695734084
+      },
+      "wrist_pitch_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 60.832825100023
+      },
+      "wrist_roll_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 127.55955183773887
+      },
+      "wrist_roll_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 187.92218078695402
+      },
+      "wrist_roll_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 10.002774518091428
+      },
+      "wrist_roll_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 9.595649288570087
+      },
+      "wrist_roll_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 18.86565356001403
+      },
+      "wrist_roll_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 70.07643320069417
+      },
+      "wrist_yaw_link/near": {
+        "violating_readings": 0,
+        "worst_slack_mm": 149.8524796120884
+      },
+      "wrist_yaw_link/far": {
+        "violating_readings": 0,
+        "worst_slack_mm": 277.31014765819185
+      },
+      "wrist_yaw_link/left": {
+        "violating_readings": 0,
+        "worst_slack_mm": 67.23523773707888
+      },
+      "wrist_yaw_link/right": {
+        "violating_readings": 0,
+        "worst_slack_mm": 98.82192838650045
+      },
+      "wrist_yaw_link/floor": {
+        "violating_readings": 0,
+        "worst_slack_mm": 12.17157389451961
+      },
+      "wrist_yaw_link/rim": {
+        "violating_readings": 0,
+        "worst_slack_mm": 111.42665112691907
+      }
+    }
+  },
+  "raw_plane_crossings": {
+    "near": {
+      "worst_raw_slack_mm": 3.0766187084708037,
+      "outside_readings": 0,
+      "ranges": []
+    },
+    "far": {
+      "worst_raw_slack_mm": 122.2752049324223,
+      "outside_readings": 0,
+      "ranges": []
+    },
+    "left": {
+      "worst_raw_slack_mm": -8.503153255841738,
+      "outside_readings": 54,
+      "ranges": [
+        {
+          "first": 233,
+          "last": 236,
+          "start_s": 25.893,
+          "end_s": 26.221,
+          "readings": 4
+        },
+        {
+          "first": 240,
+          "last": 240,
+          "start_s": 26.658,
+          "end_s": 26.658,
+          "readings": 1
+        },
+        {
+          "first": 288,
+          "last": 309,
+          "start_s": 32.001,
+          "end_s": 34.308,
+          "readings": 22
+        },
+        {
+          "first": 358,
+          "last": 364,
+          "start_s": 39.765,
+          "end_s": 40.423,
+          "readings": 7
+        },
+        {
+          "first": 368,
+          "last": 387,
+          "start_s": 40.868,
+          "end_s": 42.954,
+          "readings": 20
+        }
+      ]
+    },
+    "right": {
+      "worst_raw_slack_mm": -31.97821921818263,
+      "outside_readings": 78,
+      "ranges": [
+        {
+          "first": 408,
+          "last": 438,
+          "start_s": 45.266,
+          "end_s": 48.574,
+          "readings": 31
+        },
+        {
+          "first": 450,
+          "last": 465,
+          "start_s": 49.959,
+          "end_s": 51.599,
+          "readings": 16
+        },
+        {
+          "first": 475,
+          "last": 498,
+          "start_s": 52.701,
+          "end_s": 55.237,
+          "readings": 24
+        },
+        {
+          "first": 502,
+          "last": 508,
+          "start_s": 55.679,
+          "end_s": 56.332,
+          "readings": 7
+        }
+      ]
+    },
+    "floor": {
+      "worst_raw_slack_mm": -0.16423408824172725,
+      "outside_readings": 1,
+      "ranges": [
+        {
+          "first": 170,
+          "last": 170,
+          "start_s": 18.898,
+          "end_s": 18.898,
+          "readings": 1
+        }
+      ]
+    },
+    "rim": {
+      "worst_raw_slack_mm": 60.832825100023,
+      "outside_readings": 0,
+      "ranges": []
+    }
+  },
+  "raw_variant": "zero margins and padding; floor press 10 mm and yaw exemption retained; raw_plane_crossings removes the floor press allowance",
+  "extrema_mm": {
+    "y_min": -255.97821921818266,
+    "y_max": 218.50315325584174,
+    "z_min": -6.164234088241724
+  }
+}

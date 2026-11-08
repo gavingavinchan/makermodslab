@@ -20,8 +20,7 @@ import math
 import numpy as np
 import pytest
 
-from makermodslab import tank_geometry as geo
-from makermodslab import tank_guard as tg
+from makermodslab import tank_geometry as geo, tank_guard as tg
 
 # Resting in the tank at the end of the 2026-11-07 trace (gripper on the floor).
 REST = {
