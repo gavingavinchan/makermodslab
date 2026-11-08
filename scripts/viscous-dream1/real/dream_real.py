@@ -1096,59 +1096,74 @@ class Episode:
         return legs
 
     def plan_chunk(self, reply) -> list[dict]:
+        """Dream's rows -> 20 Hz substeps at <= 15 deg/s, every substep through the workspace box and the
+        tank guard. A row that cannot be reached (box, or the keep-out cut it) is SKIPPED and the arm heads
+        for Dream's later rows from where it is, instead of the chunk being dropped there: Dream's chunks often
+        open by continuing a motion into a limit and only then turn away (live 2026-11-08T223929Z: rows 0-10
+        folded the forearm 29 mm past the back wall, rows 11-47 reached out to the ball). Gavin: follow Dream as
+        far as possible, "it shouldn't just reject or give up". Every sent substep is still guard-proven and
+        speed-capped; IK flips are judged row to row on Dream's own chunk. Jumps, bad rows and other guard
+        refusals still stop the run."""
         rows = np.array(reply["q_l_chunk"], float)[: self.s.rows]
         rows[:, 6] = np.clip(rows[:, 6], 0.0, 1.0)
         if self.mutate:
             rows = self.mutate(rows)
-        out, prev = [], dict(self.commanded)
+        out, prev, ref, skipped = [], dict(self.commanded), dict(self.commanded), []
         for i, row in enumerate(rows):
             if not np.isfinite(row).all() or row.shape != (7,):
                 raise TripStopError([core.Trip("bad_chunk", f"row {i} is {row.tolist()}")])
             target = core.ik_row_to_motor(row, self.jmap)
-            if bad := core.jumps(prev, target, self.s.max_jump_deg):
+            if bad := core.jumps(ref, target, self.s.max_jump_deg):
                 raise TripStopError(
                     [
                         core.Trip(
                             "jump",
-                            f"row {i}: {', '.join(f'{m} {target[m] - prev[m]:+.1f} deg' for m in bad)}",
+                            f"row {i}: {', '.join(f'{m} {target[m] - ref[m]:+.1f} deg' for m in bad)}",
                         )
                     ]
                 )
+            ref = dict(target)
             target, clipped = core.clamp_to_limits(target, self.limits, self.s.limit_margin_deg)
             self.summary["clipped"] += bool(clipped)
             steps = core.retime(prev, target, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s)
             self.summary["stretched_rows"] += len(steps) > 1
+            why = None
             for step in steps:
-                # Grace (DreamLabs) via Gavin 2026-11-08: the control loop overrides Dream to stay inside the
-                # tank limits rather than ending the run. A substep outside the workspace box or the keep-out is
-                # never sent: the chunk is cut there and the arm holds its last allowed target until the next
-                # call (Dream then sees where the arm really is). Jumps, bad rows and other faults still stop.
                 if bad := self.box.violations(step):
-                    return self._override(out, len(rows), f"row {i}: workspace {bad[0]}")
+                    why = f"workspace {bad[0]}"
+                    break
                 status, granted, reason = self.guard.step(step)
                 self.summary["guard"][status] += 1
                 if status == "rejected":
                     if reason == "keepout":
-                        return self._override(out, len(rows), f"row {i}: tank keep-out")
+                        why = "tank keep-out"
+                        break
                     raise TripStopError([core.Trip("tank_guard", f"row {i}: {reason}")])
                 # A guard clamp ends short of the line; re-retime to it so the next substep stays under
                 # the cap (just `granted` when nothing was clamped).
                 subs = core.retime(prev, granted, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s)
-                for k, sub in enumerate(subs if granted != step else ()):
-                    if bad := self.box.violations(sub):
-                        return self._override(out + subs[:k], len(rows), f"row {i}: workspace {bad[0]}")
+                cut = next(
+                    (k for k, sub in enumerate(subs if granted != step else ()) if self.box.violations(sub)),
+                    None,
+                )
+                if cut is not None:
+                    out += subs[:cut]
+                    prev = subs[cut - 1] if cut else prev
+                    why = "workspace (after a clamp)"
+                    break
                 out += subs
                 prev = granted
                 if status == "clamped" and reason == "keepout":
-                    return self._override(out, len(rows), f"row {i}: tank keep-out (cut at the line)")
+                    why = "tank keep-out (cut at the line)"
+                    break
+            if why:
+                skipped.append((i, why))
         self.summary["rows_planned"] += len(rows)
-        return out
-
-    def _override(self, out, rows, why) -> list[dict]:
-        """Cut the chunk at the last allowed substep (see plan_chunk); the arm holds there."""
-        self.summary["rows_planned"] += rows
-        self.summary.setdefault("overrides", []).append({"call": self.summary["calls"], "why": why})
-        self._phase("override", f"call {self.summary['calls']}: {why}; holding the last allowed target")
+        if skipped:
+            first, why = skipped[0]
+            note = f"{len(skipped)} of {len(rows)} rows skipped (first: row {first}, {why}), {len(out)} substeps kept"
+            self.summary.setdefault("overrides", []).append({"call": self.summary["calls"], "why": note})
+            self._phase("override", f"call {self.summary['calls']}: {note}")
         return out
 
     def _check_speed(self, target):
@@ -1666,7 +1681,7 @@ def build_plan(
             if guard.available
             else f"box clip only; NO floor slide: {guard.problem}",
             "workspace_box": f"{BOX_FILE.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: "
-            "the chunk is cut at the last substep inside, the arm holds there, the next call follows",
+            "a row that cannot be reached is skipped and the arm heads for Dream's later rows; if none is reachable it holds until the next call",
             "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (keep-out -> override as "
             "above; any other rejection -> stop) and "
             "every measured pose through monitor()"

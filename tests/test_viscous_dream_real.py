@@ -1172,3 +1172,57 @@ class NoGuard:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SkipAheadReplayTest(unittest.TestCase):
+    """Live 2026-11-08T223929Z: stuck with the forearm on the back-wall line, Dream's call 2 opened by folding
+    further back (rows 0-10 into the wall) and then reached out and down to the ball. Its unreachable rows are
+    now skipped and the arm heads for the later ones instead of the whole chunk being dropped."""
+
+    def test_unreachable_leading_rows_are_skipped_not_the_chunk(self):
+        import types
+
+        run = REAL / "runs" / "live-20261108T223929Z"
+        held = json.loads((run / "ticks.jsonl").read_text().splitlines()[-1])["cmd"]
+        chunk = next(
+            c for c in map(json.loads, (run / "chunks.jsonl").read_text().splitlines()) if c["call"] == 2
+        )
+        jmap = core.JointMap.load()
+        arm = json.loads((REAL / "tank_model" / "viscous_waterproof_tank_arm.json").read_text())
+        box = core.WorkspaceBox.load(
+            dream_real.BOX_FILE, core.ROOT / "configs/viscous/model/viscous_arm.urdf", jmap, tcp_m=arm["tcp"]
+        )
+        guard = dream_real.Guard()
+        from makermodslab import tank_guard
+
+        guard.targets = tank_guard.GuardedTargets.__new__(tank_guard.GuardedTargets)
+        guard.targets.guard, guard.targets.target, guard.targets.start = guard.guard, dict(held), dict(held)
+        guard.targets.counts = {"ok": 0, "clamped": 0, "rejected": 0}
+        summary = {"clipped": 0, "stretched_rows": 0, "rows_planned": 0, "calls": 2}
+        summary["guard"] = {"ok": 0, "clamped": 0, "rejected": 0, "unguarded": 0}
+        settings = types.SimpleNamespace(
+            rows=48, max_jump_deg=20.0, limit_margin_deg=1.0, speed_deg_s=15.0, grip_deg_s=60.0
+        )
+        ep = types.SimpleNamespace(
+            s=settings,
+            jmap=jmap,
+            limits=dict(core.keepout_limits()),
+            box=box,
+            guard=guard,
+            summary=summary,
+            commanded=dict(held),
+            mutate=None,
+            _phase=lambda *a: None,
+        )
+        out = dream_real.Episode.plan_chunk(ep, {"q_l_chunk": chunk["q_l_chunk"]})
+        self.assertGreater(len(out), 100)  # the old planner sent 0
+        start, end = (box.positions_mm({m: q[m] for m in core.ARM})["tcp"] for q in (out[0], out[-1]))
+        self.assertLess(end[0], start[0] - 50)  # out toward the ball (the arm works toward -x)
+        self.assertLess(end[2], start[2] - 50)  # and down
+        self.assertIn("skipped", summary["overrides"][0]["why"])
+        prev = held
+        for q in out:  # every kept substep is inside the box, guard-clear and under the speed cap
+            self.assertEqual(box.violations(q), [])
+            self.assertTrue(guard.guard.check_pose(q).ok)
+            self.assertLessEqual(max(abs(q[m] - prev[m]) for m in core.ARM), 15.0 * core.ROW_DT_S + 1e-6)
+            prev = q

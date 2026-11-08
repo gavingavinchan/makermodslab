@@ -458,6 +458,18 @@ restore paths in the DAgger runner.
   Dream descended to the floor (213138Z: hand target 21 cm -> -19 mm) was wrist-only
   with the MEASURED (sagged) state, so the state change may have removed the descent
   too; untested. Next: ask Grace with this data before spending the last calls.
+- *Status (2026-11-08, later): skip unreachable rows instead of dropping the chunk.*
+  Live 223929Z (two cameras, MEASURED state, 4 calls): call 1 retreated again (48 -> 36
+  cm, up), parking the forearm on the back-wall limit; calls 2-3 then asked to reach back
+  out to ~48 cm and down to ~4 cm (toward the ball) but were cut at row 0 and the stop
+  held mid-air (Gavin supported it; one press released it, the earlier fix works).
+  Diagnosis: not a guard bug. Dream's chunk opened by folding further back (row 10: the
+  forearm 29 mm past the back-wall line) before swinging out, and the planner dropped
+  the whole chunk at the first refused row. Now an unreachable row is skipped and the
+  arm heads for Dream's later rows (every substep still guard-proven and <= 15 deg/s;
+  IK flips judged row to row on Dream's own chunk). Replaying call 2 from the stuck pose:
+  17 rows skipped, 118 substeps (5.9 s), hand 41 -> 48 cm out and 119 -> 39 mm down;
+  this replay is now a test. Gavin raised today's call limit to 200 (ledger cap edited).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
