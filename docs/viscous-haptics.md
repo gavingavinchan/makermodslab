@@ -493,7 +493,8 @@ restore paths in the DAgger runner.
   (motors + cameras), so the dead camera made every reading fail and the arm HELD
   mid-air (Gavin supported it; one press released it). Fixed: every stop now closes the
   cameras first and returns on motor readings only (test: a camera dying mid-run still
-  reaches the rest). Hardware fix pending: one camera on a different USB port.
+  reaches the rest). Gavin replugged `head` (now 0x1300000c45636b, on the outer hub port); a 60 s dual-camera soak
+  then read 640x480 from both with no failures (both still share the upstream hub).
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
