@@ -353,6 +353,15 @@ restore paths in the DAgger runner.
   keeps it 70 mm off the glass. Dry run, Dream pushing 25 cm into the right wall:
   37-47 rows per call slid, no cuts, 153 substeps executed. A pick needs ~10-20 calls
   (each call = one ~2.4 s chunk from the current image).
+- *Status (2026-11-08, later): first sliding run* (`runs/live-20261108T211253Z`,
+  --max-calls 20, stopped by me at call 8 on stale monitor notifications: I thought
+  the elbow cuts were repeating, but calls 5-8 were already sliding cleanly; 13 billed
+  calls today). Calls 1-3 cut by the workspace box's elbow x <= -30 limit (set when the
+  near wall was the 40 mm estimate; the wall is now 80 and the mesh guard keeps 70 mm).
+  Calls 4-8: hand slid along the floor limit (48/48 targets clipped), creeping from
+  37 to 34 cm out, ~1.5 cm right. Dream never opened the gripper (0.00-0.04 of 1 in
+  every call) and kept asking below the floor limit. Next: raise the ball 3-4 cm,
+  loosen the elbow's back limit, ask Grace about grip behaviour with wrist-only input.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
