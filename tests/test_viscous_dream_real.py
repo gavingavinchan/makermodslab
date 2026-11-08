@@ -738,7 +738,6 @@ class EpisodeOnFakesTest(unittest.TestCase):
             ("lag", "lag"),
             ("stale", "feedback"),
             ("temperature", "temperature"),
-            ("workspace", "workspace"),
             ("push", "lag"),
         ):
             summary, arm = self.episode(scenario, max_calls=5)
@@ -746,6 +745,24 @@ class EpisodeOnFakesTest(unittest.TestCase):
             self.assert_stopped_safely(arm)
             self.assertEqual(summary["stop"]["gripper_release"], "ok")
             self.assertIsInstance(summary["stop"]["reanchor"], dict, scenario)
+
+    def test_out_of_box_requests_are_overridden_not_executed(self):
+        # Grace via Gavin 2026-11-08: Dream's out-of-limit requests are cut at the box and the run goes on.
+        sent = []
+
+        def record(arm):
+            send = arm.send
+            arm.send = lambda target, previous: (sent.append(dict(target)), send(target, previous))
+
+        summary, arm = self.episode("workspace", max_calls=3, patch=record)
+        self.assertNotIn("workspace", [t["name"] for t in summary["trips"]])
+        self.assertTrue(summary.get("overrides"))
+        self.assertIn("workspace", summary["overrides"][0]["why"])
+        self.assertEqual(summary["calls"], 3)  # kept asking Dream instead of stopping
+        self.assertTrue(sent)
+        dream_part = sent[summary["approach_substeps"] :]
+        self.assertEqual([q for q in dream_part if self.ep.box.violations(q)], [])
+        self.assert_stopped_safely(arm)
 
     def test_a_pushed_arm_is_held_where_it_is_and_returns_from_there(self):
         guard = NoGuard()
@@ -812,7 +829,9 @@ class EpisodeOnFakesTest(unittest.TestCase):
 
             def stuck(pose, abort, speed, watch=None):
                 back(pose, abort, speed, watch)
-                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0  # caught on something, past its 20 deg lag trip
+                arm.pos["shoulder_lift"] = (
+                    pose["shoulder_lift"] - 25.0
+                )  # caught on something, past its 20 deg lag trip
                 arm.limp.add("shoulder_lift")
                 arm.FALL_DEG_PER_TICK = 0.0  # stays there
                 return False, "shoulder_lift still 25.0 deg away"

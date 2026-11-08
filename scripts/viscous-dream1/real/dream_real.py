@@ -882,6 +882,7 @@ class Settings:
     trips: core.TripLimits
     slots: dict
     hold_s: float = DEFAULT_HOLD_S
+    pause_s: float = 0.0  # hold at the start pose before the first Dream call (Gavin places the object)
 
 
 class Episode:
@@ -1033,21 +1034,36 @@ class Episode:
             steps = core.retime(prev, target, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s)
             self.summary["stretched_rows"] += len(steps) > 1
             for step in steps:
+                # Grace (DreamLabs) via Gavin 2026-11-08: the control loop overrides Dream to stay inside the
+                # tank limits rather than ending the run. A substep outside the workspace box or the keep-out is
+                # never sent: the chunk is cut there and the arm holds its last allowed target until the next
+                # call (Dream then sees where the arm really is). Jumps, bad rows and other faults still stop.
                 if bad := self.box.violations(step):
-                    raise TripStopError([core.Trip("workspace", f"row {i}: {bad[0]}")])
+                    return self._override(out, len(rows), f"row {i}: workspace {bad[0]}")
                 status, granted, reason = self.guard.step(step)
                 self.summary["guard"][status] += 1
                 if status == "rejected":
+                    if reason == "keepout":
+                        return self._override(out, len(rows), f"row {i}: tank keep-out")
                     raise TripStopError([core.Trip("tank_guard", f"row {i}: {reason}")])
                 # A guard clamp ends short of the line; re-retime to it so the next substep stays under
                 # the cap (just `granted` when nothing was clamped).
                 subs = core.retime(prev, granted, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s)
-                for sub in subs if granted != step else ():
+                for k, sub in enumerate(subs if granted != step else ()):
                     if bad := self.box.violations(sub):
-                        raise TripStopError([core.Trip("workspace", f"row {i}: {bad[0]}")])
+                        return self._override(out + subs[:k], len(rows), f"row {i}: workspace {bad[0]}")
                 out += subs
                 prev = granted
+                if status == "clamped" and reason == "keepout":
+                    return self._override(out, len(rows), f"row {i}: tank keep-out (cut at the line)")
         self.summary["rows_planned"] += len(rows)
+        return out
+
+    def _override(self, out, rows, why) -> list[dict]:
+        """Cut the chunk at the last allowed substep (see plan_chunk); the arm holds there."""
+        self.summary["rows_planned"] += rows
+        self.summary.setdefault("overrides", []).append({"call": self.summary["calls"], "why": why})
+        self._phase("override", f"call {self.summary['calls']}: {why}; holding the last allowed target")
         return out
 
     def _check_speed(self, target):
@@ -1063,6 +1079,7 @@ class Episode:
         frames_fed, queue, approach = 0, collections.deque(), collections.deque()
         reason = "finished"
         hold_until = None
+        dream_after = 0.0
         self._phase("connect")
         self.arm.connect()
         try:
@@ -1150,13 +1167,18 @@ class Episode:
                             "hold", f"at the Dream start pose until a stop signal or {self.s.hold_s:g} s"
                         )
                     else:
-                        self.phase = "dream"
+                        self.phase, dream_after = "dream", now + self.s.pause_s
+                        if self.s.pause_s > 0:
+                            self._phase(
+                                "pause", f"holding at the start pose {self.s.pause_s:g} s before Dream"
+                            )
                         self._phase("dream", "start pose reached; Dream calls from here")
                 if (
                     self.phase == "dream"
                     and not queue
                     and not self.worker.busy
                     and frames_fed >= core.FRAMES_IN_WINDOW
+                    and now >= dream_after
                 ):
                     if self.worker.calls >= self.s.max_calls:
                         reason = f"call cap {self.s.max_calls} reached"
@@ -1169,7 +1191,19 @@ class Episode:
                     if error:
                         raise TripStopError([core.Trip("dream", error)])
                     self.summary["calls"] += 1
-                    plan = self.plan_chunk(reply)
+                    try:
+                        plan = self.plan_chunk(reply)
+                    except TripStopError as trip:
+                        self._write(
+                            self.chunks,
+                            {
+                                "call": self.summary["calls"],
+                                "ledger": request,
+                                "q_l_chunk": np.asarray(reply["q_l_chunk"]).tolist(),
+                                "refused": str(trip),
+                            },
+                        )
+                        raise
                     self._write(
                         self.chunks,
                         {
@@ -1490,8 +1524,10 @@ def build_plan(
         "trips": {
             "joint_clamp": f"every target clipped {settings.limit_margin_deg} deg inside the motor limits (a notice, not a stop)",
             "jump": f"any arm joint target > {settings.max_jump_deg} deg from the last -> refuse chunk, stop",
-            "workspace_box": f"{BOX_FILE.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> refuse chunk, stop",
-            "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (rejected -> stop) and "
+            "workspace_box": f"{BOX_FILE.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: "
+            "the chunk is cut at the last substep inside, the arm holds there, the next call follows",
+            "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (keep-out -> override as "
+            "above; any other rejection -> stop) and "
             "every measured pose through monitor()"
             if guard.available
             else f"NOT AVAILABLE: {guard.problem}",
@@ -2019,6 +2055,12 @@ def main(argv=None) -> int:
         "--wrist-r", default="black", help="black | copy | camera:<name> (no second arm on the rig)"
     )
     p.add_argument("--max-calls", type=int, default=10)
+    p.add_argument(
+        "--pause-s",
+        type=float,
+        default=0.0,
+        help="hold at the start pose this long before the first Dream call",
+    )
     p.add_argument("--rows", type=int, default=48)
     p.add_argument("--speed-deg-s", type=float, default=HARD_ARM_SPEED_DEG_S, help="arm cap, at most 15")
     p.add_argument("--grip-deg-s", type=float, default=60.0)
@@ -2114,6 +2156,7 @@ def main(argv=None) -> int:
         trips,
         slots,
         args.hold_s,
+        args.pause_s,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     guard = Guard()

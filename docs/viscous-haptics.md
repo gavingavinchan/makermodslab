@@ -317,6 +317,19 @@ restore paths in the DAgger runner.
   ~19 deg at 10 Nm). Cameras: the `head` camera's unique id changed after the restart
   (0x1300000c45636b -> 0x1130000c45636b, a different USB port), record updated with a
   backup; `--overhead black` is now a deliberate wrist-only setup.
+- *Status (2026-11-08, later): first live Dream calls.* Gavin raised the arm's base;
+  the rest then read 15 mm into the old floor, so floor -6 -> -31 mm (measured lying
+  on the glass) and rim 427 -> 411, keep-out and workspace box both. Live 205156Z:
+  approach tripped lag at 10.2 deg on the shoulder (sag ~9 deg at ~5 Nm) -> Gavin
+  "make it 20deg" for shoulder_lift only. Live 205544Z and 205933Z (1 billed call
+  each): the start pose was reached and Dream's first chunk asked for tcp z 16 then
+  -5 mm (toward the golf ball on the floor), refused by the box; each stop returned
+  to rest cleanly. Grace (DreamLabs), via Gavin: "the control loop should overwrite
+  what dream is outputting so that its remains in the aquarium limits" -> a box or
+  keep-out violation now cuts the chunk at the last allowed substep and holds there
+  until the next call instead of ending the run (jumps, bad rows, other faults still
+  stop). `--pause-s` holds at the start pose before the first call so Gavin can place
+  the ball. Refused chunks are now logged.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
