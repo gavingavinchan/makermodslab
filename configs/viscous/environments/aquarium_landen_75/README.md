@@ -46,7 +46,8 @@ never reads the arm.
 | Mat/spacer height | 0 mm | Estimate; a spacer of height h gives floor z = mesh minimum − h |
 | Glass rim | z = 442 mm | Floor + outer height − bottom glass thickness |
 | Optional water height | 283 mm above floor | Design in `docs/shackle-sim2real.md`; not filled; `null` disables |
-| Default margin | 30 mm | Design target from this brief |
+| Wall and rim margins | 30 mm each | Follow-up brief design target; moving links only |
+| Floor margin | 0 mm | Follow-up brief: moving geometry must not go below glass floor |
 
 Inner length/width are outer minus **two** panes: 734 × 434 mm. The requested
 open-top floor-to-rim height subtracts **one** bottom pane, hence 442 mm
@@ -56,9 +57,15 @@ headroom and is not an overhead physical collision surface. `water_line`
 reports headroom below the proposed water surface, for a fully submerged arm;
 it is informational and excluded from the default glass sweep.
 
-Motor degrees convert **directly** to URDF radians for J1–J6, without wrapping,
-offsets or sign changes; shoulder_pan already has the URDF −Z axis. Gripper
-uses an **approximate** linear map: 0° closed, −115° → 52.4 mm displacement
+J1–J6 use `configs/viscous/model/motor_to_urdf.json`:
+**URDF angle = sign × motor_deg + offset_deg**, then convert to radians.
+J5 wrist_yaw is −1 (Gavin's top-down photo inference 2026-11-07; hand test pending).
+J1–J4 are +1 and photo-consistent in the supplied side view; J6 +1 is assumed,
+unverified. All offsets are 0°; a photo match does not verify isolated motor signs.
+Shoulder_pan retains its URDF −Z axis; motor angles are never wrapped.
+The gravity model (`makermodslab/arm_gravity.py`) still uses direct mapping and needs the same sign check.
+
+Gripper uses an **approximate** linear map: 0° closed, −115° → 52.4 mm displacement
 per finger, clamped to [0, 52.4] mm. Thus readback −117.9° is fully open.
 The CAD slide limit is 52.4125 mm. The geometry is the repo's CAD collision
 model, not a new measurement of waterproof seals, wiring or other hardware.
@@ -100,6 +107,12 @@ Run from repository root. Core commands need only the existing repo Python
 and numpy; tests additionally use its installed Pinocchio. `-o` writes JSON
 results; sweep also prints a Markdown table. Flags override the selected
 reference pose; `--angles` accepts a complete seven-angle JSON object or file.
+`clearance` returns `moving_links`, an informational `static_mount`, and moving
+margin `violations`. Floor is reported with its own margin; the base is never a
+violation. `sweep --margin-mm` overrides only walls/rim; `--floor-margin-mm`
+independently overrides the floor. Defaults come from `surface_margins_mm` in
+`tank.json`, each with source/status. `--include-water` optionally applies the
+rim margin to water headroom; water is otherwise informational.
 
 ```bash
 .venv/bin/python scripts/viscous_aquarium_env.py clearance --pose read -o /tmp/aquarium-read.json
@@ -117,7 +130,8 @@ from scripts.viscous_aquarium_env import load_tank, load_model, clearance
 tank = load_tank()
 model = load_model(tank)
 pose = tank["reference_poses_motor_deg"]["read"]["value"]
-distances = clearance(model, tank, pose)  # wall -> {distance_mm, link}
+distances = clearance(model, tank, pose)  # moving links, surface -> {distance_mm, link}
+mount = clearance(model, tank, pose, static_mount=True)  # info only, never a violation
 ```
 
 Only scene generation/check/render use the separate MuJoCo environment:
@@ -129,9 +143,10 @@ MUJOCO_GL=egl ~/dreamtrial/.venv/bin/python scripts/viscous_aquarium_env.py rend
 
 MuJoCo is **not** added to Lab's dependencies. MJCF copies URDF joint origins,
 axes, inertias, collision geometry and CAD limits, plus the gripper mimic
-constraint; mesh paths are relative to the scene. Arm masks 1/2 and glass
-masks 2/1 enable arm/glass contacts and disable arm self contacts. The static
-base's intentional tangencies do not create static/static MuJoCo contacts.
+constraint; mesh paths are relative to the scene. Moving-link masks 1/2 and
+glass masks 2/1 enable moving-arm/glass contacts and disable arm self contacts.
+Static base_link geoms explicitly have masks 0/0. The read/folded keyframes
+use the same sign map, and scene checks verify saved qpos before mj_forward.
 Water is a visual-only finite plane (thin box). The scene's read/folded
 keyframes are kinematic snapshots; **mj_forward only**, no dynamics/actuation
 validation. CAD joint limits differ from the waterproof motor soft limits;
@@ -139,53 +154,88 @@ these snapshots may exceed CAD limits. Sweep uses the committed waterproof
 `evidence/lab-hardware-profile.json` **follower.joint_limits**, without
 substituting the rounded calibration ranges or reading installed state.
 
-## Results and interpretation (2026-11-07)
+## Results and interpretation (2026-11-07 follow-up)
 
-FK tool0 at read: (−526.041, −65.063, 42.820) mm; folded target:
-(185.167, 125.275, 148.941) mm. Every link transform agrees with Pinocchio;
-MuJoCo tool0 agrees within 1e−9 mm. MuJoCo 3.16.0 loads 8 qpos/175 geoms,
-with **0 read-pose arm/glass contacts**, **32 folded-target near-wall
-contacts** (deepest finite-pane contact approximately −36.088 mm). Those
-finite-pane depths differ from half-space violation: parts already entirely
-beyond the glass no longer contact the pane, but remain outside the box.
+Gavin: "seems like the j5 is tilted the wrong way". Applying the provisional
+J5 −1 sign gives read tool0 **(−520.150, +101.963, 42.820) mm**; folded
+**(207.979, 82.008, 148.941) mm**. Independently assembling the mapped joint
+vector in Pinocchio 3.7.0 confirms both (numpy disagreement <2e−13 mm).
+For comparison the direct-map read was (−526.041, −65.063, 42.820) mm.
+MuJoCo 3.16.0 loads 8 qpos/175 geoms, saved mapped keyframes agree with numpy
+FK within 3e−10 mm, and reports **0 read / 28 folded near-pane contacts**.
+Base contacts are disabled. Deepest folded pane contact is −32.022 mm;
+half-space clearance can be worse when a link is already beyond a finite pane.
 
-Full-arm read distances (mm): near **0 (base)**, far **112.647 (right jaw)**,
-left **142.000 (base)**, right **87.732 (left jaw)**, floor **0 (base)**,
-rim **301.038 (yaw link)**, water line **142.038 (yaw link)**. Folded near
-clearance is **−174.529 mm (right jaw)**. No read-pose vertex penetrates;
-strictly positive clearance on every wall is impossible with the specified
-base-floor tangency. Excluding only the base for diagnosis gives moving-link
-near/floor clearances **8.979 / 4.551 mm**; no exclusions apply by default.
+Checks select **all descendants of shoulder_pan**, including **yaw_link**,
+fixed tool links and both fingers. Static base_link is informational only.
+Floor uses its own **0 mm** margin, separately from the **30 mm** walls/rim.
+Positive means inside/below rim; negative means outside/below floor.
 
-The requested **30 mm all-link margin produces no safe samples on any joint**.
-The fixed base touches the floor and near wall at every pose. A supplementary
-**zero-margin** scan shows the sampled geometric envelope below; it is not a
-recommended hardware range. All other joints remain at the supplied read pose.
+| Surface | Margin mm | Read mm / closest link | Folded mm / closest link |
+|---|---:|---|---|
+| near | 30 | 8.979 / yaw_link | -201.280 / gripper_right |
+| far | 30 | 116.580 / gripper_left | 513.697 / upper_arm_link |
+| left | 30 | 50.564 / gripper_right | 78.974 / wrist_roll_link |
+| right | 30 | 178.642 / upper_arm_link | 99.975 / forearm_link |
+| floor | 0 | 4.551 / wrist_yaw_link | 57.400 / yaw_link |
+| rim | 30 | 301.038 / yaw_link | 173.206 / wrist_pitch_link |
+| water_line | info only | 142.038 / yaw_link | 14.206 / wrist_pitch_link |
 
-| Joint | Profile soft limits (deg) | Safe samples at 30 mm | Geometric samples at 0 mm (deg) |
-|---|---:|---|---:|
-| J1 shoulder_pan | −126.85 to 187.53 | none | 173.02 to 187.53 |
-| J2 shoulder_lift | −199.45 to −2.81 | none | −199.45 to −160.83 |
-| J3 elbow_flex | 2.86 to 250.04 | none | 170.96 to 237.96 |
-| J4 wrist_flex | −122.27 to 82.10 | none | 38.42 to 82.10 |
-| J5 wrist_yaw | −86.06 to 87.32 | none | −86.06 to 54.22 |
-| J6 wrist_roll | −154.99 to 150.00 | none | −16.46 to 14.54 |
+Both poses violate only the near **margin**. The read pose has no glass
+penetration; its moving yaw_link near distance is **8.979 mm**, short of 30 mm
+by **21.021 mm**. Folded penetrates the near half-space by **201.280 mm**.
+Static mount distances, identical at both poses (mm): near 0, far 654,
+left/right 142, floor 0, rim 382, water 223. These never enter violations.
 
-Samples are anchored to each read angle at 1° steps, plus exact soft endpoints;
-intervals summarize consecutive passing samples, not a continuous swept-volume
-proof. Read shoulder_lift −201.83° is below profile −199.4466°; gripper −117.9°
-is below −115.1072°. Those facts are flagged, not normalized away. Other joints
-remain at this read pose even when outside their limits.
+**The default sweep still has no passing samples for J1–J6**, even after
+removing the static base and separating floor margin. The moving yaw_link is
+too close to the assumed near face. Near fails at every sampled angle for
+each joint (J1: 316/316; J2: 199/199; J3: 250/250; J4: 206/206;
+J5: 176/176; J6: 307/307). No moving link is silently exempted.
 
-The initial 1,000-call read benchmark was **0.464 ms median / 0.482 ms p95**
-on gavin-linux, including input validation, FK, reductions and result creation,
-excluding loading. All **9,624 distinct collision vertices** are retained;
-only duplicate coordinates are removed. This fits the 2 ms target, but these
-are observed timings, not a hard deadline guarantee or deployed 100 Hz guard.
-Before a real boundary, measurements and explicit mount-contact policy are
-needed; this work leaves the policy decision open as Gavin requested.
+| Joint | Soft limits (motor deg) | Passing samples (motor deg) | Contiguous around read (motor deg) |
+|---|---:|---:|---:|
+| J1 shoulder_pan | -126.85 to 187.53 | none | none |
+| J2 shoulder_lift | -199.45 to -2.81 | none | none |
+| J3 elbow_flex | 2.86 to 250.04 | none | none |
+| J4 wrist_flex | -122.27 to 82.10 | none | none |
+| J5 wrist_yaw | -86.06 to 87.32 | none | none |
+| J6 wrist_roll | -154.99 to 150.00 | none | none |
 
-Previews: `previews/read_top.png`, `read_side.png`, `read_three_quarter.png`.
-Each is under 1 MB. Glass outlines use the inner faces; no water volume is
-rendered because the real tank has not been filled. Tower, wiring, fixtures,
-water forces and self-collisions are outside this environment model.
+A separate **diagnostic** sweep with walls/rim 0 mm, floor still 0 mm gives:
+
+| Joint | Soft limits (motor deg) | Passing samples (motor deg) | Contiguous around read (motor deg) |
+|---|---:|---:|---:|
+| J1 shoulder_pan | -126.85 to 187.53 | 157.02 to 187.53 | 157.02 to 187.53 |
+| J2 shoulder_lift | -199.45 to -2.81 | -199.45 to -161.83 | none |
+| J3 elbow_flex | 2.86 to 250.04 | 170.96 to 235.96 | 170.96 to 235.96 |
+| J4 wrist_flex | -122.27 to 82.10 | 38.42 to 82.10 | 38.42 to 82.10 |
+| J5 wrist_yaw | -86.06 to 87.32 | -54.78 to 87.32 | -54.78 to 87.32 |
+| J6 wrist_roll | -154.99 to 150.00 | -14.46 to 16.54 | -14.46 to 16.54 |
+
+Samples use motor degrees and each read angle's 1° grid plus exact soft-limit
+endpoints. The contiguous range is the passing sampled component containing
+the read angle, not another disconnected island. J2 read −201.83° is below
+its −199.4466° profile limit, so even its diagnostic in-limit samples cannot
+contain read. Gripper −117.9° is also below −115.1072°. Other joints stay at
+read even when outside their limits; none of these tables grants hardware
+permission or proves a continuous swept-volume path.
+
+Read moving-clearance benchmark, 1,000 calls: **0.435 ms median / 0.438 ms p95 /
+0.448 ms max**; folded **0.439 / 0.445 / 0.454 ms**. Loading and the separate
+static-mount report are excluded. Every distinct vertex is retained: **9,059
+moving + 565 static = 9,624**; no geometric decimation. Observed timing meets
+the 2 ms target, without a hard deadline guarantee or deployed 100 Hz guard.
+
+17 offline tests pass, including independent Pinocchio all-link transforms,
+map signs/offsets, static separation, independent floor margin, disconnected
+sweep intervals and saved scene masks/keyframes. Ruff check/format pass.
+`tank.json`, the sign map, scene, script, tests and previews are fingerprinted
+in `offline-validation.json` alongside raw results and test output.
+
+Previews regenerated with the mapped read keyframe: `previews/read_top.png`,
+`read_side.png`, `read_three_quarter.png` (each under 1 MB, visually reviewed).
+Glass outlines mark inner faces. Placement and glass thickness are still
+estimates; no new measurement or hand sign test was performed. Tower, wiring,
+fixtures, self-collisions, water forces and dynamics remain outside this model.
+No hardware, service/session, installed-state, network or push operations.

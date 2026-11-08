@@ -99,6 +99,8 @@ class ArmModel:
     path: Path
     joints: tuple[Joint, ...]
     vertices: dict[str, np.ndarray]
+    motor_to_urdf: dict[str, dict]
+    moving_links: frozenset[str]
     gripper_motor_open_deg: float
     gripper_motor_closed_deg: float
     gripper_slide_open_m: float
@@ -136,7 +138,31 @@ def load_tank(path: Path = DEFAULT_TANK) -> dict:
             raise ValueError(f"Stale derived bound {key}; update tank.json derived values")
     if not math.isclose(bounds["z_max"], tank["rim_z_mm"]["value"], abs_tol=1e-6):
         raise ValueError("Stale rim_z_mm")
+    surface_margins(tank)
     return tank
+
+
+def load_motor_map(path: Path) -> dict[str, dict]:
+    mapping = json.loads(path.read_text())["joints"]
+    if set(mapping) != set(JOINTS):
+        raise ValueError("Motor map must specify exactly J1-J6")
+    for entry in mapping.values():
+        if entry["sign"] not in (-1, 1) or not math.isfinite(entry["offset_deg"]):
+            raise ValueError("Motor map requires sign +/-1 and finite offset_deg")
+        if not entry["status"] or not entry["source"]:
+            raise ValueError("Motor map requires status and source")
+    return mapping
+
+
+def surface_margins(tank: dict, wall_margin: float | None = None, floor_margin: float | None = None) -> dict:
+    margins = {w: tank["surface_margins_mm"][w]["value"] for w in WALLS}
+    if wall_margin is not None:
+        margins.update({w: wall_margin for w in WALLS if w != "floor"})
+    if floor_margin is not None:
+        margins["floor"] = floor_margin
+    if any(not math.isfinite(v) or v < 0 for v in margins.values()):
+        raise ValueError("Margins must be finite and nonnegative")
+    return margins
 
 
 def load_model(tank: dict) -> ArmModel:
@@ -177,11 +203,18 @@ def load_model(tank: dict) -> ArmModel:
             joints.append(joint)
             known.add(joint.child)
             pending.remove(j)
+    # Descendants of shoulder_pan, including its child yaw_link and fixed tools.
+    moving = set()
+    for joint in joints:
+        if joint.name == "shoulder_pan" or joint.parent in moving:
+            moving.add(joint.child)
     mapping = tank["joint_mapping"]["gripper"]["value"]
     model = ArmModel(
         path,
         tuple(joints),
         vertices,
+        load_motor_map(ROOT / tank["joint_mapping"]["arm"]["value"]),
+        frozenset(moving),
         mapping["motor_open_deg"],
         mapping["motor_closed_deg"],
         mapping["slide_open_mm"] / 1000,
@@ -194,10 +227,15 @@ def load_model(tank: dict) -> ArmModel:
 
 
 def joint_positions(model: ArmModel, motor_deg: dict[str, float]) -> dict[str, float]:
-    """Direct arm angle conversion; approximate clamped linear finger displacement."""
+    """Apply the documented sign/offset map; approximate clamped finger slide."""
     if set(motor_deg) != {*JOINTS, "gripper"} or not all(math.isfinite(v) for v in motor_deg.values()):
         raise ValueError("Supply exactly six arm joints plus gripper, all finite motor degrees")
-    q = {name: math.radians(motor_deg[name]) for name in JOINTS}
+    q = {
+        name: math.radians(
+            model.motor_to_urdf[name]["sign"] * motor_deg[name] + model.motor_to_urdf[name]["offset_deg"]
+        )
+        for name in JOINTS
+    }
     fraction = (motor_deg["gripper"] - model.gripper_motor_closed_deg) / (
         model.gripper_motor_open_deg - model.gripper_motor_closed_deg
     )
@@ -223,13 +261,20 @@ def forward_kinematics(model: ArmModel, motor_deg: dict[str, float]) -> dict:
 
 
 def clearance(
-    model: ArmModel, tank: dict, motor_deg: dict[str, float], *, exclude_links: tuple[str, ...] = ()
+    model: ArmModel,
+    tank: dict,
+    motor_deg: dict[str, float],
+    *,
+    exclude_links: tuple[str, ...] = (),
+    static_mount: bool = False,
 ) -> dict[str, dict]:
-    """Minimum signed plane distance over EVERY collision vertex (mm).
+    """Minimum signed plane distance over every selected collision vertex (mm).
 
     Near/far are +x/-x; left/right are +y/-y. Rim is upper headroom,
     water_line is submersion headroom, both positive below the plane. Neither
-    is a physical lid. No margins, exclusions or input angle clamping by default.
+    is a physical lid. Default selection is everything below shoulder_pan,
+    including yaw_link. static_mount=True reports the fixed mount separately;
+    its distances are informational, never violations. No input angle clamping.
     """
     transforms = forward_kinematics(model, motor_deg)
     b = tank["derived_inner_bounds_mm"]["value"]
@@ -240,7 +285,8 @@ def clearance(
     best = np.full(len(names), np.inf)
     closest = [None] * len(names)
     for name, vertices in model.vertices.items():
-        if name in exclude_links:
+        selected = name not in model.moving_links if static_mount else name in model.moving_links
+        if name in exclude_links or not selected:
             continue
         r, t = transforms[name]
         v = (vertices @ r.T + t) * 1000
@@ -264,6 +310,26 @@ def clearance(
     return {name: {"distance_mm": float(best[i]), "link": closest[i]} for i, name in enumerate(names)}
 
 
+def clearance_report(model: ArmModel, tank: dict, pose: dict) -> dict:
+    moving = clearance(model, tank, pose)
+    margins = surface_margins(tank)
+    return {
+        "moving_links": {
+            w: {
+                **entry,
+                "margin_mm": margins.get(w),
+                "meets_margin": entry["distance_mm"] >= margins[w] - EPS_MM if w in margins else None,
+            }
+            for w, entry in moving.items()
+        },
+        "static_mount": {
+            "role": "informational only; never a violation",
+            "clearance": clearance(model, tank, pose, static_mount=True),
+        },
+        "violations": [w for w in WALLS if moving[w]["distance_mm"] < margins[w] - EPS_MM],
+    }
+
+
 def benchmark(model: ArmModel, tank: dict, pose: dict, repeat: int = 1000) -> dict:
     if repeat < 1:
         raise ValueError("repeat must be positive")
@@ -280,6 +346,10 @@ def benchmark(model: ArmModel, tank: dict, pose: dict, repeat: int = 1000) -> di
         "p95_ms": float(np.percentile(durations, 95)),
         "max_ms": max(durations),
         "distinct_vertices": sum(len(v) for v in model.vertices.values()),
+        "evaluated_moving_vertices": sum(
+            len(v) for name, v in model.vertices.items() if name in model.moving_links
+        ),
+        "operation": "clearance() moving-link FK/plane distances; loading and separate static-mount report excluded",
         "decimation": "none; duplicate vertices only removed",
     }
 
@@ -292,10 +362,11 @@ def sweep(
     model: ArmModel,
     tank: dict,
     pose: dict,
-    margin: float,
+    margin: float | None = None,
     *,
     exclude_links: tuple[str, ...] = (),
     include_water: bool = False,
+    floor_margin: float | None = None,
 ) -> dict:
     """Contiguous safe samples, anchored at read angle, 1 deg toward both limits.
 
@@ -303,6 +374,10 @@ def sweep(
     Out-of-limit reference angles are retained and explicitly reported.
     """
     limits = soft_limits(tank)
+    margins = surface_margins(tank, margin, floor_margin)
+    # Optional water constraint uses the rim margin, never the floor margin.
+    margins["water_line"] = margins["rim"]
+    reference_clearance = clearance(model, tank, pose, exclude_links=exclude_links)
     constraints = (
         (*WALLS, "water_line") if include_water and tank["water_height_mm"]["value"] is not None else WALLS
     )
@@ -318,10 +393,14 @@ def sweep(
                     samples.add(angle)
                 angle += direction
         intervals, active = [], None
+        blocking_counts = dict.fromkeys(constraints, 0)
         for angle in sorted(samples):
             p = {**pose, joint: angle}
             c = clearance(model, tank, p, exclude_links=exclude_links)
-            safe = min(c[w]["distance_mm"] for w in constraints) >= margin - EPS_MM
+            failed = [w for w in constraints if c[w]["distance_mm"] < margins[w] - EPS_MM]
+            for wall in failed:
+                blocking_counts[wall] += 1
+            safe = not failed
             if safe:
                 if active is None:
                     active = [angle, angle]
@@ -336,32 +415,51 @@ def sweep(
                 "joint": joint,
                 "limits_deg": [lo, hi],
                 "safe_sample_intervals_deg": intervals,
+                "contiguous_around_read_deg": next(
+                    (interval for interval in intervals if interval[0] <= center <= interval[1]), None
+                ),
+                "reference_meets_margins": all(
+                    reference_clearance[w]["distance_mm"] >= margins[w] - EPS_MM for w in constraints
+                ),
                 "reference_within_limits": lo <= center <= hi,
                 "samples": len(samples),
+                "samples_failing_surface": blocking_counts,
             }
         )
     return {
         "limits_source": tank["soft_limits_file"],
-        "margin_mm": margin,
+        "surface_margins_mm": {w: margins[w] for w in constraints},
+        "moving_links": sorted(model.moving_links & model.vertices.keys()),
+        "static_mount": "base_link informational only; excluded from sweep",
+        "reference_clearance": reference_clearance,
+        "reference_violations": [
+            w for w in constraints if reference_clearance[w]["distance_mm"] < margins[w] - EPS_MM
+        ],
         "excluded_links": list(exclude_links),
         "constraints": list(constraints),
         "rows": rows,
         "reference_outside_limits": {
             j: pose[j] for j in (*JOINTS, "gripper") if not limits[j][0] <= pose[j] <= limits[j][1]
         },
-        "warning": "Sampled geometry only; fixed base touches near wall/floor. No automatic exemptions. "
-        "Other joints remain at the supplied reference even if outside soft limits.",
+        "warning": "Sampled geometry only, no continuous path proof. Moving links include yaw_link; static base is informational. "
+        "Floor has its own margin. Other joints remain at the reference even if outside soft limits. "
+        "A contiguous range is null if the reference fails margins or is outside that joint's soft limits.",
     }
 
 
 def sweep_table(result: dict) -> str:
-    lines = ["| Joint | Soft limits (motor deg) | Safe sampled intervals (motor deg) |", "|---|---:|---:|"]
+    lines = [
+        "| Joint | Soft limits (motor deg) | Passing samples (motor deg) | Contiguous around read (motor deg) |",
+        "|---|---:|---:|---:|",
+    ]
     for i, row in enumerate(result["rows"], 1):
         intervals = (
             "; ".join(f"{lo:.2f} to {hi:.2f}" for lo, hi in row["safe_sample_intervals_deg"]) or "none"
         )
         lo, hi = row["limits_deg"]
-        lines.append(f"| J{i} {row['joint']} | {lo:.2f} to {hi:.2f} | {intervals} |")
+        around = row["contiguous_around_read_deg"]
+        around_text = f"{around[0]:.2f} to {around[1]:.2f}" if around else "none"
+        lines.append(f"| J{i} {row['joint']} | {lo:.2f} to {hi:.2f} | {intervals} | {around_text} |")
     return "\n".join(lines)
 
 
@@ -410,6 +508,7 @@ def build_scene(model: ArmModel, tank: dict, output: Path) -> Path:
         ET.Comment(
             "Generated by scripts/viscous_aquarium_env.py scene from tank.json and repo URDF. "
             "Arm/glass contacts only; no self contacts. CAD joint limits copied verbatim. "
+            "Motor signs/offsets from motor_to_urdf.json; static mount masks 0/0. "
             "Read/folded keyframes are kinematic snapshots, NOT dynamic safe targets."
         )
     )
@@ -496,8 +595,8 @@ def build_scene(model: ArmModel, tank: dict, output: Path) -> Path:
                 pos=fmt(t),
                 quat=fmt(quaternion(r)),
                 rgba="0.32 0.39 0.45 1",
-                contype="1",
-                conaffinity="2",
+                contype="1" if link.attrib["name"] in model.moving_links else "0",
+                conaffinity="2" if link.attrib["name"] in model.moving_links else "0",
                 group="0",
             )
     for name, (pos, size) in glass_boxes(tank).items():
@@ -568,12 +667,17 @@ def check_scene(scene: Path, model: ArmModel, tank: dict) -> dict:
         "scene": str(scene.relative_to(ROOT)),
         "nq": m.nq,
         "ngeom": m.ngeom,
+        "static_mount_contacts": "disabled by contype=0, conaffinity=0 on base_link geoms",
     }
     for name, entry in tank["reference_poses_motor_deg"].items():
         d = mujoco.MjData(m)
+        key = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_KEY, name)
+        mujoco.mj_resetDataKeyframe(m, d, key)
+        # Validate the saved keyframes too, rather than overwriting their qpos.
         for joint, value in joint_positions(model, entry["value"]).items():
             idx = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_JOINT, joint)
-            d.qpos[m.jnt_qposadr[idx]] = value
+            if not math.isclose(d.qpos[m.jnt_qposadr[idx]], value, abs_tol=1e-10):
+                raise ValueError(f"Stale {name} keyframe for {joint}")
         mujoco.mj_forward(m, d)
         contacts = []
         for c in d.contact:
@@ -663,12 +767,12 @@ def render_scene(scene: Path, directory: Path) -> list[str]:
             draw.rectangle((0, 0, 1000, 50), fill=(245, 248, 250))
             draw.text(
                 (18, 12),
-                f"LANDEN 75 | {name.replace('_', ' ')} | READ POSE | placement ESTIMATED | inner {inner_length:g} x {inner_width:g} mm",
+                f"LANDEN 75 | {name.replace('_', ' ')} | READ POSE | J5 sign -1 (photo-inferred) | inner {inner_length:g} x {inner_width:g} mm",
                 fill=(25, 40, 50),
             )
             draw.text(
                 (18, 30),
-                "Near wall +x (base end); far wall -x (gripper end). Tank not filled. Outline = inner glass box.",
+                "Placement ESTIMATED. Near +x (base); far -x (gripper). Not filled. Outline = inner glass box.",
                 fill=(25, 40, 50),
             )
             path = directory / f"read_{name}.png"
@@ -696,7 +800,10 @@ def main() -> None:
         if name == "clearance":
             p.add_argument("--repeat", type=int, default=1000)
         if name == "sweep":
-            p.add_argument("--margin-mm", type=float)
+            p.add_argument("--margin-mm", type=float, help="Override wall/rim margins only")
+            p.add_argument(
+                "--floor-margin-mm", type=float, help="Override floor margin (default from tank.json: 0)"
+            )
             p.add_argument(
                 "--exclude-link",
                 action="append",
@@ -724,25 +831,21 @@ def main() -> None:
         if args.command == "clearance":
             result = {
                 "motor_deg": pose,
-                "clearance": clearance(model, tank, pose),
+                **clearance_report(model, tank, pose),
                 "tool0_mm": (forward_kinematics(model, pose)["tool0"][1] * 1000).tolist(),
                 "timing": benchmark(model, tank, pose, args.repeat),
             }
         else:
             if set(args.exclude_link) - set(model.vertices):
                 raise ValueError("Unknown excluded collision link")
-            margin = (
-                args.margin_mm if args.margin_mm is not None else tank["default_safety_margin_mm"]["value"]
-            )
-            if not math.isfinite(margin) or margin < 0:
-                raise ValueError("Margin must be finite and nonnegative")
             result = sweep(
                 model,
                 tank,
                 pose,
-                margin,
+                args.margin_mm,
                 exclude_links=tuple(args.exclude_link),
                 include_water=args.include_water,
+                floor_margin=args.floor_margin_mm,
             )
     elif args.command == "scene":
         build_scene(model, tank, args.scene_path)
@@ -754,7 +857,8 @@ def main() -> None:
         args.output.write_text(output)
     if args.command == "sweep":
         print(sweep_table(result))
-        print(f"\nMargin {result['margin_mm']:g} mm; limits: {result['limits_source']}")
+        print(f"\nMargins (mm): {result['surface_margins_mm']}; limits: {result['limits_source']}")
+        print("Reference margin violations:", result["reference_violations"])
         print(result["warning"])
         print("Reference outside limits:", result["reference_outside_limits"])
     else:

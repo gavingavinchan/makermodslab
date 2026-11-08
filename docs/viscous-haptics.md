@@ -1867,6 +1867,37 @@ not need to put up real time boundary limits to the follower arm. lets see".
   Offline only; local commit requested, **no push**, no service/session or
   installed-state changes, overriding the usual synchronisation rule below.
 
+*2026-11-07 follow-up — J5 photo inference and moving/static clearance (A1a/A3, B4):*
+Gavin: "seems like the j5 is tilted the wrong way". Added shared
+`configs/viscous/model/motor_to_urdf.json`: J5 −1, hand test pending; J1–J4 +1
+photo-consistent, J6 +1 assumed/unverified, all offsets zero. Aquarium FK and
+saved MJCF keyframes use it; gravity's direct mapping is unchanged and needs
+the same check. Independent Pinocchio confirms read tool0
+(−520.150,+101.963,42.820) mm and folded (207.979,82.008,148.941).
+New clearance semantics select all moving descendants of shoulder_pan,
+**including yaw_link**; base_link is separate static-mount info, never a
+violation, and has MuJoCo contact masks 0/0. Provenanced per-surface margins
+in tank.json are walls/rim 30 mm, floor independently 0 mm.
+Moving read distances (near/far/left/right/floor/rim, mm):
+8.979/116.580/50.564/178.642/4.551/301.038; folded:
+−201.280/513.697/78.974/99.975/57.400/173.206.
+**Default 30/0 mm sweep remains empty for J1–J6: moving yaw_link is too close
+to the assumed near wall**, not the static base or floor. Every near-wall
+sample fails; no contiguous passing range contains read. Supplemental 0/0 mm
+motor-degree samples: J1 [157.02,187.53], J2 [−199.45,−161.83],
+J3 [170.96,235.96], J4 [38.42,82.10], J5 [−54.78,87.32],
+J6 [−14.46,16.54]; J2 cannot contain the out-of-limit read angle.
+Read lift/gripper remain outside profile limits; geometry only, no path or
+hardware permission. MuJoCo 3.16.0: 0 read / 28 folded near-pane contacts;
+three mapped previews regenerated/reviewed. 17 offline tests pass; read
+clearance median/p95 0.435/0.438 ms (1,000 calls, 9,059 moving vertices;
+565 static vertices reported separately). Updated README and
+`offline-validation.json` preserve inputs, results and reproduction commands
+above; `--margin-mm` now overrides only walls/rim, `--floor-margin-mm` is
+independent. Placement/glass estimates are unchanged. Local follow-up to
+1e5282b5 only, no ports/services, installed state, frontend edits, network or
+push; the original subsection above is retained as history.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.

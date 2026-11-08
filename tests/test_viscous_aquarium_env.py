@@ -23,6 +23,7 @@ import math
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -69,11 +70,11 @@ class AquariumGeometryTest(unittest.TestCase):
 
     def test_read_pose_tool0_within_5_mm(self):
         tool = env.forward_kinematics(self.model, self.read)["tool0"][1] * 1000
-        self.assertLess(np.linalg.norm(tool - [-526, -65, 43]), 5)
+        self.assertLess(np.linalg.norm(tool - [-520, 102, 43]), 5)
 
     def test_folded_pose_tool0_within_5_mm(self):
         tool = env.forward_kinematics(self.model, self.folded)["tool0"][1] * 1000
-        self.assertLess(np.linalg.norm(tool - [185, 125, 149]), 5)
+        self.assertLess(np.linalg.norm(tool - [208, 82, 149]), 5)
 
     def test_fk_matches_independent_pinocchio_all_links(self):
         import pinocchio as pin
@@ -82,8 +83,18 @@ class AquariumGeometryTest(unittest.TestCase):
         data = model.createData()
         for pose in (self.read, self.folded):
             q = pin.neutral(model)
-            for name, value in env.joint_positions(self.model, pose).items():
-                q[model.idx_qs[model.getJointId(name)]] = value
+            # Independently assemble q from the committed map, not the helper under test.
+            mapping = json.loads((env.ROOT / self.tank["joint_mapping"]["arm"]["value"]).read_text())[
+                "joints"
+            ]
+            for name in env.JOINTS:
+                entry = mapping[name]
+                q[model.idx_qs[model.getJointId(name)]] = math.radians(
+                    entry["sign"] * pose[name] + entry["offset_deg"]
+                )
+            slide = min(1, max(0, pose["gripper"] / -115)) * 0.0524
+            for name in ("gripper_left_joint", "gripper_right_joint"):
+                q[model.idx_qs[model.getJointId(name)]] = slide
             pin.framesForwardKinematics(model, data, q)
             for name, (r, t) in env.forward_kinematics(self.model, pose).items():
                 actual = data.oMf[model.getFrameId(name)]
@@ -91,20 +102,26 @@ class AquariumGeometryTest(unittest.TestCase):
                 np.testing.assert_allclose(r, actual.rotation, atol=1e-10)
 
     def test_read_pose_no_penetration_and_all_moving_links_positive(self):
-        # Strictly positive floor clearance is impossible for a base on the floor.
-        # Preserve the full-arm result; test those intentional tangencies explicitly.
         c = env.clearance(self.model, self.tank, self.read)
-        for wall, result in c.items():
-            self.assertGreaterEqual(result["distance_mm"], -env.EPS_MM, wall)
+        self.assertTrue(all(v["distance_mm"] > 0 for v in c.values()))
+        self.assertEqual(c["near"]["link"], "yaw_link")
+        self.assertAlmostEqual(c["near"]["distance_mm"], 8.978817, places=5)
+        static = env.clearance(self.model, self.tank, self.read, static_mount=True)
         for wall in ("floor", "near"):
-            self.assertEqual(c[wall]["link"], "base_link")
-            self.assertAlmostEqual(c[wall]["distance_mm"], 0, delta=env.EPS_MM)
-        moving = env.clearance(self.model, self.tank, self.read, exclude_links=("base_link",))
-        self.assertTrue(all(v["distance_mm"] > 0 for v in moving.values()))
+            self.assertEqual(static[wall]["link"], "base_link")
+            self.assertAlmostEqual(static[wall]["distance_mm"], 0, delta=env.EPS_MM)
+        report = env.clearance_report(self.model, self.tank, self.read)
+        self.assertEqual(report["violations"], ["near"])
+        self.assertEqual(report["moving_links"]["floor"]["margin_mm"], 0)
+        self.assertTrue(report["moving_links"]["floor"]["meets_margin"])
+        # Even a static mount outside the box cannot become a moving violation.
+        vertices = {**self.model.vertices, "base_link": self.model.vertices["base_link"] + [10, 0, -10]}
+        shifted = replace(self.model, vertices=vertices)
+        self.assertEqual(env.clearance_report(shifted, self.tank, self.read)["violations"], ["near"])
 
     def test_folded_target_penetrates_near_wall(self):
         c = env.clearance(self.model, self.tank, self.folded)
-        self.assertLess(c["near"]["distance_mm"], -170)
+        self.assertAlmostEqual(c["near"]["distance_mm"], -201.279670, places=5)
         self.assertEqual(c["near"]["link"], "gripper_right")
 
     def test_gripper_linear_mapping_clamps_overtravel(self):
@@ -128,10 +145,16 @@ class AquariumGeometryTest(unittest.TestCase):
         self.assertNotIn("water_line", c)
         self.assertEqual(set(c), set(env.WALLS))
 
-    def test_default_margin_sweep_is_empty_and_flags_reference_limits(self):
+    def test_default_margin_sweep_is_empty_due_to_moving_yaw_and_flags_reference_limits(self):
         result = env.sweep(self.model, self.tank, self.read, 30)
         self.assertTrue(all(row["safe_sample_intervals_deg"] == [] for row in result["rows"]))
         self.assertEqual(set(result["reference_outside_limits"]), {"shoulder_lift", "gripper"})
+        self.assertTrue(all(row["contiguous_around_read_deg"] is None for row in result["rows"]))
+        self.assertEqual(result["reference_violations"], ["near"])
+        self.assertEqual(result["reference_clearance"]["near"]["link"], "yaw_link")
+        self.assertEqual(result["surface_margins_mm"]["floor"], 0)
+        self.assertNotIn("base_link", result["moving_links"])
+        self.assertIn("yaw_link", result["moving_links"])
         self.assertEqual(result["excluded_links"], [])
         self.assertNotIn("water_line", result["constraints"])
 
@@ -144,6 +167,51 @@ class AquariumGeometryTest(unittest.TestCase):
             result = env.sweep(self.model, self.tank, self.read, 0)
         row = next(row for row in result["rows"] if row["joint"] == "wrist_flex")
         np.testing.assert_allclose(row["safe_sample_intervals_deg"], [[38.42, 42.42]])
+        np.testing.assert_allclose(row["contiguous_around_read_deg"], [38.42, 42.42])
+        # The same valid floor headroom would fail if incorrectly using a 30 mm floor margin.
+        self.assertLess(result["reference_clearance"]["floor"]["distance_mm"], 30)
+
+    def test_sign_map_provenance_and_offsets(self):
+        mapping = self.model.motor_to_urdf
+        self.assertEqual(
+            {j: m["sign"] for j, m in mapping.items()}, {j: -1 if j == "wrist_yaw" else 1 for j in env.JOINTS}
+        )
+        self.assertEqual(mapping["wrist_yaw"]["status"], "photo-inferred 2026-11-07, hand test pending")
+        for j in env.JOINTS[:4]:
+            self.assertEqual(mapping[j]["status"], "photo-consistent 2026-11-07")
+        self.assertTrue(all(m["source"] and m["offset_deg"] == 0 for m in mapping.values()))
+        changed = copy.deepcopy(mapping)
+        changed["wrist_yaw"]["offset_deg"] = 5
+        model = replace(self.model, motor_to_urdf=changed)
+        self.assertAlmostEqual(env.joint_positions(model, self.read)["wrist_yaw"], math.radians(33.78))
+
+    def test_per_surface_margins_keep_floor_separate(self):
+        self.assertEqual(env.surface_margins(self.tank), {w: 0 if w == "floor" else 30 for w in env.WALLS})
+        self.assertEqual(env.surface_margins(self.tank, 5)["floor"], 0)
+        self.assertEqual(env.surface_margins(self.tank, 5, 2)["floor"], 2)
+        for entry in self.tank["surface_margins_mm"].values():
+            self.assertTrue(entry["source"])
+        for margin in (-1, float("nan")):
+            with self.assertRaisesRegex(ValueError, "Margins"):
+                env.surface_margins(self.tank, margin)
+
+    def test_sweep_reports_only_component_containing_read(self):
+        limits = {j: [self.read[j] - 2, self.read[j] + 2] for j in (*env.JOINTS, "gripper")}
+
+        # Two disconnected passing islands in J1; only the first contains read.
+        def distances(model, tank, pose, **kwargs):
+            offset = pose["shoulder_pan"] - self.read["shoulder_pan"]
+            safe = offset <= 0 or offset >= 2
+            return {w: {"distance_mm": (40 if safe else -1), "link": "yaw_link"} for w in env.WALLS}
+
+        with (
+            patch.object(env, "soft_limits", return_value=limits),
+            patch.object(env, "clearance", side_effect=distances),
+        ):
+            result = env.sweep(self.model, self.tank, self.read)
+        row = result["rows"][0]
+        np.testing.assert_allclose(row["safe_sample_intervals_deg"], [[180.02, 182.02], [184.02, 184.02]])
+        np.testing.assert_allclose(row["contiguous_around_read_deg"], [180.02, 182.02])
 
     def test_scene_assets_are_relative_and_glass_contact_masks_match(self):
         scene = env.ENV_DIR / "aquarium_scene.xml"
@@ -156,6 +224,18 @@ class AquariumGeometryTest(unittest.TestCase):
         self.assertEqual(len(glass), 5)
         for g in glass:
             self.assertEqual((g.get("contype"), g.get("conaffinity")), ("2", "1"))
+        for body in root.findall(".//body"):
+            for geom in body.findall("geom"):
+                expected = ("0", "0") if body.get("name") == "base_link" else ("1", "2")
+                self.assertEqual((geom.get("contype"), geom.get("conaffinity")), expected)
+        # URDF joint traversal is the qpos order encoded by the generated MJCF.
+        names = [j.name for j in self.model.joints if j.kind != "fixed"]
+        for key in root.findall("keyframe/key"):
+            pose = self.tank["reference_poses_motor_deg"][key.get("name")]["value"]
+            qpos = [float(v) for v in key.get("qpos").split()]
+            self.assertAlmostEqual(
+                qpos[names.index("wrist_yaw")], math.radians(-pose["wrist_yaw"]), places=10
+            )
         water = root.find("worldbody/geom[@name='water_line']")
         self.assertEqual((water.get("contype"), water.get("conaffinity")), ("0", "0"))
 

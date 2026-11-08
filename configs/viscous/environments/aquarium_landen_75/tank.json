@@ -1,7 +1,7 @@
 {
   "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
   "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "aquarium_landen_75",
   "frame": "base_link",
   "units": "mm",
@@ -56,11 +56,6 @@
     "source": "docs/shackle-sim2real.md 2026-11-06/07 layout; height above inner glass floor, tank not filled; null disables",
     "status": "design"
   },
-  "default_safety_margin_mm": {
-    "value": 30.0,
-    "source": "Gavin aquarium brief 2026-11-07; future boundary design target",
-    "status": "design"
-  },
   "rim_z_mm": {
     "value": 442.0,
     "source": "derived: placement.floor_z_mm + outer height - glass thickness; no physical lid",
@@ -80,9 +75,9 @@
   },
   "joint_mapping": {
     "arm": {
-      "value": "motor degrees directly to URDF radians",
-      "source": "Gavin brief and makermodslab/arm_gravity.py; no encoder offset or wrapping applied",
-      "status": "measured"
+      "value": "configs/viscous/model/motor_to_urdf.json",
+      "status": "provisional",
+      "source": "Gavin photo comparison 2026-11-07; per-joint signs/status recorded in map, no hardware verification"
     },
     "gripper": {
       "value": {
@@ -126,5 +121,37 @@
   "unmodelled_obstacles": [
     "Black rim-clamped support tower near base: footprint and height unmeasured",
     "Cables, fixtures, shackle and any mat/spacer are absent"
-  ]
+  ],
+  "surface_margins_mm": {
+    "near": {
+      "value": 30,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin"
+    },
+    "far": {
+      "value": 30,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin"
+    },
+    "left": {
+      "value": 30,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin"
+    },
+    "right": {
+      "value": 30,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin"
+    },
+    "rim": {
+      "value": 30,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin"
+    },
+    "floor": {
+      "value": 0,
+      "status": "design",
+      "source": "Gavin aquarium follow-up 2026-11-07: moving links must not go below floor"
+    }
+  }
 }

@@ -1,14 +1,23 @@
 {
   "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
   "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "schema_version": 2,
   "date": "2026-11-07",
   "machine": "gavin-linux",
   "offline_only": true,
+  "builds_on_commit": "1e5282b5",
+  "intent": "Correct J5 photo mismatch; separate static mount and floor margin without hiding moving yaw_link wall violations",
   "inputs_sha256": {
-    "configs/viscous/environments/aquarium_landen_75/tank.json": "13b1aa04749c26e486870d80d195636290f874e82c98b06be84c5046c0156297",
+    "configs/viscous/environments/aquarium_landen_75/tank.json": "428f12410cc2ce5c4e74d830bc0f2d5a52a47bc33296f87889a6d7009f6da715",
+    "configs/viscous/model/motor_to_urdf.json": "620214fa1c1b79d24844c3d4c3dc3b7106549faae9bb014bae7ce48929cc04bd",
     "configs/viscous/model/viscous_arm.urdf": "c1e6c3876a67ce2a2e229bdd8a80960e68f085e08833d699536b1feddefb6ff7",
     "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json": "d440487e2520336c869ec3a781dd397862a0c4491263cc64615ae0c1c2045fd2",
-    "scripts/viscous_aquarium_env.py": "8583ac19adde4c58e288d7c2c726642cbf7c5c2807317f31a11a421f56f3c163"
+    "scripts/viscous_aquarium_env.py": "4d5dec217ab3764dcecc5acd14cb83a685e5a7c000e7da95998722cbdff05f8e",
+    "tests/test_viscous_aquarium_env.py": "2002c5db40a8e6589e190230bb84d98a79e78326c2b7cd964b23dbe51de60541",
+    "configs/viscous/environments/aquarium_landen_75/aquarium_scene.xml": "60691057dd954533271dd3422f0aa5d834c55c6602789a03910432521232bb99",
+    "configs/viscous/environments/aquarium_landen_75/previews/read_top.png": "d3d013115bc93303f8ab17ee3b24fbd8e1115b3fab4d7a4e3b80fc3dfd339d30",
+    "configs/viscous/environments/aquarium_landen_75/previews/read_side.png": "3f5e3e925ba74e8a131852bb9f317fbb638524853de4a3a52d9a9bec10924e55",
+    "configs/viscous/environments/aquarium_landen_75/previews/read_three_quarter.png": "1d18ddf822a1d8f025e7322855b0a5a6b43d070fccbae397650b28e61aaa9e86"
   },
   "read": {
     "motor_deg": {
@@ -20,47 +29,99 @@
       "wrist_roll": -7.46,
       "gripper": -117.9
     },
-    "clearance": {
+    "moving_links": {
       "near": {
-        "distance_mm": 8.940696716308594e-07,
-        "link": "base_link"
+        "distance_mm": 8.978816887063445,
+        "link": "yaw_link",
+        "margin_mm": 30,
+        "meets_margin": false
       },
       "far": {
-        "distance_mm": 112.64725676823537,
-        "link": "gripper_right"
+        "distance_mm": 116.57980606792023,
+        "link": "gripper_left",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "left": {
-        "distance_mm": 141.99999701976776,
-        "link": "base_link"
+        "distance_mm": 50.56424701140375,
+        "link": "gripper_right",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "right": {
-        "distance_mm": 87.73166904700534,
-        "link": "gripper_left"
+        "distance_mm": 178.6420857703339,
+        "link": "upper_arm_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "floor": {
-        "distance_mm": 0.0,
-        "link": "base_link"
+        "distance_mm": 4.550808577744203,
+        "link": "wrist_yaw_link",
+        "margin_mm": 0,
+        "meets_margin": true
       },
       "rim": {
         "distance_mm": 301.03799841403963,
-        "link": "yaw_link"
+        "link": "yaw_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "water_line": {
         "distance_mm": 142.0379984140396,
-        "link": "yaw_link"
+        "link": "yaw_link",
+        "margin_mm": null,
+        "meets_margin": null
       }
     },
+    "static_mount": {
+      "role": "informational only; never a violation",
+      "clearance": {
+        "near": {
+          "distance_mm": 8.940696716308594e-07,
+          "link": "base_link"
+        },
+        "far": {
+          "distance_mm": 654.0000008940697,
+          "link": "base_link"
+        },
+        "left": {
+          "distance_mm": 141.99999701976776,
+          "link": "base_link"
+        },
+        "right": {
+          "distance_mm": 141.99999701976776,
+          "link": "base_link"
+        },
+        "floor": {
+          "distance_mm": 0.0,
+          "link": "base_link"
+        },
+        "rim": {
+          "distance_mm": 382.0000013411045,
+          "link": "base_link"
+        },
+        "water_line": {
+          "distance_mm": 223.0000013411045,
+          "link": "base_link"
+        }
+      }
+    },
+    "violations": [
+      "near"
+    ],
     "tool0_mm": [
-      -526.040873436006,
-      -65.06330872235445,
-      42.82046162759793
+      -520.1498208001416,
+      101.96273182394577,
+      42.820461632577704
     ],
     "timing": {
       "calls": 1000,
-      "median_ms": 0.464439,
-      "p95_ms": 0.48188105,
-      "max_ms": 0.646664,
+      "median_ms": 0.435229,
+      "p95_ms": 0.437681,
+      "max_ms": 0.447567,
       "distinct_vertices": 9624,
+      "evaluated_moving_vertices": 9059,
+      "operation": "clearance() moving-link FK/plane distances; loading and separate static-mount report excluded",
       "decimation": "none; duplicate vertices only removed"
     }
   },
@@ -74,53 +135,156 @@
       "wrist_roll": -2.7,
       "gripper": 0.0
     },
-    "clearance": {
+    "moving_links": {
       "near": {
-        "distance_mm": -174.52943261801616,
-        "link": "gripper_right"
+        "distance_mm": -201.27966954387955,
+        "link": "gripper_right",
+        "margin_mm": 30,
+        "meets_margin": false
       },
       "far": {
         "distance_mm": 513.697148069034,
-        "link": "upper_arm_link"
+        "link": "upper_arm_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "left": {
-        "distance_mm": 60.61574733313384,
-        "link": "wrist_roll_link"
+        "distance_mm": 78.97405514997072,
+        "link": "wrist_roll_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "right": {
         "distance_mm": 99.97452764010583,
-        "link": "forearm_link"
+        "link": "forearm_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "floor": {
-        "distance_mm": 0.0,
-        "link": "base_link"
+        "distance_mm": 57.4,
+        "link": "yaw_link",
+        "margin_mm": 0,
+        "meets_margin": true
       },
       "rim": {
         "distance_mm": 173.2062347938628,
-        "link": "wrist_pitch_link"
+        "link": "wrist_pitch_link",
+        "margin_mm": 30,
+        "meets_margin": true
       },
       "water_line": {
         "distance_mm": 14.20623479386279,
-        "link": "wrist_pitch_link"
+        "link": "wrist_pitch_link",
+        "margin_mm": null,
+        "meets_margin": null
       }
     },
+    "static_mount": {
+      "role": "informational only; never a violation",
+      "clearance": {
+        "near": {
+          "distance_mm": 8.940696716308594e-07,
+          "link": "base_link"
+        },
+        "far": {
+          "distance_mm": 654.0000008940697,
+          "link": "base_link"
+        },
+        "left": {
+          "distance_mm": 141.99999701976776,
+          "link": "base_link"
+        },
+        "right": {
+          "distance_mm": 141.99999701976776,
+          "link": "base_link"
+        },
+        "floor": {
+          "distance_mm": 0.0,
+          "link": "base_link"
+        },
+        "rim": {
+          "distance_mm": 382.0000013411045,
+          "link": "base_link"
+        },
+        "water_line": {
+          "distance_mm": 223.0000013411045,
+          "link": "base_link"
+        }
+      }
+    },
+    "violations": [
+      "near"
+    ],
     "tool0_mm": [
-      185.16705427518127,
-      125.27477802902209,
-      148.941164089621
+      207.97918610398594,
+      82.00772005031615,
+      148.941164088225
     ],
     "timing": {
       "calls": 1000,
-      "median_ms": 0.46073149999999996,
-      "p95_ms": 0.46590349999999997,
-      "max_ms": 0.827996,
+      "median_ms": 0.439242,
+      "p95_ms": 0.44456245,
+      "max_ms": 0.453849,
       "distinct_vertices": 9624,
+      "evaluated_moving_vertices": 9059,
+      "operation": "clearance() moving-link FK/plane distances; loading and separate static-mount report excluded",
       "decimation": "none; duplicate vertices only removed"
     }
   },
-  "sweep_30_mm": {
+  "sweep_wall_30_floor_0_mm": {
     "limits_source": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json",
-    "margin_mm": 30.0,
+    "surface_margins_mm": {
+      "near": 30,
+      "far": 30,
+      "left": 30,
+      "right": 30,
+      "floor": 0,
+      "rim": 30
+    },
+    "moving_links": [
+      "forearm_link",
+      "gripper_left",
+      "gripper_right",
+      "upper_arm_link",
+      "wrist_pitch_link",
+      "wrist_roll_link",
+      "wrist_yaw_link",
+      "yaw_link"
+    ],
+    "static_mount": "base_link informational only; excluded from sweep",
+    "reference_clearance": {
+      "near": {
+        "distance_mm": 8.978816887063445,
+        "link": "yaw_link"
+      },
+      "far": {
+        "distance_mm": 116.57980606792023,
+        "link": "gripper_left"
+      },
+      "left": {
+        "distance_mm": 50.56424701140375,
+        "link": "gripper_right"
+      },
+      "right": {
+        "distance_mm": 178.6420857703339,
+        "link": "upper_arm_link"
+      },
+      "floor": {
+        "distance_mm": 4.550808577744203,
+        "link": "wrist_yaw_link"
+      },
+      "rim": {
+        "distance_mm": 301.03799841403963,
+        "link": "yaw_link"
+      },
+      "water_line": {
+        "distance_mm": 142.0379984140396,
+        "link": "yaw_link"
+      }
+    },
+    "reference_violations": [
+      "near"
+    ],
     "excluded_links": [],
     "constraints": [
       "near",
@@ -138,8 +302,18 @@
           187.52908634631845
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": true,
-        "samples": 316
+        "samples": 316,
+        "samples_failing_surface": {
+          "near": 316,
+          "far": 0,
+          "left": 112,
+          "right": 156,
+          "floor": 0,
+          "rim": 0
+        }
       },
       {
         "joint": "shoulder_lift",
@@ -148,8 +322,18 @@
           -2.807493196141034
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": false,
-        "samples": 199
+        "samples": 199,
+        "samples_failing_surface": {
+          "near": 199,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 9,
+          "rim": 119
+        }
       },
       {
         "joint": "elbow_flex",
@@ -158,8 +342,18 @@
           250.03878179509124
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": true,
-        "samples": 250
+        "samples": 250,
+        "samples_failing_surface": {
+          "near": 250,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 169,
+          "rim": 23
+        }
       },
       {
         "joint": "wrist_flex",
@@ -168,8 +362,18 @@
           82.10485204224697
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": true,
-        "samples": 206
+        "samples": 206,
+        "samples_failing_surface": {
+          "near": 206,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 161,
+          "rim": 0
+        }
       },
       {
         "joint": "wrist_yaw",
@@ -178,8 +382,18 @@
           87.31876797793745
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": true,
-        "samples": 176
+        "samples": 176,
+        "samples_failing_surface": {
+          "near": 176,
+          "far": 0,
+          "left": 50,
+          "right": 33,
+          "floor": 0,
+          "rim": 0
+        }
       },
       {
         "joint": "wrist_roll",
@@ -188,19 +402,78 @@
           150.00035076524952
         ],
         "safe_sample_intervals_deg": [],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": false,
         "reference_within_limits": true,
-        "samples": 307
+        "samples": 307,
+        "samples_failing_surface": {
+          "near": 307,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 275,
+          "rim": 0
+        }
       }
     ],
     "reference_outside_limits": {
       "shoulder_lift": -201.83,
       "gripper": -117.9
     },
-    "warning": "Sampled geometry only; fixed base touches near wall/floor. No automatic exemptions. Other joints remain at the supplied reference even if outside soft limits."
+    "warning": "Sampled geometry only, no continuous path proof. Moving links include yaw_link; static base is informational. Floor has its own margin. Other joints remain at the reference even if outside soft limits. A contiguous range is null if the reference fails margins or is outside that joint's soft limits."
   },
-  "diagnostic_sweep_0_mm": {
+  "diagnostic_sweep_wall_0_floor_0_mm": {
     "limits_source": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json",
-    "margin_mm": 0.0,
+    "surface_margins_mm": {
+      "near": 0.0,
+      "far": 0.0,
+      "left": 0.0,
+      "right": 0.0,
+      "floor": 0,
+      "rim": 0.0
+    },
+    "moving_links": [
+      "forearm_link",
+      "gripper_left",
+      "gripper_right",
+      "upper_arm_link",
+      "wrist_pitch_link",
+      "wrist_roll_link",
+      "wrist_yaw_link",
+      "yaw_link"
+    ],
+    "static_mount": "base_link informational only; excluded from sweep",
+    "reference_clearance": {
+      "near": {
+        "distance_mm": 8.978816887063445,
+        "link": "yaw_link"
+      },
+      "far": {
+        "distance_mm": 116.57980606792023,
+        "link": "gripper_left"
+      },
+      "left": {
+        "distance_mm": 50.56424701140375,
+        "link": "gripper_right"
+      },
+      "right": {
+        "distance_mm": 178.6420857703339,
+        "link": "upper_arm_link"
+      },
+      "floor": {
+        "distance_mm": 4.550808577744203,
+        "link": "wrist_yaw_link"
+      },
+      "rim": {
+        "distance_mm": 301.03799841403963,
+        "link": "yaw_link"
+      },
+      "water_line": {
+        "distance_mm": 142.0379984140396,
+        "link": "yaw_link"
+      }
+    },
+    "reference_violations": [],
     "excluded_links": [],
     "constraints": [
       "near",
@@ -219,12 +492,25 @@
         ],
         "safe_sample_intervals_deg": [
           [
-            173.02,
+            157.02,
             187.52908634631845
           ]
         ],
+        "contiguous_around_read_deg": [
+          157.02,
+          187.52908634631845
+        ],
+        "reference_meets_margins": true,
         "reference_within_limits": true,
-        "samples": 316
+        "samples": 316,
+        "samples_failing_surface": {
+          "near": 274,
+          "far": 0,
+          "left": 104,
+          "right": 149,
+          "floor": 0,
+          "rim": 0
+        }
       },
       {
         "joint": "shoulder_lift",
@@ -235,11 +521,21 @@
         "safe_sample_intervals_deg": [
           [
             -199.44660848503955,
-            -160.83
+            -161.83
           ]
         ],
+        "contiguous_around_read_deg": null,
+        "reference_meets_margins": true,
         "reference_within_limits": false,
-        "samples": 199
+        "samples": 199,
+        "samples_failing_surface": {
+          "near": 109,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 9,
+          "rim": 111
+        }
       },
       {
         "joint": "elbow_flex",
@@ -250,11 +546,24 @@
         "safe_sample_intervals_deg": [
           [
             170.96,
-            237.96
+            235.96
           ]
         ],
+        "contiguous_around_read_deg": [
+          170.96,
+          235.96
+        ],
+        "reference_meets_margins": true,
         "reference_within_limits": true,
-        "samples": 250
+        "samples": 250,
+        "samples_failing_surface": {
+          "near": 55,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 169,
+          "rim": 15
+        }
       },
       {
         "joint": "wrist_flex",
@@ -268,8 +577,21 @@
             82.10485204224697
           ]
         ],
+        "contiguous_around_read_deg": [
+          38.42,
+          82.10485204224697
+        ],
+        "reference_meets_margins": true,
         "reference_within_limits": true,
-        "samples": 206
+        "samples": 206,
+        "samples_failing_surface": {
+          "near": 0,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 161,
+          "rim": 0
+        }
       },
       {
         "joint": "wrist_yaw",
@@ -279,12 +601,25 @@
         ],
         "safe_sample_intervals_deg": [
           [
-            -86.05826082864965,
-            54.22
+            -54.78,
+            87.31876797793745
           ]
         ],
+        "contiguous_around_read_deg": [
+          -54.78,
+          87.31876797793745
+        ],
+        "reference_meets_margins": true,
         "reference_within_limits": true,
-        "samples": 176
+        "samples": 176,
+        "samples_failing_surface": {
+          "near": 0,
+          "far": 0,
+          "left": 32,
+          "right": 0,
+          "floor": 0,
+          "rim": 0
+        }
       },
       {
         "joint": "wrist_roll",
@@ -294,235 +629,228 @@
         ],
         "safe_sample_intervals_deg": [
           [
-            -16.46,
-            14.54
+            -14.46,
+            16.54
           ]
         ],
+        "contiguous_around_read_deg": [
+          -14.46,
+          16.54
+        ],
+        "reference_meets_margins": true,
         "reference_within_limits": true,
-        "samples": 307
+        "samples": 307,
+        "samples_failing_surface": {
+          "near": 0,
+          "far": 0,
+          "left": 0,
+          "right": 0,
+          "floor": 275,
+          "rim": 0
+        }
       }
     ],
     "reference_outside_limits": {
       "shoulder_lift": -201.83,
       "gripper": -117.9
     },
-    "warning": "Sampled geometry only; fixed base touches near wall/floor. No automatic exemptions. Other joints remain at the supplied reference even if outside soft limits."
+    "warning": "Sampled geometry only, no continuous path proof. Moving links include yaw_link; static base is informational. Floor has its own margin. Other joints remain at the reference even if outside soft limits. A contiguous range is null if the reference fails margins or is outside that joint's soft limits."
   },
-  "read_moving_links_only": {
-    "near": {
-      "distance_mm": 8.978816887063445,
-      "link": "yaw_link"
+  "pinocchio": {
+    "read": {
+      "direct_tool0_mm": [
+        -526.0408734360058,
+        -65.06330872235444,
+        42.82046162759792
+      ],
+      "mapped_tool0_mm": [
+        -520.1498208001415,
+        101.96273182394575,
+        42.820461632577704
+      ],
+      "numpy_disagreement_mm": 1.1718571004216928e-13
     },
-    "far": {
-      "distance_mm": 112.64725676823537,
-      "link": "gripper_right"
+    "folded": {
+      "direct_tool0_mm": [
+        185.16705427518127,
+        125.27477802902209,
+        148.941164089621
+      ],
+      "mapped_tool0_mm": [
+        207.97918610398594,
+        82.00772005031615,
+        148.941164088225
+      ],
+      "numpy_disagreement_mm": 0.0
     },
-    "left": {
-      "distance_mm": 167.12038971604287,
-      "link": "wrist_pitch_link"
-    },
-    "right": {
-      "distance_mm": 87.73166904700534,
-      "link": "gripper_left"
-    },
-    "floor": {
-      "distance_mm": 4.550808577743718,
-      "link": "wrist_yaw_link"
-    },
-    "rim": {
-      "distance_mm": 301.03799841403963,
-      "link": "yaw_link"
-    },
-    "water_line": {
-      "distance_mm": 142.0379984140396,
-      "link": "yaw_link"
-    }
+    "pinocchio_version": "3.7.0"
   },
   "mujoco": {
     "mujoco_version": "3.16.0",
     "scene": "configs/viscous/environments/aquarium_landen_75/aquarium_scene.xml",
     "nq": 8,
     "ngeom": 175,
+    "static_mount_contacts": "disabled by contype=0, conaffinity=0 on base_link geoms",
     "read": {
       "arm_glass_contacts": [],
       "count": 0,
       "tool0_mm": [
-        -526.0408734360059,
-        -65.06330872235446,
-        42.82046162759793
+        -520.1498208001625,
+        101.96273182391016,
+        42.82046163285379
       ],
-      "fk_disagreement_mm": 1.1457157353758233e-13
+      "fk_disagreement_mm": 2.791606589198933e-10
     },
     "folded": {
       "arm_glass_contacts": [
         {
           "geom1": "glass_near",
           "geom2": "arm_yaw_link_collision_006_04",
-          "distance_mm": -0.2701820921525086
+          "distance_mm": -0.2701820921473738
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_yaw_link_collision_006_04",
-          "distance_mm": -0.2312614480395811
+          "distance_mm": -0.23126144803443938
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_yaw_link_collision_006_05",
-          "distance_mm": -0.29583441554266454
+          "distance_mm": -0.2958344155375367
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_yaw_link_collision_006_05",
-          "distance_mm": -0.1534176247048602
+          "distance_mm": -0.15341762469969766
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_053",
-          "distance_mm": -25.93887763734149
+          "distance_mm": -25.938877637332297
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_053",
-          "distance_mm": -25.80723771713017
+          "distance_mm": -25.80723771711976
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_01",
-          "distance_mm": -23.15636506809719
+          "distance_mm": -23.156365068095848
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_01",
-          "distance_mm": -22.960855768725917
+          "distance_mm": -22.96085576872435
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_02",
-          "distance_mm": -0.7147097036685202
+          "distance_mm": -0.7147097036849098
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_02",
-          "distance_mm": -0.5210589762531526
+          "distance_mm": -0.5210589762693063
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_03",
-          "distance_mm": -20.949955456722943
+          "distance_mm": -20.949955456722382
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_03",
-          "distance_mm": -20.728835207893926
+          "distance_mm": -20.72883520789443
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_05",
-          "distance_mm": -9.341417375392485
+          "distance_mm": -9.341417375393748
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_07",
-          "distance_mm": -11.926204475787621
+          "distance_mm": -11.926204475767872
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_054_07",
-          "distance_mm": -11.73073350474401
+          "distance_mm": -11.730733504724034
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_056_05",
-          "distance_mm": -12.005174126050456
+          "distance_mm": -12.005174126042087
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_pitch_link_collision_056_05",
-          "distance_mm": -11.999704759000537
+          "distance_mm": -11.999704758992161
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_049",
-          "distance_mm": -36.08767213422506
+          "distance_mm": -32.021512176758016
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_049",
-          "distance_mm": -35.961928671420345
+          "distance_mm": -32.00501795405132
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_051_00",
-          "distance_mm": -13.7024830987736
+          "distance_mm": -16.062825653189392
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_051_01",
-          "distance_mm": -4.595947422199057
+          "distance_mm": -6.9707578699481285
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_051_01",
-          "distance_mm": -4.317646002687137
+          "distance_mm": -6.547702367076191
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_051_02",
-          "distance_mm": -10.71528983657473
+          "distance_mm": -5.3888049661016195
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_051_02",
-          "distance_mm": -10.51653817841601
-        },
-        {
-          "geom1": "glass_near",
-          "geom2": "arm_wrist_yaw_link_collision_051_04",
-          "distance_mm": -4.955912519071348
-        },
-        {
-          "geom1": "glass_near",
-          "geom2": "arm_wrist_yaw_link_collision_051_04",
-          "distance_mm": -4.935225338506932
+          "distance_mm": -5.380818432535003
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_052",
-          "distance_mm": -16.30765396809086
+          "distance_mm": -16.3150949618399
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_052",
-          "distance_mm": -16.278083032689945
-        },
-        {
-          "geom1": "glass_near",
-          "geom2": "arm_wrist_yaw_link_collision_059_01",
-          "distance_mm": -2.5407115310646793
-        },
-        {
-          "geom1": "glass_near",
-          "geom2": "arm_wrist_yaw_link_collision_059_01",
-          "distance_mm": -2.5214053495009257
+          "distance_mm": -16.264601803763863
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_059_03",
-          "distance_mm": -11.6070448886866
+          "distance_mm": -6.203708558637555
         },
         {
           "geom1": "glass_near",
           "geom2": "arm_wrist_yaw_link_collision_059_03",
-          "distance_mm": -11.606771254524432
+          "distance_mm": -6.201932063336988
         }
       ],
-      "count": 32,
+      "count": 28,
       "tool0_mm": [
-        185.16705427518127,
-        125.27477802902209,
-        148.94116408962097
+        207.97918610404818,
+        82.00772005015331,
+        148.9411640882307
       ],
-      "fk_disagreement_mm": 2.842170943040401e-14
+      "fk_disagreement_mm": 1.7442519146645812e-10
     }
   },
   "previews": [
@@ -530,21 +858,35 @@
     "configs/viscous/environments/aquarium_landen_75/previews/read_side.png",
     "configs/viscous/environments/aquarium_landen_75/previews/read_three_quarter.png"
   ],
+  "preview_sizes_bytes": {
+    "configs/viscous/environments/aquarium_landen_75/previews/read_top.png": 42374,
+    "configs/viscous/environments/aquarium_landen_75/previews/read_side.png": 39422,
+    "configs/viscous/environments/aquarium_landen_75/previews/read_three_quarter.png": 67480
+  },
   "tests": {
     "command": ".venv/bin/python -m unittest discover -s tests -p test_viscous_aquarium_env.py -v",
-    "count": 14,
+    "count": 17,
     "result": "OK",
-    "note": "unittest bypasses unrelated Lab pytest fixtures; independent Pinocchio comparison included; installed hppfcl emits a deprecation warning"
+    "output": "test_default_margin_sweep_is_empty_due_to_moving_yaw_and_flags_reference_limits (test_viscous_aquarium_env.AquariumGeometryTest.test_default_margin_sweep_is_empty_due_to_moving_yaw_and_flags_reference_limits) ... ok\ntest_fk_matches_independent_pinocchio_all_links (test_viscous_aquarium_env.AquariumGeometryTest.test_fk_matches_independent_pinocchio_all_links) ... /home/gavin/Documents/makermodslab-viscous/.venv/lib/python3.12/site-packages/cmeel.prefix/lib/python3.12/site-packages/hppfcl/__init__.py:3: DeprecationWarning: Please update your 'hppfcl' imports to 'coal'\n  warnings.warn(\nok\ntest_floor_is_collision_base_minimum_minus_spacer (test_viscous_aquarium_env.AquariumGeometryTest.test_floor_is_collision_base_minimum_minus_spacer) ... ok\ntest_folded_pose_tool0_within_5_mm (test_viscous_aquarium_env.AquariumGeometryTest.test_folded_pose_tool0_within_5_mm) ... ok\ntest_folded_target_penetrates_near_wall (test_viscous_aquarium_env.AquariumGeometryTest.test_folded_target_penetrates_near_wall) ... ok\ntest_gripper_linear_mapping_clamps_overtravel (test_viscous_aquarium_env.AquariumGeometryTest.test_gripper_linear_mapping_clamps_overtravel) ... ok\ntest_invalid_motor_angles_rejected (test_viscous_aquarium_env.AquariumGeometryTest.test_invalid_motor_angles_rejected) ... ok\ntest_optional_waterline_is_visual_headroom (test_viscous_aquarium_env.AquariumGeometryTest.test_optional_waterline_is_visual_headroom) ... ok\ntest_per_surface_margins_keep_floor_separate (test_viscous_aquarium_env.AquariumGeometryTest.test_per_surface_margins_keep_floor_separate) ... ok\ntest_read_pose_no_penetration_and_all_moving_links_positive (test_viscous_aquarium_env.AquariumGeometryTest.test_read_pose_no_penetration_and_all_moving_links_positive) ... ok\ntest_read_pose_tool0_within_5_mm (test_viscous_aquarium_env.AquariumGeometryTest.test_read_pose_tool0_within_5_mm) ... ok\ntest_scene_assets_are_relative_and_glass_contact_masks_match (test_viscous_aquarium_env.AquariumGeometryTest.test_scene_assets_are_relative_and_glass_contact_masks_match) ... ok\ntest_sign_map_provenance_and_offsets (test_viscous_aquarium_env.AquariumGeometryTest.test_sign_map_provenance_and_offsets) ... ok\ntest_stale_derived_bounds_rejected (test_viscous_aquarium_env.AquariumGeometryTest.test_stale_derived_bounds_rejected) ... ok\ntest_sweep_reports_only_component_containing_read (test_viscous_aquarium_env.AquariumGeometryTest.test_sweep_reports_only_component_containing_read) ... ok\ntest_tank_bounds_consistent_and_provenanced (test_viscous_aquarium_env.AquariumGeometryTest.test_tank_bounds_consistent_and_provenanced) ... ok\ntest_zero_margin_sweep_stops_before_floor_penetration (test_viscous_aquarium_env.AquariumGeometryTest.test_zero_margin_sweep_stops_before_floor_penetration) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.730s\n\nOK\n",
+    "note": "unittest avoids unrelated Lab pytest fixtures; installed hppfcl emits a deprecation warning"
   },
   "lint": {
     "ruff_check": "passed",
     "ruff_format_check": "passed"
   },
   "limitations": [
-    "No physical placement measurements; unconfirmed glass thickness",
-    "Base tangencies preclude strictly positive full-arm floor/near clearance or 30 mm all-link sweep",
-    "Read shoulder lift and gripper outside committed waterproof soft limits",
+    "J5 sign is photo-inferred; hand test pending; J1-J4 photo-consistent only and J6 assumed unverified; zero offsets assumed",
+    "Gravity model still uses direct mapping and needs same check; deliberately unchanged",
+    "No physical placement measurements; uniform 8 mm glass unconfirmed; centered/aligned base and no mat assumed",
+    "Moving yaw_link fails near-wall 30 mm margin; static base is informational and floor margin is independently zero",
+    "Read shoulder lift and gripper outside committed waterproof soft limits; no hardware/path permission",
+    "Sweep 1 degree samples plus endpoints; no continuous path proof",
     "No tower, cables, fixtures, self collisions, water forces or dynamics validation",
-    "No hardware, service/session, installed-state or network operations; no push"
-  ]
+    "No hardware, service/session, installed-state, frontend, network or push operations"
+  ],
+  "yaw_link_near_over_j1_samples_mm": {
+    "samples": 316,
+    "min": -3.8103461162777705,
+    "max": 9.989705055816643
+  }
 }
