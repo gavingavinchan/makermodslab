@@ -449,6 +449,15 @@ restore paths in the DAgger runner.
   `--overhead head --wrist-l left --wrist-r black`. The inputs id stays 9430f986ab69
   (Dream's id covers slot names and frame sizes, which did not change). Both ids are
   USB-port based: swapping the cameras' ports swaps them.
+- *Status (2026-11-08, later): first two-camera run* (`live-20261108T223649Z`, overhead
+  `head` + wrist `left`, commanded state, 15 calls, 87 billed today). 11 calls executed
+  in full (~35 s), then calls 12-15 were cut near the back wall and the stuck rule ended
+  it; return to rest clean, peak 43 C. Dream's own hand targets (before any clamp) hovered
+  12-15 cm up and crept in 49 -> 42 cm and ~3 cm right; it never descended and never
+  opened the gripper, same as the wrist-only commanded-state run. The only run where
+  Dream descended to the floor (213138Z: hand target 21 cm -> -19 mm) was wrist-only
+  with the MEASURED (sagged) state, so the state change may have removed the descent
+  too; untested. Next: ask Grace with this data before spending the last calls.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
