@@ -1,0 +1,33 @@
+{
+ "urdf": "viscous-waterproof-tank.urdf",
+ "base": "dream_base",
+ "flange": "wrist_roll_link",
+ "tcp": [
+  0.166308,
+  0.0,
+  -0.027091
+ ],
+ "approach": [
+  0.986991,
+  0.0,
+  -0.160775
+ ],
+ "jaw": [
+  0.0,
+  1.0,
+  0.0
+ ],
+ "rest": [
+  -0.059516,
+  -2.14501,
+  1.73381,
+  0.1494,
+  0.15708,
+  -0.069639
+ ],
+ "tcp_calibration": {
+  "status": "calibrated",
+  "at": "2026-11-08T06:44:09+00:00",
+  "digest": "6514c61d3eb7c893"
+ }
+}
