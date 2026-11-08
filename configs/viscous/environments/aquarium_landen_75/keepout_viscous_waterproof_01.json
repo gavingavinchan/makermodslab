@@ -1,0 +1,101 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "schema_version": 1,
+  "name": "aquarium_landen_75 keep-out for viscous_waterproof_01",
+  "purpose": "Workspace box that gates every joint target sent to the real arm in the tank (makermodslab/tank_guard.py). Gavin 2026-11-07: \"can we now build a bounding box to run dream1?\" and \"the floor of the aquarium is the only part of the aquarium the arm is allowed to touch anyways\".",
+  "robot": "viscous_waterproof_01",
+  "tank": "configs/viscous/environments/aquarium_landen_75/tank.json",
+  "frame": "base_link",
+  "units": "mm, motor degrees (after the full-turn unwrap)",
+  "yaw_deg": {
+    "value": 0.0,
+    "status": "measured",
+    "source": "Trace 20261108T044404Z (evidence copy in configs/viscous/viscous_waterproof_01/evidence/tank-trace-20261108T044404Z.jsonl): +y wall line through every-vertex extremes has 0.25 deg of yaw over 224 mm of travel; the earlier probe fit read about 1 deg. Taken as 0; the wall offsets below are the closer readings, so a residual yaw of 1 deg moves the wall at most ~10 mm at full reach, inside the 30 mm margin."
+  },
+  "planes_mm": {
+    "left": {
+      "value": 210.0,
+      "status": "measured",
+      "source": "+y wall, hand-traced 2026-11-07 (sd 1.7 mm over 237 mm). Every-vertex extremes on that pass reached 213 mean / 218.5 max, so 210 is the conservative side by 3-8 mm."
+    },
+    "right": {
+      "value": -224.0,
+      "status": "measured",
+      "source": "-y wall, the readings clustered between -218 and -228 mm before the loose base slid (later readings out to -254 are the slide). Every-vertex extremes on the plateau reached -223 to -231. 210 + 224 = 434 mm = nominal inner width for 8 mm glass (glass thickness unconfirmed)."
+    },
+    "near": {
+      "value": 40.0,
+      "status": "estimate",
+      "source": "NOT TRACED. tank.json placement estimate (wall at the base's back edge, 40 mm behind J1). Gavin: \"lets also measure where the back wall is from the arm as j3 can easily hit it.\" Trace it before a powered run."
+    },
+    "far": {
+      "value": -694.0,
+      "status": "estimate",
+      "source": "near minus nominal inner length 734 mm; out of reach (furthest collision point ~610 mm)."
+    },
+    "floor": {
+      "value": -6.0,
+      "status": "bound",
+      "source": "Highest floor the evidence allows: the fingers' lowest mesh point reached -6.2 mm in the trace, so the glass is at -6 or lower. Gavin: \"the true gap is more like 15mm\" (floor ~ -15). Floor contact is allowed; the highest plausible floor bounds how hard a command can press into it."
+    },
+    "rim": {
+      "value": 427.0,
+      "status": "estimate",
+      "source": "Lowest plausible rim: Gavin's floor at about -15 mm plus the nominal 442 mm inner height (450 outer - 8 glass)."
+    }
+  },
+  "margins_mm": {
+    "value": {"near": 30.0, "far": 30.0, "left": 30.0, "right": 30.0, "rim": 30.0},
+    "status": "design",
+    "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin (tank.json surface_margins_mm). Covers FK error, tracking lag and the residual yaw; it does NOT cover the loose base sliding (~30 mm under a hand push), which must be clamped."
+  },
+  "floor_press_mm": {
+    "value": 10.0,
+    "status": "design",
+    "source": "Floor is the one allowed contact surface (Gavin 2026-11-07). A target may put a vertex at most this far below the floor bound, so a command can never ask for a deep push into the floor glass. Padding does not apply to the floor."
+  },
+  "padding_mm": {
+    "value": {"default": 40.0, "gripper_left": 0.0, "gripper_right": 0.0},
+    "status": "design",
+    "source": "Gavin: \"there are a lot of cabling sticking out of the side of the arms, and not represented in the urdf\". tank_geometry's unmeasured-link default of 40 mm; the fingers carry no cables and are the measured probe, so they use the mesh itself. Replace with measured cable padding (the tank-measure envelope touches) when available."
+  },
+  "link_rules": {
+    "yaw_link": {
+      "exempt_faces": ["near", "far", "left", "right", "floor", "rim"],
+      "why": "Rides on the base and turns with J1 only: its extent behind J1 is 30-42.5 mm at every J1 angle (never further), so it cannot approach a wall it does not already touch. It is part of the base footprint, like the base itself."
+    },
+    "upper_arm_link": {
+      "faces": {"near": {"margin": 0.0, "padding": 10.0}},
+      "why": "Its heel (around the J2 axis) sits a constant 28 mm behind J1 whenever J2 <= -100 deg, so it cannot keep the full 70 mm off a near wall estimated at 40 mm. This rule lets the heel stay where it is and forbids the upper arm from tipping back past roughly vertical. Links beyond the elbow (J3, the hazard Gavin named) keep the full near margin and padding."
+    }
+  },
+  "joint_limits_deg": {
+    "value": {
+      "shoulder_pan": [-126.85285584196426, 187.52908634631845],
+      "shoulder_lift": [-199.44660848503955, -2.807493196141034],
+      "elbow_flex": [2.8647889756541165, 250.03878179509124],
+      "wrist_flex": [-122.26919348091766, 82.10485204224697],
+      "wrist_yaw": [-86.05826082864965, 87.31876797793745],
+      "wrist_roll": [-154.98508358288768, 150.00035076524952],
+      "gripper": [-115.10722104178238, -2.9220847551671985]
+    },
+    "status": "measured",
+    "source": "configs/viscous/viscous_waterproof_01/evidence/lab-hardware-profile.json follower joint_limits. Note the arm rests at J1 182-191 in the tank, so a start at J1 > 187.53 is refused until it is moved inside by hand."
+  },
+  "max_jump_deg": {
+    "value": 20.0,
+    "status": "design",
+    "source": "Any arm joint target more than this from the last accepted target is refused outright, never slid toward: it catches a J1 wrap (+182 -> -178) and IK branch flips. At 20 Hz a 30 deg/s joint moves 1.5 deg per row."
+  },
+  "sweep_tolerance_mm": {
+    "value": 2.0,
+    "status": "design",
+    "source": "Path check resolution: segments are sampled finely enough that no point of any link can move more than this between samples, and every sample must clear by this much, so the whole straight joint-space path is proven clear."
+  },
+  "tracking_allowance_mm": {
+    "value": 15.0,
+    "status": "design",
+    "source": "The MEASURED pose may lag or sag from the target. A measured pose that eats more than this into the margin means the arm is not where the guard thinks: stop the run."
+  }
+}
