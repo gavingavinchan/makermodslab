@@ -1,0 +1,337 @@
+{
+ "trips": [],
+ "calls": 20,
+ "rows_planned": 960,
+ "approach_substeps": 123,
+ "substeps_sent": 102,
+ "clipped": 0,
+ "guard": {
+  "ok": 205,
+  "clamped": 20
+ },
+ "stretched_rows": 29,
+ "phases": [
+  "connect",
+  "start gate",
+  "engage",
+  "approach",
+  "pause",
+  "dream",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "slide",
+  "override",
+  "stop: re-anchor",
+  "stop: gripper torque off",
+  "stop: HOLDING",
+  "release all torque"
+ ],
+ "slid": [
+  {
+   "call": 1,
+   "rows": 35,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 2,
+   "rows": 39,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 3,
+   "rows": 25,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 4,
+   "rows": 6,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 5,
+   "rows": 33,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 6,
+   "rows": 20,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 7,
+   "rows": 10,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 8,
+   "rows": 32,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 9,
+   "rows": 29,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 10,
+   "rows": 9,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 11,
+   "rows": 46,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 12,
+   "rows": 33,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 13,
+   "rows": 12,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 14,
+   "rows": 14,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 15,
+   "rows": 8,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 16,
+   "rows": 5,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 17,
+   "rows": 11,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 18,
+   "rows": 1,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 19,
+   "rows": 3,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  },
+  {
+   "call": 20,
+   "rows": 14,
+   "floor_rows": 0,
+   "max_floor_lift_mm": 0.0
+  }
+ ],
+ "overrides": [
+  {
+   "call": 1,
+   "why": "row 15: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 2,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 3,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 4,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 5,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 6,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 7,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 8,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 9,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 10,
+   "why": "row 6: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 11,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 12,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 13,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 14,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 15,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 16,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 17,
+   "why": "row 12: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 18,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 19,
+   "why": "row 0: tank keep-out (cut at the line)"
+  },
+  {
+   "call": 20,
+   "why": "row 0: tank keep-out (cut at the line)"
+  }
+ ],
+ "stop": {
+  "reason": "call cap 20 reached",
+  "reanchor": {
+   "measured": {
+    "shoulder_pan": 174.48,
+    "shoulder_lift": -97.45,
+    "elbow_flex": 56.54,
+    "wrist_flex": 6.32,
+    "wrist_yaw": 3.79,
+    "wrist_roll": -2.5
+   },
+   "offset_deg": {
+    "shoulder_pan": 0.18,
+    "shoulder_lift": 2.33,
+    "elbow_flex": 1.72,
+    "wrist_flex": 2.95,
+    "wrist_yaw": 0.01,
+    "wrist_roll": 0.24
+   },
+   "goal": {
+    "shoulder_pan": 174.66,
+    "shoulder_lift": -95.12,
+    "elbow_flex": 58.26,
+    "wrist_flex": 9.27,
+    "wrist_yaw": 3.8,
+    "wrist_roll": -2.26
+   }
+  },
+  "gripper_release": "ok",
+  "legs": [],
+  "returned": "held before leg 1: its path is not clear of the tank keep-out; released on the second signal",
+  "release_problems": null
+ },
+ "reason": "call cap 20 reached",
+ "peak_torque_nm": {
+  "shoulder_pan": 0.39316239316239354,
+  "shoulder_lift": 6.47179487179487,
+  "elbow_flex": 4.017094017094017,
+  "wrist_flex": 2.321367521367524,
+  "wrist_yaw": 0.3589743589743577,
+  "wrist_roll": 0.29059829059828957,
+  "gripper": 0.28376068376068275
+ },
+ "peak_temp_c": {
+  "shoulder_pan": 23.0,
+  "shoulder_lift": 38.0,
+  "elbow_flex": 30.0,
+  "wrist_flex": 24.0,
+  "wrist_yaw": 23.0,
+  "wrist_roll": 23.0,
+  "gripper": 23.0
+ },
+ "peak_lag_deg": {
+  "shoulder_pan": 0.4427451338886783,
+  "shoulder_lift": 4.5392483245042285,
+  "elbow_flex": 2.3185350629669728,
+  "wrist_flex": 4.751395770749882,
+  "wrist_yaw": 0.7865426595085814,
+  "wrist_roll": 0.6644007382093235
+ },
+ "peak_speed_deg_s": {
+  "shoulder_pan": 4.575140582999302,
+  "shoulder_lift": 21.43532534138944,
+  "elbow_flex": 18.342210758498037,
+  "wrist_flex": 23.500599501372253,
+  "wrist_yaw": 9.084114955365228,
+  "wrist_roll": 6.136541320500271
+ }
+}

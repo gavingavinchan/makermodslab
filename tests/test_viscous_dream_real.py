@@ -776,6 +776,33 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertTrue(summary["reason"].startswith("stuck"), summary["reason"])
         self.assert_stopped_safely(arm)
 
+    def test_a_hold_after_a_trip_releases_on_the_first_press(self):
+        # The stop came from a trip, not a signal; the hold must release on ONE press (live 215535Z).
+        def patch(arm):
+            back = arm.return_to_rest
+
+            def stuck(pose, abort, speed, watch=None):
+                back(pose, abort, speed, watch)
+                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0
+                arm.limp.add("shoulder_lift")
+                arm.FALL_DEG_PER_TICK = 0.0
+                return False, "shoulder_lift still 25.0 deg away"
+
+            arm.return_to_rest = stuck
+
+        pressed = []
+
+        def one_real_press(clock, stop, abort):
+            # install_stop_signals' handler: the first signal is "stop", only a later one "abort".
+            if clock.t > 1040 and not pressed:
+                pressed.append(clock.t)
+                (abort if stop.is_set() else stop).set()
+
+        summary, arm = self.episode(max_calls=1, patch=patch, after=one_real_press)
+        self.assertEqual(len(pressed), 1)
+        self.assertIn("held", summary["stop"]["returned"])
+        self.assertFalse(arm.energized)
+
     def test_a_pushed_arm_is_held_where_it_is_and_returns_from_there(self):
         guard = NoGuard()
         summary, arm = self.episode("push", max_calls=5, guard=guard)

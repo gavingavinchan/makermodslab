@@ -1485,6 +1485,10 @@ class Episode:
         arm is held where it is (a ramp cut short leaves its goal elsewhere); while no fresh reading can be
         had the last goal is held and the re-anchor retried. The second signal is the only mid-air release."""
         self._phase("stop: HOLDING", why)
+        # Any signal from here releases. A stop that began without a signal (call cap, trip) left stop_event
+        # clear, so the handler would have spent the next press on "stop" and the hold kept waiting: Gavin
+        # pressed once, supported the arm, and torque stayed on (live 2026-11-08T215535Z).
+        self.stop_event.set()
         print(
             f"RETURN HELD ({why}): HOLDING (gripper already limp). Support the arm, then press the stop "
             "button again (or Ctrl-C / kill -TERM) to release all torque.",

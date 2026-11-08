@@ -403,6 +403,20 @@ restore paths in the DAgger runner.
   sag at the hand is 27-53 mm off the glass, not 5-7. Offline replay of 213138Z through
   Dream's real IK: no floor cuts; calls 9-10 (reach ~310 mm) still cut by the forearm
   vs the back wall. 154 targeted tests pass.
+- *Status (2026-11-08, later): stuck folded at the back wall; a hold that would not
+  release.* Live 215535Z (20 calls, 61 billed today): Dream's call 1 folded the arm up
+  and back (as at the start of every run) until the forearm sat ~4 mm off the guard's
+  back-wall limit; calls 2-20 were then cut at row 0 one after another (each sent one
+  substep, so the stuck check, which counted only empty calls, never fired). At the
+  call cap the return's first leg was not clear of the back wall, so the arm HELD
+  mid-air as designed. Bug: Gavin supported the arm and pressed STOP once, but the stop
+  had come from the call cap, not a signal, so that press only counted as "stop" and
+  the hold kept waiting; I sent the release after he said he was holding it. Fixed:
+  entering a hold arms the release, so any one press releases (test proves it fails
+  without the fix). Still to do: let the guard move a pose that sits on a limit away
+  from it (it currently freezes), report the commanded rather than the sagged pose to
+  Dream (its first move "corrects" the ~5 cm sag by lifting and folding back), and
+  count near-empty calls as stuck.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
