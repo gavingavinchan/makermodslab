@@ -186,7 +186,13 @@ restore paths in the DAgger runner.
   motor pan 176.59, lift -122.9, elbow 99.34, flex 8.56, yaw -9.0, roll -3.99, tcp
   462 mm out, centred, 143 mm up, no box violation
   (`scripts/viscous-dream1/real/runs/start_pose/20261108T183949Z.json`). Gavin: "i like
-  this pose". `make_tank_arm.py --rest-motor-deg ...` rewrote only `rest` (arm file,
+  this pose", and later: "its the follower arm pose that i like, the leader arm does
+  not map nicely to it". The recorded numbers are the follower's MEASURED joints (the
+  broadcast's `joints_deg`), so they are the right ones; never reproduce this pose by
+  matching the leader to it, or take a start pose from the leader's reading. The
+  leader-to-follower shape mismatch at this pose is unexplained (scale/offset in the
+  leader profile?). The J5/J6 test only needed the direction of each wrist joint
+  through that mapping, not its shape. `make_tank_arm.py --rest-motor-deg ...` rewrote only `rest` (arm file,
   provenance); the URDF bytes and its normalized hash 8975766e...cef7f are unchanged,
   so the station arm file `viscous-waterproof-tank.json` from `dreamcli tcp` stays
   valid (untouched). The dry run with that arm file and `--overhead head` puts the new
