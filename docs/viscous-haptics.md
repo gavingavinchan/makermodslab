@@ -2533,6 +2533,19 @@ start pose and an object on the tank's centre line. On the +y side the J1
 soft limit (187.5 deg, possibly stale) binds before the glass. Full write-up, validation and the real-run plan with open questions:
 [dream1-tank.md](dream1-tank.md). Nothing drives the arm yet.
 
+## Waterproof arm read-only CAN check (2026-11-13)
+
+*Intent:* Gavin: "the waterproof arm is connected, test it, dont move it". Arm on
+the Mac (CANable `/dev/cu.usbmodem2050389538461`), no Star leader plugged in, Lab
+not running, port free.
+
+- `scripts/viscous-can-ping.py` (bus opened without the enable handshake, the
+  clear-fault state refresh only, closed with no disable write). Nothing energized.
+- *All seven answer 5/5*, torque 0.00 Nm, MOS 24-27 C. Readings (deg): pan
+  +178.1, lift +302.0 (-58.0 one turn down), elbow +0.49, wrist_flex +34.9, yaw
+  -2.2, roll -1.4, gripper -0.30 (inside its soft limits [-115.1, -0.03], at the
+  closed end; the 2026-11-07 reading of +242.1 is gone).
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
