@@ -524,6 +524,16 @@ restore paths in the DAgger runner.
   sim scene still say 40 mm. The base can still slide or rotate under a push on the
   glass and neither the box nor the guard can see it, so before every powered run:
   post between the marks and flush on the back glass.
+- *Status (2026-11-13, later): the mount's fin is not modelled; the post is the back wall.*
+  Gavin: "i dont see how the fin is an obstacle as the tank will limit things before the
+  fin is hit. the back post is still a thing as j3 can hit it". A Codex round did model
+  the fin and post from the mount 3MF as convex obstacles (5 mm margin, local branch
+  `feat/viscous-tank-mount-fin-2` at 61299e9e on the Mac, not pushed) and agrees: in
+  the replay no row was ever cut by the fin (2838/2928 with the heel loosened, vs 2828
+  here), and the shoulder housing never comes within 11.3 mm of it at any J1. It cost
+  about 5x per pose check (0.5 -> 2.7 ms), so it was parked. The post stays covered by
+  the near plane at its face (106 mm), applied across the full width, so J3 and every
+  link beyond the elbow keep 70 mm off it; the heel keeps its 40 mm limit.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
