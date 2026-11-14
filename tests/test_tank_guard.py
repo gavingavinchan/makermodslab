@@ -82,7 +82,8 @@ def test_config_loads_with_documented_rules(guard):
     # 66 margin from the 106 post face = the heel's same 40 mm behind J1 (2026-11-13 mount)
     assert guard.required["upper_arm_link"]["near"] == 66.0
     assert guard.required["forearm_link"]["near"] == 70.0  # the elbow keeps the full near rule
-    assert all(guard.required[link]["floor"] == -10.0 for link in guard.links if link != "yaw_link")
+    # 20 mm floor press since 2026-11-14 (was 10): the rest on the glass read 13.7 mm under the line
+    assert all(guard.required[link]["floor"] == -20.0 for link in guard.links if link != "yaw_link")
 
 
 def test_rest_and_work_poses_may_start(guard):
@@ -132,7 +133,7 @@ def test_walls_refuse_but_floor_allows_contact(guard):
     # Resting on the floor, as at the end of the trace: allowed.
     floor_slack = min(v for (link, face), v in guard.clearances(REST).items() if face == "floor")
     # The 11-07 trace's rest; the floor bound moved down 25 mm when Gavin raised the base (2026-11-08).
-    assert floor_slack < 45
+    assert floor_slack < 55  # +10 when the floor press went 10 -> 20 mm (2026-11-14)
     assert guard.check_pose(REST).ok
 
 
