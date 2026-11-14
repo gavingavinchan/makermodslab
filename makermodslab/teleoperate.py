@@ -887,8 +887,8 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
     until lease attribution, so a start response can be heartbeated/stopped.
     """
     global teleoperation_active, teleoperation_thread, current_robot, current_teleop, last_cleanup_error
-    global releasing, rest_failed, _requires_verified_rest, last_session_outcome, last_session_error, _starting
-    global connection_phase, last_connection_code, last_connection_details
+    global releasing, rest_failed, _requires_verified_rest, last_session_outcome, last_session_error
+    global _starting, connection_phase, last_connection_code, last_connection_details
 
     from . import (
         auto_calibrate as _auto_calibrate,

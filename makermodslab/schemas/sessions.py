@@ -882,6 +882,9 @@ class TeleoperationStatusResponse(BaseModel):
     gripper_haptics: dict[str, Any] | None
     available_controls: dict[str, bool]
     releasing: bool
+    # A CAN family with requires_verified_rest whose landing failed: torque is
+    # held until an explicit release. Always False for Viscous (opted out).
+    rest_failed: bool
     last_cleanup_error: str | None
     outcome: str | None
     error: str | None

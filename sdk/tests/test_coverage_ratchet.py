@@ -32,7 +32,19 @@ PLANNED: dict[str, frozenset[str]] = {
     "robots": frozenset(),
     "sfu": frozenset(),
     "sessions": frozenset(),
-    "system": frozenset(),
+    # The Viscous fork's tank-measurement routes (2026-11-13 upstream sync):
+    # bench tooling for one arm, not yet in the SDK.
+    "system": frozenset(
+        {
+            "capture_tank_touch",
+            "delete_tank_touch",
+            "get_latest_tank_measurement",
+            "get_tank_measurement_status",
+            "save_tank_measurement",
+            "start_tank_measurement",
+            "stop_tank_measurement",
+        }
+    ),
 }
 
 

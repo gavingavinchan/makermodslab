@@ -484,7 +484,8 @@ def test_teleoperation_installs_maker_adapter_before_connect(monkeypatch):
     monkeypatch.setattr(teleoperate, "build_single_configs", lambda req: (robot.config, object()))
     monkeypatch.setattr(teleoperate, "make_robot_from_config", lambda cfg: robot)
     monkeypatch.setattr(teleoperate, "make_teleoperator_from_config", lambda cfg: SimpleNamespace())
-    monkeypatch.setattr(teleoperate, "de_energize_can_device", lambda *a: None)
+    # The fork's _connect_can collects the de-energize problems into a list.
+    monkeypatch.setattr(teleoperate, "de_energize_can_device", lambda *a: [])
 
     def connect(**kwargs):
         assert isinstance(robot.bus, MakerHoldingBus)
@@ -492,9 +493,11 @@ def test_teleoperation_installs_maker_adapter_before_connect(monkeypatch):
         raise ConnectionError("prepared maker holding")
 
     monkeypatch.setattr(robot, "connect", connect)
+    # Not /dev/ paths: the fork's _connect_can refuses a /dev/ port that is
+    # absent before building anything (USB presence check).
     request = teleoperate.TeleoperateRequest(
-        leader_port="/dev/star",
-        follower_port="/dev/fake",
+        leader_port="STAR",
+        follower_port="CAN",
         leader_config="L",
         follower_config="F",
         arm_type="maker",

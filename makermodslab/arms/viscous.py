@@ -37,6 +37,12 @@ class ViscousFamily(CanArmFamily):
     follower_probe_protocol = "robstride"
     motion_identify_energizes_follower = False
 
+    follower_zero_pose = (
+        "Use the existing commissioned Viscous follower calibration (viscous_01). "
+        "Import or select that file in the calibration library. "
+        "Re-zeroing the follower is disabled because it invalidates its measured limits."
+    )
+
     # --- Upstream CAN behaviour kept OFF for this arm (sync of 2026-11-13) ---
     # Each reaches Viscous through CanArmFamily or a MakerFollower hook unless
     # opted out here. Turning one on is a hardware decision: see
@@ -63,11 +69,6 @@ class ViscousFamily(CanArmFamily):
         # Metal installs its 280 deg/s follower speed cap here. Viscous has its
         # own supervised teleop speed limit (supports_teleop_speed_limit).
         return None
-    follower_zero_pose = (
-        "Use the existing commissioned Viscous follower calibration (viscous_01). "
-        "Import or select that file in the calibration library. "
-        "Re-zeroing the follower is disabled because it invalidates its measured limits."
-    )
 
     def follower_calibration_dir(self) -> str:
         # Registration can run while utils.config is still importing. Its base

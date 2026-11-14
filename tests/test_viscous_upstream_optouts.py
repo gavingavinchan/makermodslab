@@ -100,7 +100,9 @@ def test_hosted_gripper_stays_under_the_speed_cap():
     assert remote_can.hosted_speed_cap_exempt(MAKER) == remote_can.GRIPPERS
     previous = {"shoulder_pan.pos": 0.0, "gripper.pos": 0.0}
     action = {"shoulder_pan.pos": 50.0, "gripper.pos": -50.0}
-    capped = remote_can.limit_action(previous, action, 0.1, exempt=remote_can.hosted_speed_cap_exempt(VISCOUS))
+    capped = remote_can.limit_action(
+        previous, action, 0.1, exempt=remote_can.hosted_speed_cap_exempt(VISCOUS)
+    )
     assert capped == {"shoulder_pan.pos": pytest.approx(3.0), "gripper.pos": pytest.approx(-3.0)}
 
 

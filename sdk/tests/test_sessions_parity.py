@@ -37,8 +37,16 @@ CLIENT_ONLY_PARAMS: dict[str, dict[str, str]] = {
 
 # Per-kind server option fields the SDK deliberately does NOT expose as sugar
 # kwargs, each with its reason. Equality-guarded below so entries can only be
-# added or removed consciously. Empty today — full parity.
-EXCLUDED_OPTIONS: dict[str, dict[str, str]] = {}
+# added or removed consciously.
+_VISCOUS = "Viscous fork teleop option (2026-11-13 upstream sync); not in the upstream SDK yet"
+EXCLUDED_OPTIONS: dict[str, dict[str, str]] = {
+    "teleoperation": {
+        "allow_unit_override": _VISCOUS,
+        "gripper_haptics": _VISCOUS,
+        "joint_posture_mapping": _VISCOUS,
+        "speed_limit_deg_s": _VISCOUS,
+    },
+}
 
 
 def server_registries():
