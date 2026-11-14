@@ -50,7 +50,10 @@ def test_remote_targets_have_a_rate_limit_even_after_network_gaps(elapsed, step)
 
 def test_single_arm_gripper_is_not_rate_limited():
     result = remote_can.limit_action(
-        {"elbow.pos": 0.0, "gripper.pos": 0.0}, {"elbow.pos": 90.0, "gripper.pos": 60.0}, 1 / 30, exempt=remote_can.GRIPPERS
+        {"elbow.pos": 0.0, "gripper.pos": 0.0},
+        {"elbow.pos": 90.0, "gripper.pos": 60.0},
+        1 / 30,
+        exempt=remote_can.GRIPPERS,
     )
     assert result == pytest.approx({"elbow.pos": 1.0, "gripper.pos": 60.0})
 

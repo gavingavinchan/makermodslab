@@ -4600,7 +4600,9 @@ def test_camera_recovery_reconnects_then_reads_again() -> None:
             raise result
         return result
 
-    assert _observe_with_camera_recovery(observe, robot, MAKER, lambda: False, sleep=lambda _s: None) == {"ok": 1}
+    assert _observe_with_camera_recovery(observe, robot, MAKER, lambda: False, sleep=lambda _s: None) == {
+        "ok": 1
+    }
     assert dead.connects == 1
 
 
