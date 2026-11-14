@@ -1030,6 +1030,8 @@ class Episode:
         mutate=None,
         arm_rest=None,
         say=None,
+        status_path=None,
+        wall=time.time,
     ):
         if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
             raise RefusedError(
@@ -1044,6 +1046,13 @@ class Episode:
             mutate,
         )
         self.say = say
+        # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
+        # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
+        # seen limp is shown limp until all torque is off.
+        self.status_path, self.wall = (Path(status_path) if status_path else None), wall
+        self.run_state, self.status_phase, self.status_message = "starting", "connect", ""
+        self.status_reading, self.last_fresh_wall = None, None
+        self.dead: set[str] = set()
         self.monitor = core.TripMonitor(settings.trips, clock)
         self.hold_error = core.HoldError(limit_deg=min(settings.trips.lag_deg, REANCHOR_MAX_OFFSET_DEG))
         self.measured = None  # the last fresh reading's positions
@@ -1108,7 +1117,62 @@ class Episode:
             out["lag_deg"] = {m: round(float(cmd[m]) - float(reading["pos"][m]), 2) for m in core.ARM}
         return out
 
+    @staticmethod
+    def _run_state(phase: str) -> str:
+        if phase in ("connect", "start gate"):
+            return "starting"
+        if phase in ("stop: re-anchor", "stop: gripper torque off") or phase.startswith("return leg"):
+            return "returning"
+        if phase in ("stop: HOLDING", "stop: LIMP"):
+            return "holding"
+        if phase == "release all torque":
+            return "releasing"
+        return "running"
+
+    def _status(self, reading=None, state=None, message=None) -> None:
+        """Write the status file (stop_button.py shows it): on every phase, every loop tick, every reading
+        the stop and the hold take, and once more when all torque is off. Never raises."""
+        if reading is not None:
+            if not isinstance(reading, dict):
+                reading = {"torque": reading.torque, "temp": reading.temp}
+            if reading.get("torque") is not None:
+                self.status_reading = reading
+                self.last_fresh_wall = self.wall()
+        if state is not None:
+            self.run_state = state
+        if message is not None:
+            self.status_message = message
+        if self.status_path is None:
+            return
+        torque = (self.status_reading or {}).get("torque") or {}
+        temp = (self.status_reading or {}).get("temp") or {}
+        joints = {
+            m: {
+                "limp": m in self.dead,
+                "torque_nm": round(float(torque[m]), 2) if m in torque else None,
+                "temp_c": round(float(temp[m]), 1) if m in temp else None,
+            }
+            for m in core.ARM
+        }
+        with contextlib.suppress(Exception):
+            core.write_status(
+                self.status_path,
+                {
+                    "pid": os.getpid(),
+                    "run": self.log_dir.name,
+                    "written": self.wall(),
+                    "phase": self.status_phase,
+                    "state": self.run_state,
+                    "limp": sorted(self.dead),
+                    "joints": joints,
+                    "last_reading": self.last_fresh_wall,
+                    "message": self.status_message,
+                },
+            )
+
     def _phase(self, name, detail=""):
+        self.status_phase = name
+        self._status(state=self._run_state(name), message=f"{name}: {detail}" if detail else name)
         self.summary["phases"].append(name)
         if self.say:
             self.say(f"[{self.clock() - self.t0:6.1f} s] phase: {name}{f' - {detail}' if detail else ''}")
@@ -1298,6 +1362,8 @@ class Episode:
                 if not any(t.name == "bad_reading" for t in trips):
                     self.measured = dict(reading.pos)
                 self.last_state = self._state(reading, self.commanded, self.phase)
+                self.dead |= self.monitor.limp.limp
+                self._status(reading)
                 if not trips:  # the tick that trips (a push, a drop) must not teach the stop its error
                     self.hold_error.update(reading.pos, self.commanded, now)
                 self._write(
@@ -1552,6 +1618,8 @@ class Episode:
                         trips += limp.update(pos, goal, torque)
                     reading = {"pos": pos, "torque": torque, "temp": temp}
                     self._tick(where[0], reading, goal, trips)
+                    self.dead |= limp.limp
+                    self._status(reading)
                     if trips and "at_return_trip" not in out:
                         out["at_return_trip"] = self._state(reading, goal, where[0])
                     return_trips.extend(trips)
@@ -1637,6 +1705,11 @@ class Episode:
             self._phase("release all torque")
             out["release_problems"] = self.arm.release()
             self.energized = False
+            problems = out["release_problems"]
+            self._status(
+                state="released",
+                message=f"released: all torque off{f' (problems: {problems})' if problems else ''}",
+            )
         return out
 
     def _fresh_arm(self, watch, attempts: int = 3, goal=None) -> dict | None:
@@ -1670,9 +1743,11 @@ class Episode:
                 f"LIMP: {m} went limp{facts}: holding is not possible; SUPPORT THE ARM. Its motor makes no "
                 "torque and is NOT re-enabled; the other joints stay held."
             )
+            self.dead.add(m)
             self._phase("stop: LIMP", msg)
             print(msg, flush=True)
         out["not_held"] = sorted(found)
+        self._status(message=f"LIMP: {', '.join(sorted(found))}: support the arm, then RELEASE")
 
     def _hold_mid_air(self, out, why: str, reanchor: bool = False, goal=None) -> None:
         """Never release an arm that is up: HOLD (torque on, gripper already limp) until the second
@@ -1723,9 +1798,11 @@ class Episode:
                 self._tick(
                     "stop: HOLDING", {"pos": None, "torque": None, "temp": None}, held, error=str(error)
                 )
+                self._status()  # written, but the last fresh reading ages: the button says NO DATA
             else:
                 trips = limp.update(reading.pos, held, reading.torque) if held else []
                 self._tick("stop: HOLDING", reading, held, trips)
+                self._status(reading)
                 if new := sorted(limp.limp - set(out.get("limp") or ())):
                     self._limp_alarm(out, new, self._state(reading, held, "stop: HOLDING"))
             self.sleep(0.1)
@@ -2364,6 +2441,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         abort_event,
         arm_rest=arm["rest"],
         say=lambda line: print(line, flush=True),
+        status_path=f"{args.pid_file}{core.STATUS_SUFFIX}" if args.pid_file else None,
     )
     try:
         summary = episode.run()

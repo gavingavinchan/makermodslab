@@ -718,6 +718,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         mutate=None,
         patch=None,
         settings_changes=None,
+        status_path=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -775,6 +776,8 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 abort,
                 mutate=mutate,
                 arm_rest=arm_rest,
+                status_path=status_path,
+                wall=clock,
             )
             summary = self.ep.run()
             ticks = Path(tmp) / "ticks.jsonl"
@@ -1118,6 +1121,40 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertGreaterEqual(len(legs), 1)
         self.assertEqual(len(legs), len(summary["stop"]["legs"]))
 
+    def test_the_status_file_follows_the_run_through_a_limp_joint(self):
+        # stop_button.py shows this file (Gavin: "the arm will suddenly die, but the line under the big stop
+        # button still says alive"). Snapshot it on every sleep of a run whose shoulder cuts out.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "dream_real.pid.status.json"
+            seen = []
+
+            def after(clock, stop, abort):
+                if path.exists():
+                    seen.append(json.loads(path.read_text()))
+                if clock.t > 1030:
+                    abort.set()
+
+            self.episode("limp", max_calls=5, after=after, status_path=path)
+            final = json.loads(path.read_text())
+        states = [st["state"] for st in seen]
+        self.assertIn("running", states)
+        self.assertIn("holding", states)
+        running = next(st for st in seen if st["state"] == "running")
+        self.assertEqual(set(running["joints"]), set(core.ARM))
+        self.assertFalse(any(j["limp"] for j in running["joints"].values()))
+        self.assertIsNotNone(running["joints"]["shoulder_lift"]["temp_c"])
+        held = [st for st in seen if st["state"] == "holding"]
+        self.assertTrue(all(st["limp"] == ["shoulder_lift"] for st in held))
+        self.assertTrue(held[-1]["joints"]["shoulder_lift"]["limp"])
+        self.assertEqual(held[-1]["joints"]["shoulder_lift"]["torque_nm"], 0.0)
+        self.assertFalse(held[-1]["joints"]["elbow_flex"]["limp"])
+        self.assertGreater(held[-1]["last_reading"], held[0]["last_reading"])  # the hold keeps reading
+        self.assertEqual(final["state"], "released")
+        self.assertIn("all torque off", final["message"])
+        self.assertEqual(final["limp"], ["shoulder_lift"])
+        self.assertEqual(final["pid"], __import__("os").getpid())
+        self.assertEqual(core.STATUS_SUFFIX, __import__("stop_button").STATUS_SUFFIX)
+
     def test_a_joint_going_limp_while_held_is_announced(self):
         # Held after a stuck leg; then the shoulder's motor cuts out under the hold.
         def patch(arm):
@@ -1362,6 +1399,77 @@ class StopButtonTest(unittest.TestCase):
         self.assertEqual(len(self.kills), 1)
         logic.press(from_key=False)
         self.assertEqual(self.kills, [(4242, signal.SIGTERM)] * 2)
+
+    def status(self, state="running", limp=(), written=100.0, last=100.0, pid=4242, **extra):
+        joints = {
+            m: {"limp": m in limp, "torque_nm": 0.0 if m in limp else 1.0, "temp_c": 30.0} for m in core.ARM
+        }
+        return {
+            "pid": pid,
+            "state": state,
+            "phase": "hold",
+            "limp": list(limp),
+            "joints": joints,
+            "written": written,
+            "last_reading": last,
+            "message": "m",
+        } | extra
+
+    def test_the_view_says_what_is_wrong(self):
+        import stop_button
+
+        self.tmp = tempfile.TemporaryDirectory()  # tearDown's
+        view = stop_button.status_view
+        now = 100.4
+        self.assertEqual(view(4242, "runner pid 4242 alive", self.status(), now)[:2], ("RUNNING: hold", "ok"))
+        headline, level, _ = view(4242, "", self.status("holding", limp=["shoulder_lift"]), now)
+        self.assertEqual((headline, level), ("SHOULDER WENT LIMP: SUPPORT THE ARM, then RELEASE", "alarm"))
+        # Limp beats holding; and it is shown while running too (the loop saw it before the stop).
+        self.assertIn("WENT LIMP", view(4242, "", self.status("running", limp=["elbow_flex"]), now)[0])
+        self.assertEqual(
+            view(4242, "", self.status("holding"), now)[0],
+            "HOLDING MID-AIR: support the arm, then press RELEASE",
+        )
+        # The file stops being written while the pid is alive; or it is written but no reading is fresh.
+        self.assertEqual(
+            view(4242, "", self.status(written=98.0), now)[:2], ("NO DATA FROM THE RUN", "nodata")
+        )
+        self.assertEqual(view(4242, "", self.status("holding", last=98.0), now)[0], "NO DATA FROM THE RUN")
+        self.assertEqual(view(4242, "", self.status("returning"), now)[0], "RETURNING TO REST")
+        # Released is final and plain, limp or not; with no live pid it is still released.
+        for pid in (4242, None):
+            self.assertEqual(
+                view(pid, "", self.status("released", limp=["shoulder_lift"], written=50.0), now)[:2],
+                ("RELEASED: torque off", "ok"),
+            )
+        # The runner died while energized: say so, never "alive".
+        self.assertEqual(view(None, "", self.status("holding"), now)[1], "alarm")
+        # Missing, corrupt or another run's status: today's pid line.
+        self.assertEqual(view(4242, "runner pid 4242 alive", None, now)[2], "runner pid 4242 alive")
+        self.assertEqual(view(4242, "line", self.status(pid=1), now)[0], "RUNNER ALIVE (no status)")
+
+    def test_the_button_reads_a_missing_or_corrupt_status_file_without_failing(self):
+        logic = self.logic()
+        status = Path(f"{logic.pid_file}.status.json")
+        logic.wall = lambda: 100.4
+        self.assertEqual(logic.view()[0], "RUNNER ALIVE (no status)")
+        status.write_text("{not json")
+        self.assertEqual(logic.view()[0], "RUNNER ALIVE (no status)")
+        status.write_text(json.dumps(self.status("holding", limp=["shoulder_lift"])))
+        self.assertIn("SHOULDER WENT LIMP", logic.view()[0])
+
+    def test_while_the_runner_holds_a_click_releases_and_a_key_does_not(self):
+        import signal
+
+        logic = self.logic()
+        logic.wall = lambda: 100.4
+        Path(f"{logic.pid_file}.status.json").write_text(json.dumps(self.status("holding")))
+        logic.view()
+        self.assertIn("RELEASE ALL TORQUE NOW", logic.label)
+        self.assertIn("click the button", logic.press(from_key=True))
+        self.assertEqual(self.kills, [])
+        logic.press(from_key=False)  # no lockout: there was no STOP press to double-click past
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM)])
 
     def test_never_signals_a_dead_or_foreign_pid(self):
         for pid_text, command in ((None, "x"), ("4242", None), ("4242", "/usr/bin/vim notes.txt")):

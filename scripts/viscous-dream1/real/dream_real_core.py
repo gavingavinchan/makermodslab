@@ -96,6 +96,17 @@ def atomic_json(path: Path, obj) -> None:
     os.replace(tmp, path)
 
 
+# The runner's live status for stop_button.py, beside its --pid-file (stop_button.STATUS_SUFFIX is the same).
+STATUS_SUFFIX = ".status.json"
+
+
+def write_status(path: Path, obj) -> None:
+    """Atomic (rename) but not fsynced: written every 50 ms tick, read by the button, never kept."""
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(obj, allow_nan=False, default=str))
+    os.replace(tmp, path)
+
+
 # --- URDF forward kinematics (numpy) ------------------------------------------
 
 

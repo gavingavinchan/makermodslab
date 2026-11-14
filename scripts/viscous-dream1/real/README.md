@@ -273,7 +273,16 @@ Each layer stands alone: none relies on the tank guard's boundaries or on anothe
    re-anchored, until a person presses RELEASE ALL. Every reading the stop and the hold take (about
    10 Hz while holding) is logged to `ticks.jsonl` under its `stop: ...` phase, and the summary's
    `at_trip` holds every joint's torque, temperature, pose and lag at the trip.
-10. **People**: the red button (stop; then RELEASE ALL), and Gavin at the power switch.
+10. **People**: the red button (stop; then RELEASE ALL), and Gavin at the power switch. Under the
+   button is the runner's own status (`<pid-file>.status.json`, written every tick, in every phase, the
+   stop path and the hold included: run state, per-joint limp/torque/temperature, the time of the last
+   fresh reading, one line), not just "pid alive" (Gavin, 2026-11-14: "the arm will suddenly die, but
+   the line under the big stop button still says alive, so thats wrong"). It reads, in large type:
+   `SHOULDER WENT LIMP: SUPPORT THE ARM, then RELEASE` (blinking red), `HOLDING MID-AIR: support the
+   arm, then press RELEASE` (orange; the button is then the release press, by click only), `NO DATA FROM
+   THE RUN` (purple: the file or the arm's readings older than 1 s while the pid lives), `RUNNER GONE`
+   if it died energized, and `RELEASED: torque off` at the end. A missing or corrupt file falls back to
+   the pid check.
 
 **The honest gap: a motor suddenly losing its hold** (the dry shoulder lost its hold at ~5.6 Nm, hot,
 with no fault logged; the wet shoulder cut out at 5.1 Nm, 48 C, in 082911Z) is mitigated by the torque
