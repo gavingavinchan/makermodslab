@@ -537,6 +537,19 @@ restore paths in the DAgger runner.
   Gavin, same night: "no need to leave the 5mm gap between fin and the arm, they dont
   hit each other, ive played with it" (moved by hand through its range, no contact), so
   the fin needs no keep-out at all.
+- *Status (2026-11-14): limp-motor trip, offline, on branch `fix/viscous-motor-limp-trip`
+  (not merged).* Why: in the powered rehearsal `rehearse-live-20261114T082911Z` the
+  shoulder (RS00) held the start pose underwater at 5.1 Nm, 48 C, and 115 s in its
+  torque read 0.00 Nm in one tick while it kept answering with fresh positions; the arm
+  fell. The runner saw it only through the overspeed trip, a tick later, then returned
+  and "held" against a dead motor, and the tick log stopped at the trip. Every read
+  sends the RobStride clear-fault frame and the driver decodes no mode/fault bits from
+  the MIT reply, so a cut-out motor is invisible except as torque collapse. Now: a `limp` trip (arm joint
+  < 0.25 Nm while > 3 deg behind its goal, one reading; zero hits over all 23 logged
+  runs, fires on the drop tick), no return and a loud "support the arm" when a joint
+  is limp, the dead motor never re-enabled, every stop/hold reading in `ticks.jsonl`,
+  and every joint's torque/temperature at the trip in the summary (`at_trip`). Details
+  in the runner README (safety layer 6a). The plan id changes: fresh dry run first.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

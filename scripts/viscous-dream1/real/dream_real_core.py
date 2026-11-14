@@ -634,6 +634,16 @@ class TripLimits:
     # command cap. Faster than that is a push, a spring-back or a joint losing its hold.
     overspeed_deg_s: float = 30.0
     overspeed_ticks: int = 2
+    # A motor that cuts out (overload, under-voltage) keeps answering every read with fresh positions but
+    # makes no torque, and every read's clear-fault frame (0xFB with FF) hides the fault, so neither the
+    # fault check nor a stale reply catches it (rehearsal 20261114T082911Z: shoulder_lift 5.1 Nm -> 0.00 Nm
+    # in one tick at 48 C; the arm fell and only the overspeed trip saw it, a tick later). MIT torque is
+    # kp * error - kd * speed: a live joint this far behind its goal makes at least ~1 Nm (kp 30 Nm/rad on
+    # the wrists, 90 on shoulder/elbow), so near-zero torque there is a dead motor. Calibrated on every
+    # run's ticks (see LimpMonitor).
+    limp_torque_nm: float = 0.25
+    limp_lag_deg: float = 3.0
+    limp_ticks: int = 1
 
     def lag_for(self, motor: str) -> float:
         return self.shoulder_lag_deg if motor == "shoulder_lift" else self.lag_deg
@@ -651,6 +661,10 @@ class TripLimits:
             raise ValueError(
                 "overspeed trip must be above the 15 deg/s command cap, at most 45, for 1..3 ticks"
             )
+        if not 0 < self.limp_torque_nm <= 1.0 or not 0 < self.limp_lag_deg <= 6.0:
+            raise ValueError("limp trip must be at most 1 Nm of torque at most 6 deg behind the target")
+        if not 1 <= self.limp_ticks <= 3:
+            raise ValueError("limp trip must fire within 1..3 ticks")
 
 
 @dataclass(frozen=True)
@@ -697,6 +711,47 @@ class SpeedMonitor:
                     Trip(
                         "overspeed",
                         f"{m} measured at {speed:.0f} deg/s (> {self.limit:g} for {self.ticks} readings)",
+                    )
+                )
+        return trips
+
+
+class LimpMonitor:
+    """An arm joint whose motor makes (almost) no torque while it is well behind its goal: a motor that cut
+    out. The six arm joints only; the gripper is left out (it goes limp on purpose on every stop, and a
+    limp gripper drops nothing but what it holds).
+
+    Near its goal a joint may make no torque (lying on the floor at the rest, or a wrist with no load),
+    so torque alone says nothing; and lag alone is a sag or a push. Together they are physics: an MIT
+    joint makes kp * error - kd * speed, at least ~1.2 Nm at 3 deg on the softest joints (kp 30 Nm/rad)
+    even moving at 15 deg/s. `limp` holds the joints that tripped and have not recovered (the stop path
+    reads it); `peak` the worst (lag, torque) seen meeting the condition, for the summary.
+    """
+
+    def __init__(self, torque_nm: float, lag_deg: float, ticks: int):
+        self.torque, self.lag, self.ticks = float(torque_nm), float(lag_deg), int(ticks)
+        self._count = dict.fromkeys(ARM, 0)
+        self.limp: set[str] = set()
+        self.first: dict[str, dict] = {}  # joint -> the reading that first tripped it
+
+    def update(self, measured: Mapping[str, float], commanded: Mapping[str, float], torque) -> list[Trip]:
+        trips = []
+        for m in ARM:
+            lag = abs(float(commanded[m]) - float(measured[m]))
+            tau = abs(float(torque[m]))
+            if tau < self.torque and lag > self.lag:
+                self._count[m] += 1
+            else:
+                self._count[m] = 0
+                self.limp.discard(m)
+            if self._count[m] >= self.ticks:
+                self.limp.add(m)
+                self.first.setdefault(m, {"torque_nm": round(tau, 3), "lag_deg": round(lag, 2)})
+                trips.append(
+                    Trip(
+                        "limp",
+                        f"{m} went limp: {tau:.2f} Nm at {lag:.1f} deg behind its target "
+                        f"(< {self.torque:g} Nm while > {self.lag:g} deg behind: the motor makes no torque)",
                     )
                 )
         return trips
@@ -753,6 +808,7 @@ class TripMonitor:
         self._torque = dict.fromkeys(MOTORS, 0)
         self._over_cap_since: dict[str, float | None] = dict.fromkeys(MOTORS, None)
         self.speed = SpeedMonitor(limits.overspeed_deg_s, limits.overspeed_ticks)
+        self.limp = LimpMonitor(limits.limp_torque_nm, limits.limp_lag_deg, limits.limp_ticks)
         self.peak_torque = dict.fromkeys(MOTORS, 0.0)
         self.peak_temp = dict.fromkeys(MOTORS, 0.0)
         self.peak_lag = dict.fromkeys(ARM, 0.0)
@@ -767,6 +823,7 @@ class TripMonitor:
                     trips.append(Trip("bad_reading", f"{m} {name} is {v!r}"))
         if trips:
             return trips
+        trips += self.limp.update(measured, commanded, torque)
         trips += self.speed.update(measured, now)
         for m in ARM:
             lag = abs(measured[m] - commanded[m])

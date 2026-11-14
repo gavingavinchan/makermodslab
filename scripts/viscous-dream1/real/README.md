@@ -251,6 +251,14 @@ Each layer stands alone: none relies on the tank guard's boundaries or on anothe
 6. **Torque tiers** (12 Nm instant, 6.5 Nm for 5 s) and **heat** (80 C trip, 70 C warning): the sustained
    tier is the heat guard, since heat comes from sustained torque (the dry shoulder ran 33 -> 65 C in under
    2 min at 5-6 Nm); the 80 C trip is the backstop.
+6a. **Limp trip** (< 0.25 Nm while > 3 deg behind the goal, 1 reading; arm joints, not the gripper): a
+   motor that cut out. Rehearsal 20261114T082911Z: the shoulder held the start pose at 5.1 Nm, 48 C, then
+   read 0.00 Nm with fresh, continuous positions and the arm fell. Every read sends the RobStride
+   clear-fault frame, so no fault is ever seen, and the driver decodes no mode or fault bits from the MIT
+   reply (position, speed, torque, temperature only; the reply's CAN id is never looked at). MIT torque is kp * error - kd * speed, so a live joint 3 deg
+   off makes >= ~1.2 Nm even on the soft wrists; over all 23 logged runs (17k ticks) the closest healthy
+   cases were 1.29 Nm at 3.1 deg and 1.8 deg at 0.16 Nm. It fires on the tick of the drop, one tick
+   (50 ms) before the measured-speed trip; it runs in the loop, the return legs and the hold.
 7. **No spring-back on any stop** (the re-anchor, step 8a above): the goal moves to where the arm is,
    so the position controller's stored error cannot throw a pushed-away arm back. It keeps each joint's
    standing error (MIT position control holds the arm up with a position error: shoulder_lift kp 30
@@ -261,17 +269,23 @@ Each layer stands alone: none relies on the tank guard's boundaries or on anothe
 8. **Return from the measured pose**: the return plans every leg from a fresh reading, never the
    cached command.
 9. **No mid-air release**: torque goes off by itself only at the rest. A return that cannot get there
-   (stopped beyond the lag trip, overspeed, no fresh reading, guard) holds where it is, re-anchored,
-   until a person presses RELEASE ALL.
+   (stopped beyond the lag trip, overspeed, a limp joint, no fresh reading, guard) holds where it is,
+   re-anchored, until a person presses RELEASE ALL. Every reading the stop and the hold take (about
+   10 Hz while holding) is logged to `ticks.jsonl` under its `stop: ...` phase, and the summary's
+   `at_trip` holds every joint's torque, temperature, pose and lag at the trip.
 10. **People**: the red button (stop; then RELEASE ALL), and Gavin at the power switch.
 
 **The honest gap: a motor suddenly losing its hold** (the dry shoulder lost its hold at ~5.6 Nm, hot,
-with no fault logged) is mitigated by the torque and heat limits, not prevented. If it happens, the
-measured-speed trip sees the joint falling within about 0.1-0.15 s; the return stops and the other
-joints hold, re-anchored where they are, until the second signal. But the failed joint is already
-falling: nothing here can hold a motor that is not making torque, so the arm swings about it under
-gravity with the momentum of that fall. Supporting the arm before pressing RELEASE ALL is the person's
-job.
+with no fault logged; the wet shoulder cut out at 5.1 Nm, 48 C, in 082911Z) is mitigated by the torque
+and heat limits, not prevented. A motor that cuts out trips `limp` on the next reading; one that slips
+while still making torque trips the measured-speed trip within about 0.1-0.15 s. Either way the other
+joints hold, re-anchored where they are, until the second signal. With a limp joint the stop does not
+return at all (moving the others with a dead one is motion nothing models) and prints
+`LIMP: <joint> went limp ...: holding is not possible; SUPPORT THE ARM`. The dead motor is not
+re-enabled: it most likely cut out on its own overload or under-voltage protection, and re-enabling it
+under the same load would ask it to do again what it just refused, at the moment someone's hands are
+going under the arm. Nothing here can hold a motor that is not making torque, so the arm swings about it
+under gravity. Supporting the arm before pressing RELEASE ALL is the person's job.
 
 ## Known limits and findings
 

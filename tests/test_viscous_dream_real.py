@@ -329,6 +329,99 @@ class SpeedMonitorTest(unittest.TestCase):
         self.assertLess(peak, 21.0)
 
 
+# rehearse-live-20261114T082911Z, ticks 2434-2440 (rounded): the shoulder holds the start pose at ~5.1 Nm and
+# 48 C, then its torque reads 0.00 Nm (tick 2439) with fresh, continuous positions, and the arm falls.
+DROP_TICKS = [
+    '{"t":72358.676,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.003,"shoulder_lift":5.132,"elbow_flex":3.08,"wrist_flex":1.446,"wrist_yaw":-0.099,"wrist_roll":-0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.726,"pos":{"shoulder_pan":176.549,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.024,"shoulder_lift":5.132,"elbow_flex":3.074,"wrist_flex":1.439,"wrist_yaw":-0.092,"wrist_roll":0.003,"gripper":0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.776,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.031,"shoulder_lift":5.104,"elbow_flex":3.074,"wrist_flex":1.46,"wrist_yaw":-0.113,"wrist_roll":0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.823,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.357,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.01,"shoulder_lift":5.118,"elbow_flex":3.06,"wrist_flex":1.439,"wrist_yaw":-0.106,"wrist_roll":0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.876,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.017,"shoulder_lift":5.132,"elbow_flex":3.08,"wrist_flex":1.446,"wrist_yaw":-0.106,"wrist_roll":0.003,"gripper":-0.01},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.923,"pos":{"shoulder_pan":176.593,"shoulder_lift":-129.338,"elbow_flex":98.632,"wrist_flex":6.934,"wrist_yaw":-8.913,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.195,"shoulder_lift":-0.003,"elbow_flex":0.858,"wrist_flex":-0.058,"wrist_yaw":0.01,"wrist_roll":-0.003,"gripper":0.017},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.974,"pos":{"shoulder_pan":176.571,"shoulder_lift":-132.305,"elbow_flex":99.182,"wrist_flex":8.165,"wrist_yaw":-8.913,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.003,"shoulder_lift":-0.003,"elbow_flex":-0.161,"wrist_flex":-0.55,"wrist_yaw":-0.079,"wrist_roll":-0.017,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+]
+
+
+def all_run_logs():
+    return sorted((REAL / "runs").glob("*/ticks.jsonl"))
+
+
+class LimpMonitorTest(unittest.TestCase):
+    def mon(self):
+        lim = core.TripLimits()
+        return core.LimpMonitor(lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks)
+
+    def test_the_thresholds(self):
+        lim = core.TripLimits()
+        self.assertEqual((lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks), (0.25, 3.0, 1))
+        for bad in ({"limp_torque_nm": 0}, {"limp_torque_nm": 1.5}, {"limp_lag_deg": 8}, {"limp_ticks": 0}):
+            with self.assertRaises(ValueError, msg=bad):
+                core.TripLimits(**bad).check()
+
+    def test_no_torque_far_from_the_goal_is_limp(self):
+        mon = self.mon()
+        cmd = dict(POSE)
+        pos = dict(POSE, shoulder_lift=POSE["shoulder_lift"] - 6.4)
+        trips = mon.update(pos, cmd, dict(zeros(1.0), shoulder_lift=-0.003))
+        self.assertEqual([t.name for t in trips], ["limp"])
+        self.assertIn("shoulder_lift went limp", trips[0].detail)
+        self.assertEqual(mon.limp, {"shoulder_lift"})
+
+    def test_near_the_goal_or_under_load_is_not(self):
+        mon = self.mon()
+        # Lying on the floor at the rest: no torque, no lag.
+        self.assertEqual(mon.update(POSE, POSE, zeros(0.0)), [])
+        # Holding the start pose: 3-10 deg of standing error at 3-6 Nm.
+        sag = dict(POSE, shoulder_lift=POSE["shoulder_lift"] - 9.4)
+        self.assertEqual(mon.update(sag, POSE, dict(zeros(0.0), shoulder_lift=5.1)), [])
+        # A small error with no torque (a wrist with no load, moving): under the lag floor.
+        self.assertEqual(mon.update(dict(POSE, wrist_roll=POSE["wrist_roll"] + 1.8), POSE, zeros(0.0)), [])
+
+    def test_the_gripper_is_excluded(self):
+        # It goes limp on purpose on every stop.
+        mon = self.mon()
+        self.assertEqual(mon.update(dict(POSE, gripper=POSE["gripper"] - 40), POSE, zeros(0.0)), [])
+
+    def test_a_joint_that_makes_torque_again_is_no_longer_limp(self):
+        mon = self.mon()
+        far = dict(POSE, elbow_flex=POSE["elbow_flex"] - 5)
+        mon.update(far, POSE, zeros(0.0))
+        self.assertEqual(mon.limp, {"elbow_flex"})
+        mon.update(far, POSE, zeros(2.6))
+        self.assertEqual(mon.limp, set())
+        self.assertEqual(mon.first["elbow_flex"]["torque_nm"], 0.0)
+
+    def test_the_14_nov_drop_trips_limp_on_the_tick_of_the_drop(self):
+        # The overspeed trip fired on the tick after (2440); the limp trip fires on 2439, one tick earlier.
+        clock = FakeClock()
+        mon = core.TripMonitor(core.TripLimits(), clock)
+        names = []
+        for line in DROP_TICKS:
+            tick = json.loads(line)
+            clock.t = tick["t"]
+            names.append([t.name for t in mon.update(tick["pos"], tick["cmd"], tick["torque"], tick["temp"])])
+        self.assertEqual(names[:5], [[]] * 5)
+        self.assertEqual(names[5], ["limp"])  # tick 2439
+        self.assertEqual(sorted(names[6]), ["limp", "overspeed"])  # tick 2440
+        self.assertEqual(mon.limp.limp, {"shoulder_lift"})
+
+    @unittest.skipUnless(all_run_logs(), "no run logs in this checkout")
+    def test_no_run_logged_trips_limp(self):
+        # Every committed run (17k+ ticks with the untracked ones, 2026-11-08..14): approach, Dream chunks,
+        # holds. The closest healthy cases: 1.29 Nm at 3.1 deg behind (shoulder_lift, approach) and 1.8 deg
+        # behind at 0.16 Nm (elbow_flex, approach). Only 082911Z's drop trips, from its tick 2439.
+        for path in all_run_logs():
+            mon = self.mon()
+            for i, line in enumerate(path.read_text().splitlines()):
+                tick = json.loads(line)
+                if tick["phase"].startswith("stop") or tick.get("cmd") is None or tick.get("torque") is None:
+                    continue
+                trips = mon.update(tick["pos"], tick["cmd"], tick["torque"])
+                if path.parent.name == "rehearse-live-20261114T082911Z" and i >= 2439:
+                    break
+                self.assertEqual(trips, [], (path.parent.name, i))
+
+
 class HoldErrorTest(unittest.TestCase):
     def test_learns_the_standing_sag_and_a_short_push_barely_moves_it(self):
         hold = core.HoldError(tau_s=1.0, limit_deg=10.0)
@@ -386,7 +479,8 @@ class FakeCanRobot:
 
     def get_observation(self):
         self.pos["shoulder_lift"] -= self.fall
-        return {f"{m}.pos": v for m, v in self.pos.items()}
+        torque = {f"{m}.torque": 0.0 if (self.fall and m == "shoulder_lift") else 0.5 for m in self.pos}
+        return {f"{m}.pos": v for m, v in self.pos.items()} | torque | {f"{m}.temp": 30.0 for m in self.pos}
 
     def send_action(self, action):
         self.sent.append(dict(action))
@@ -410,7 +504,7 @@ class LabArmReturnTest(unittest.TestCase):
         speed = core.SpeedMonitor(30.0, 2)
         trips = []
 
-        def watch(pos):
+        def watch(pos, torque, temp, goal):
             trips.extend(found := speed.update(pos, time.monotonic()))
             return found
 
@@ -421,10 +515,29 @@ class LabArmReturnTest(unittest.TestCase):
         # 30 Hz reads merge into >= 40 ms windows, so two over-speed readings take ~4 setpoints (~0.14 s).
         self.assertLessEqual(len(robot.sent), 5)
 
+    def test_the_watch_sees_torque_temperature_and_the_setpoint_sent(self):
+        # The stop path's limp check needs torque against the goal the joint was last sent; before the first
+        # setpoint there is no goal (None), so a limp check cannot misfire on the planning read.
+        robot = FakeCanRobot(fall=1.0)
+        limp = core.LimpMonitor(0.25, 3.0, 1)
+        seen = []
+
+        def watch(pos, torque, temp, goal):
+            seen.append((dict(pos), dict(torque), dict(temp), goal))
+            return limp.update(pos, goal, torque) if goal is not None else []
+
+        ok, message = self.leg(robot, watch)
+        self.assertIsNone(seen[0][3])
+        self.assertTrue(all(set(g) == set(core.ARM) for *_, g in seen[1:] if g is not None))
+        self.assertEqual(seen[0][2]["shoulder_lift"], 30.0)
+        self.assertFalse(ok)
+        self.assertIn("limp", message)
+        self.assertEqual(limp.limp, {"shoulder_lift"})
+
     def test_missed_replies_do_not_end_the_leg(self):
         # The planning read misses once (retried); a read before a setpoint misses (skipped, not raised).
         robot = FakeCanRobot(miss=(1, 4))
-        ok, message = self.leg(robot, lambda pos: [])
+        ok, message = self.leg(robot, lambda pos, torque, temp, goal: [])
         self.assertTrue(ok, message)
         self.assertAlmostEqual(robot.pos["elbow_flex"], POSE["elbow_flex"] - 3.0)
 
@@ -663,7 +776,12 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 mutate=mutate,
                 arm_rest=arm_rest,
             )
-            return self.ep.run(), arm
+            summary = self.ep.run()
+            ticks = Path(tmp) / "ticks.jsonl"
+            self.tick_rows = (
+                [json.loads(line) for line in ticks.read_text().splitlines()] if ticks.exists() else []
+            )
+            return summary, arm
 
     def assert_stopped_safely(self, arm, returned=True):
         """After engage: the arm re-anchored at its measured pose, the gripper released, then the return
@@ -671,6 +789,9 @@ class EpisodeOnFakesTest(unittest.TestCase):
         names = [e.split(":")[0] for e in arm.events]
         self.assertEqual(names[-1], "release")
         self.assertNotIn("SPRING-BACK", names)
+        # No false limp: a healthy arm's stop never reports a dead joint (the limp tests check theirs).
+        if arm.scenario != "limp":
+            self.assertNotIn("limp", self.ep.summary.get("stop") or {})
         stop = names[names.index("engage") + 1 :]
         self.assertEqual(stop[0], "drop cameras")  # the return reads the motors only (live 225249Z)
         stop = stop[1:]
@@ -872,8 +993,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
             def stuck(pose, abort, speed, watch=None):
                 back(pose, abort, speed, watch)
                 arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0
-                arm.limp.add("shoulder_lift")
-                arm.FALL_DEG_PER_TICK = 0.0
+                arm.stuck.add("shoulder_lift")
                 return False, "shoulder_lift still 25.0 deg away"
 
             arm.return_to_rest = stuck
@@ -926,7 +1046,12 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertAlmostEqual(
             first_from["shoulder_pan"], summary["stop"]["reanchor"]["goal"]["shoulder_pan"], 1
         )
-        self.assertAlmostEqual(arm.leg_starts[0]["shoulder_pan"], measured["shoulder_pan"], places=2)
+        # The leg starts physically from where the arm is: the measured pose, settled at most its offset
+        # toward the re-anchored goal (the fake settles on the stop's limp-check reading).
+        offset = summary["stop"]["reanchor"]["offset_deg"]["shoulder_pan"]
+        self.assertAlmostEqual(
+            arm.leg_starts[0]["shoulder_pan"], measured["shoulder_pan"], delta=abs(offset) + 0.01
+        )
         self.assert_stopped_safely(arm)
 
     @staticmethod
@@ -950,6 +1075,81 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assert_held_until_the_second_signal(summary, arm, "during leg 1: overspeed")
         self.assertEqual(stop["hold_reanchor"]["attempts"], 1)  # held where it is, not at the old goal
         self.assertEqual([e.split(":")[0] for e in arm.events].count("re-anchor"), 2)
+
+    def test_a_motor_that_cuts_out_trips_limp_at_once_and_is_not_held(self):
+        # Rehearsal 20261114T082911Z: the shoulder's torque went to 0.00 Nm in one tick and the arm fell;
+        # only the overspeed trip saw it, and the stop re-anchored and returned against a dead motor.
+        summary, arm = self.episode("limp", max_calls=5, after=self.second_signal_at(1030))
+        names = [t["name"] for t in summary["trips"]]
+        self.assertIn("limp", names)
+        self.assertIn("shoulder_lift", summary["trips"][names.index("limp")]["detail"])
+        at = summary["at_trip"]
+        self.assertEqual(at["torque_nm"]["shoulder_lift"], 0.0)
+        self.assertEqual(set(at["temp_c"]), set(core.MOTORS))
+        self.assertGreater(abs(at["lag_deg"]["shoulder_lift"]), 3.0)
+        # The first limp tick is no later than the first overspeed tick.
+        loop = [r for r in self.tick_rows if not r["phase"].startswith("stop")]
+        first = {n: next(i for i, r in enumerate(loop) if n in r["trips"]) for n in ("limp",)}
+        self.assertEqual(first["limp"], len(loop) - 1)
+        stop = summary["stop"]
+        self.assertEqual(stop["not_held"], ["shoulder_lift"])
+        self.assertEqual(stop["legs"], [])  # no return motion with a dead joint
+        self.assertEqual(arm.returns, [])
+        self.assertIn("stop: LIMP", summary["phases"])
+        self.assert_held_until_the_second_signal(summary, arm, "shoulder_lift went limp")
+        self.assertIn("holding is not possible; support the arm", stop["returned"])
+        # The dead motor is never re-enabled: engage happened once, before the run.
+        self.assertEqual([e.split(":")[0] for e in arm.events].count("engage"), 1)
+
+    def test_the_stop_path_and_the_hold_are_in_the_tick_log(self):
+        summary, _ = self.episode("limp", max_calls=5, after=self.second_signal_at(1030))
+        phases = [r["phase"] for r in self.tick_rows]
+        held = [r for r in self.tick_rows if r["phase"] == "stop: HOLDING"]
+        self.assertIn("stop: check", phases)
+        self.assertGreater(len(held), 10)  # ~10 Hz until the second signal
+        for row in held:
+            self.assertEqual(set(row["pos"]), set(core.MOTORS))
+            self.assertEqual(set(row["torque"]), set(core.MOTORS))
+            self.assertEqual(set(row["temp"]), set(core.MOTORS))
+            self.assertEqual(set(row["cmd"]), set(core.ARM))
+        # A healthy stop logs its return legs too, to the last reading before the release.
+        summary, _ = self.episode(max_calls=1)
+        legs = {r["phase"] for r in self.tick_rows if r["phase"].startswith("stop: return leg")}
+        self.assertGreaterEqual(len(legs), 1)
+        self.assertEqual(len(legs), len(summary["stop"]["legs"]))
+
+    def test_a_joint_going_limp_while_held_is_announced(self):
+        # Held after a stuck leg; then the shoulder's motor cuts out under the hold.
+        def patch(arm):
+            back = arm.return_to_rest
+
+            def stuck(pose, abort, speed, watch=None):
+                back(pose, abort, speed, watch)
+                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0
+                arm.stuck.add("shoulder_lift")
+                return False, "shoulder_lift still 25.0 deg away"
+
+            arm.return_to_rest = stuck
+
+        def after(clock, stop, abort):
+            if clock.t > 1035 and "shoulder_lift" not in self.arm.dead:
+                self.arm.stuck.discard("shoulder_lift")
+                self.arm.limp.add("shoulder_lift")
+                self.arm.dead.add("shoulder_lift")
+            if clock.t > 1045:
+                abort.set()
+
+        def keep(arm):
+            self.arm = arm
+            patch(arm)
+
+        summary, arm = self.episode(max_calls=1, patch=keep, after=after)
+        stop = summary["stop"]
+        self.assertTrue(stop["returned"].startswith("held leg 1 ended 25.0 deg off its target"))
+        self.assertEqual(stop["not_held"], ["shoulder_lift"])
+        self.assertEqual(stop["limp"]["shoulder_lift"]["phase"], "stop: HOLDING")
+        self.assertEqual(stop["limp"]["shoulder_lift"]["torque_nm"]["shoulder_lift"], 0.0)
+        self.assertTrue(self.release_after_abort)
 
     def test_a_sagging_arm_stopped_far_from_the_start_reaches_the_rest_before_release(self):
         # The real shoulder settles 7.45 deg short at the start pose: more than the return helper's 6 deg,
@@ -979,8 +1179,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 arm.pos["shoulder_lift"] = (
                     pose["shoulder_lift"] - 25.0
                 )  # caught on something, past its 20 deg lag trip
-                arm.limp.add("shoulder_lift")
-                arm.FALL_DEG_PER_TICK = 0.0  # stays there
+                arm.stuck.add("shoulder_lift")  # stays there, making torque
                 return False, "shoulder_lift still 25.0 deg away"
 
             arm.return_to_rest = stuck
