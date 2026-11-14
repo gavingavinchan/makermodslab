@@ -150,6 +150,16 @@ def install_from_env(robot, robot_name: str) -> dict | None:
             "%s is set but %s is not a single MIT-mode CAN follower; not applied", ENV_FIT, robot_name
         )
         return None
+    if getattr(robot, "gravity_feedforward", None) is not None:
+        # Upstream's Maker feed-forward (maker_gravity.py) is already on this
+        # follower's bus. Two models adding torque to the same MIT frame would
+        # double it, so the bench switch refuses rather than stacking.
+        logger.warning(
+            "%s is set but %s already carries the Maker gravity feed-forward; not applied",
+            ENV_FIT,
+            robot_name,
+        )
+        return None
     fit, model = load_model(path)
     if fit.get("robot") != robot_name:
         logger.warning("Gravity fit %s is for %s, not %s; not applied", path, fit.get("robot"), robot_name)

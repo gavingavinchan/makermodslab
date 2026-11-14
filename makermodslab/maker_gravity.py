@@ -297,15 +297,30 @@ class GravityFeedforward:
         return self._bus_disable_torque(motors, num_retry=num_retry)
 
 
+def _family_scale(follower) -> float:
+    """The feed-forward scale of the family whose follower class this is.
+
+    The hook patches ``MakerFollower.__init__``, which every subclass inherits:
+    the Viscous follower is a ``MakerFollower`` subclass with a different motor
+    fit, mass and URDF, and runs its own fitted feed-forward
+    (``gravity_feedforward.py``). Only a follower whose class name is the Maker
+    family's own robot type gets the Maker model. A bimanual Maker's sub-arms
+    are plain ``MakerFollower`` instances, so they qualify.
+    """
+    from .arms.maker import MAKER
+
+    if getattr(type(follower), "name", None) != MAKER.single_robot_type:
+        return 0.0
+    return MAKER.gravity_feedforward_scale
+
+
 def attach_to_follower(follower) -> GravityFeedforward | None:
     """Fit a follower's bus with the family's feed-forward, if it asks for one.
 
     A model that cannot load leaves the follower as the driver built it; a scale
     out of range refuses the follower before anything is energized.
     """
-    from .arms.maker import MAKER
-
-    scale = MAKER.gravity_feedforward_scale
+    scale = _family_scale(follower)
     if scale == 0.0:
         return None
     try:

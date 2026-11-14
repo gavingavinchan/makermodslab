@@ -36,6 +36,33 @@ class ViscousFamily(CanArmFamily):
     robot_type_markers = ("viscous",)
     follower_probe_protocol = "robstride"
     motion_identify_energizes_follower = False
+
+    # --- Upstream CAN behaviour kept OFF for this arm (sync of 2026-11-13) ---
+    # Each reaches Viscous through CanArmFamily or a MakerFollower hook unless
+    # opted out here. Turning one on is a hardware decision: see
+    # docs/viscous-upstream-sync-2026-11.md for the test each needs at the arm.
+    # A failed teleop landing releases torque as before, instead of holding
+    # the bus until an explicit release (upstream's tracking failsafe).
+    requires_verified_rest = False
+    # A stop already within tolerance of the captured pose sends no ramp.
+    rest_return_ensures_target = False
+    # Hosted (remote) gripper stays under the 30 deg/s target cap.
+    hosted_gripper_skips_speed_cap = False
+    # Upstream's Maker URDF feed-forward (maker_gravity.py). This arm has its
+    # own fitted one, MAKERMODSLAB_GRAVITY_FF (gravity_feedforward.py).
+    gravity_feedforward_scale = 0.0
+    # Maker/Metal gripper holding torque and Metal current limiting.
+    supports_gripper_effort_control = False
+    supports_gripper_current_control = False
+
+    def prepare_teleoperation(self, robot):
+        # Maker installs MakerTeleopSafety (firmware-fault guard) here.
+        return None
+
+    def prepare_leader_following(self, robot):
+        # Metal installs its 280 deg/s follower speed cap here. Viscous has its
+        # own supervised teleop speed limit (supports_teleop_speed_limit).
+        return None
     follower_zero_pose = (
         "Use the existing commissioned Viscous follower calibration (viscous_01). "
         "Import or select that file in the calibration library. "
