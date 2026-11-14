@@ -54,9 +54,17 @@ class ViscousFamily(CanArmFamily):
     rest_return_ensures_target = False
     # Hosted (remote) gripper stays under the 30 deg/s target cap.
     hosted_gripper_skips_speed_cap = False
-    # Upstream's Maker URDF feed-forward (maker_gravity.py). This arm has its
-    # own fitted one, MAKERMODSLAB_GRAVITY_FF (gravity_feedforward.py).
-    gravity_feedforward_scale = 0.0
+    # Upstream's Maker URDF feed-forward (maker_gravity.py) is NOT gated by a
+    # flag here: maker_gravity._family_scale only attaches it to a follower
+    # whose class name is the Maker's own robot type, so ViscousFollower never
+    # gets it. This arm has its own fitted one, MAKERMODSLAB_GRAVITY_FF
+    # (gravity_feedforward.py).
+    # Recording ends on a dead camera, as before, instead of holding the arm
+    # at its last command while the camera reconnects.
+    recording_recovers_dead_cameras = False
+    # Recording re-alignment drives to the leader's targets unclamped, as
+    # before (the follower's send_action still applies its own limits).
+    recording_clamps_alignment_targets = False
     # Maker/Metal gripper holding torque and Metal current limiting.
     supports_gripper_effort_control = False
     supports_gripper_current_control = False

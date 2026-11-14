@@ -62,7 +62,7 @@ def limit_action(
     elapsed_s: float,
     *,
     speed_deg_s: float = CAN_TRACKING_SPEED_DEG_S,
-    exempt: tuple[str, ...] = GRIPPERS,
+    exempt: tuple[str, ...],
 ) -> dict[str, float]:
     """Limit target travel in degrees per second, including after packet gaps.
 
@@ -70,8 +70,10 @@ def limit_action(
     authorize a large jump. Grippers follow the operator directly: a capped
     jaw lags a grasp, and clamp_action has already applied its soft limits.
     ``exempt=()`` caps every joint, grippers included (the Viscous arm, whose
-    family opts out of the uncapped hosted gripper). Device soft limits still
-    apply in send_action.
+    family opts out of the uncapped hosted gripper). ``exempt`` is required
+    so no call site gets the uncapped gripper by default; hosting passes
+    ``hosted_speed_cap_exempt(family)``. Device soft limits still apply in
+    send_action.
     """
     target = checked_pose(action, previous)
     if not math.isfinite(speed_deg_s) or speed_deg_s <= 0 or not math.isfinite(elapsed_s):

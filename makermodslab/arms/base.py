@@ -329,6 +329,12 @@ class ArmFamily(ABC):
     recording_home_is_rest_pose: bool = False
     # Gravity feed-forward on the follower's MIT frames, 0..1.2; 0 sends none.
     gravity_feedforward_scale: float = 0.0
+    # Recording reconnects a camera whose reader died mid-session (instead of
+    # ending the session). The motors hold their last command meanwhile.
+    recording_recovers_dead_cameras: bool = True
+    # Recording's leader re-alignment clamps each target to the follower's
+    # soft joint_limits before driving to it.
+    recording_clamps_alignment_targets: bool = True
 
     def hold_recording_home(self, targets):
         """Finalize a completed follower-only home return before no-send reset."""

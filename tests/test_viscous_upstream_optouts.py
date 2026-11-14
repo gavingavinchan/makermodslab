@@ -24,7 +24,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from makermodslab import gravity_feedforward, maker_can, maker_rest_pose, remote_can, teleoperate
+from makermodslab import gravity_feedforward, maker_can, maker_rest_pose, record, remote_can, teleoperate
 from makermodslab.arms.maker import MAKER
 from makermodslab.arms.metal import METAL
 from makermodslab.arms.viscous import VISCOUS, ViscousFamily
@@ -34,7 +34,8 @@ def test_family_flags_opt_out_while_maker_and_metal_keep_upstreams():
     assert VISCOUS.requires_verified_rest is False
     assert VISCOUS.rest_return_ensures_target is False
     assert VISCOUS.hosted_gripper_skips_speed_cap is False
-    assert VISCOUS.gravity_feedforward_scale == 0.0
+    assert VISCOUS.recording_recovers_dead_cameras is False
+    assert VISCOUS.recording_clamps_alignment_targets is False
     assert VISCOUS.supports_gripper_effort_control is False
     assert VISCOUS.supports_gripper_current_control is False
     # The opt-outs are Viscous's own; the shared CAN defaults stay upstream's.
@@ -42,6 +43,8 @@ def test_family_flags_opt_out_while_maker_and_metal_keep_upstreams():
         assert family.requires_verified_rest is True
         assert family.rest_return_ensures_target is True
         assert family.hosted_gripper_skips_speed_cap is True
+        assert family.recording_recovers_dead_cameras is True
+        assert family.recording_clamps_alignment_targets is True
     assert MAKER.gravity_feedforward_scale == 1.0
 
 
@@ -150,3 +153,55 @@ def test_viscous_leader_keeps_the_signed_star_mapping():
     assert STAR_TRIGGER_LEADER_KIND not in {option.id for option in VISCOUS.leader_options()}
     leader = VISCOUS.single_leader_config("/dev/fake", "")
     assert not isinstance(leader.joint_directions, TriggerJointDirections)
+
+
+def test_failed_return_that_raises_holds_torque_until_an_explicit_release(monkeypatch):
+    # A return that RAISES (rather than reporting a stalled verdict) sets
+    # rest_failed on Viscous too: torque stays on until a second Stop or the
+    # lease expiry releases it. Before the sync the exception escaped the
+    # worker's finally and skipped the release with no status at all.
+    def explode(self, poses, abort):
+        raise RuntimeError("bus went silent")
+
+    monkeypatch.setattr(ViscousFamily, "return_to_rest", explode)
+    device = SimpleNamespace(bus=SimpleNamespace(motors={"shoulder_pan": 1}))
+    reason = teleoperate._return_before_release(VISCOUS, [(device, {"shoulder_pan": 0.0})], None)
+    assert "Automatic torque release is blocked" in reason and "bus went silent" in reason
+
+
+def test_recording_realignment_does_not_clamp_viscous_targets(monkeypatch):
+    # Upstream clamps recording's leader re-alignment targets to the
+    # follower's joint_limits; Viscous keeps driving to the unclamped target.
+    seen = []
+
+    class Source:
+        def __init__(self, *args, **kwargs):
+            seen.append(kwargs["clamp_to_limits"])
+
+        def split(self):
+            return []
+
+    monkeypatch.setattr(record, "_LeaderTargetSource", Source)
+    for arm_type in ("viscous", "maker"):
+        assert record._realign_follower_to_leader(object(), object(), arm_type, None, None) is True
+    assert seen == [False, True]
+
+    robot = SimpleNamespace(config=SimpleNamespace(joint_limits={"shoulder_lift": (-90.0, -2.4)}))
+    action = {"shoulder_lift.pos": 17.6}
+    assert maker_rest_pose.maker_targets_from_action(robot, action, clamp_to_limits=False) == [
+        (robot, {"shoulder_lift": 17.6})
+    ]
+    assert maker_rest_pose.maker_targets_from_action(robot, action) == [(robot, {"shoulder_lift": -2.4})]
+
+
+def test_recording_ends_on_a_dead_viscous_camera_instead_of_recovering(monkeypatch):
+    def recover(*args, **kwargs):
+        raise AssertionError("Viscous must not reconnect cameras mid-recording")
+
+    monkeypatch.setattr(record, "_recover_dead_cameras", recover)
+
+    def observe():
+        raise RuntimeError("OpenCVCamera(0) read thread is not running.")
+
+    with pytest.raises(RuntimeError, match="read thread is not running"):
+        record._observe_with_camera_recovery(observe, SimpleNamespace(), VISCOUS, lambda: False)

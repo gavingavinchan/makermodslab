@@ -4562,6 +4562,65 @@ def test_recover_dead_cameras_is_a_noop_when_all_readers_alive() -> None:
     assert _recover_dead_cameras(SimpleNamespace(), sleep=lambda _s: None) == []
 
 
+def test_camera_recovery_never_retries_or_hides_a_motor_fault() -> None:
+    # A follower's get_observation checks the bus and temperatures before it
+    # reads the cameras: a thermal or bus-silence error must propagate as-is
+    # even while a camera reader is also dead, with no reconnect attempt.
+    from types import SimpleNamespace
+
+    from makermodslab.arms.maker import MAKER
+    from makermodslab.record import _observe_with_camera_recovery
+
+    dead = _FakeCamera(alive=False)
+    robot = SimpleNamespace(cameras={"top": dead})
+    calls = []
+
+    def observe():
+        calls.append(1)
+        raise RuntimeError("shoulder_lift at 83.0 C: above the thermal stop")
+
+    with pytest.raises(RuntimeError, match="thermal stop"):
+        _observe_with_camera_recovery(observe, robot, MAKER, lambda: False, sleep=lambda _s: None)
+    assert len(calls) == 1 and dead.connects == 0
+
+
+def test_camera_recovery_reconnects_then_reads_again() -> None:
+    from types import SimpleNamespace
+
+    from makermodslab.arms.maker import MAKER
+    from makermodslab.record import _observe_with_camera_recovery
+
+    dead = _FakeCamera(alive=False)
+    robot = SimpleNamespace(cameras={"top": dead})
+    results = iter([RuntimeError("OpenCVCamera(0) read thread is not running."), {"ok": 1}])
+
+    def observe():
+        result = next(results)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    assert _observe_with_camera_recovery(observe, robot, MAKER, lambda: False, sleep=lambda _s: None) == {"ok": 1}
+    assert dead.connects == 1
+
+
+def test_camera_recovery_stops_retrying_when_the_session_stops() -> None:
+    from types import SimpleNamespace
+
+    from makermodslab.record import _recover_dead_cameras
+
+    dead = _FakeCamera(alive=False, connect_failures=10)
+    robot = SimpleNamespace(cameras={"top": dead})
+    stop = {"pressed": False}
+
+    def sleep(_s):
+        stop["pressed"] = True  # Stop arrives during the first back-off
+
+    with pytest.raises(RuntimeError, match="session is stopping"):
+        _recover_dead_cameras(robot, sleep=sleep, cancelled=lambda: stop["pressed"])
+    assert dead.connects == 1
+
+
 def test_recover_dead_cameras_raises_when_camera_never_returns() -> None:
     from types import SimpleNamespace
 

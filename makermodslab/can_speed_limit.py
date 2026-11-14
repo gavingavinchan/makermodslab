@@ -156,6 +156,8 @@ class RateLimitedRobstrideBus:
                     {name: target},
                     now - self._last_time[name],
                     speed_deg_s=self.speed_limit_deg_s,
+                    # One non-gripper joint per call; the gripper bypass is above.
+                    exempt=(),
                 )[name]
             self._base.write(data_name, motor, next_value)
             # Only a successful command advances the last-sent reference.

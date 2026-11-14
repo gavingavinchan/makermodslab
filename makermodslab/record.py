@@ -573,12 +573,18 @@ _CAMERA_RECOVERY_ATTEMPTS = 5
 _CAMERA_RECOVERY_DELAY_S = 1.0
 
 
-def _recover_dead_cameras(robot, sleep: Callable[[float], None] = time.sleep) -> list[str]:
+def _recover_dead_cameras(
+    robot,
+    sleep: Callable[[float], None] = time.sleep,
+    cancelled: Callable[[], bool] = lambda: False,
+) -> list[str]:
     """Reconnect every camera on `robot` whose background reader has died.
 
     Returns the names reconnected (empty when every reader is alive, so the
     caller's original error is not a dead camera and should propagate).
-    Raises the last connect error when a camera does not come back.
+    Raises the last connect error when a camera does not come back, and a
+    RuntimeError as soon as `cancelled()` (Stop) is true between attempts:
+    the motors hold their last command for as long as this runs.
     """
     dead = {
         name: cam
@@ -588,6 +594,8 @@ def _recover_dead_cameras(robot, sleep: Callable[[float], None] = time.sleep) ->
     for name, cam in dead.items():
         logger.warning("📷 CAMERA RECOVERY: %s (%s) stopped delivering frames; reconnecting", name, cam)
         for attempt in range(1, _CAMERA_RECOVERY_ATTEMPTS + 1):
+            if cancelled():
+                raise RuntimeError(f"Camera {name} recovery stopped: the session is stopping")
             try:
                 cam.disconnect()
             except Exception:
@@ -602,6 +610,35 @@ def _recover_dead_cameras(robot, sleep: Callable[[float], None] = time.sleep) ->
                     raise
                 sleep(_CAMERA_RECOVERY_DELAY_S)
     return list(dead)
+
+
+def _observe_with_camera_recovery(
+    get_observation: Callable[[], dict],
+    robot,
+    family,
+    cancelled: Callable[[], bool],
+    sleep: Callable[[float], None] = time.sleep,
+) -> dict:
+    """Read one observation, reconnecting a dead camera reader once.
+
+    Only a camera read failure is recovered. Everything else propagates
+    unchanged, even while a camera is also dead: a follower's
+    ``get_observation`` runs its bus-silence and thermal checks before it
+    reads the cameras, so a broad catch would retry (and could swallow) a
+    motor fault. A family with ``recording_recovers_dead_cameras = False``
+    (Viscous) never recovers: the session ends on the camera error, as it did
+    before the recovery existed.
+    """
+    try:
+        return get_observation()
+    except Exception as exc:
+        if not (
+            getattr(family, "recording_recovers_dead_cameras", True)
+            and _is_transient_camera_error(str(exc))
+            and _recover_dead_cameras(robot, sleep=sleep, cancelled=cancelled)
+        ):
+            raise
+    return get_observation()
 
 
 def create_record_config(request: RecordingRequest, cameras: dict | None = None) -> RecordConfig:
@@ -1834,8 +1871,10 @@ class _LeaderTargetSource:
         robot_action_processor,
         ttl_s: float = 1.0 / MAKER_RETURN_FPS,
         strict: bool = False,
+        clamp_to_limits: bool = True,
     ) -> None:
         self._robot = robot
+        self._clamp_to_limits = clamp_to_limits
         self._teleop = teleop
         self._teleop_action_processor = teleop_action_processor
         self._robot_action_processor = robot_action_processor
@@ -1879,7 +1918,9 @@ class _LeaderTargetSource:
         # so the jaws are the operator's to command. See maker_targets_from_action.
         self._split = [
             (device, pose)
-            for device, pose in maker_targets_from_action(self._robot, robot_action, include_gripper=True)
+            for device, pose in maker_targets_from_action(
+                self._robot, robot_action, include_gripper=True, clamp_to_limits=self._clamp_to_limits
+            )
             if pose
         ]
         self._read_at = now
@@ -1962,7 +2003,12 @@ def _realign_follower_to_leader(
     logger.info("Re-aligning the follower to the leader before passthrough resumes")
 
     source = _LeaderTargetSource(
-        robot, teleop, teleop_action_processor, robot_action_processor, strict=require_settled
+        robot,
+        teleop,
+        teleop_action_processor,
+        robot_action_processor,
+        strict=require_settled,
+        clamp_to_limits=arm_registry.get(arm_type).recording_clamps_alignment_targets,
     )
     targets = source.split()
     if not targets:
@@ -2647,13 +2693,9 @@ def record_with_web_events(
     original_get_observation = robot.get_observation
 
     def get_observation_with_preview(*args, **kwargs):
-        try:
-            observation = original_get_observation(*args, **kwargs)
-        except Exception:
-            # Only a dead camera reader is recovered; anything else propagates.
-            if not _recover_dead_cameras(robot):
-                raise
-            observation = original_get_observation(*args, **kwargs)
+        observation = _observe_with_camera_recovery(
+            lambda: original_get_observation(*args, **kwargs), robot, family, cancelled
+        )
         publish_preview(observation)
         return observation
 

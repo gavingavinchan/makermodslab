@@ -35,6 +35,7 @@ def test_remote_targets_have_a_rate_limit_even_after_network_gaps(elapsed, step)
             "right_gripper.pos": -40.0,
         },
         elapsed,
+        exempt=remote_can.GRIPPERS,
     )
     # Arm joints are capped; grippers follow the operator directly.
     assert result == pytest.approx(
@@ -49,7 +50,7 @@ def test_remote_targets_have_a_rate_limit_even_after_network_gaps(elapsed, step)
 
 def test_single_arm_gripper_is_not_rate_limited():
     result = remote_can.limit_action(
-        {"elbow.pos": 0.0, "gripper.pos": 0.0}, {"elbow.pos": 90.0, "gripper.pos": 60.0}, 1 / 30
+        {"elbow.pos": 0.0, "gripper.pos": 0.0}, {"elbow.pos": 90.0, "gripper.pos": 60.0}, 1 / 30, exempt=remote_can.GRIPPERS
     )
     assert result == pytest.approx({"elbow.pos": 1.0, "gripper.pos": 60.0})
 
@@ -414,7 +415,7 @@ def test_maker_folded_zero_is_accepted_and_alignment_does_not_snap_to_soft_limit
     remote_can.send_action(robot, pose, pose)
     assert sent[-1] == pose
     for _ in range(3):
-        action = remote_can.limit_action(pose, goal, 1 / 30)
+        action = remote_can.limit_action(pose, goal, 1 / 30, exempt=remote_can.GRIPPERS)
         remote_can.send_action(robot, action, pose)
         # Arm joints ease inward; the gripper goes straight to its clamped goal.
         assert abs(sent[-1]["elbow.pos"] - pose["elbow.pos"]) <= 1.001

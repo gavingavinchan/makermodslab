@@ -83,6 +83,8 @@ docs/*
 !docs/api/
 # ... and the Viscous joint-mapping problem record (see docs/viscous-mapping/README.md)
 !docs/viscous-mapping/
+# ... and the record of the 2026-11 makermods-robotics sync (the Viscous OFF list)
+!docs/viscous-upstream-sync-2026-11.md
 PHONE_CAMERA_SETUP.md
 HTTPS_SETUP.md
 JETSON_SETUP.md

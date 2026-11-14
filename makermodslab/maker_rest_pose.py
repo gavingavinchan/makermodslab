@@ -221,7 +221,7 @@ def capture_maker_pose(device, include_gripper: bool = False) -> dict[str, float
 
 
 def maker_targets_from_action(
-    robot, action: dict, include_gripper: bool = False
+    robot, action: dict, include_gripper: bool = False, clamp_to_limits: bool = True
 ) -> list[tuple[object, dict[str, float]]]:
     """Split a ROBOT-level action dict into per-sub-arm target poses.
 
@@ -254,6 +254,8 @@ def maker_targets_from_action(
     past a follower limit (the Maker gripper opens beyond its narrowed open
     limit); unclamped, the follower stalls at the limit and the alignment
     reports it as stopped short of a pose it may never be sent to.
+    ``clamp_to_limits=False`` skips that clamp (the Viscous family's
+    ``recording_clamps_alignment_targets``).
     """
     left = getattr(robot, "left_arm", None)
     right = getattr(robot, "right_arm", None)
@@ -273,7 +275,7 @@ def maker_targets_from_action(
             if motor == "gripper" and not include_gripper:
                 continue
             pose[motor] = float(value)
-            if motor in limits:
+            if clamp_to_limits and motor in limits:
                 low, high = limits[motor]
                 pose[motor] = max(low, min(high, pose[motor]))
         targets.append((device, pose))
