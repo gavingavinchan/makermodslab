@@ -495,6 +495,35 @@ restore paths in the DAgger runner.
   cameras first and returns on motor readings only (test: a camera dying mid-run still
   reaches the rest). Gavin replugged `head` (now 0x1300000c45636b, on the outer hub port); a 60 s dual-camera soak
   then read 640x480 from both with no failures (both still share the upstream hub).
+- *Status (2026-11-13): keep-out moved to the new base mount, offline, pending
+  Gavin's approval of the diff.* Why: the arm now sits on an upright L-bracket (CAD
+  from Gavin's 3MF): it bolts to a floor plate with J1 at the bolt pattern's centre,
+  and a 12 mm truss post 80 mm wide stands flush on the back glass (Gavin confirmed
+  flush). J1 is 106 mm from the post's inner face and 118 mm from the glass, 50 mm
+  from the post's +y edge and 30 mm from its -y edge. The clamp is weak, so the base
+  can slide or rotate if pushed; Gavin resets the post to the middle of the back glass
+  on marker lines each time, and the numbers assume it centred (177 mm gaps each side).
+  Keep-out: `near` 80 -> 106 (the post face; the 12 mm to the glass is slack for J1
+  off the bolt centre), `far` -654 -> -616 (from the glass, 118 - 734; near - 734
+  would place it 12 mm too far), `left` 210 -> 227, `right` -224 -> -207 (17 mm
+  closer), statuses "cad", yaw "assumed". The upper-arm heel keeps its absolute limit
+  (40 mm behind J1, margin 40 -> 66, padding 0) because of a corner fin of the mount
+  42-50 mm to +y of J1, from about 16 mm behind J1 back to the post, which is not
+  modelled; the shoulder came within 11-17 mm of it in logged poses. Workspace box:
+  the wall-derived limits moved with their walls (elbow x max +10 -> +36, wrist_pitch
+  +20 -> +46, every y range [-154, 140] -> [-137, 157]); the J1-relative tcp/wrist
+  limits stay. Replay of the five live runs of 2026-11-08 (planner and guard
+  parity-checked against the runner's own code): 2828 of 2928 rows reach their
+  target, vs 2167 with the 80 mm wall; every remaining cut is the upper-arm heel at
+  the near plane, none at a side wall or the far wall. The start pose, the tank rest
+  and the five runs' measured rests and Dream starts all pass the start gate. The far
+  glass is now close at the rest: the fingers lying down the tank keep 10-28 mm of
+  slack beyond the 30 mm margin (was about 55). Targeted tests pass after two pinned
+  numbers were updated (the heel's 66 mm rule; the trace route's right/far slack).
+  The plan id changes, so the next live run needs a fresh dry run. `tank.json` and the
+  sim scene still say 40 mm. The base can still slide or rotate under a push on the
+  glass and neither the box nor the guard can see it, so before every powered run:
+  post between the marks and flush on the back glass.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

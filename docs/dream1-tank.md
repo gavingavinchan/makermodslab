@@ -75,36 +75,60 @@ and the granted point is unchanged.
 
 ### The numbers (J1 base frame, mm)
 
+Current values (2026-11-13, after the new base mount; the config file is the
+authority and every number there carries its source):
+
 | Surface | Plane | Status | Required clearance |
 |---|---|---|---|
-| +y wall ("left" in the model) | 210 | measured (trace) | 30 margin + 40 cable padding; fingers 30 |
-| −y wall ("right") | −224 | measured (trace) | same |
-| near/back wall (+x, behind J1) | 40 | **estimate, not traced** | same; see the base-riding links below |
-| far wall | −694 | estimate (out of reach) | same |
-| floor | −6 | bound (highest the evidence allows) | contact allowed, at most 10 mm press |
-| rim | 427 | estimate (Gavin's −15 floor + 442) | 30 margin + 40 padding |
+| +y wall ("left" in the model) | 227 (was 210) | CAD, post centred on Gavin's marks | 30 margin + 40 cable padding; fingers 30 |
+| −y wall ("right") | −207 (was −224) | CAD, post centred on Gavin's marks | same |
+| near/back (+x, behind J1) | 106 (was 80) | CAD: the mount's post face; glass at 118 | same; the upper-arm heel has its own rule, below |
+| far wall | −616 (was −654) | estimate: glass 118 − 734 | same |
+| floor | −28 | measured (jaws on the glass, live 213138Z) | contact allowed, at most 10 mm press |
+| rim | 414 | estimate (−28 floor + 442) | 30 margin + 40 padding |
 
-Where they come from (the evidence trace is committed:
+**The new base mount (2026-11-13).** CAD from Gavin's 3MF: an upright
+L-bracket. The arm bolts to its floor plate, with J1 at the centre of the
+bolt pattern, and a 12 mm vertical truss post 80 mm wide stands flush against
+the back glass (Gavin confirmed flush). J1 is 106 mm from the post's inner
+face and 118 mm from the glass. The near plane is the post face, the nearest
+thing behind J1; the 12 mm to the glass is slack for J1 sitting off the bolt
+centre. The far wall is taken from the glass (118 − 734 = −616), not from the
+post face, so it is not placed 12 mm too far away. That puts the far glass only
+a little beyond the arm's furthest collision point (~610 mm), so the far rule
+can now bind at full reach. J1 sits 50 mm from the post's +y edge and 30 mm from
+its −y edge. The clamp is weak and the base can slide or rotate if pushed, so
+Gavin resets the post to the middle of the back glass on marker lines before
+each run. Centred, each side gap is (434 − 80) / 2 = 177 mm, so the walls are
+50 + 177 = 227 and −(30 + 177) = −207. None of this is traced on the new mount.
+`tank.json` and the sim scene still say 40 mm for the back wall.
+
+Where the older numbers came from (the evidence trace is committed:
 `configs/viscous/viscous_waterproof_01/evidence/tank-trace-20261108T044404Z.jsonl`):
 
-- **Side walls.** These are the numbers Gavin accepted ("lets go with this for
-  now"). Re-fitting the trace with every mesh vertex, the arm actually
-  reached +218.5 mm (plateau mean 213) and −223 to −231 mm (before the base
-  slid). So both planes sit 3-8 mm on the conservative side. Yaw is taken as
-  0; the every-vertex line along the +y wall shows 0.25°.
-- **Floor.** The fingers' lowest point reached −6.2 mm, so the glass is at −6
-  or lower. Gavin says it is about −15. The box uses −6, which bounds how hard
-  a command can press: at most 10 mm into −6, so at most about 1 mm into the
-  real −15.
-- **Rim.** The lowest plausible rim, from Gavin's −15 floor.
+- **Side walls on the old base.** These are the numbers Gavin accepted ("lets
+  go with this for now"). Re-fitting the trace with every mesh vertex, the arm
+  actually reached +218.5 mm (plateau mean 213) and −223 to −231 mm (before
+  the base slid). So both planes sat 3-8 mm on the conservative side. Yaw was
+  taken as 0 (the every-vertex line along the +y wall showed 0.25°); on the
+  new mount it rests on squaring the post on its marks.
+- **Floor.** First −6 (the fingers' lowest point in the trace), then −31 after
+  Gavin raised the base, then −28, where the jaws rested on the glass in live
+  213138Z.
+- **Rim.** The lowest plausible rim, from the floor.
 - **Cable padding.** 40 mm is the default for unmeasured links. The fingers
   carry no cables and are the measured probe, so they get 0.
 - **Base-riding links.** `yaw_link` turns with J1 only. Its extent behind J1
   is 30-42.5 mm at every J1 angle, so it is exempt: it cannot approach a wall
   it doesn't already touch. The upper arm's heel sits 28 mm behind J1
   whenever J2 ≤ −100°, and reached 36.9 mm in the trace, so it cannot keep
-  70 mm off a wall estimated at 40. Until the near wall is traced, the heel
-  only has to stay behind the estimated plane. That still forbids the upper
+  the full 70 mm near rule. Its limit has stayed 40 mm behind J1 through every
+  near-wall change: 0 margin at the 40 mm estimate, 40 at Gavin's 80 mm, and
+  66 at the mount's 106 mm post face (2026-11-13). It was not given the post's
+  extra 26 mm on purpose: the new mount has a corner fin 42-50 mm to +y of J1,
+  running from about 16 mm behind J1 back to the post. The keep-out does not
+  model it, and the shoulder came within 11-17 mm of it in logged poses, so
+  the heel must not gain room toward it. The limit still forbids the upper
   arm tipping back past about vertical (the heel reaches 58 mm at J2 = −80).
   Every link beyond the elbow keeps the full near rule: that is the J3 hazard
   Gavin named.
@@ -117,7 +141,14 @@ Where they come from (the evidence trace is committed:
 
 - **The loose base.** It slides about 30 mm under a hand push, and the 30 mm
   margin is not meant for that. A powered arm can shove it, and FK has no way
-  to see it. **Clamp or weight the base before any powered run.**
+  to see it. **Clamp or weight the base before any powered run.** The new
+  mount (2026-11-13) sets where the base starts, but its clamp is weak: a push
+  against the glass can still slide or rotate the base, and neither the
+  keep-out nor the workspace box can see that. The side walls also assume the
+  post sits centred on Gavin's marks.
+- **The mount's corner fin** (42-50 mm to +y of J1, from about 16 mm behind
+  J1 back to the post) is not modelled. Only the upper-arm heel's limit is held
+  back for it.
 - **The straight-path proof assumes the targets really move in a straight
   line.** A per-joint slew limiter downstream bends that path, because joints
   finish at different times. So the executor must retime each row
@@ -250,6 +281,10 @@ sim sweeps.
    15 deg/s near the middle, with Gavin at the power switch and each phase
    relayed live.
 3. *Live Dream:* a short run (10 calls) at 15 deg/s, the same supervision.
+
+**Before every powered run (hardware, Gavin):** post between the marks and
+flush on the back glass (2026-11-13; the side walls and the back plane assume
+it).
 
 **Before step 2 (hardware, Gavin):** clamp or weight the base; trace the
 near/back wall; ruler-check the floor gap; confirm the glass thickness; ideally

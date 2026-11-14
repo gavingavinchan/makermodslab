@@ -21,9 +21,12 @@ Minimum slack along the route at the TRACE_POSE rest (mm, clearance minus the
 guard's requirement; floor slack is above floor bound - 10 mm press):
 near 9.4 (upper-arm heel, the rest's own), floor 16.0 (forearm, just off the
 rest, rising from there), rim 43.3 (wrist pitch, at the start pose itself),
-left 46.0, right 64.6, far 55.5. Over the perturbed rests the worst are near
-7.5, floor 10.9, left 8.0, all at the rest itself: the route never takes the
-heel closer to the back wall, or any link lower, than the rest already is.
+left 63.2, right 47.6, far 17.5 (the 2026-11-13 base mount: side walls +227 /
+-207, far glass -616; were left 46.0, right 64.6, far 55.5). Over the perturbed
+rests the worst are near 7.5, floor 10.9, left 8.0, all at the rest itself: the
+route never takes the heel closer to the back wall, or any link lower, than the
+rest already is. The far slack is the fingers at the rest, lying down the tank:
+with the new mount the far glass is 38 mm closer to J1.
 
 Guard stream (retimed at 15 deg/s): every substep is `clamped`, never
 `rejected`. The gripper rests at -0.45, outside its -2.92 limit, so the guard
@@ -183,9 +186,9 @@ def test_trace_rest_slack_per_face(guard):
     assert slack["near"] > 9.0
     assert slack["floor"] > 15.5
     assert slack["rim"] > 27.0  # the rim is 16 mm lower relative to the raised base (2026-11-08)
-    assert slack["left"] > 45.0
-    assert slack["right"] > 60.0
-    assert slack["far"] > 50.0
+    assert slack["left"] > 60.0
+    assert slack["right"] > 45.0  # the -y wall is 17 mm closer on the 2026-11-13 mount
+    assert slack["far"] > 15.0  # the far glass is 38 mm closer (118 - 734 = -616)
     # The lift waypoint itself is well clear of the floor and the rim.
     lifted = face_slack(guard, [route[1]])
     assert lifted["floor"] > 100.0 and lifted["rim"] > 100.0

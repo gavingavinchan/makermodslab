@@ -94,7 +94,9 @@ it, and prints the 12-hex **inputs id**. Never run `python -m dream.check` on th
    `--ack-unverified-sign <joint>` for it.
 6. **Tank guard merged.** `makermodslab/tank_guard.py` (branch `feat/viscous-dream1-tank-box`) gates
    every substep at mesh-vertex level; `--live` refuses without it. Its hardware items too: clamp or
-   weight the base (it slides about 30 mm), trace the near wall.
+   weight the base (it slides about 30 mm), trace the near wall. Before every powered run: **post
+   between the marks and flush on the back glass** (the 2026-11-13 mount; the keep-out's back plane
+   and both side walls assume it, and nothing in the software can check it).
 7. **Credentials** `~/.dreamlabs/credentials` (0600, a fresh key) written by Gavin. Never printed or logged.
 8. **Plan id.** Run the dry run with exactly the live settings and `--arm-file`; pass its plan id as
    `--plan-id`. Its "Joints that may move" list is the statement of what moves.
