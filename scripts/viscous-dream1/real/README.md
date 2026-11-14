@@ -170,8 +170,11 @@ feedback, every leg planned from the measured pose (the return helper's own fres
 check and the leg choice use the re-anchor's reading). Past the approach that means to the start pose
 (skipped when the arm is within the 10 deg lag trip of it: it holds there with its sag), then
 `core.return_waypoints` (the approach reversed). Mid-approach it means back along the legs travelled.
-Each leg's straight path is checked by the guard first, and every reading during the legs goes
-through the measured-speed trip. A leg that stops short but within the 10 deg lag trip of its target
+Each leg's straight path is checked by the guard first (`check_return_segment`: a start up to the
+15 mm tracking allowance inside a requirement may leave it along a path on which nothing gets more than
+0.5 mm worse than at the start; live 20261114T084532Z held mid-air because its re-anchored goal sat
+1.84 mm over the right-wall line), and every reading during the legs goes through the measured-speed
+and limp trips. A leg that stops short but within the 10 deg lag trip of its target
 on every arm joint (a fresh reading after it) counts as arrived and the return goes on: the shoulder
 holds the start pose 7.45 deg short, more than the helper's 6 deg settle band; (d) `remote_can.release`
 (zero effort, torque off, cameras closed), at the rest. **The arm is never released mid-air** except by

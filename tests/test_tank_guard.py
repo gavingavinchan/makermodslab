@@ -320,3 +320,85 @@ def test_a_start_inside_a_requirement_is_still_refused(guard):
     assert guard.check_pose(inside).face == "right" and not guard.check_pose(inside).ok
     away = {**inside, "shoulder_pan": 170.0}
     assert not guard.check_segment(inside, away).ok
+
+
+def inside_by(guard, q, joint, blocked, mm):
+    """q with `joint` moved toward `blocked` until its worst slack is -mm."""
+    clear, inside = q[joint], blocked
+    for _ in range(80):
+        mid = (clear + inside) / 2
+        clear, inside = (mid, inside) if guard.check_pose({**q, joint: mid}).slack_mm >= -mm else (clear, mid)
+    return {**q, joint: clear}
+
+
+def never_worse_than_the_start(guard, q0, q1, eps_mm=tg.RETURN_EPS_MM, step_deg=0.05):
+    """Dense check of the return rule's promise: a link/face that started clear stays clear; one that
+    started inside never ends up more than eps further inside than it started."""
+    start = guard.clearances(q0)
+    floor = {k: min(0.0, v) - (eps_mm if v < 0 else 0.0) for k, v in start.items()}
+    span = max(abs(q1[m] - q0[m]) for m in tg.MOTORS)
+    n = max(1, math.ceil(span / step_deg))
+    return all(
+        v >= floor[k] - 1e-9
+        for i in range(n + 1)
+        for k, v in guard.clearances(tg._lerp(q0, q1, i / n)).items()
+    )
+
+
+def test_a_return_leg_may_leave_a_small_overshoot_but_never_deepen_it(guard):
+    # Live 20261114T084532Z: the re-anchored stop goal sat 1.84 mm over the right-wall line and every
+    # return leg failed at its first sample, so the arm held mid-air. A clear start is check_segment.
+    inside = inside_by(guard, WORK, "shoulder_pan", 160.0, 1.8)
+    v = guard.check_pose(inside)
+    assert v.face == "right" and -1.81 < v.slack_mm < -1.79
+    away = {**inside, "shoulder_pan": inside["shoulder_pan"] + 5.0}
+    assert not guard.check_segment(inside, away).ok  # the Dream-substep rule is unchanged
+    assert guard.check_return_segment(inside, away).ok
+    assert never_worse_than_the_start(guard, inside, away)
+    deeper = {**inside, "shoulder_pan": inside["shoulder_pan"] - 1.0}
+    assert not guard.check_return_segment(inside, deeper).ok
+    # Away from the right wall but into the rim (clear at the start): the rim keeps its full requirement.
+    up = {**away, "shoulder_lift": away["shoulder_lift"] + 19.0}
+    assert not guard.check_pose(up).ok and guard.check_pose(up).face == "rim"
+    assert not guard.check_return_segment(inside, up).ok
+    # Clear start: exactly check_segment.
+    assert guard.check_return_segment(WORK, away) == guard.check_segment(WORK, away)
+
+
+def test_a_return_leg_from_further_inside_than_the_tracking_allowance_is_refused(guard):
+    deep = inside_by(guard, WORK, "shoulder_pan", 150.0, guard.tracking_allowance_mm + 1.0)
+    away = {**deep, "shoulder_pan": WORK["shoulder_pan"]}
+    verdict = guard.check_return_segment(deep, away)
+    assert not verdict.ok and verdict.samples == 1 and verdict.slack_mm < -guard.tracking_allowance_mm
+
+
+# live-20261114T084532Z's stop: the re-anchored goal (summary.stop.reanchor.goal, gripper at call 10's
+# substep) and its first return leg's target (the Dream start pose, the approach's last command).
+STOP_084532Z = {
+    "shoulder_pan": 161.66,
+    "shoulder_lift": -134.57,
+    "elbow_flex": 107.39,
+    "wrist_flex": -56.12,
+    "wrist_yaw": -35.37,
+    "wrist_roll": -54.75,
+}
+STOP_084532Z_GRIP = -16.76923337396569
+LEG1_084532Z = {
+    "shoulder_pan": 176.59262673518805,
+    "shoulder_lift": -123.3720009107243,
+    "elbow_flex": 99.35833762523698,
+    "wrist_flex": 9.309613221480923,
+    "wrist_yaw": -9.021139590653746,
+    "wrist_roll": -3.9795993796114217,
+}
+
+
+def test_the_14_nov_084532_stop_return_is_cleared(guard):
+    here = {**STOP_084532Z, "gripper": STOP_084532Z_GRIP}
+    v = guard.check_pose(here)
+    assert (v.link, v.face) == ("wrist_pitch_link", "right") and -2.0 < v.slack_mm < -1.6
+    leg1 = {**LEG1_084532Z, "gripper": STOP_084532Z_GRIP}  # the stop leaves the limp gripper where it was
+    assert not guard.check_segment(here, leg1).ok  # what held the arm mid-air
+    verdict = guard.check_return_segment(here, leg1)
+    assert verdict.ok, verdict
+    assert never_worse_than_the_start(guard, here, leg1, step_deg=0.25)

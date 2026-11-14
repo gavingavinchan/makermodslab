@@ -554,6 +554,16 @@ restore paths in the DAgger runner.
   still says alive, so thats wrong". The runner now writes a status file beside its pid
   file every tick and phase (stop path and hold included), and `stop_button.py` shows it
   in large colour: limp joint, HOLDING mid-air, no data from the run, released.
+  Also from live `20261114T084532Z`: the stop's return was refused ("path not clear of the
+  tank keep-out") and the arm held mid-air for 134 s, unlogged, while the shoulder cut out.
+  The re-anchored goal sat 1.84 mm over the right-wall line (Dream's last target was on it,
+  +0.04 mm; between the last tick and the re-anchor, 0.4 s, the shoulder dropped 8.2 deg and
+  wrist_yaw moved 9.1 deg), and the guard refuses any segment that starts over a line. Return
+  legs now use `tank_guard.check_return_segment`: a start inside a requirement by up to the
+  15 mm tracking allowance is walked with that link/face's requirement lowered to 0.5 mm below
+  where it starts, every other requirement unchanged, so the proof is "nothing ends up worse
+  than where it started". Dream substeps keep the old rule. Replay of 507 stop points sampled
+  from that run: the old rule cleared 498, the new one 507, the real stop included.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

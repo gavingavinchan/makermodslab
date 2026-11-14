@@ -281,7 +281,10 @@ class Guard:
         )
 
     def path_clear(self, a, b) -> bool:
-        return True if not self.available else self.guard.check_segment(a, b).ok
+        """A stop's return leg: its start (the re-anchored goal, where the arm is) may sit up to the tracking
+        allowance inside a requirement, and leaves it only along a path that never gets worse than the
+        start (tank_guard.check_return_segment; live 20261114T084532Z held mid-air on a 1.84 mm overshoot)."""
+        return True if not self.available else self.guard.check_return_segment(a, b).ok
 
 
 # --- the arm: a fake for dry runs, the Lab's CAN machinery for live --------------------------
