@@ -64,6 +64,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import dream_real_core as core  # noqa: E402
+import run_data  # noqa: E402
 
 REPO = core.ROOT
 DEFAULT_ARM_FILE = HERE / "tank_model/viscous_waterproof_tank_arm.json"
@@ -1035,6 +1036,8 @@ class Episode:
         say=None,
         status_path=None,
         wall=time.time,
+        mirror_dir=None,
+        frame_sink=None,
     ):
         if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
             raise RefusedError(
@@ -1053,6 +1056,10 @@ class Episode:
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
         # seen limp is shown limp until all torque is off.
         self.status_path, self.wall = (Path(status_path) if status_path else None), wall
+        # The raw run bundle (run_data.py): ticks/chunks mirrored there as written, and the frames read for
+        # Dream handed to its background writer (never an extra camera read).
+        self.mirror_dir = Path(mirror_dir) if mirror_dir else None
+        self.frame_sink = frame_sink
         self.run_state, self.status_phase, self.status_message = "starting", "connect", ""
         self.status_reading, self.last_fresh_wall = None, None
         self.dead: set[str] = set()
@@ -1091,8 +1098,12 @@ class Episode:
         self.chunks = log_dir / "chunks.jsonl"
 
     def _write(self, path, obj):
+        line = json.dumps(obj, default=float) + "\n"
         with path.open("a") as f:
-            f.write(json.dumps(obj, default=float) + "\n")
+            f.write(line)
+        if self.mirror_dir is not None:
+            with contextlib.suppress(Exception), (self.mirror_dir / path.name).open("a") as f:
+                f.write(line)
 
     def _tick(self, phase, reading, cmd, trips=(), **extra) -> None:
         """One line of ticks.jsonl: the loop's ticks and, since the 20261114T082911Z drop, every reading
@@ -1390,6 +1401,9 @@ class Episode:
                         self.dream_pose(reading.pos), self.jmap, self.right_rest, self.s.prompt
                     )
                     self.dream.set_observation(frames, state, now)
+                    if self.frame_sink is not None:
+                        with contextlib.suppress(Exception):
+                            self.frame_sink(now, reading.frames)
                     frames_fed += 1
                     next_frame += core.FRAME_PERIOD_S
                 if self.stop_event.is_set():
@@ -2139,8 +2153,11 @@ def run_dry(args, ctx) -> int:
             mutate={"jump": jump_mutation, "far": far_mutation()}.get(scenario),
             arm_rest=ctx["arm"]["rest"],
             say=print if args.rehearse else None,
+            mirror_dir=ctx["bundle"].mirror_dir(scenario) if ctx.get("bundle") else None,
         )
         summary = episode.run()
+        if ctx.get("bundle"):
+            summary["run_data"] = str(ctx["bundle"].dir)
         summary["fake_arm_events"] = arm.events
         summary["inputs_id"] = getattr(dream, "inputs_id", None)
         if dream is not None:
@@ -2188,6 +2205,8 @@ def run_dry(args, ctx) -> int:
             "cameras is the one Gavin records)"
         )
     print(f"logs: {ctx['out']}")
+    if ctx.get("bundle"):
+        print(f"raw run data (ticks of every scenario, console, inputs): {ctx['bundle'].dir}")
     return 0
 
 
@@ -2445,14 +2464,18 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         arm_rest=arm["rest"],
         say=lambda line: print(line, flush=True),
         status_path=f"{args.pid_file}{core.STATUS_SUFFIX}" if args.pid_file else None,
+        mirror_dir=bundle.mirror_dir() if (bundle := ctx.get("bundle")) else None,
+        frame_sink=(bundle.record_frames() if bundle and not args.rehearse else None),
     )
     try:
         summary = episode.run()
     finally:
         if dream is not None:
             dream.close()
+    if bundle:
+        summary["run_data"] = str(bundle.dir)
     core.atomic_json(out / "summary.json", summary)
-    shown = ("reason", "calls", "phases", "at_trip", "stop")
+    shown = ("reason", "calls", "phases", "at_trip", "stop", "run_data")
     print(json.dumps({k: summary[k] for k in shown if k in summary}, indent=1, default=str))
     return 0 if not summary["trips"] else 1
 
@@ -2550,6 +2573,13 @@ def main(argv=None) -> int:
     )
     p.add_argument("--pid-file")
     p.add_argument("--out", type=Path)
+    p.add_argument(
+        "--run-data",
+        type=Path,
+        default=run_data.RUN_DATA,
+        help="where this run's raw bundle goes (a ring of the last 10; see run_data.py)",
+    )
+    p.add_argument("--no-run-data", action="store_true", help="write no raw bundle (tests)")
     args = p.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
@@ -2570,11 +2600,47 @@ def main(argv=None) -> int:
     limits, limits_source = follower_limits(home, record)
     stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     out = args.out or (HERE / "runs" / f"{kind}-{stamp}")
+    bundle = None
+    if not args.no_run_data:
+        try:
+            bundle = run_data.RunBundle.start(
+                out.name,
+                args.run_data,
+                meta={
+                    "kind": kind,
+                    "lab_home": str(home),
+                    "robot": args.robot,
+                    "follower_port": record.get("follower_port"),
+                    "leader_port": record.get("leader_port"),
+                    "cameras": [
+                        {k: c.get(k) for k in ("name", "unique_id", "camera_index", "width", "height", "fps")}
+                        for c in record.get("cameras") or []
+                    ],
+                    "run_folder": str(out),
+                },
+            )
+            bundle.tee()
+        except Exception as error:  # noqa: BLE001 - the run goes on without its raw bundle, and says so
+            print(f"run-data: NOT recorded ({error.__class__.__name__}: {error})")
+            bundle = None
+    try:
+        return _main(args, p, kind, home, record, limits, limits_source, out, bundle)
+    finally:
+        if bundle is not None:
+            bundle.finish(out)
+            print(f"raw run data: {bundle.dir}")
+
+
+def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> int:
     source_arm = (args.arm_file or DEFAULT_ARM_FILE).expanduser().resolve()
     arm_path, rest_note = effective_arm_file(source_arm, args.keep_arm_rest, out)
     arm = json.loads(arm_path.read_text())
     urdf_path = arm_path.parent / arm["urdf"]
     urdf_bytes = urdf_path.read_bytes()
+    if bundle is not None:
+        for src in (core.KEEPOUT_FILE, BOX_FILE, source_arm, arm_path, urdf_path):
+            bundle.copy_input(src)
+        bundle.copy_input(home / "robots" / f"{args.robot}.json", "robot_record.json")
     print(f"arm file: {source_arm}\n  {rest_note}")
     sidecars = [
         source_arm.parent / Path(arm["urdf"]).with_suffix(".provenance.json"),
@@ -2651,6 +2717,7 @@ def main(argv=None) -> int:
         "dream_problem": dream_problem,
         "plan": plan,
         "out": out,
+        "bundle": bundle,
     }
     if not args.live and not args.preview:
         print(

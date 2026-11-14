@@ -18,6 +18,7 @@ Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-t
 |---|---|
 | `dream_real.py` | The runner: `--dry-run` (default), `--preview`, `--live`; `--rehearse` (no Dream) alone or with `--live` |
 | `stop_button.py` | The big red button: an always-on-top window that sends SIGTERM to the runner's `--pid-file` pid |
+| `run_data.py` | Raw run bundles outside git (a ring of the last 10, KEEP to keep one forever) and their CLI |
 | `dream_real_core.py` | Pure helpers: frame maps, limits, retiming, workspace box, trips, refusals, ledger, images |
 | `make_tank_arm.py` | Generates the tank IK model below, with provenance |
 | `tank_model/viscous_waterproof_tank.urdf` | The arm URDF with a `dream_base` root turned 180 deg and the unit's own limits |
@@ -25,6 +26,41 @@ Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-t
 | `tank_model/viscous_waterproof_tank_arm.json` | Dry-run arm file only (no `tcp_calibration`; tcp copied from `viscous_arm.json`, never confirmed) |
 | `workspace_box_viscous_waterproof_01.json` | Per-point boxes in the physical base frame (proposal, pending Gavin) |
 | `tests/test_viscous_dream_real.py` (repo root) | Offline tests: pure helpers, the loop on fakes, the stop button's logic |
+
+## Raw run data (every run, the last 10 kept)
+
+Gavin (2026-11-14): "all run from now to the future, keep all the last 10 run logs, like all the raw
+data, if possible even camera in the future, so we can always go back in time to figure out what is
+wrong. then discard by default unless needed to be kept".
+
+Every run of `dream_real.py` (dry, rehearse, preview, live) also writes a raw bundle to
+`~/.makermods/makermodslab-viscous/run-data/<run-name>/` (`run_data.RUN_DATA`; `--run-data DIR`
+elsewhere, `--no-run-data` none): `meta.json` (command line, git SHA, `git diff --stat`, host, Lab
+home, ports, cameras), `console.log` (everything printed), `ticks.jsonl` and `chunks.jsonl` mirrored as
+written (every tick at full rate, the stop path and the hold included; per scenario in a dry run),
+`inputs/` (keep-out, box, arm file, URDF, robot record), `run/` (the runs/ folder at the end: plan,
+summary, Dream logs, preview frames), and, live with Dream only, `frames/` (below). Each summary
+names its bundle (`run_data`). The small run folders under `runs/` are unchanged: they stay the
+evidence the docs point to.
+
+The ring: at the start of each run, the oldest bundles beyond the newest 10 are deleted. A bundle with
+a `KEEP` file is kept forever and does not count. Prune never deletes an `ACTIVE` bundle whose pid is
+alive, a bundle written in the last 2 min, a symlink, or anything that is not a folder directly under
+`run-data/`.
+
+```bash
+.venv/bin/python scripts/viscous-dream1/real/run_data.py list
+.venv/bin/python scripts/viscous-dream1/real/run_data.py keep live-20261114T084532Z "return refused, shoulder cut out in the hold"
+.venv/bin/python scripts/viscous-dream1/real/run_data.py unkeep live-20261114T084532Z
+.venv/bin/python scripts/viscous-dream1/real/run_data.py prune
+```
+
+Cameras: no extra read. The frames the live loop already hands to Dream (5 Hz, every record camera,
+full 640x480) go to a background writer as JPEG q80, `frames/<camera>/<t>.jpg` plus
+`frames/index.jsonl`; a full queue drops a frame (counted in `frames/stats.json`) rather than wait.
+About 50-85 KB a frame, so two cameras are ~30-50 MB a minute; it stops by itself past 2 GB in a run
+or under 4 GB of free disk. Rehearsals open no cameras, and the stop path closes them, so frames end
+at the stop: the stop and the hold are in the ticks, not on video.
 
 ## Why a tank model
 

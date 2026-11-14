@@ -564,6 +564,14 @@ restore paths in the DAgger runner.
   where it starts, every other requirement unchanged, so the proof is "nothing ends up worse
   than where it started". Dream substeps keep the old rule. Replay of 507 stop points sampled
   from that run: the old rule cleared 498, the new one 507, the real stop included.
+- *Status (2026-11-14, later): raw run data, a ring of the last 10.* Gavin: "all run from
+  now to the future, keep all the last 10 run logs, like all the raw data, if possible even
+  camera in the future, so we can always go back in time to figure out what is wrong. then
+  discard by default unless needed to be kept". Every `dream_real.py` run now writes a bundle
+  to `~/.makermods/makermodslab-viscous/run-data/<run>/` (console, every tick through the
+  stop and the hold, Dream chunks, meta with git SHA and diff stat, the inputs used, the run
+  folder, and live the 5 Hz frames already read for Dream). Pruned to the newest 10 at each
+  run's start; `run_data.py keep <run> [reason]` keeps one forever. See the runner README.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

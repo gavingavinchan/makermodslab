@@ -719,6 +719,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         patch=None,
         settings_changes=None,
         status_path=None,
+        bundle=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -778,8 +779,12 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 arm_rest=arm_rest,
                 status_path=status_path,
                 wall=clock,
+                mirror_dir=bundle.mirror_dir(scenario) if bundle else None,
             )
             summary = self.ep.run()
+            if bundle:
+                core.atomic_json(Path(tmp) / "summary.json", summary)
+                bundle.finish(Path(tmp))
             ticks = Path(tmp) / "ticks.jsonl"
             self.tick_rows = (
                 [json.loads(line) for line in ticks.read_text().splitlines()] if ticks.exists() else []
@@ -1154,6 +1159,37 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertEqual(final["limp"], ["shoulder_lift"])
         self.assertEqual(final["pid"], __import__("os").getpid())
         self.assertEqual(core.STATUS_SUFFIX, __import__("stop_button").STATUS_SUFFIX)
+
+    def test_a_fake_run_writes_its_raw_bundle_through_the_stop_and_the_hold(self):
+        import run_data
+
+        with tempfile.TemporaryDirectory() as root:
+            bundle = run_data.RunBundle.start(
+                "rehearse-dry-20261114T120000Z", Path(root), meta={"kind": "test"}
+            )
+            bundle.tee()
+            try:
+                print("hello from the run")
+                bundle.copy_input(core.KEEPOUT_FILE)
+                self.episode("limp", max_calls=5, after=self.second_signal_at(1030), bundle=bundle)
+            finally:
+                bundle.finish()  # idempotent: the harness finished it already
+            path = Path(root) / "rehearse-dry-20261114T120000Z"
+            meta = json.loads((path / "meta.json").read_text())
+            self.assertEqual(meta["kind"], "test")
+            self.assertTrue(meta["git_sha"])
+            self.assertIn("argv", meta)
+            console = (path / "console.log").read_text()
+            self.assertIn("hello from the run", console)
+            self.assertIn("LIMP: shoulder_lift went limp", console)
+            self.assertTrue((path / "inputs" / core.KEEPOUT_FILE.name).is_file())
+            ticks = [json.loads(line) for line in (path / "limp" / "ticks.jsonl").read_text().splitlines()]
+            self.assertEqual(ticks, self.tick_rows)  # the mirror is the run's log, line for line
+            self.assertIn("stop: HOLDING", {t["phase"] for t in ticks})
+            self.assertTrue((path / "run" / "summary.json").is_file())
+            self.assertFalse((path / "run" / "ticks.jsonl").exists())  # mirrored live, not copied twice
+            self.assertFalse((path / run_data.ACTIVE).exists())
+            self.assertIs(sys.stdout.__class__.__name__ == "_Tee", False)
 
     def test_a_joint_going_limp_while_held_is_announced(self):
         # Held after a stuck leg; then the shoulder's motor cuts out under the hold.
