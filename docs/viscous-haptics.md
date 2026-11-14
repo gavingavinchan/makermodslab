@@ -534,6 +534,9 @@ restore paths in the DAgger runner.
   about 5x per pose check (0.5 -> 2.7 ms), so it was parked. The post stays covered by
   the near plane at its face (106 mm), applied across the full width, so J3 and every
   link beyond the elbow keep 70 mm off it; the heel keeps its 40 mm limit.
+  Gavin, same night: "no need to leave the 5mm gap between fin and the arm, they dont
+  hit each other, ive played with it" (moved by hand through its range, no contact), so
+  the fin needs no keep-out at all.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
