@@ -1964,6 +1964,17 @@ file instead.
   `5ce2fe41a` plus 16 Viscous commits. Do it in its own worktree, keep the
   Viscous tests green, and do a powered acceptance run before it replaces the
   running Lab on either machine.
+  - *Status (2026-11-13):* merged `upstream/staging` `232f8894` on branch
+    `feat/viscous-upstream-sync` (merge `7888ed7e`), not yet in this branch.
+    Every new upstream CAN behaviour is opted OFF for Viscous and pinned by
+    `tests/test_viscous_upstream_optouts.py`. The most serious catch: upstream
+    fits the Maker URDF gravity feed-forward to every `MakerFollower`, which
+    the Viscous follower subclasses; it is now gated, and our own
+    `MAKERMODSLAB_GRAVITY_FF` is unchanged. Offline checks on gavin-linux match
+    the baseline. Conflicts, the OFF list (how to turn each on, what to test
+    at the arm) and results are in
+    [viscous-upstream-sync-2026-11.md](viscous-upstream-sync-2026-11.md).
+    Still needed: Gavin's review, then the powered acceptance run.
 
 **Parallel track (Gavin, 2026-10-27): B4, shackle pin insertion, sim to real.**
 
