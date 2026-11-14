@@ -8380,6 +8380,10 @@
             "title": "Releasing",
             "type": "boolean"
           },
+          "rest_failed": {
+            "title": "Rest Failed",
+            "type": "boolean"
+          },
           "status_sentence": {
             "anyOf": [
               {
@@ -8406,6 +8410,7 @@
           "gripper_haptics",
           "available_controls",
           "releasing",
+          "rest_failed",
           "last_cleanup_error",
           "outcome",
           "error",
