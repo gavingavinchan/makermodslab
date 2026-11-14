@@ -40,6 +40,7 @@ class MakerFamily(CanArmFamily):
     # https://www.waveshare.com/wiki/ST3215_Servo
     recording_home_speed_deg_s = 400.0 * 360.0 / 4096.0
     recording_home_is_rest_pose = True
+    gravity_feedforward_scale = 1.0
     id = "maker"
     label = "Maker Arm v1"
     short_label = "Maker"
@@ -47,6 +48,7 @@ class MakerFamily(CanArmFamily):
 
     supports_gripper_wiggle = True
     supports_teleop_speed_limit = True
+    supports_gripper_effort_control = True
 
     follower_zero_pose = "Move the arm by hand to its ZERO POSE — folded against the base, gripper fully closed — then confirm."
 
@@ -66,6 +68,13 @@ class MakerFamily(CanArmFamily):
     # tells a bimanual rig's two followers apart is safe to watch.
     follower_probe_protocol = "robstride"
     motion_identify_energizes_follower = False
+
+    def prepare_teleoperation(self, robot):
+        from ..maker_rest_pose import maker_follower_arms
+        from ..maker_teleop_safety import MakerTeleopSafety
+
+        for arm, _label in maker_follower_arms(robot):
+            MakerTeleopSafety(arm)
 
     def leader_options(self) -> tuple[LeaderOption, ...]:
         from ..star_gripper import STAR_TRIGGER_LEADER_KIND

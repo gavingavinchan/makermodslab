@@ -290,12 +290,30 @@ class ArmFamily(ABC):
     supports_tank_measurement: bool = False
     supports_bimanual: bool
 
+    def prepare_teleoperation(self, robot: Any) -> None:
+        """Install family-specific control safeguards before connecting."""
+        return None
+
+    def prepare_leader_following(self, robot: Any) -> None:
+        """Bound the follower's motion before a flow that makes it chase a leader.
+
+        Teleoperation and recording both call this on the freshly built
+        follower, before connecting. The default leaves the follower as the
+        driver built it.
+        """
+        return None
+
     def urdf_joint_positions(self, degrees: dict[str, float]) -> dict[str, float]:
         """Map CAN motor degrees to this family's viewer joints, if it ships a model."""
         return {}
 
     # --- capability flags -------------------------------------------------
     uses_feetech_bus: bool
+    # A failed landing must retain bus ownership until an explicit torque release.
+    requires_verified_rest: bool = False
+    # Remote hosting (CAN): the gripper follows the operator without the
+    # 30 deg/s target-speed cap the arm joints get. False caps it too.
+    hosted_gripper_skips_speed_cap: bool = True
     supports_auto_calibration: bool
     supports_dagger: bool
     # The current DRTC robot entrypoints can safely drive this family. False
@@ -309,6 +327,8 @@ class ArmFamily(ABC):
     recording_home_speed_deg_s: float | None = None
     # Upright zero poses must not replace the captured torque-off resting pose.
     recording_home_is_rest_pose: bool = False
+    # Gravity feed-forward on the follower's MIT frames, 0..1.2; 0 sends none.
+    gravity_feedforward_scale: float = 0.0
 
     def hold_recording_home(self, targets):
         """Finalize a completed follower-only home return before no-send reset."""
@@ -393,6 +413,7 @@ class ArmFamily(ABC):
     supports_gripper_haptics: bool = False
     # Opt-in for the local MIT holding / mode-4 gripper adapters.
     supports_gripper_effort_control: bool = False
+    supports_gripper_current_control: bool = False
 
     def teleop_adapter_units(self) -> dict:
         """Adapter enrollment seam; future motor UID verification belongs here."""
@@ -701,7 +722,9 @@ class ArmFamily(ABC):
         return []
 
     @abstractmethod
-    def return_to_rest(self, rest_poses: list[tuple[Any, dict]], abort_event: Any = None) -> None:
+    def return_to_rest(
+        self, rest_poses: list[tuple[Any, dict]], abort_event: Any = None
+    ) -> list[tuple[bool, str]] | None:
         """Drive every captured arm back to its pose, concurrently, then return.
 
         Runs on a NORMAL stop, immediately before release_torque, and returns
@@ -709,7 +732,8 @@ class ArmFamily(ABC):
         ceiling, or been cut short). ``abort_event`` (a second stop press)
         cuts every arm's return short promptly, leaving it nearer rest than it
         started. Best-effort, never raises: every outcome falls through to
-        the unconditional release.
+        the release. Families with requires_verified_rest return one verdict per
+        captured arm; teleoperation retains ownership when any verdict fails.
         """
 
     @abstractmethod

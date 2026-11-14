@@ -117,6 +117,10 @@ class CanArmFamily(ArmFamily):
     follower_zero_pose: str
 
     uses_feetech_bus = False
+    requires_verified_rest = True
+    # return_to_rest re-commands the captured pose even when feedback already
+    # reads within tolerance (upstream's teleop tracking failsafe).
+    rest_return_ensures_target = True
     supports_auto_calibration = False
     # The zero-pose procedure below, run as the generic step wizard.
     calibration_kind = "steps"
@@ -434,22 +438,28 @@ class CanArmFamily(ArmFamily):
                 continue
             drive = maker_rest_pose.EnergizedLeaderDrive(arm)
             pose = maker_rest_pose.capture_maker_pose(drive, include_gripper=False)
-            if pose:
-                poses.append((drive, pose))
+            poses.append((drive, pose))
         return poses
 
-    def return_to_rest(self, rest_poses: list[tuple[Any, dict]], abort_event: Any = None) -> None:
+    def return_to_rest(
+        self, rest_poses: list[tuple[Any, dict]], abort_event: Any = None
+    ) -> list[tuple[bool, str]]:
         # The MIT setpoint interpolated at a bounded rate, arrival judged by
         # CONVERGENCE (a loaded joint holds a standing error), all arms at once.
         from .. import maker_rest_pose
 
+        # Upstream re-commands the captured pose even when feedback already
+        # reads within tolerance (``ensure_target``); a family that has not
+        # been accepted with that on its hardware opts out.
+        ensure_target = self.rest_return_ensures_target
         caps = [
             getattr(getattr(device, "bus", None), "speed_limit_deg_s", None) for device, _pose in rest_poses
         ]
         caps = [cap for cap in caps if isinstance(cap, (int, float)) and cap > 0]
         if not caps:
-            maker_rest_pose.return_maker_arms_to_rest(rest_poses, abort_event)
-            return
+            return maker_rest_pose.return_maker_arms_to_rest(
+                rest_poses, abort_event, ensure_target=ensure_target
+            )
         speed = min(maker_rest_pose.MAKER_RETURN_SPEED_DEG_S, *caps)
         # A slower return needs time to finish, never extra speed to meet a
         # deadline designed for the standard 30 deg/s return.
@@ -459,11 +469,12 @@ class CanArmFamily(ArmFamily):
             for lo, hi in getattr(getattr(device, "config", None), "joint_limits", {}).values()
         ]
         ceiling = max(maker_rest_pose.MAKER_RETURN_CEILING_S, max(spans, default=360) / speed + 3)
-        maker_rest_pose.return_maker_arms_to_rest(
+        return maker_rest_pose.return_maker_arms_to_rest(
             rest_poses,
             abort_event,
             speed_deg_s=speed,
             ceiling_s=ceiling,
+            ensure_target=ensure_target,
         )
 
     def release_torque(self, device: Any, label: str = "device") -> list[str]:

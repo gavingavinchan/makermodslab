@@ -37,7 +37,7 @@ from .arm_capabilities import require_known_arm_type
 from .arm_identity import ArmIdentityError
 from .arms import registry as arm_registry
 from .bus_retry import BUS_SYNC_READ_RETRIES as _BUS_SYNC_READ_RETRIES  # noqa: F401
-from .camera_preview import camera_preview_manager
+from .camera_preview import DEFAULT_FOURCC, camera_preview_manager
 from .datasets import (
     _lerobot_cache_root,
     invalidate_dataset_listing_cache,
@@ -69,7 +69,7 @@ logger = logging.getLogger(__name__)
 # from the UI. MJPG is ~10x smaller and lets the full rig stream. macOS already
 # negotiates MJPEG, so this only changes Linux behavior. An explicit per-camera
 # fourcc (e.g. a deliberate YUYV choice from the UI) still wins.
-_DEFAULT_FOURCC = "MJPG"
+_DEFAULT_FOURCC = DEFAULT_FOURCC  # one default, shared with the live preview
 
 # --- Motor bus read retries ----------------------------------------------------
 # Moved to makermodslab/bus_retry.py so the two subprocess runners (eval and
@@ -562,6 +562,46 @@ def _is_transient_camera_error(msg: str) -> bool:
             "timed out waiting for frame",
         )
     )
+
+
+# A USB camera that drops off the bus mid-session (a flaky cable or hub
+# re-enumerating it, seen 2026-09-18 on a KD-USB camera) usually comes back on
+# the same /dev/video node within ~0.5 s. Its background reader dies with it,
+# and every later read raises "read thread is not running", so without a
+# reconnect one blip ends the whole recording session.
+_CAMERA_RECOVERY_ATTEMPTS = 5
+_CAMERA_RECOVERY_DELAY_S = 1.0
+
+
+def _recover_dead_cameras(robot, sleep: Callable[[float], None] = time.sleep) -> list[str]:
+    """Reconnect every camera on `robot` whose background reader has died.
+
+    Returns the names reconnected (empty when every reader is alive, so the
+    caller's original error is not a dead camera and should propagate).
+    Raises the last connect error when a camera does not come back.
+    """
+    dead = {
+        name: cam
+        for name, cam in (getattr(robot, "cameras", None) or {}).items()
+        if hasattr(cam, "thread") and (cam.thread is None or not cam.thread.is_alive())
+    }
+    for name, cam in dead.items():
+        logger.warning("📷 CAMERA RECOVERY: %s (%s) stopped delivering frames; reconnecting", name, cam)
+        for attempt in range(1, _CAMERA_RECOVERY_ATTEMPTS + 1):
+            try:
+                cam.disconnect()
+            except Exception:
+                logger.debug("Camera %s disconnect before reconnect failed", name, exc_info=True)
+            try:
+                cam.connect()
+                logger.warning("📷 CAMERA RECOVERY: %s reconnected (attempt %d)", name, attempt)
+                break
+            except Exception as e:
+                if attempt == _CAMERA_RECOVERY_ATTEMPTS:
+                    logger.error("📷 CAMERA RECOVERY: %s did not come back: %s", name, e)
+                    raise
+                sleep(_CAMERA_RECOVERY_DELAY_S)
+    return list(dead)
 
 
 def create_record_config(request: RecordingRequest, cameras: dict | None = None) -> RecordConfig:
@@ -2265,6 +2305,9 @@ def record_with_web_events(
 
         install_metal_gripper(robot, getattr(cfg, "_makermodslab_robot_name", ""))
 
+    if teleop is not None:
+        family.prepare_leader_following(robot)
+
     teleop_action_processor, robot_action_processor, robot_observation_processor = make_default_processors()
     publish_preview = observation_tap(robot, family)
 
@@ -2604,7 +2647,13 @@ def record_with_web_events(
     original_get_observation = robot.get_observation
 
     def get_observation_with_preview(*args, **kwargs):
-        observation = original_get_observation(*args, **kwargs)
+        try:
+            observation = original_get_observation(*args, **kwargs)
+        except Exception:
+            # Only a dead camera reader is recovered; anything else propagates.
+            if not _recover_dead_cameras(robot):
+                raise
+            observation = original_get_observation(*args, **kwargs)
         publish_preview(observation)
         return observation
 
