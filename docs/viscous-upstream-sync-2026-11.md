@@ -256,6 +256,13 @@ is fixed below). Fixed after review:
 - **CLAUDE.md named makermods-robotics' lerobot pin** (Fable): it now names
   ours and says to keep it when merging makermods-robotics.
 
+After the fixes (`c9875e9b`, gavin-linux, same venv and commands as above):
+`tests/` 4,897 passed, 1 failed (the same pre-existing
+`test_single_device_configs_carry_the_port_and_id[viscous]`), 17 skipped,
+which is the 4,891 plus the six new tests; `sdk/tests` 427 passed; the OpenAPI
+export has no diff; ruff check the same 4,673 findings and ruff format the
+same 199 files as the baseline.
+
 Noted, not changed: 50 of the 121 merged upstream commits carry
 `Co-Authored-By: Claude` trailers from upstream's own history. Gavin's
 no-attribution rule is about commits written for him; only a squash would drop
