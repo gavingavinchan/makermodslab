@@ -103,8 +103,19 @@ STATUS_SUFFIX = ".status.json"
 def write_status(path: Path, obj) -> None:
     """Atomic (rename) but not fsynced: written every 50 ms tick, read by the button, never kept."""
     tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
-    tmp.write_text(json.dumps(obj, allow_nan=False, default=str))
+    tmp.write_text(json.dumps(finite_status(obj), allow_nan=False, default=str))
     os.replace(tmp, path)
+
+
+def finite_status(obj):
+    """Unknown/non-finite telemetry is JSON null; never freeze the safety panel on NaN/Inf."""
+    if isinstance(obj, float) and not math.isfinite(obj):
+        return None
+    if isinstance(obj, dict):
+        return {k: finite_status(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [finite_status(v) for v in obj]
+    return obj
 
 
 # --- URDF forward kinematics (numpy) ------------------------------------------

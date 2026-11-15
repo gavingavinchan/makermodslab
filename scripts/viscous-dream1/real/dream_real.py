@@ -1070,6 +1070,7 @@ class Episode:
         self.view = view
         self.stop_button_alive = stop_button_alive
         self.view_problem_reported = False
+        self.status_problem_reported = False
         # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
         # seen limp is shown limp until all torque is off.
@@ -1231,21 +1232,32 @@ class Episode:
             }
             for m in core.ARM
         }
-        with contextlib.suppress(Exception):
+        try:
             core.write_status(
                 self.status_path,
-                {
-                    "pid": os.getpid(),
-                    "run": self.log_dir.name,
-                    "written": self.wall(),
-                    "phase": self.status_phase,
-                    "state": self.run_state,
-                    "limp": sorted(self.dead),
-                    "joints": joints,
-                    "last_reading": self.last_fresh_wall,
-                    "message": self.status_message,
-                },
+                core.finite_status(
+                    {
+                        "pid": os.getpid(),
+                        "run": self.log_dir.name,
+                        "written": self.wall(),
+                        "phase": self.status_phase,
+                        "state": self.run_state,
+                        "limp": sorted(self.dead),
+                        "joints": joints,
+                        "last_reading": self.last_fresh_wall,
+                        "message": self.status_message,
+                    }
+                ),
             )
+            self.status_problem_reported = False
+        except Exception as error:
+            if not self.status_problem_reported:
+                print(f"STOP BUTTON STATUS WRITE FAILED (no status): {error}", flush=True)
+                self.status_problem_reported = True
+            # Prefer an explicit 'no status' panel to a frozen old HOLD/RUNNING.
+            # If the directory itself is unwritable the age check reports no status.
+            with contextlib.suppress(OSError):
+                self.status_path.unlink(missing_ok=True)
 
     def _phase(self, name, detail=""):
         if name == "pause" and self.view is not None:
@@ -1431,7 +1443,7 @@ class Episode:
             next_tick = next_frame = self.clock()
             while True:
                 if self.stop_button_alive is not None and not self.stop_button_alive():
-                    reason = "stop button gone"
+                    reason = getattr(self.stop_button_alive, "reason", "stop button gone")
                     break  # internal stop: never sets stop_event or abort_event
                 now = self.clock()
                 try:
@@ -1847,20 +1859,22 @@ class Episode:
         limp while held is announced (core.LimpMonitor against the goal it is held at): a held arm whose
         shoulder cuts out is not held. `goal` is the arm goal held without a re-anchor."""
         self._phase("stop: HOLDING", why)
-        # Any signal from here releases. A stop that began without a signal (call cap, trip) left stop_event
-        # clear, so the handler would have spent the next press on "stop" and the hold kept waiting: Gavin
-        # pressed once, supported the arm, and torque stayed on (live 2026-11-08T215535Z).
+        # Terminal mode retains its one-further-signal hold release. Supervised
+        # handlers ignore repeated STOPs; only the physical-click SIGUSR1 aborts.
         self.stop_event.set()
+        release_help = (
+            "click the red button (SIGUSR1) to release all torque; keys and remote stops cannot release."
+            if self.stop_button_alive is not None
+            else "press the stop button again (or Ctrl-C / kill -TERM) to release all torque."
+        )
         if out.get("limp"):
             print(
-                f"NOT HOLDING {', '.join(sorted(out['limp']))} ({why}). Support the arm, then press the stop "
-                "button again (or Ctrl-C / kill -TERM) to release all torque.",
+                f"NOT HOLDING {', '.join(sorted(out['limp']))} ({why}). Support the arm, then {release_help}",
                 flush=True,
             )
         else:
             print(
-                f"RETURN HELD ({why}): HOLDING (gripper already limp). Support the arm, then press the stop "
-                "button again (or Ctrl-C / kill -TERM) to release all torque.",
+                f"RETURN HELD ({why}): HOLDING (gripper already limp). Support the arm, then {release_help}",
                 flush=True,
             )
         lim = self.s.trips
@@ -2434,36 +2448,84 @@ def rehearse_refusals(f: core.LiveFacts) -> list[str]:
     )
 
 
-def button_liveness(pid):
+def button_liveness(pid, start_time=None, pid_file=None, timeout=2.0, *, clock=time.monotonic):
     if pid is None:
         return None  # terminal runs keep their existing signal semantics
     import psutil
 
     try:
         button = psutil.Process(pid)
+        expected_start = button.create_time() if start_time is None else start_time
     except psutil.NoSuchProcess:
         return lambda: False
 
+    last_heartbeat = None
+
     def alive():
+        nonlocal last_heartbeat
+        alive.reason = "stop button gone"
         try:
-            return button.is_running() and button.status() != psutil.STATUS_ZOMBIE
+            if (
+                not button.is_running()
+                or button.status() == psutil.STATUS_ZOMBIE
+                or button.create_time() != expected_start
+            ):
+                return False
         except psutil.NoSuchProcess:
             return False
+        if pid_file is not None:
+            try:
+                heartbeat = json.loads(Path(f"{pid_file}.button.json").read_text())
+                mono, wall = heartbeat["mono"], heartbeat["wall"]
+                if (
+                    heartbeat["pid"] == pid
+                    and heartbeat["start_time"] == expected_start
+                    and math.isfinite(mono)
+                    and math.isfinite(wall)
+                    and wall >= expected_start
+                    and mono <= clock()
+                ):
+                    last_heartbeat = max(last_heartbeat or mono, mono)
+            except (OSError, ValueError, TypeError, KeyError):
+                pass  # after the first heartbeat, lost/corrupt data also expires
+            if last_heartbeat is not None and clock() - last_heartbeat > timeout:
+                alive.reason = "stop button not responding"
+                return False
+        return True
 
+    alive.reason = "stop button gone"
     return alive
 
 
-def install_stop_signals(pid_file):
-    """SIGINT/SIGTERM/SIGHUP (handlers installed, so nohup cannot swallow them): the first stops, a
-    second aborts the return and releases. stop_button.py sends SIGTERM to the pid written here."""
+def install_stop_signals(pid_file, button_supervised=False):
+    """Supervised: TERM/INT/HUP only STOP, USR1 releases. Terminal: retain two-stop-signal release.
+
+    Publish the pid only after every handler is installed. USR1 also supports a
+    manually opened button in terminal mode, without changing Ctrl-C/TERM behaviour.
+    """
     stop_event, abort_event = threading.Event(), threading.Event()
 
     def on_signal(signum, _frame):
+        if signum == signal.SIGUSR1:
+            stop_event.set()
+            abort_event.set()
+            print("SIGUSR1: physical click release; abort return/hold, all torque off", flush=True)
+            return
+        if button_supervised:
+            repeated = stop_event.is_set()
+            stop_event.set()
+            print(
+                f"signal {signum}: STOP {'ignored (already stopping/holding)' if repeated else 'requested'}; "
+                "no-op during return/hold; release requires physical click (SIGUSR1)",
+                flush=True,
+            )
+            return
         (abort_event if stop_event.is_set() else stop_event).set()
         print(f"signal {signum}: {'abort the return' if abort_event.is_set() else 'stopping'}", flush=True)
 
     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, on_signal)
+    signal.signal(signal.SIGUSR1, on_signal)
     if pid_file:
         Path(pid_file).write_text(f"{os.getpid()}\n")
     return stop_event, abort_event
@@ -2490,7 +2552,7 @@ def run_live(args, ctx) -> int:
     out = ctx["out"]
     out.mkdir(parents=True, exist_ok=True)
     core.atomic_json(out / "plan.json", ctx["plan"])
-    stop_event, abort_event = install_stop_signals(args.pid_file)
+    stop_event, abort_event = install_stop_signals(args.pid_file, args.stop_button_pid is not None)
     try:
         return _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event)
     finally:
@@ -2540,8 +2602,13 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     print(
         f"{'REHEARSAL (no Dream, no billed call). ' if args.rehearse else ''}Energizing next: ALL SEVEN joints may "
         f"move (plan {ctx['plan']['plan_id']}), arm <= {ctx['settings'].speed_deg_s:g} deg/s. Stop: the red button "
-        f"(stop_button.py --pid-file {args.pid_file or '<none>'}), Ctrl-C or kill -TERM {os.getpid()}; a second press "
-        "releases all torque at once; the power switch is the hard stop.",
+        f"(stop_button.py --pid-file {args.pid_file or '<none>'}), Ctrl-C or kill -TERM {os.getpid()}; "
+        + (
+            "only a physical button click (SIGUSR1) aborts the return/hold and releases all torque. "
+            if args.stop_button_pid is not None
+            else "a second stop signal releases all torque at once. "
+        )
+        + "The power switch is the hard stop.",
         flush=True,
     )
     speed = ctx["settings"].speed_deg_s
@@ -2566,7 +2633,9 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         mirror_dir=bundle.mirror_dir() if (bundle := ctx.get("bundle")) else None,
         frame_sink=(bundle.record_frames() if bundle and not args.rehearse else None),
         view=ctx.get("view"),
-        stop_button_alive=button_liveness(args.stop_button_pid),
+        stop_button_alive=button_liveness(
+            args.stop_button_pid, args.stop_button_start_time, args.pid_file, args.stop_button_timeout_s
+        ),
     )
     try:
         summary = episode.run()
@@ -2684,6 +2753,12 @@ def main(argv=None) -> int:
     p.add_argument(
         "--stop-button-pid", type=int, help="live: gracefully stop internally if this button exits"
     )
+    p.add_argument(
+        "--stop-button-start-time", type=float, help="button process creation time (pid reuse guard)"
+    )
+    p.add_argument(
+        "--stop-button-timeout-s", type=float, default=2.0, help="button heartbeat timeout (default: 2 s)"
+    )
     p.add_argument("--pid-file")
     p.add_argument("--out", type=Path)
     p.add_argument(
@@ -2694,6 +2769,8 @@ def main(argv=None) -> int:
     )
     p.add_argument("--no-run-data", action="store_true", help="write no raw bundle (tests)")
     args = p.parse_args(argv)
+    if not math.isfinite(args.stop_button_timeout_s) or args.stop_button_timeout_s <= 0:
+        p.error("--stop-button-timeout-s must be finite and positive")
     sys.stdout.reconfigure(line_buffering=True)
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")

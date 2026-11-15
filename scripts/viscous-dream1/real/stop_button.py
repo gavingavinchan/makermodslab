@@ -15,11 +15,11 @@
 """The big red button for dream_real.py (Gavin: "one big red button to stop").
 
 A small always-on-top window, a separate process from the runner, so it works even if the runner's
-loop is stuck. It sends SIGTERM to the pid in the runner's --pid-file:
+loop is stuck. It signals the pid in the runner's --pid-file:
 
-  first press   STOP: the runner releases the gripper at once, walks the arm back to its rest at
+  first press   STOP (SIGTERM): the runner releases the gripper at once, walks the arm back to its rest at
                 <= 15 deg/s, then releases all torque.
-  second press  RELEASE ALL TORQUE NOW (arm drops): aborts the return and releases everything.
+  second click  RELEASE ALL TORQUE NOW (SIGUSR1, arm drops): aborts the return and releases everything.
 
 Space, Enter and Escape press STOP while the window has focus. They never give the second press: a
 held key auto-repeats, and that must not skip the return. The second press is a click on the button,
@@ -42,11 +42,14 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import math
 import os
 import signal
 import subprocess
 import time
 from pathlib import Path
+
+import psutil
 
 DEFAULT_PID_FILE = "/tmp/dream_real.pid"
 ARM_SECOND_S = 1.0  # the release-all press is refused this soon after STOP
@@ -77,16 +80,26 @@ def request_directory(pid_file):
     return Path(f"{pid_file}.press")
 
 
-def request_remote_press(pid_file, source):
+def runner_start(pid):
+    try:
+        return psutil.Process(pid).create_time()
+    except (psutil.Error, ValueError):
+        return None
+
+
+def request_remote_press(pid_file, source, target_pid=None, *, wall=time.time):
     """Atomic mailbox; the Tk timer consumes requests on its own thread."""
     import uuid
 
+    if target_pid is None:
+        target_pid = int(Path(pid_file).read_text().split()[0])
     directory = request_directory(pid_file)
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"{uuid.uuid4().hex}.json"
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps({"source": source}))
+    tmp.write_text(json.dumps({"source": source, "pid": target_pid, "written": wall()}))
     tmp.replace(path)
+    return path
 
 
 def read_status(pid_file) -> dict | None:
@@ -127,7 +140,7 @@ def status_view(pid: int | None, pid_line: str, status: dict | None, now: float)
     last = status.get("last_reading")
     if not isinstance(written, (int, float)) or now - written > STALE_S:
         age = f"{now - written:.1f} s" if isinstance(written, (int, float)) else "?"
-        return "NO DATA FROM THE RUN", "nodata", f"status {age} old ({state}: {message})"
+        return "NO DATA FROM THE RUN (no status)", "nodata", f"status {age} old ({state}: {message})"
     energized = state in ("running", "returning", "holding")
     if energized and (not isinstance(last, (int, float)) or now - last > STALE_S):
         age = f"{now - last:.1f} s" if isinstance(last, (int, float)) else "never"
@@ -164,23 +177,34 @@ class StopLogic:
     """Everything but the window: pid lookup, the two stages, the lockout. Injected kill/clock for tests."""
 
     def __init__(
-        self, pid_file, *, kill=os.kill, clock=time.monotonic, command=runner_command, wall=time.time
+        self,
+        pid_file,
+        *,
+        kill=os.kill,
+        clock=time.monotonic,
+        command=runner_command,
+        wall=time.time,
+        started=runner_start,
+        button_start_time=None,
     ):
         self.pid_file = Path(pid_file)
         self.kill, self.clock, self.command, self.wall = kill, clock, command, wall
+        self.started = started
+        self.button_start = psutil.Process().create_time() if button_start_time is None else button_start_time
+        self.live_pid = None
         self.pid = None  # the runner the presses so far went to
         self.presses = 0
         self.first_at = None
         self.message = ""
         self.remote_waiting = set()
-        self.holding = False  # the runner's status says it HOLDS: the next signal releases all torque
+        self.holding = False  # the runner HOLDS: a physical click may send release immediately
 
     def view(self) -> tuple[str, str, str]:
         """Refresh, then (headline, level, detail) for the panel. Never raises: the button must keep working."""
         pid_line = self.refresh()
         try:
             status = read_status(self.pid_file)
-            view = status_view(self.pid, pid_line, status, self.wall())
+            view = status_view(self.live_pid, pid_line, status, self.wall())
         except Exception as error:  # noqa: BLE001 - a bad status falls back to the pid check
             status, view = (
                 None,
@@ -191,7 +215,10 @@ class StopLogic:
                 ),
             )
         self.holding = bool(
-            self.pid and status and status.get("pid") in (None, self.pid) and status.get("state") == "holding"
+            self.live_pid
+            and status
+            and status.get("pid") in (None, self.live_pid)
+            and status.get("state") == "holding"
         )
         return view
 
@@ -210,8 +237,10 @@ class StopLogic:
 
     def refresh(self) -> str:
         pid, status = self.target()
-        if pid != self.pid:
-            self.pid, self.presses, self.first_at = pid, 0, None  # runner gone or a new run: back to STOP
+        self.live_pid = pid
+        if pid is not None and pid != self.pid:
+            self.pid, self.presses, self.first_at = pid, 0, None  # only a different live runner resets STOP
+            self.holding = False
         return status
 
     def press(self, *, from_key=False) -> str:
@@ -221,24 +250,30 @@ class StopLogic:
             return self.message
         if pid != self.pid:
             self.pid, self.presses, self.first_at = pid, 0, None
-        if self.presses >= 1 or self.holding:
-            if from_key:
-                self.message = "keys only STOP; click the button to release all torque"
-                return self.message
-            if self.first_at is not None and self.clock() - self.first_at < ARM_SECOND_S:
-                self.message = "release-all ignored: too soon after STOP (click again)"
-                return self.message
+            self.holding = False
+        release = not from_key and (self.presses >= 1 or self.holding)
+        if from_key and self.presses >= 1:
+            self.message = "keys only STOP; click the button to release all torque"
+            return self.message
+        if (
+            release
+            and not self.holding
+            and self.first_at is not None
+            and self.clock() - self.first_at < ARM_SECOND_S
+        ):
+            self.message = "release-all ignored: too soon after STOP (click again)"
+            return self.message
         try:
-            self.kill(pid, signal.SIGTERM)
+            self.kill(pid, signal.SIGUSR1 if release else signal.SIGTERM)
         except ProcessLookupError:
             self.message = f"NOT SENT: pid {pid} exited"
             return self.message
         self.presses += 1
-        if self.presses == 1 and not self.holding:
+        if not release:
             self.first_at = self.clock()
             self.message = f"STOP sent (SIGTERM to {pid}): gripper off, returning to rest, then torque off"
         else:
-            self.message = f"RELEASE ALL sent (SIGTERM #{self.presses} to {pid}): all torque off now"
+            self.message = f"RELEASE ALL sent (SIGUSR1 to {pid}): all torque off now"
         return self.message
 
     def poll_remote(self):
@@ -246,10 +281,23 @@ class StopLogic:
         messages = []
         for path in sorted(request_directory(self.pid_file).glob("*.json")):
             try:
-                source = str(json.loads(path.read_text()).get("source", "unknown"))[:160]
+                request = json.loads(path.read_text())
+                source = str(request.get("source", "unknown"))[:160]
             except (OSError, ValueError, AttributeError):
-                source = "unreadable request"
-            if self.target()[0] is None:
+                request, source = {}, "unreadable request"
+            pid = self.target()[0]
+            start = self.started(pid) if pid is not None else None
+            written = request.get("written")
+            if (
+                not isinstance(written, (int, float))
+                or not math.isfinite(written)
+                or not isinstance(request.get("pid"), int)
+                or written < self.button_start
+                or (pid is not None and (request["pid"] != pid or start is None or written < start))
+            ):
+                result = "ignored: stale or different runner request"
+                path.unlink(missing_ok=True)
+            elif pid is None:
                 # A live launch publishes its pid only once signal handlers
                 # are installed. Never drop a stop requested during preflight.
                 if path in self.remote_waiting:
@@ -266,6 +314,23 @@ class StopLogic:
             messages.append(message)
             print(message, flush=True)
         return messages
+
+    def heartbeat(self):
+        """The Tk tick, not process existence, proves that mailbox consumption is progressing."""
+        path = Path(f"{self.pid_file}.button.json")
+        tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+        tmp.write_text(
+            json.dumps(
+                {
+                    "pid": os.getpid(),
+                    "start_time": self.button_start,
+                    "wall": self.wall(),
+                    "mono": self.clock(),
+                },
+                allow_nan=False,
+            )
+        )
+        tmp.replace(path)
 
     @property
     def label(self) -> str:
@@ -326,6 +391,10 @@ class App:
 
     def tick(self):
         try:
+            self.logic.heartbeat()
+        except Exception as error:
+            print(f"BUTTON HEARTBEAT FAILED: {error}", flush=True)
+        try:
             for message in self.logic.poll_remote():
                 self.note.configure(text=message)
         except Exception as error:
@@ -350,7 +419,23 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--pid-file", default=DEFAULT_PID_FILE, help="the runner's --pid-file")
     args = p.parse_args(argv)
-    App(StopLogic(args.pid_file)).run()
+    # Apple's NSProcessInfo activity assertion disables App Nap even when this
+    # window is covered/on another Space. Keep the returned token alive.
+    activity = None
+    if os.sys.platform == "darwin":
+        try:
+            from Foundation import NSActivityUserInitiated, NSProcessInfo
+
+            activity = NSProcessInfo.processInfo().beginActivityWithOptions_reason_(
+                NSActivityUserInitiated, "Dream safety button must poll stops without App Nap"
+            )
+        except Exception as error:
+            print(f"APP NAP ASSERTION UNAVAILABLE: {error}; runner heartbeat is the backstop", flush=True)
+    try:
+        App(StopLogic(args.pid_file)).run()
+    finally:
+        if activity is not None:
+            NSProcessInfo.processInfo().endActivity_(activity)
     return 0
 
 

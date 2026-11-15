@@ -441,6 +441,7 @@ def _worker(request, settings, name, work):
             button.wait(timeout=1.0)
         if button.poll() is not None:
             raise RuntimeError(_button_problem(pid_file))
+        button_identity = dream_process.identity(button.pid)
         with _lock:
             if _stop_requested:
                 return
@@ -452,6 +453,8 @@ def _worker(request, settings, name, work):
                     "--live",
                     "--stop-button-pid",
                     str(button.pid),
+                    "--stop-button-start-time",
+                    str(button_identity["started"]),
                     "--plan-id",
                     request.plan_id,
                     "--pid-file",
@@ -524,8 +527,13 @@ def handle_stop_dream(source="page/lease"):
             # Only the button signals the runner. Its real key-press logic
             # serializes physical and remote requests, with no release path.
             _helpers()
-            importlib.import_module("stop_button").request_remote_press(_pid_file, source)
-            _term_sent = True
+            target_pid = _proc.pid if _proc is not None else _adopted["runner"]["pid"] if _adopted else None
+            if target_pid is None:
+                with contextlib.suppress(OSError, ValueError, IndexError):
+                    target_pid = int(_pid_file.read_text().split()[0])
+            if target_pid is not None:
+                importlib.import_module("stop_button").request_remote_press(_pid_file, source, target_pid)
+                _term_sent = True
         if dream_active and first:
             session_events.notify_session_changed("dream", True, phase="stopping")
     return {"success": True, "message": "Return to rest requested. The standalone button owns release-all."}
@@ -575,6 +583,18 @@ def status():
         button_alive = _button is not None and _button.poll() is None
         if _adopted is not None:
             button_alive = dream_process.alive(_adopted["button"], REAL / "stop_button.py")
+        if active and _pid_file is not None:
+            _helpers()
+            pending = importlib.import_module("stop_button").request_directory(_pid_file)
+            try:
+                unresponsive = any(
+                    time.time() - path.stat().st_mtime >= 1.0 for path in pending.glob("*.json")
+                )
+            except OSError:
+                unresponsive = True
+            if unresponsive:
+                warning = "the red button is not responding: use it directly or cut power"
+                error = f"{warning}\n{error}" if error else warning
     data = _read_view(run)
     stale = bool(active and (not data or time.time() - data.get("written", 0) > 1.0))
     return {

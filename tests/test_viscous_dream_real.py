@@ -721,6 +721,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         status_path=None,
         bundle=None,
         stop_button_alive=None,
+        signal_events=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -744,7 +745,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
             settings = dataclasses.replace(settings, **settings_changes)
         tcp = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["tcp"]
         box = core.WorkspaceBox.load(dream_real.BOX_FILE, dream_real.SRC_URDF, jmap, tcp)
-        stop, abort = threading.Event(), threading.Event()
+        stop, abort = signal_events or (threading.Event(), threading.Event())
         release = arm.release
         self.release_after_abort = None  # whether all torque went off only after the second signal
 
@@ -1473,7 +1474,7 @@ class StopButtonTest(unittest.TestCase):
         logic.press(from_key=True)
         self.assertEqual(len(self.kills), 1)
         logic.press(from_key=False)
-        self.assertEqual(self.kills, [(4242, signal.SIGTERM)] * 2)
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM), (4242, signal.SIGUSR1)])
 
     def status(self, state="running", limp=(), written=100.0, last=100.0, pid=4242, **extra):
         joints = {
@@ -1507,7 +1508,7 @@ class StopButtonTest(unittest.TestCase):
         )
         # The file stops being written while the pid is alive; or it is written but no reading is fresh.
         self.assertEqual(
-            view(4242, "", self.status(written=98.0), now)[:2], ("NO DATA FROM THE RUN", "nodata")
+            view(4242, "", self.status(written=98.0), now)[:2], ("NO DATA FROM THE RUN (no status)", "nodata")
         )
         self.assertEqual(view(4242, "", self.status("holding", last=98.0), now)[0], "NO DATA FROM THE RUN")
         self.assertEqual(view(4242, "", self.status("returning"), now)[0], "RETURNING TO REST")
@@ -1541,10 +1542,10 @@ class StopButtonTest(unittest.TestCase):
         Path(f"{logic.pid_file}.status.json").write_text(json.dumps(self.status("holding")))
         logic.view()
         self.assertIn("RELEASE ALL TORQUE NOW", logic.label)
-        self.assertIn("click the button", logic.press(from_key=True))
-        self.assertEqual(self.kills, [])
-        logic.press(from_key=False)  # no lockout: there was no STOP press to double-click past
+        logic.press(from_key=True)
         self.assertEqual(self.kills, [(4242, signal.SIGTERM)])
+        logic.press(from_key=False)  # no lockout: there was no STOP press to double-click past
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM), (4242, signal.SIGUSR1)])
 
     def test_never_signals_a_dead_or_foreign_pid(self):
         for pid_text, command in ((None, "x"), ("4242", None), ("4242", "/usr/bin/vim notes.txt")):

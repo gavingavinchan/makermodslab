@@ -222,7 +222,7 @@ def test_changed_or_expired_plan_cannot_start(robot):
 
 
 def test_repeated_stop_and_lease_expiry_only_send_one_term(monkeypatch, tmp_path):
-    proc = Mock()
+    proc = Mock(pid=4242)
     proc.poll.return_value = None
     monkeypatch.setattr(dream, "_proc", proc)
     monkeypatch.setattr(dream, "dream_active", True)
@@ -463,7 +463,7 @@ def test_all_calibration_and_wiggle_paths_respect_dream(monkeypatch, reserved):
 
 
 def test_button_or_runner_return_already_in_flight_cannot_release_all(monkeypatch):
-    proc = Mock()
+    proc = Mock(pid=4242)
     proc.poll.return_value = None
     monkeypatch.setattr(dream, "_proc", proc)
     monkeypatch.setattr(dream, "dream_active", True)
@@ -566,6 +566,7 @@ def test_remote_stop_sequences_use_real_button_logic(monkeypatch, tmp_path, orde
     logic = stop_button.StopLogic(
         pid_file,
         command=lambda pid: "python dream_real.py",
+        started=lambda pid: 0.0,
         clock=lambda: now[0],
         kill=lambda pid, sig: sent.append((pid, sig)),
     )
@@ -590,7 +591,7 @@ def test_remote_stop_sequences_use_real_button_logic(monkeypatch, tmp_path, orde
         assert len(sent) == 1
         now[0] = 1.0
         logic.press()
-        assert sent == [(4242, signal.SIGTERM)] * 2
+        assert sent == [(4242, signal.SIGTERM), (4242, signal.SIGUSR1)]
 
 
 def test_lab_has_no_runner_signal_paths():
@@ -757,6 +758,7 @@ def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path):
     runner.poll.side_effect = [None, None, None, 0, 0]
     monkeypatch.setattr(dream.dream_process, "spawn", Mock(side_effect=[button, runner]))
     monkeypatch.setattr(dream, "_save_active", Mock())
+    monkeypatch.setattr(dream.dream_process, "identity", lambda pid: {"pid": pid, "started": 123.0})
     monkeypatch.setattr(dream, "_read_view", lambda run: {"phase": "running"})
     events = Mock(wraps=session_events.notify_session_changed)
     monkeypatch.setattr(session_events, "notify_session_changed", events)
@@ -776,9 +778,12 @@ def test_remote_press_during_launch_is_retained_until_pid_ready(tmp_path):
     pid_file = tmp_path / "runner.pid"
     sent = []
     logic = stop_button.StopLogic(
-        pid_file, command=lambda pid: "python dream_real.py", kill=lambda pid, sig: sent.append((pid, sig))
+        pid_file,
+        command=lambda pid: "python dream_real.py",
+        started=lambda pid: 0.0,
+        kill=lambda pid, sig: sent.append((pid, sig)),
     )
-    stop_button.request_remote_press(pid_file, "early page stop")
+    stop_button.request_remote_press(pid_file, "early page stop", 4242)
     assert "waiting" in logic.poll_remote()[0]
     assert logic.poll_remote() == []  # no repeated window/log messages while waiting
     assert not sent
@@ -810,3 +815,22 @@ def test_service_templates_preserve_independent_dream_processes(tmp_path, monkey
     assert launcher["start_mac"]() == 0
     plist = tmp_path / "Library/LaunchAgents/com.gavin.makermods-viscous.plist"
     assert plistlib.loads(plist.read_bytes())["AbandonProcessGroup"] is True
+
+
+def test_pending_stop_warns_page_after_one_second(monkeypatch, tmp_path, client):
+    import os
+
+    monkeypatch.setattr(dream, "dream_active", True)
+    monkeypatch.setattr(dream, "_proc", Mock(pid=4242))
+    monkeypatch.setattr(dream, "_button", Mock(poll=Mock(return_value=None)))
+    monkeypatch.setattr(dream, "_pid_file", tmp_path / "runner.pid")
+    dream.handle_stop_dream(source="page")
+    path = next(tmp_path.glob("runner.pid.press/*.json"))
+    # Real status endpoint, existing frontend error alert; process still alive.
+    assert "not responding" not in (client.get("/api/v1/dream/status").json()["error"] or "")
+    os.utime(path, (time.time() - 1.1, time.time() - 1.1))
+    response = client.get("/api/v1/dream/status").json()
+    assert response["button_alive"]
+    assert "the red button is not responding: use it directly or cut power" in response["error"]
+    path.unlink()  # button consumes the request
+    assert "not responding" not in (dream.status()["error"] or "")
