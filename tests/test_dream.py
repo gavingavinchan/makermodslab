@@ -648,11 +648,16 @@ def test_reparented_run_survives_shutdown_and_is_adopted(monkeypatch, tmp_path, 
         assert {p.pid for p in children}.isdisjoint({p.pid for p in seen if hasattr(p, "pid")})
         pid_file = tmp_path / "runner.pid"
         pid_file.write_text(str(runner.pid))
+        view_path = dream._view_file("live-adopt", "status.json")
+        view_path.parent.mkdir(parents=True)
+        view_path.write_text(json.dumps({"state": "holding", "phase": "stop: HOLDING"}))
         dream._save_active(runner, button, pid_file, "live-adopt", "tank", "original-session")
+        monkeypatch.setattr(cfg, "DREAM_RUN_DATA", tmp_path / "changed-run-data")
         assert dream.adopt_active()
         assert sessions.held_by() == "dream"
         assert sessions.tracker.current()["id"] == "original-session"
         assert dream.status()["run"] == "live-adopt" and dream.status()["button_alive"]
+        assert dream.status()["status"]["state"] == "holding"
         response = client.post("/api/v1/sessions/original-session/stop")
         assert response.status_code == 200, response.text
         dream.stop_for_shutdown()
@@ -780,3 +785,26 @@ def test_remote_press_during_launch_is_retained_until_pid_ready(tmp_path):
     assert logic.poll_remote() == []
     logic.press(from_key=True)
     assert sent == [(4242, signal.SIGTERM)]
+
+
+def test_service_templates_preserve_independent_dream_processes(tmp_path, monkeypatch):
+    import configparser
+    import plistlib
+    import runpy
+
+    service = configparser.ConfigParser(interpolation=None)
+    service.read(dream.REPO / "scripts/makermodslab-viscous.service")
+    assert service["Service"]["KillMode"] == "process"
+    launcher = runpy.run_path(str(dream.REPO / "scripts/makermods-viscous"))
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    run = Mock(
+        side_effect=[
+            SimpleNamespace(returncode=1),
+            SimpleNamespace(returncode=0),
+            SimpleNamespace(returncode=0),
+        ]
+    )
+    monkeypatch.setattr(launcher["subprocess"], "run", run)
+    assert launcher["start_mac"]() == 0
+    plist = tmp_path / "Library/LaunchAgents/com.gavin.makermods-viscous.plist"
+    assert plistlib.loads(plist.read_bytes())["AbandonProcessGroup"] is True

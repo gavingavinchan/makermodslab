@@ -138,7 +138,9 @@ restore paths in the DAgger runner.
   Runner/button launch uses a fresh double-fork helper, outside shutdown
   descendant snapshots; Lab shutdown requests a press and returns. Persisted
   start-time/cmdline-checked active records restore the robot mutex and
-  session after restart. Dev reload watches only makermodslab/.
+  session after restart. Service templates preserve the independent
+  processes (systemd KillMode=process; launchd AbandonProcessGroup). Installed
+  services are untouched. Dev reload watches only makermodslab/.
   Local commits only, no push/hardware/Dream network or approvals.
 
 - *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:

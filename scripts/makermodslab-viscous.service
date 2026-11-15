@@ -6,3 +6,6 @@ Type=simple
 WorkingDirectory=%h/Documents/makermodslab-viscous
 Environment=MAKERMODSLAB_HOME=%h/.makermods/makermodslab-viscous
 ExecStart=%h/Documents/makermodslab-viscous/.venv/bin/python -m uvicorn makermodslab.server:app --host 100.64.91.4 --port 8000
+# Dream's runner/button are independent supervisors, even in this cgroup.
+# Stop only uvicorn; its shutdown requests one remote press without escalation.
+KillMode=process

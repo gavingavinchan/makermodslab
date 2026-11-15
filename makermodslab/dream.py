@@ -550,7 +550,11 @@ def _bundle(run):
 
 
 def _view_file(run, name):
-    folder = _bundle(run) / "dream_view"
+    folder = (
+        Path(_adopted["status_path"]).parent
+        if _adopted is not None and _adopted["run"] == run
+        else _bundle(run) / "dream_view"
+    )
     path = folder / name
     if folder.is_symlink() or path.is_symlink():
         refuse("Unknown Dream view.", status=404)

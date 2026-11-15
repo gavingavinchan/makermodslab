@@ -98,8 +98,13 @@ def main(payload):
         return
     os.close(read_fd)
     os.setsid()
+    intermediate_pid = os.getpid()
     if os.fork():
         os._exit(0)
+    # Do not create the button/runner until reparenting is complete, even
+    # if this grandchild is scheduled before the intermediate parent exits.
+    while os.getppid() == intermediate_pid:
+        time.sleep(0.001)
     # No pipes back to subprocess.run remain open in the detached monitor.
     with open(os.devnull) as null, open(payload["log"], "a") as log:
         os.dup2(null.fileno(), 0)

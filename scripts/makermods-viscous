@@ -58,6 +58,9 @@ def start_mac():
                         "StandardErrorPath": str(state / "server.log"),
                         "RunAtLoad": False,
                         "KeepAlive": False,
+                        # Dream owns its return after Lab exits; launchd must
+                        # not sweep up independent processes on job exit.
+                        "AbandonProcessGroup": True,
                     }
                 )
             )
