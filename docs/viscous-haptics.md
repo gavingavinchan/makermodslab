@@ -1960,6 +1960,28 @@ This section is the source of truth for picking the work back up. Nothing about
 this project should live only in one assistant's private memory: update this
 file instead.
 
+### Dream page on the upstream-sync base (2026-11-15, B3, offline)
+
+Gavin's intent: a Playground-style page **just for our Viscous arm**, because
+without a preview he could not see that the low side camera and 16:9 crop
+excluded the arm. `/dream` now adds idle crop overlays, exact-request JPEGs,
+explicit camera input review, dry-plan confirmation, and leased subprocess
+sessions using the existing runner and unmodified independent stop button.
+Replay reads an external bundle; no run frames were copied into git. The
+new family capability defaults OFF and is ON only for Viscous. The upstream
+CAN opt-outs remain OFF.
+
+This restart is based on `origin/feat/viscous-upstream-sync` (`d2cdb986`), on
+`feat/viscous-dream-page`; the old WIP was used as reference, without its
+media/LFS churn. **No hardware, real camera reads, Dream network/billed calls,
+or input approvals. No push**, per this task's explicit instruction.
+[viscous-dream-page.md](viscous-dream-page.md) records the operator flow,
+configuration, replay, and safety acceptance limits (including independent
+button/page simultaneous-stop coordination). 3D is skipped because no
+Viscous frontend URDF is registered. Review and supervised Mac acceptance
+remain; this does not mark the powered B3 goal complete. Offline report and
+screenshots are in `~/dream-page-ref/REPORT.md` on gavin-linux.
+
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
 - [ ] **Dream-1 on the real arm in the tank** (Gavin, 2026-11-07: "can we now

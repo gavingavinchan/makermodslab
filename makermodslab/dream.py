@@ -455,8 +455,9 @@ def handle_stop_dream():
         if already_stopping:
             _term_sent = True  # e.g. the independent button already requested the return
         if _proc is not None and _proc.poll() is None and not _term_sent:
-            # Single atomic claim of the signal. Repeated browser requests,
-            # lease expiry, lost button and shutdown can NEVER release mid-air.
+            # Single atomic claim of Lab's signal across browser requests,
+            # lease expiry, lost button and shutdown. The independent button
+            # retains the runner's separate two-signal semantics.
             _term_sent = True
             with contextlib.suppress(ProcessLookupError):
                 _proc.send_signal(signal.SIGTERM)
