@@ -1069,6 +1069,7 @@ class Episode:
         self.say = say
         self.view = view
         self.stop_button_alive = stop_button_alive
+        self.view_problem_reported = False
         # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
         # seen limp is shown limp until all torque is off.
@@ -1122,6 +1123,12 @@ class Episode:
             with contextlib.suppress(Exception), (self.mirror_dir / path.name).open("a") as f:
                 f.write(line)
 
+    def _view_problem(self, error):
+        if not self.view_problem_reported:
+            self.view_problem_reported = True
+            with contextlib.suppress(Exception):
+                print(f"dream-view unavailable: {type(error).__name__}: {error}", flush=True)
+
     def _tick(self, phase, reading, cmd, trips=(), **extra) -> None:
         """One line of ticks.jsonl: the loop's ticks and, since the 20261114T082911Z drop, every reading
         the stop path takes too (return legs, HOLDING), so an incident is recorded to the end. `reading`
@@ -1129,7 +1136,10 @@ class Episode:
         if not isinstance(reading, dict):
             reading = {"pos": reading.pos, "torque": reading.torque, "temp": reading.temp}
         if self.view is not None:
-            self.view.update(measured=reading.get("pos"), commanded=cmd)
+            try:
+                self.view.update(measured=reading.get("pos"), commanded=cmd)
+            except Exception as error:
+                self._view_problem(error)
         row = {"t": self.clock(), "phase": phase, **reading, "cmd": cmd, "trips": [t.name for t in trips]}
         with contextlib.suppress(Exception):  # a full disk must never break the stop path
             self._write(self.ticks, row | extra)
@@ -1181,30 +1191,34 @@ class Episode:
         if message is not None:
             self.status_message = message
         if self.view is not None:
-            torque = (self.status_reading or {}).get("torque") or {}
-            temp = (self.status_reading or {}).get("temp") or {}
-            self.view.update(
-                phase="released"
-                if self.run_state == "released"
-                else "pause"
-                if self.clock() < getattr(self, "view_pause_until", 0) and self.phase == "dream"
-                else self.status_phase,
-                state=self.run_state,
-                message=self.status_message,
-                call=self.worker.calls if self.worker else 0,
-                measured=view_measured or self.measured,
-                commanded=self.commanded
-                if not self.status_phase.startswith(("stop:", "return leg", "release"))
-                else self.view.status["commanded"],
-                last_reading=self.last_fresh_wall,
-                peak_torque_nm=max(
-                    self.view.status["peak_torque_nm"],
-                    max((abs(float(v)) for v in torque.values()), default=0.0),
-                ),
-                peak_temp_c=max(
-                    self.view.status["peak_temp_c"], max((float(v) for v in temp.values()), default=0.0)
-                ),
-            )
+            try:
+                torque = (self.status_reading or {}).get("torque") or {}
+                temp = (self.status_reading or {}).get("temp") or {}
+                self.view.update(
+                    phase="released"
+                    if self.run_state == "released"
+                    else "pause"
+                    if self.clock() < getattr(self, "view_pause_until", 0) and self.phase == "dream"
+                    else self.status_phase,
+                    state=self.run_state,
+                    message=self.status_message,
+                    call=self.worker.calls if self.worker else 0,
+                    measured=view_measured or self.measured,
+                    commanded=self.commanded
+                    if not self.status_phase.startswith(("stop:", "return leg", "release"))
+                    else self.view.status["commanded"],
+                    last_reading=self.last_fresh_wall,
+                    peak_torque_nm=max(
+                        self.view.status["peak_torque_nm"],
+                        max((abs(float(v)) for v in torque.values() if math.isfinite(float(v))), default=0.0),
+                    ),
+                    peak_temp_c=max(
+                        self.view.status["peak_temp_c"],
+                        max((float(v) for v in temp.values() if math.isfinite(float(v))), default=0.0),
+                    ),
+                )
+            except Exception as error:
+                self._view_problem(error)
         if self.status_path is None:
             return
         torque = (self.status_reading or {}).get("torque") or {}

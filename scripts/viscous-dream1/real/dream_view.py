@@ -37,6 +37,7 @@ class DreamView:
         self.directory = Path(directory)
         self.wall = wall
         self.lock = threading.Lock()
+        self.write_lock = threading.Lock()
         self.problem_reported = False
         self.status = {
             "run": run,
@@ -72,8 +73,11 @@ class DreamView:
                 tmp.unlink()
 
     def _write_status(self):
-        self.status["written"] = self.wall()
-        self._atomic("status.json", json.dumps(self.status, allow_nan=False, default=str).encode())
+        # Caller owns write_lock. Never hold the state lock for JSON/JPEG or IO.
+        with self.lock:
+            self.status["written"] = self.wall()
+            snapshot = dict(self.status)
+        self._atomic("status.json", json.dumps(snapshot, allow_nan=False, default=str).encode())
 
     def _problem(self, error):
         if not self.problem_reported:
@@ -82,24 +86,36 @@ class DreamView:
                 print(f"dream-view unavailable: {type(error).__name__}: {error}", flush=True)
 
     def update(self, **values):
-        with self.lock:
-            try:
+        try:
+            with self.lock:
                 self.status.update(values)
+            # The 20 Hz control loop must not wait behind request JPEG IO.
+            # That writer publishes the latest state on completion; subsequent
+            # ticks also flush any update arriving after its snapshot.
+            if not self.write_lock.acquire(blocking=False):
+                return
+            try:
                 self._write_status()
-            except Exception as error:  # outputs must never break the stop path
-                self._problem(error)
+            finally:
+                self.write_lock.release()
+        except Exception as error:
+            self._problem(error)
 
     def observation(self, observation, **values):
-        with self.lock:
-            try:
-                for slot in SLOTS:
-                    value = observation[f"video.{slot}"]
-                    newest = value[-1] if isinstance(value, list) else value
-                    self._atomic(f"{slot}.jpg", base64.b64decode(newest, validate=True))
-                self.status.update(values, images_written=self.wall())
+        try:
+            images = {}
+            for slot in SLOTS:
+                value = observation[f"video.{slot}"]
+                newest = value[-1] if isinstance(value, list) else value
+                images[slot] = base64.b64decode(newest, validate=True)
+            with self.write_lock:
+                for slot, data in images.items():
+                    self._atomic(f"{slot}.jpg", data)
+                with self.lock:
+                    self.status.update(values, images_written=self.wall())
                 self._write_status()
-            except Exception as error:
-                self._problem(error)
+        except Exception as error:
+            self._problem(error)
 
 
 class ViewTransport:
@@ -114,7 +130,9 @@ class ViewTransport:
         self.real, self.view = real, view
 
     def request(self, request, headers, **kwargs):
-        self.view.observation(request["observation"])
+        observation = request.get("observation")
+        if observation is not None:
+            self.view.observation(observation)
         reply = self.real.request(request, headers, **kwargs)
         with contextlib.suppress(Exception):
             path = reply.get("actions", {}).get("per_key", {}).get("action.left_eef_xyz", [])

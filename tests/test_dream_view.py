@@ -249,3 +249,90 @@ def test_new_cli_flags_report_the_verbatim_plan_without_changing_it(tmp_path, mo
     assert (tmp_path / "chosen/status.json").is_file()
     assert dry.call_count == 2
     assert dry.call_args.args[0].lab_session_id == "claimed"
+
+
+def test_transport_end_session_delegates_and_closes_unchanged(tmp_path):
+    view = make_view(tmp_path)
+    real = Mock()
+    real.request.return_value = {"ended": True}
+    transport = ViewTransport(real, view)
+    # Dream._end_session has no observation; this must reach the transport.
+    request, headers = {"end_session": True}, {"session": "fake"}
+    assert transport.request(request, headers, timeout=2) == {"ended": True}
+    transport.close()
+    real.request.assert_called_once_with(request, headers, timeout=2)
+    real.close.assert_called_once()
+    assert view.status["images_written"] is None
+
+
+def test_control_updates_do_not_wait_for_jpeg_writes(tmp_path, monkeypatch):
+    import threading
+
+    view = make_view(tmp_path)
+    entered, finish, updated = threading.Event(), threading.Event(), threading.Event()
+    atomic = view._atomic
+
+    def slow_write(name, data):
+        if name.endswith(".jpg"):
+            entered.set()
+            assert finish.wait(5)
+        atomic(name, data)
+
+    monkeypatch.setattr(view, "_atomic", slow_write)
+    request = {f"video.{s}": core.jpeg_b64(core.black_frame()) for s in core.SLOTS}
+    writer = threading.Thread(target=view.observation, args=(request,))
+    writer.start()
+    try:
+        assert entered.wait(5)
+        tick = threading.Thread(target=lambda: (view.update(phase="returning"), updated.set()))
+        tick.start()
+        assert updated.wait(1), "control status waited behind JPEG IO"
+        tick.join(1)
+        assert view.status["phase"] == "returning"
+    finally:
+        finish.set()
+        writer.join(5)
+    assert json.loads((view.directory / "status.json").read_text())["phase"] == "returning"
+
+
+def test_nonfinite_peaks_do_not_freeze_later_status(tmp_path):
+    from tests.test_viscous_dream_real import EpisodeOnFakesTest
+
+    trial = EpisodeOnFakesTest()
+    trial.episode(rehearse=True, hold_s=0.1)
+    ep = trial.ep
+    ep.view = make_view(tmp_path)
+    ep._status(
+        {
+            "torque": {"a": float("inf"), "b": float("nan"), "c": -2},
+            "temp": {"a": float("nan"), "b": float("inf"), "c": 30},
+        }
+    )
+    ep._status(state="released", message="finished")
+    status = json.loads((ep.view.directory / "status.json").read_text())
+    assert status["state"] == "released"
+    assert status["peak_torque_nm"] == 2 and status["peak_temp_c"] == 30
+
+
+def test_entire_view_status_block_cannot_interrupt_release(tmp_path, monkeypatch, capsys):
+    from tests.test_viscous_dream_real import EpisodeOnFakesTest
+
+    class BrokenView:
+        # Fail during argument evaluation, before update() can swallow errors.
+        @property
+        def status(self):
+            raise RuntimeError("broken view state")
+
+        def update(self, **values):
+            pass
+
+    init = dream_real.Episode.__init__
+
+    def with_view(self, *args, **kwargs):
+        init(self, *args, **kwargs, view=BrokenView())
+
+    monkeypatch.setattr(dream_real.Episode, "__init__", with_view)
+    trial = EpisodeOnFakesTest()
+    _, arm = trial.episode(rehearse=True, hold_s=0.1)
+    trial.assert_stopped_safely(arm)
+    assert capsys.readouterr().out.count("dream-view unavailable") == 1
