@@ -1,3 +1,4 @@
+import dream from "./dream";
 import tank from "./tank";
 import common from "./common";
 import launchpad from "./launchpad";
@@ -20,6 +21,7 @@ import shared from "./shared";
 /** Simplified Chinese catalog. Key tree must match `locales/en` exactly —
  * enforced by `src/i18n/catalogs.test.ts`. */
 export default {
+  dream,
   tank,
   common,
   launchpad,

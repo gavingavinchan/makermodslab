@@ -1,3 +1,4 @@
+import dream from "./dream";
 import tank from "./tank";
 import common from "./common";
 import launchpad from "./launchpad";
@@ -26,6 +27,7 @@ import shared from "./shared";
  * migration PR touches exactly one catalog file per language.
  */
 export default {
+  dream,
   tank,
   common,
   launchpad,

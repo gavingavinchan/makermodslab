@@ -9,6 +9,7 @@ import { StudioProvider } from "@/contexts/StudioContext";
 import { InferenceSessionProvider } from "@/contexts/InferenceSessionContext";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import Spotlight from "@/components/onboarding/Spotlight";
+import Dream from "@/pages/Dream";
 import Launchpad from "@/pages/Launchpad";
 import Teleoperation from "@/pages/Teleoperation";
 import Training from "@/pages/Training";
@@ -61,6 +62,7 @@ function App() {
                         <TeleopRecoveryNotice />
                         <Routes>
                           <Route path="/" element={<Launchpad />} />
+                          <Route path="/dream" element={<Dream />} />
                           <Route path="/teleoperation" element={<Teleoperation />} />
                           {/* /training (no id) hosts the shared configurator.
                               Nothing in the app navigates here any more —

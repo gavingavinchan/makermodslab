@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useArms } from "@/hooks/useArms";
+import { useRobots } from "@/hooks/useRobots";
 import { useTranslation } from "react-i18next";
 import { ChevronUp, Library } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,6 +37,9 @@ const Launchpad = () => {
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [search, setSearch] = useState("");
   const { openStudio } = useStudio();
+  const { records: robots } = useRobots();
+  const { byId } = useArms();
+  const dreamRobot = Object.values(robots).find((r) => byId(r.arm_type)?.capabilities.supports_dream && r.mode === "single" && r.arms !== "leader");
   const { t } = useTranslation();
   const { start } = useOnboarding();
   const { seen, markSeen } = useOnceFlag(ONBOARDING_KEY);
@@ -63,6 +69,9 @@ const Launchpad = () => {
             <Library className="h-3.5 w-3.5" />
             {t("launchpad.header.myLibrary")}
           </Button>
+          {dreamRobot && <Button variant="outline" size="sm" className="rounded-full" asChild>
+            <Link to={`/dream?robot=${encodeURIComponent(dreamRobot.name)}`}>{t("dream.open")}</Link>
+          </Button>}
           <RobotToolbar tourTarget />
         </div>
       </header>

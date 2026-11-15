@@ -27,7 +27,8 @@ export type StartableSessionKind =
   | "calibration"
   | "auto_calibration"
   | "hosting"
-  | "remote_teleoperation";
+  | "remote_teleoperation"
+  | "dream";
 
 export interface SessionLeaseInfo {
   owner: string;
@@ -234,7 +235,12 @@ export interface RemoteTeleoperationSessionOptions {
   skip_identity_check?: boolean;
 }
 
+export interface DreamSessionOptions {
+  plan_id: string;
+}
+
 export type SessionOptions =
+  | DreamSessionOptions
   | TeleoperationSessionOptions
   | HostingSessionOptions
   | RemoteTeleoperationSessionOptions
@@ -385,6 +391,7 @@ export function sessionHeldHolder(e: unknown): { kind: string | null } | null {
 // verify each one resolves. The holder kind is backend data — matched on,
 // never displayed raw except as the last-resort fallback.
 const HOLDER_ACTIVITY_KEYS: Record<string, string> = {
+  dream: "dream.activity",
   teleoperation: "shared.sessionBusy.activity.teleoperation",
   recording: "shared.sessionBusy.activity.recording",
   inference: "shared.sessionBusy.activity.inference",

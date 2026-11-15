@@ -24,7 +24,8 @@ export type SessionKind =
   | "auto_calibration"
   | "wiggle"
   | "hosting"
-  | "remote_teleoperation";
+  | "remote_teleoperation"
+  | "dream";
 
 /** The latest `session_changed` hint seen on the shared WS channel. */
 export interface SessionChangedEvent {
