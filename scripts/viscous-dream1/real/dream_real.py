@@ -2450,8 +2450,6 @@ def button_liveness(pid):
 def install_stop_signals(pid_file):
     """SIGINT/SIGTERM/SIGHUP (handlers installed, so nohup cannot swallow them): the first stops, a
     second aborts the return and releases. stop_button.py sends SIGTERM to the pid written here."""
-    if pid_file:
-        Path(pid_file).write_text(f"{os.getpid()}\n")
     stop_event, abort_event = threading.Event(), threading.Event()
 
     def on_signal(signum, _frame):
@@ -2460,6 +2458,8 @@ def install_stop_signals(pid_file):
 
     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, on_signal)
+    if pid_file:
+        Path(pid_file).write_text(f"{os.getpid()}\n")
     return stop_event, abort_event
 
 

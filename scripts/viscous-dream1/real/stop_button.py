@@ -172,6 +172,7 @@ class StopLogic:
         self.presses = 0
         self.first_at = None
         self.message = ""
+        self.remote_waiting = set()
         self.holding = False  # the runner's status says it HOLDS: the next signal releases all torque
 
     def view(self) -> tuple[str, str, str]:
@@ -248,13 +249,22 @@ class StopLogic:
                 source = str(json.loads(path.read_text()).get("source", "unknown"))[:160]
             except (OSError, ValueError, AttributeError):
                 source = "unreadable request"
-            result = self.press(from_key=True)
+            if self.target()[0] is None:
+                # A live launch publishes its pid only once signal handlers
+                # are installed. Never drop a stop requested during preflight.
+                if path in self.remote_waiting:
+                    continue
+                self.remote_waiting.add(path)
+                result = "waiting for runner pid; STOP retained"
+            else:
+                result = self.press(from_key=True)
+                self.remote_waiting.discard(path)
+                with contextlib.suppress(FileNotFoundError):
+                    path.unlink()
             message = f"REMOTE ({source}): {result}"
             self.message = message
             messages.append(message)
             print(message, flush=True)
-            with contextlib.suppress(FileNotFoundError):
-                path.unlink()
         return messages
 
     @property

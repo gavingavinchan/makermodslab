@@ -377,7 +377,9 @@ signals. The separate `stop_button.py` remains unchanged.
 
 For Lab runs the red button is the only process that signals the runner.
 Lab's page, lease expiry, shutdown and supervision errors write atomic JSON
-requests under `<pid-file>.press/`. The button polls this mailbox on its
+requests under `<pid-file>.press/`. Requests arriving before the runner pid
+is ready remain queued; the runner publishes its pid after installing signal
+handlers. The button polls this mailbox on its
 existing 250 ms Tk timer and applies each request as a key press: STOP once,
 never release. Each remote request and its source are logged to the window
 and stdout. Files avoid Python signal handlers interacting with Tk, queue

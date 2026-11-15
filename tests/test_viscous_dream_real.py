@@ -806,6 +806,30 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertFalse(self.ep.abort_event.is_set())
         self.assert_stopped_safely(arm)
 
+    def test_own_button_process_killed_mid_run_stops_without_runner_signal(self):
+        import subprocess
+
+        button = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+        try:
+            alive = dream_real.button_liveness(button.pid)
+            killed = []
+
+            def after(clock, stop, abort):
+                if clock.t > 0.2 and not killed:
+                    button.terminate()  # only this test's own inert child
+                    button.wait(timeout=5)
+                    killed.append(True)
+
+            summary, arm = self.episode(rehearse=True, after=after, stop_button_alive=alive)
+            self.assertEqual(summary["reason"], "stop button gone")
+            self.assertFalse(self.ep.stop_event.is_set())
+            self.assertFalse(self.ep.abort_event.is_set())
+            self.assert_stopped_safely(arm)
+        finally:
+            if button.poll() is None:
+                button.terminate()
+            button.wait(timeout=5)
+
     def assert_stopped_safely(self, arm, returned=True):
         """After engage: the arm re-anchored at its measured pose, the gripper released, then the return
         legs (none starting with a goal far from the arm: no spring-back), then all torque off."""
