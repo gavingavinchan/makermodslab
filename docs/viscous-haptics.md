@@ -141,6 +141,11 @@ restore paths in the DAgger runner.
   session after restart. Service templates preserve the independent
   processes (systemd KillMode=process; launchd AbandonProcessGroup). Installed
   services are untouched. Dev reload watches only makermodslab/.
+  Fix round verified: 360 focused tests; full pytest 4,989 passed, 25 skipped,
+  only the same two baseline failures (profile fixture/Pinocchio). Frontend
+  lint, both typecheck projects, external build and 621 tests pass; the
+  confirmation header wraps on desktop/mobile. Powered Mac acceptance
+  remains pending. Item-to-commit/test evidence: ~/dream-page-ref/REPORT.md.
   Local commits only, no push/hardware/Dream network or approvals.
 
 - *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:
