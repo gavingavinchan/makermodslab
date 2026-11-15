@@ -336,3 +336,15 @@ def test_entire_view_status_block_cannot_interrupt_release(tmp_path, monkeypatch
     _, arm = trial.episode(rehearse=True, hold_s=0.1)
     trial.assert_stopped_safely(arm)
     assert capsys.readouterr().out.count("dream-view unavailable") == 1
+
+
+def test_deadman_disappearance_during_identity_read_is_an_internal_stop(monkeypatch):
+    import psutil
+
+    button = Mock()
+    button.is_running.return_value = True
+    button.status.side_effect = psutil.NoSuchProcess(42)
+    monkeypatch.setattr(psutil, "Process", Mock(return_value=button))
+    assert dream_real.button_liveness(42)() is False
+    monkeypatch.setattr(psutil, "Process", Mock(side_effect=psutil.NoSuchProcess(42)))
+    assert dream_real.button_liveness(42)() is False

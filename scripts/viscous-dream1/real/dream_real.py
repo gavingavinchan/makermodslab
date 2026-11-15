@@ -2439,10 +2439,16 @@ def button_liveness(pid):
         return None  # terminal runs keep their existing signal semantics
     import psutil
 
-    button = psutil.Process(pid)
+    try:
+        button = psutil.Process(pid)
+    except psutil.NoSuchProcess:
+        return lambda: False
 
     def alive():
-        return button.is_running() and button.status() != psutil.STATUS_ZOMBIE
+        try:
+            return button.is_running() and button.status() != psutil.STATUS_ZOMBIE
+        except psutil.NoSuchProcess:
+            return False
 
     return alive
 

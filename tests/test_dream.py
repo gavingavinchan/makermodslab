@@ -557,7 +557,8 @@ def test_stop_button_spawn_failure_explains_manual_recovery_without_launching_ru
 def test_remote_stop_sequences_use_real_button_logic(monkeypatch, tmp_path, order):
     import signal
 
-    import stop_button
+    dream._helpers()
+    stop_button = importlib.import_module("stop_button")
 
     pid_file = tmp_path / "runner.pid"
     pid_file.write_text("4242")
@@ -769,7 +770,8 @@ def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path):
 def test_remote_press_during_launch_is_retained_until_pid_ready(tmp_path):
     import signal
 
-    import stop_button
+    dream._helpers()
+    stop_button = importlib.import_module("stop_button")
 
     pid_file = tmp_path / "runner.pid"
     sent = []
