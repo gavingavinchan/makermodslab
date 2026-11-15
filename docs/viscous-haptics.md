@@ -135,6 +135,10 @@ restore paths in the DAgger runner.
   second-signal race that could drop an arm during its return. Button loss
   triggers an internal graceful runner stop, not a signal. Sequence tests
   use the real StopLogic with injected kill; the dead-man uses FakeArm.
+  Runner/button launch uses a fresh double-fork helper, outside shutdown
+  descendant snapshots; Lab shutdown requests a press and returns. Persisted
+  start-time/cmdline-checked active records restore the robot mutex and
+  session after restart. Dev reload watches only makermodslab/.
   Local commits only, no push/hardware/Dream network or approvals.
 
 - *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:
@@ -1979,7 +1983,7 @@ Gavin's intent: a Playground-style page **just for our Viscous arm**, because
 without a preview he could not see that the low side camera and 16:9 crop
 excluded the arm. `/dream` now adds idle crop overlays, exact-request JPEGs,
 explicit camera input review, dry-plan confirmation, and leased subprocess
-sessions using the existing runner and unmodified independent stop button.
+sessions using the existing runner and independent stop button with remote key presses.
 Replay reads an external bundle; no run frames were copied into git. The
 new family capability defaults OFF and is ON only for Viscous. The upstream
 CAN opt-outs remain OFF.
@@ -1989,8 +1993,7 @@ This restart is based on `origin/feat/viscous-upstream-sync` (`d2cdb986`), on
 media/LFS churn. **No hardware, real camera reads, Dream network/billed calls,
 or input approvals. No push**, per this task's explicit instruction.
 [viscous-dream-page.md](viscous-dream-page.md) records the operator flow,
-configuration, replay, and safety acceptance limits (including independent
-button/page simultaneous-stop coordination). 3D is skipped because no
+configuration, replay, stop coordination, restart adoption and safety acceptance limits. 3D is skipped because no
 Viscous frontend URDF is registered. Review and supervised Mac acceptance
 remain; this does not mark the powered B3 goal complete. Offline report and
 screenshots are in `~/dream-page-ref/REPORT.md` on gavin-linux.

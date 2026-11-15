@@ -715,6 +715,8 @@ def _run_dev(
             "--port",
             str(BACKEND_PORT),
             "--reload",
+            "--reload-dir",
+            str(PROJECT_ROOT / "makermodslab"),
         ],
         cwd=PROJECT_ROOT,
         env=os.environ.copy(),

@@ -5540,6 +5540,13 @@ async def start_avfoundation_pump():
     _avf_pump_task = asyncio.create_task(pump_avfoundation_runloop())
 
 
+@app.on_event("startup")
+def adopt_dream_runner():
+    from . import dream
+
+    dream.adopt_active()
+
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """Clean up resources when FastAPI shuts down"""

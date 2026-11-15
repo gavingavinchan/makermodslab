@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 export default {
+  noCodeEdits: "运行期间请勿编辑代码。",
   open: "Dream-1 Playground", activity: "Dream-1 运行", title: "Dream-1", subtitle: "Viscous · 水族箱",
   robot: "机器人", chooseRobot: "选择 Viscous 机器人", noRobot: "请先在 Lab 中添加 Viscous 机器人，以使用 Dream-1。",
   settings: "设置", cameras: "摄像头", front: "前方", left: "左侧", right: "右侧", swap: "将{{camera}}移到中央",

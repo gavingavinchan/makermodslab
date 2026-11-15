@@ -39,6 +39,7 @@ def isolated(tmp_lerobot_home, tmp_path, monkeypatch):
         "checking_inputs": False,
         "_proc": None,
         "_pid_file": None,
+        "_adopted": None,
         "_button": None,
         "_thread": None,
         "_term_sent": False,
@@ -248,7 +249,7 @@ def test_stop_before_spawn_prevents_hardware_launch(monkeypatch, tmp_path):
     monkeypatch.setattr(dream, "dream_active", True)
     session_events.notify_session_changed("dream", True, "starting")
     popen = Mock(side_effect=AssertionError("must not launch"))
-    monkeypatch.setattr(dream.subprocess, "Popen", popen)
+    monkeypatch.setattr(dream.dream_process, "spawn", popen)
     dream.handle_stop_dream()
     dream._worker(request, DreamSettings(), "live-test", tmp_path)
     popen.assert_not_called()
@@ -266,7 +267,7 @@ def test_missing_display_button_refuses_before_runner_launch(monkeypatch, tmp_pa
     button = Mock()
     button.poll.return_value = 1
     popen = Mock(return_value=button)
-    monkeypatch.setattr(dream.subprocess, "Popen", popen)
+    monkeypatch.setattr(dream.dream_process, "spawn", popen)
     dream._worker(request, DreamSettings(), "live-test", tmp_path)
     assert popen.call_count == 1
     assert "stop_button.py" in popen.call_args.args[0][1]
@@ -545,7 +546,7 @@ def test_stop_button_spawn_failure_explains_manual_recovery_without_launching_ru
     session_events.notify_session_changed("dream", True, "starting")
     monkeypatch.setattr(camera_preview_manager, "stop_all", lambda: None)
     spawn = Mock(side_effect=OSError("cannot spawn button"))
-    monkeypatch.setattr(dream.subprocess, "Popen", spawn)
+    monkeypatch.setattr(dream.dream_process, "spawn", spawn)
     dream._worker(request, DreamSettings(), "live-test", tmp_path)
     assert spawn.call_count == 1
     assert "Start it by hand" in dream._error and "arm has not been started" in dream._error
@@ -597,3 +598,87 @@ def test_lab_has_no_runner_signal_paths():
     source = inspect.getsource(dream)
     assert "send_signal" not in source and "os.kill" not in source
     assert "proc.terminate(" not in source and "proc.kill(" not in source
+
+
+def test_reparented_run_survives_shutdown_and_is_adopted(monkeypatch, tmp_path, client):
+    import sys
+
+    import psutil
+
+    from makermodslab import dream_process
+    from makermodslab.scripts import makermodslab as launcher
+
+    # These are inert scripts authored by this test; no runner/hardware imports.
+    script = "import time, pathlib, sys\nwhile not pathlib.Path(sys.argv[1]).exists(): time.sleep(.01)\n"
+    finish = tmp_path / "finish"
+    runner_file, button_file = tmp_path / "dream_real.py", tmp_path / "stop_button.py"
+    runner_file.write_text(script)
+    button_file.write_text(script)
+    monkeypatch.setattr(dream, "REAL", tmp_path)
+    children = []
+    try:
+        for target in (button_file, runner_file):
+            children.append(
+                dream_process.spawn(
+                    [sys.executable, str(target), str(finish)],
+                    cwd=dream.REPO,
+                    log=tmp_path / "fake.log",
+                    result=target.with_suffix(".exit.json"),
+                )
+            )
+        button, runner = children
+        snapshot = psutil.Process().children(recursive=True)
+        assert {p.pid for p in children}.isdisjoint({p.pid for p in snapshot})
+        # Exercise the launcher's real tree snapshot without sending any OS signal.
+        seen = []
+
+        class Snapshot:
+            def children(self, recursive):
+                return snapshot
+
+            def terminate(self):
+                pass
+
+        with monkeypatch.context() as patch:
+            patch.setattr(launcher.psutil, "Process", lambda pid: Snapshot())
+            patch.setattr(
+                launcher.psutil, "wait_procs", lambda procs, timeout: (seen.extend(procs) or procs, [])
+            )
+            launcher._terminate_tree(999)  # Process and terminate are injected above
+        assert {p.pid for p in children}.isdisjoint({p.pid for p in seen if hasattr(p, "pid")})
+        pid_file = tmp_path / "runner.pid"
+        pid_file.write_text(str(runner.pid))
+        dream._save_active(runner, button, pid_file, "live-adopt", "tank", "original-session")
+        assert dream.adopt_active()
+        assert sessions.held_by() == "dream"
+        assert sessions.tracker.current()["id"] == "original-session"
+        assert dream.status()["run"] == "live-adopt" and dream.status()["button_alive"]
+        response = client.post("/api/v1/sessions/original-session/stop")
+        assert response.status_code == 200, response.text
+        dream.stop_for_shutdown()
+        assert len(list(tmp_path.glob("runner.pid.press/*.json"))) == 1
+        assert runner.poll() is None and button.poll() is None
+        assert dream._active_path().exists()
+        finish.touch()
+        for child in children:
+            child.wait(timeout=5)
+        assert not dream.dream_is_active()
+        assert not dream._active_path().exists()
+        assert sessions.tracker.current() is None
+    finally:
+        finish.touch()
+        for child in children:
+            child.wait(timeout=5)
+
+
+def test_active_identity_requires_start_time_and_runner_command(monkeypatch):
+    from makermodslab import dream_process
+
+    process = Mock()
+    process.create_time.return_value = 10.0
+    process.cmdline.return_value = ["python", str(dream.REAL / "dream_real.py")]
+    monkeypatch.setattr(dream_process.psutil, "Process", lambda pid: process)
+    assert dream_process.alive({"pid": 42, "started": 10.0}, dream.REAL / "dream_real.py")
+    assert not dream_process.alive({"pid": 42, "started": 11.0}, dream.REAL / "dream_real.py")
+    process.cmdline.return_value = ["python", "/unrelated.py"]
+    assert not dream_process.alive({"pid": 42, "started": 10.0}, dream.REAL / "dream_real.py")

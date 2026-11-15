@@ -34,7 +34,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
-from . import session_events
+from . import dream_process, session_events
 from .api_errors import ApiError, ErrorCode
 from .arms import registry
 from .schemas.dream import DreamPlanBody, DreamSettings
@@ -55,6 +55,7 @@ _thread = None
 _stop_requested = False
 _term_sent = False
 _pid_file = None
+_adopted = None
 _latest_run = None
 _latest_robot = None
 _error = None
@@ -77,8 +78,72 @@ def refuse(message, code=ErrorCode.ROBOT_NOT_READY, status=409):
     raise ApiError(status_code=status, detail=message, code=code)
 
 
+def _active_path():
+    return root() / "active.json"
+
+
+def _save_active(proc, button, pid_file, name, robot, session_id):
+    record = {
+        "runner": dream_process.identity(proc.pid),
+        "button": dream_process.identity(button.pid),
+        "pid_file": str(pid_file),
+        "status_path": str(_view_file(name, "status.json")),
+        "session_id": session_id,
+        "run": name,
+        "robot": robot,
+    }
+    path = _active_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(record))
+    tmp.replace(path)
+
+
+def adopt_active():
+    """Reconcile on startup and every mutex check, including after abrupt Lab death."""
+    global _adopted, _latest_run, _latest_robot, _pid_file, _term_sent, _stop_requested
+    from . import sessions
+
+    with _lock:
+        if dream_active:  # this server's worker still owns the launch/cleanup
+            return True
+        try:
+            record = json.loads(_active_path().read_text())
+        except FileNotFoundError:
+            return False
+        except (OSError, ValueError):
+            logger.exception("Cannot read Dream active record; refusing other robot work")
+            return True
+        try:
+            if not dream_process.alive(record["runner"]):
+                _active_path().unlink(missing_ok=True)  # only after original runner exits
+                if _adopted is not None:
+                    session_events.notify_session_changed("dream", False, phase="exited")
+                _adopted = None
+                return False
+            if not dream_process.alive(record["runner"], REAL / "dream_real.py"):
+                logger.error(
+                    "Dream active record has a live identity with unexpected command; refusing robot work"
+                )
+                return True
+        except Exception:
+            logger.exception("Cannot verify Dream runner identity; refusing other robot work")
+            return True
+        if _adopted != record:
+            logger.warning(
+                "Adopting surviving Dream runner %s and red button %s; no shutdown escalation",
+                record["runner"]["pid"],
+                record["button"]["pid"],
+            )
+            _term_sent = _stop_requested = False
+        _adopted = record
+        _latest_run, _latest_robot, _pid_file = record["run"], record["robot"], Path(record["pid_file"])
+        sessions.tracker.adopt_dream(record["session_id"], record["robot"])
+        return True
+
+
 def dream_is_active() -> bool:
-    return dream_active or checking_inputs
+    return dream_active or checking_inputs or adopt_active()
 
 
 def busy_response():
@@ -336,7 +401,6 @@ def _worker(request, settings, name, work):
     from . import sessions
     from .camera_preview import camera_preview_manager
 
-    log = None
     proc = button = None
     phase = "starting"
     try:
@@ -352,14 +416,13 @@ def _worker(request, settings, name, work):
         pid_file = work / "runner.pid"
         with _lock:
             _pid_file = pid_file
-        log = (work / "supervisor.log").open("w")
+        log_path = work / "supervisor.log"
         try:
-            button = subprocess.Popen(
+            button = dream_process.spawn(
                 [sys.executable, str(REAL / "stop_button.py"), "--pid-file", str(pid_file)],
                 cwd=REPO,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                start_new_session=True,
+                log=log_path,
+                result=work / "button-exit.json",
             )
         except OSError as exc:
             raise RuntimeError(f"{_button_problem(pid_file)} ({exc})") from exc
@@ -374,7 +437,7 @@ def _worker(request, settings, name, work):
                 return
             if button.poll() is not None:
                 raise RuntimeError(_button_problem(pid_file))
-            proc = subprocess.Popen(
+            proc = dream_process.spawn(
                 [
                     *_argv(request.robot, settings, name, work),
                     "--live",
@@ -388,11 +451,16 @@ def _worker(request, settings, name, work):
                     session_id,
                 ],
                 cwd=REPO,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                start_new_session=True,
+                log=log_path,
+                result=work / "runner-exit.json",
             )
             _proc = proc
+            _save_active(proc, button, pid_file, name, request.robot, session_id)
+            logger.warning(
+                "Dream runner %s and button %s are reparented outside Lab shutdown trees",
+                proc.pid,
+                button.pid,
+            )
         button_gone = False
         while proc.poll() is None:
             status = _read_view(name)
@@ -426,34 +494,20 @@ def _worker(request, settings, name, work):
             proc.wait()  # deliberately no timeout escalation, never SIGKILL
         phase = "error"
     finally:
-        # Only the button may be terminated. Keep it visible after a runner
-        # failure when torque state is unknown.
-        try:
-            status = _read_view(name)
-            if (
-                button is not None
-                and button.poll() is None
-                and (proc is None or (status or {}).get("state") == "released")
-            ):
-                button.terminate()
-                button.wait(timeout=2.0)
-        except Exception as exc:
-            logger.exception("Dream stop-button cleanup failed")
-            with _lock:
-                _error = _error or f"Stop-button cleanup failed: {exc}"
-        finally:
-            if log is not None:
-                with contextlib.suppress(OSError):
-                    log.close()
-            with _lock:
-                _proc = None
-                _button = None
-                dream_active = False
-                session_events.notify_session_changed("dream", False, phase="error" if _error else "released")
+        # Neither process belongs to Lab's shutdown tree. Leave the button
+        # open even after failure, and never escalate a held arm's stop.
+        with _lock:
+            if proc is not None and proc.poll() is not None:
+                _active_path().unlink(missing_ok=True)
+            _proc = None
+            _button = None
+            dream_active = False
+            session_events.notify_session_changed("dream", False, phase="error" if _error else "released")
 
 
 def handle_stop_dream(source="page/lease"):
     global _stop_requested, _term_sent
+    dream_is_active()  # adopt a surviving runner before routing its stop
     with _lock:
         first = not _stop_requested
         _stop_requested = True
@@ -502,9 +556,12 @@ def _read_view(run):
 
 
 def status():
+    is_active = dream_is_active()
     with _lock:
-        active, checking, run, error = dream_active, checking_inputs, _latest_run, _error
+        active, checking, run, error = is_active, checking_inputs, _latest_run, _error
         button_alive = _button is not None and _button.poll() is None
+        if _adopted is not None:
+            button_alive = dream_process.alive(_adopted["button"], REAL / "stop_button.py")
     data = _read_view(run)
     stale = bool(active and (not data or time.time() - data.get("written", 0) > 1.0))
     return {

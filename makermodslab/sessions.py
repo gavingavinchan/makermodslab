@@ -233,6 +233,22 @@ class SessionTracker:
                 self._current["owner"] = owner
             return self._snapshot_locked()
 
+    def adopt_dream(self, session_id: str, robot: str) -> None:
+        """Restore a reparented Dream's identity; old monotonic leases cannot survive restart."""
+        with self._lock:
+            if self._current is not None and self._current["id"] == session_id:
+                return
+            self._current = {
+                "id": session_id,
+                "kind": "dream",
+                "robot": robot,
+                "owner": None,
+                "started_at": time.time(),
+                "revision": 1,
+                "phase": "adopted",
+                "lease": None,
+            }
+
     def attach_lease(self, kind: str, owner: str, timeout_s: float) -> dict | None:
         """Put a lease on the current session, if it is of `kind`. Only the
         start wrapper calls this (the ONLY way a session gets a lease — see
@@ -1147,6 +1163,9 @@ def handle_current_session() -> dict[str, Any]:
     """Identity of the current session, lease included — a pure read. It
     deliberately does NOT renew the lease: reads are for any observer, while
     renewal is the owner's deliberate act (the heartbeat endpoint)."""
+    from . import dream
+
+    dream.dream_is_active()  # reconcile an adopted runner exit before exposing identity
     return {"session": _public_session(tracker.current()), "last_ended": tracker.last_ended()}
 
 

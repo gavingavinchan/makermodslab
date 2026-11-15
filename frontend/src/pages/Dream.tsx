@@ -197,6 +197,7 @@ export default function Dream() {
           {demo ? t("dream.exitDemo") : t("dream.demo")}<ArrowUpRight className="h-3 w-3" />
         </Button>
       </div>
+      <p className="w-full text-xs text-muted-foreground">{t("dream.noCodeEdits")}</p>
       <section aria-label={t("dream.cameras")} className="grid w-full grid-cols-2 items-center gap-4 md:grid-cols-[1fr_2.25fr_1fr] md:gap-5">
         {ordered.map((slot, i) => {
           const source = sourceFor(slot);

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 export default {
+  noCodeEdits: "Do not edit code during a run.",
   open: "Dream-1 Playground", activity: "a Dream-1 run", title: "Dream-1", subtitle: "Viscous · Aquarium",
   robot: "Robot", chooseRobot: "Select a Viscous robot", noRobot: "Add a Viscous robot in Lab to use Dream-1.",
   settings: "Settings", cameras: "Cameras", front: "Front", left: "Left", right: "Right", swap: "Bring {{camera}} to the centre",
