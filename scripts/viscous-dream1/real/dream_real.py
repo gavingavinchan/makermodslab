@@ -1182,7 +1182,9 @@ class Episode:
             torque = (self.status_reading or {}).get("torque") or {}
             temp = (self.status_reading or {}).get("temp") or {}
             self.view.update(
-                phase="pause"
+                phase="released"
+                if self.run_state == "released"
+                else "pause"
                 if self.clock() < getattr(self, "view_pause_until", 0) and self.phase == "dream"
                 else self.status_phase,
                 state=self.run_state,

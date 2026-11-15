@@ -137,6 +137,7 @@ def test_episode_outputs_follow_the_stop_without_changing_its_actions(tmp_path, 
     assert observed == summary
     status = json.loads((view.directory / "status.json").read_text())
     assert status["state"] == "released"
+    assert status["phase"] == "released"
     assert status["call"] == 2
     assert status["last_reason"] == "call cap 2 reached"
     assert status["measured"]
