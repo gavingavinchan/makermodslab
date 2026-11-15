@@ -971,3 +971,62 @@ def test_npm_install_skips_audit_and_fund() -> None:
 
     assert NPM_INSTALL_ARGS[:2] == ("npm", "install")
     assert {"--no-audit", "--no-fund", "--prefer-offline"} <= set(NPM_INSTALL_ARGS)
+
+
+def test_terminal_hangup_uses_launcher_shutdown(monkeypatch):
+    """Run launcher glue on inert children and dispatch its installed HUP handler."""
+    import signal
+    from unittest.mock import Mock
+
+    from makermodslab.scripts import makermodslab as launcher
+
+    installed, stopped = {}, []
+    monkeypatch.setattr(launcher, "_ensure_port_available", lambda *args: None)
+    monkeypatch.setattr(launcher, "_frontend_deps_current", lambda: True)
+    monkeypatch.setattr(launcher, "_wait_for_port", lambda *args, **kwargs: True)
+    monkeypatch.setattr(launcher.webbrowser, "open", lambda *args: None)
+    monkeypatch.setattr(launcher.subprocess, "Popen", Mock(side_effect=[Mock(pid=101), Mock(pid=102)]))
+    monkeypatch.setattr(launcher, "_terminate_tree", lambda pid, **kwargs: stopped.append(pid))
+    monkeypatch.setattr(
+        launcher,
+        "signal",
+        types.SimpleNamespace(
+            SIGINT=signal.SIGINT,
+            SIGTERM=signal.SIGTERM,
+            SIGHUP=signal.SIGHUP,
+            signal=lambda sig, fn: installed.update({sig: fn}),
+        ),
+    )
+    monkeypatch.setattr(
+        launcher, "time", types.SimpleNamespace(sleep=lambda _: installed[signal.SIGHUP](signal.SIGHUP, None))
+    )
+    with pytest.raises(SystemExit):
+        launcher._run_dev()
+    assert installed[signal.SIGHUP] is installed[signal.SIGTERM]
+    assert stopped == [102, 101]
+
+
+def test_worker_hangup_enters_uvicorn_graceful_shutdown(monkeypatch):
+    """Use Uvicorn's real exit handler, without running a server or lifecycle hooks."""
+    import signal
+
+    import uvicorn
+
+    from makermodslab import server as worker
+
+    server = uvicorn.Server(uvicorn.Config("unused:app"))
+    installed = {}
+    monkeypatch.setattr(
+        worker,
+        "signal",
+        types.SimpleNamespace(
+            SIGTERM=signal.SIGTERM,
+            SIGHUP=signal.SIGHUP,
+            getsignal=lambda _: server.handle_exit,
+            signal=lambda sig, fn: installed.update({sig: fn}),
+        ),
+    )
+    worker.install_hangup_shutdown()
+    installed[signal.SIGHUP](signal.SIGHUP, None)
+    assert server.should_exit and not server.force_exit
+    assert server._captured_signals == [signal.SIGTERM]

@@ -22,6 +22,7 @@ import logging
 import os
 import queue
 import re
+import signal
 import subprocess
 import sys
 import threading
@@ -5497,6 +5498,20 @@ def delete_robot(name: str):
     if delete_robot_record(name):
         return {"status": "success"}
     return JSONResponse(status_code=404, content={"status": "error", "message": "Robot not found"})
+
+
+@app.on_event("startup")
+def install_hangup_shutdown():
+    """Uvicorn captures TERM before lifespan startup, but does not capture HUP.
+
+    Forward Terminal closure to its installed TERM handler so normal lifespan
+    shutdown (including the independent red-button stop request) still runs.
+    TestClient/non-main-thread app instances have no process signal ownership.
+    """
+    if hasattr(signal, "SIGHUP") and threading.current_thread() is threading.main_thread():
+        term = signal.getsignal(signal.SIGTERM)
+        if callable(term):
+            signal.signal(signal.SIGHUP, lambda _signum, frame: term(signal.SIGTERM, frame))
 
 
 @app.on_event("startup")

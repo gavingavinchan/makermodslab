@@ -760,6 +760,8 @@ def _run_dev(
 
     signal.signal(signal.SIGINT, shutdown)
     signal.signal(signal.SIGTERM, shutdown)
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, shutdown)
 
     while True:
         time.sleep(2)
