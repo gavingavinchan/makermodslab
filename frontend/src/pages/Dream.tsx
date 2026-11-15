@@ -69,7 +69,9 @@ export default function Dream() {
   useSessionHeartbeat(session?.kind === "dream" ? session.id : null, owner, session?.kind === "dream" && session.owner === owner);
   useUnloadWarning(live);
 
-  useEffect(() => { if (live) setShowLastRun(true); }, [live]);
+  useEffect(() => {
+    if (live) { setShowLastRun(true); setPreview(null); }
+  }, [live]);
 
   useEffect(() => {
     const id = setInterval(() => setHint((n) => (n + 1) % DREAM_EXAMPLES.length), 5000);
