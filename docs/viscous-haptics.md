@@ -524,6 +524,54 @@ restore paths in the DAgger runner.
   sim scene still say 40 mm. The base can still slide or rotate under a push on the
   glass and neither the box nor the guard can see it, so before every powered run:
   post between the marks and flush on the back glass.
+- *Status (2026-11-13, later): the mount's fin is not modelled; the post is the back wall.*
+  Gavin: "i dont see how the fin is an obstacle as the tank will limit things before the
+  fin is hit. the back post is still a thing as j3 can hit it". A Codex round did model
+  the fin and post from the mount 3MF as convex obstacles (5 mm margin, local branch
+  `feat/viscous-tank-mount-fin-2` at 61299e9e on the Mac, not pushed) and agrees: in
+  the replay no row was ever cut by the fin (2838/2928 with the heel loosened, vs 2828
+  here), and the shoulder housing never comes within 11.3 mm of it at any J1. It cost
+  about 5x per pose check (0.5 -> 2.7 ms), so it was parked. The post stays covered by
+  the near plane at its face (106 mm), applied across the full width, so J3 and every
+  link beyond the elbow keep 70 mm off it; the heel keeps its 40 mm limit.
+  Gavin, same night: "no need to leave the 5mm gap between fin and the arm, they dont
+  hit each other, ive played with it" (moved by hand through its range, no contact), so
+  the fin needs no keep-out at all.
+- *Status (2026-11-14): limp-motor trip, offline, on branch `fix/viscous-motor-limp-trip`
+  (not merged).* Why: in the powered rehearsal `rehearse-live-20261114T082911Z` the
+  shoulder (RS00) held the start pose underwater at 5.1 Nm, 48 C, and 115 s in its
+  torque read 0.00 Nm in one tick while it kept answering with fresh positions; the arm
+  fell. The runner saw it only through the overspeed trip, a tick later, then returned
+  and "held" against a dead motor, and the tick log stopped at the trip. Every read
+  sends the RobStride clear-fault frame and the driver decodes no mode/fault bits from
+  the MIT reply, so a cut-out motor is invisible except as torque collapse. Now: a `limp` trip (arm joint
+  < 0.25 Nm while > 3 deg behind its goal, one reading; zero hits over all 23 logged
+  runs, fires on the drop tick), no return and a loud "support the arm" when a joint
+  is limp, the dead motor never re-enabled, every stop/hold reading in `ticks.jsonl`,
+  and every joint's torque/temperature at the trip in the summary (`at_trip`). Details
+  in the runner README (safety layer 6a). The plan id changes: fresh dry run first.
+  Gavin, same day: "the arm will suddenly die, but the line under the big stop button
+  still says alive, so thats wrong". The runner now writes a status file beside its pid
+  file every tick and phase (stop path and hold included), and `stop_button.py` shows it
+  in large colour: limp joint, HOLDING mid-air, no data from the run, released.
+  Also from live `20261114T084532Z`: the stop's return was refused ("path not clear of the
+  tank keep-out") and the arm held mid-air for 134 s, unlogged, while the shoulder cut out.
+  The re-anchored goal sat 1.84 mm over the right-wall line (Dream's last target was on it,
+  +0.04 mm; between the last tick and the re-anchor, 0.4 s, the shoulder dropped 8.2 deg and
+  wrist_yaw moved 9.1 deg), and the guard refuses any segment that starts over a line. Return
+  legs now use `tank_guard.check_return_segment`: a start inside a requirement by up to the
+  15 mm tracking allowance is walked with that link/face's requirement lowered to 0.5 mm below
+  where it starts, every other requirement unchanged, so the proof is "nothing ends up worse
+  than where it started". Dream substeps keep the old rule. Replay of 507 stop points sampled
+  from that run: the old rule cleared 498, the new one 507, the real stop included.
+- *Status (2026-11-14, later): raw run data, a ring of the last 10.* Gavin: "all run from
+  now to the future, keep all the last 10 run logs, like all the raw data, if possible even
+  camera in the future, so we can always go back in time to figure out what is wrong. then
+  discard by default unless needed to be kept". Every `dream_real.py` run now writes a bundle
+  to `~/.makermods/makermodslab-viscous/run-data/<run>/` (console, every tick through the
+  stop and the hold, Dream chunks, meta with git SHA and diff stat, the inputs used, the run
+  folder, and live the 5 Hz frames already read for Dream). Pruned to the newest 10 at each
+  run's start; `run_data.py keep <run> [reason]` keeps one forever. See the runner README.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

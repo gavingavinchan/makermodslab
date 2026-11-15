@@ -69,6 +69,9 @@ DEFAULT_CONFIG = geo.ENV_DIR / "keepout_viscous_waterproof_01.json"
 SETTLE_MM = 0.05
 RESOLUTION_MM = 1e-9  # a step no point can move further than this proves nothing (FK noise is ~1e-13 mm)
 MAX_SAMPLES = 1000
+# check_return_segment: a link/face that starts inside its requirement must stay within this much of
+# where it started. It gives the walk a positive slack to start from (a slack of exactly 0 proves nothing).
+RETURN_EPS_MM = 0.5
 
 
 def _value(entry):
@@ -190,8 +193,9 @@ class TankGuard:
         bound = sum(self._reach[n] * math.radians(abs(q1[n] - q0[n])) for n in ARM)
         return bound + self._reach["gripper"] * abs(q1["gripper"] - q0["gripper"])
 
-    def clearances(self, q: dict) -> dict[tuple[str, str], float]:
-        """Slack (clearance minus requirement, mm) for each checked link/face."""
+    def clearances(self, q: dict, relax: dict | None = None) -> dict[tuple[str, str], float]:
+        """Slack (clearance minus requirement, mm) for each checked link/face; `relax` lowers the
+        requirement of the link/faces it names by that many mm (check_return_segment only)."""
         _check_positions(q)
         transforms = geo.forward_kinematics(self.model, q)
         o, axes, out = self.planes, self._axes, {}
@@ -211,11 +215,11 @@ class TankGuard:
             }
             for face, need in self.required[link].items():
                 if need is not None:
-                    out[(link, face)] = float(dist[face] - need)
+                    out[(link, face)] = float(dist[face] - need + (relax or {}).get((link, face), 0.0))
         return out
 
-    def check_pose(self, q: dict, *, need_mm: float = 0.0) -> Verdict:
-        slack = self.clearances(q)
+    def check_pose(self, q: dict, *, need_mm: float = 0.0, relax: dict | None = None) -> Verdict:
+        slack = self.clearances(q, relax)
         (link, face), worst = min(slack.items(), key=lambda kv: kv[1])
         return Verdict(worst >= need_mm, worst - need_mm, link, face)
 
@@ -223,7 +227,41 @@ class TankGuard:
         """Prove the straight joint-space path q0 -> q1 clear, or say where not."""
         return self._scan(q0, q1, to_violation=False)[0]
 
-    def _scan(self, q0: dict, q1: dict, *, to_violation: bool = True) -> tuple[Verdict, float]:
+    def check_return_segment(self, q0: dict, q1: dict, *, eps_mm: float = RETURN_EPS_MM) -> Verdict:
+        """check_segment for a STOP's return leg, whose start may sit slightly inside a requirement.
+
+        Why (live 20261114T084532Z): Dream's last target sat on the right-wall line (+0.04 mm, accepted);
+        the stop re-anchored the goal at the measured pose plus its standing error, which then lay 1.84 mm
+        over that line (wrist_pitch_link), so the first return leg failed at sample 0 although along it
+        the clearance only grew (-1.8 -> +4.9 -> +81 mm). The arm held mid-air, and the shoulder cut out
+        during the hold. Such a start was never an accepted target; it is where the arm already is.
+
+        The rule. A start clear of every requirement is check_segment exactly. A start inside some by d_k
+        (per link/face k), all within the tracking allowance (what monitor() already tolerates for a
+        measured pose), is walked with each such requirement lowered by d_k + eps_mm and every other one
+        unchanged. The start then has slack >= eps_mm everywhere, so _scan's proof applies as is, and
+        what it proves is: along the whole path every link/face that started clear stays clear, and
+        every one that started inside never ends up more than eps_mm further inside than it started.
+        Nothing gets meaningfully closer to the glass than it already is. A start inside by more than
+        the allowance is refused, as before (the arm is not where anything thinks it is).
+
+        For the stop path only: a Dream substep always starts from an accepted target (slack >= 0), where
+        this is check_segment anyway, and limit() keeps refusing an unsafe previous target.
+        """
+        _check_positions(q0)
+        _check_positions(q1)
+        start = self.clearances(q0)
+        over = {k: -v for k, v in start.items() if v < 0}
+        if not over:
+            return self.check_segment(q0, q1)
+        (link, face), worst = max(over.items(), key=lambda kv: kv[1])
+        if worst > self.tracking_allowance_mm:
+            return Verdict(False, -worst, link, face, 1)
+        return self._scan(q0, q1, to_violation=False, relax={k: d + eps_mm for k, d in over.items()})[0]
+
+    def _scan(
+        self, q0: dict, q1: dict, *, to_violation: bool = True, relax: dict | None = None
+    ) -> tuple[Verdict, float]:
         """Prove q0 -> q1 clear by a walk along it; also return the proven-clear fraction.
 
         Why a walk (2026-11-08, live 215535Z): the fixed grid this replaced asked
@@ -259,7 +297,10 @@ class TankGuard:
         A start INSIDE a requirement (slack < 0, never an accepted target; the
         stop path's re-anchored goal can be) is refused as before: the bound
         lets any vertex move toward the glass at B from s = 0 on, so no finite
-        set of samples can prove that slack does not first get worse.
+        set of samples can prove that slack does not first get worse. (The stop
+        path's check_return_segment lowers those requirements to just below
+        where the start is, so the walk proves "never worse than the start".)
+        `relax` passes those lowered requirements to every sample.
 
         Ends: clear as soon as the prefix covers [0, 1]; cut, before that, when
         a connecting sample comes within SETTLE_MM of a line and closer than
@@ -273,7 +314,7 @@ class TankGuard:
         exactly, slack >= 0), so a clamp lands on a checked pose.
         """
         bound = self.motion_bound_mm(q0, q1)
-        v = self.check_pose(q0)
+        v = self.check_pose(q0, relax=relax)
         if not v.ok or bound <= 0:
             return Verdict(v.ok, v.slack_mm, v.link, v.face, 1), 1.0 if v.ok else 0.0
         settle = min(SETTLE_MM, v.slack_mm)  # never a cut at the slack the start already has
@@ -282,7 +323,7 @@ class TankGuard:
         probe = proven + v.slack_mm / bound  # where an equal slack would just reach back to `proven`
         while proven < 1.0 and samples < MAX_SAMPLES:
             probe = min(1.0, probe)
-            v = self.check_pose(_lerp(q0, q1, probe))
+            v = self.check_pose(_lerp(q0, q1, probe), relax=relax)
             samples += 1
             if v.slack_mm < worst.slack_mm:
                 worst = v

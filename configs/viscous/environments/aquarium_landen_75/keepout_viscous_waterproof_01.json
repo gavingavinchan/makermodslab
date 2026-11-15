@@ -51,9 +51,9 @@
     "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin (tank.json surface_margins_mm). Covers FK error, tracking lag and the residual yaw; it does NOT cover the loose base sliding (~30 mm under a hand push), which must be clamped."
   },
   "floor_press_mm": {
-    "value": 10.0,
+    "value": 20.0,
     "status": "design",
-    "source": "Floor is the one allowed contact surface (Gavin 2026-11-07). A target may put a vertex at most this far below the floor bound, so a command can never ask for a deep push into the floor glass. Padding does not apply to the floor."
+    "source": "Floor is the one allowed contact surface (Gavin 2026-11-07). A target may put a vertex at most this far below the floor bound, so a command can never ask for a deep push into the floor glass. Padding does not apply to the floor. Was 10; raised to 20 on 2026-11-14 after the start gate refused the arm lying on the glass at its rest (wrist_yaw_link mesh 13.7 mm under the -28 line with J5 at +24 deg, i.e. the FK floor error varies by pose by more than 10 mm). Gavin: the pose was fine, the check \"too strict\". Dream's own floor slide target (floor + 10 mm + sag) is unchanged; only the guard's backstop depth moved."
   },
   "padding_mm": {
     "value": {"default": 40.0, "gripper_left": 0.0, "gripper_right": 0.0},

@@ -329,6 +329,99 @@ class SpeedMonitorTest(unittest.TestCase):
         self.assertLess(peak, 21.0)
 
 
+# rehearse-live-20261114T082911Z, ticks 2434-2440 (rounded): the shoulder holds the start pose at ~5.1 Nm and
+# 48 C, then its torque reads 0.00 Nm (tick 2439) with fresh, continuous positions, and the arm falls.
+DROP_TICKS = [
+    '{"t":72358.676,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.003,"shoulder_lift":5.132,"elbow_flex":3.08,"wrist_flex":1.446,"wrist_yaw":-0.099,"wrist_roll":-0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.726,"pos":{"shoulder_pan":176.549,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.024,"shoulder_lift":5.132,"elbow_flex":3.074,"wrist_flex":1.439,"wrist_yaw":-0.092,"wrist_roll":0.003,"gripper":0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.776,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.031,"shoulder_lift":5.104,"elbow_flex":3.074,"wrist_flex":1.46,"wrist_yaw":-0.113,"wrist_roll":0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.823,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.357,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.01,"shoulder_lift":5.118,"elbow_flex":3.06,"wrist_flex":1.439,"wrist_yaw":-0.106,"wrist_roll":0.01,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.876,"pos":{"shoulder_pan":176.527,"shoulder_lift":-126.217,"elbow_flex":97.335,"wrist_flex":5.704,"wrist_yaw":-8.847,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":0.017,"shoulder_lift":5.132,"elbow_flex":3.08,"wrist_flex":1.446,"wrist_yaw":-0.106,"wrist_roll":0.003,"gripper":-0.01},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.923,"pos":{"shoulder_pan":176.593,"shoulder_lift":-129.338,"elbow_flex":98.632,"wrist_flex":6.934,"wrist_yaw":-8.913,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.195,"shoulder_lift":-0.003,"elbow_flex":0.858,"wrist_flex":-0.058,"wrist_yaw":0.01,"wrist_roll":-0.003,"gripper":0.017},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+    '{"t":72358.974,"pos":{"shoulder_pan":176.571,"shoulder_lift":-132.305,"elbow_flex":99.182,"wrist_flex":8.165,"wrist_yaw":-8.913,"wrist_roll":-4.055,"gripper":-0.363},"cmd":{"shoulder_pan":176.59,"shoulder_lift":-122.9,"elbow_flex":99.34,"wrist_flex":8.56,"wrist_yaw":-9.0,"wrist_roll":-3.99,"gripper":-0.319},"torque":{"shoulder_pan":-0.003,"shoulder_lift":-0.003,"elbow_flex":-0.161,"wrist_flex":-0.55,"wrist_yaw":-0.079,"wrist_roll":-0.017,"gripper":-0.003},"temp":{"shoulder_pan":22.0,"shoulder_lift":48.0,"elbow_flex":33.0,"wrist_flex":24.0,"wrist_yaw":22.0,"wrist_roll":22.0,"gripper":22.0}}',
+]
+
+
+def all_run_logs():
+    return sorted((REAL / "runs").glob("*/ticks.jsonl"))
+
+
+class LimpMonitorTest(unittest.TestCase):
+    def mon(self):
+        lim = core.TripLimits()
+        return core.LimpMonitor(lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks)
+
+    def test_the_thresholds(self):
+        lim = core.TripLimits()
+        self.assertEqual((lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks), (0.25, 3.0, 1))
+        for bad in ({"limp_torque_nm": 0}, {"limp_torque_nm": 1.5}, {"limp_lag_deg": 8}, {"limp_ticks": 0}):
+            with self.assertRaises(ValueError, msg=bad):
+                core.TripLimits(**bad).check()
+
+    def test_no_torque_far_from_the_goal_is_limp(self):
+        mon = self.mon()
+        cmd = dict(POSE)
+        pos = dict(POSE, shoulder_lift=POSE["shoulder_lift"] - 6.4)
+        trips = mon.update(pos, cmd, dict(zeros(1.0), shoulder_lift=-0.003))
+        self.assertEqual([t.name for t in trips], ["limp"])
+        self.assertIn("shoulder_lift went limp", trips[0].detail)
+        self.assertEqual(mon.limp, {"shoulder_lift"})
+
+    def test_near_the_goal_or_under_load_is_not(self):
+        mon = self.mon()
+        # Lying on the floor at the rest: no torque, no lag.
+        self.assertEqual(mon.update(POSE, POSE, zeros(0.0)), [])
+        # Holding the start pose: 3-10 deg of standing error at 3-6 Nm.
+        sag = dict(POSE, shoulder_lift=POSE["shoulder_lift"] - 9.4)
+        self.assertEqual(mon.update(sag, POSE, dict(zeros(0.0), shoulder_lift=5.1)), [])
+        # A small error with no torque (a wrist with no load, moving): under the lag floor.
+        self.assertEqual(mon.update(dict(POSE, wrist_roll=POSE["wrist_roll"] + 1.8), POSE, zeros(0.0)), [])
+
+    def test_the_gripper_is_excluded(self):
+        # It goes limp on purpose on every stop.
+        mon = self.mon()
+        self.assertEqual(mon.update(dict(POSE, gripper=POSE["gripper"] - 40), POSE, zeros(0.0)), [])
+
+    def test_a_joint_that_makes_torque_again_is_no_longer_limp(self):
+        mon = self.mon()
+        far = dict(POSE, elbow_flex=POSE["elbow_flex"] - 5)
+        mon.update(far, POSE, zeros(0.0))
+        self.assertEqual(mon.limp, {"elbow_flex"})
+        mon.update(far, POSE, zeros(2.6))
+        self.assertEqual(mon.limp, set())
+        self.assertEqual(mon.first["elbow_flex"]["torque_nm"], 0.0)
+
+    def test_the_14_nov_drop_trips_limp_on_the_tick_of_the_drop(self):
+        # The overspeed trip fired on the tick after (2440); the limp trip fires on 2439, one tick earlier.
+        clock = FakeClock()
+        mon = core.TripMonitor(core.TripLimits(), clock)
+        names = []
+        for line in DROP_TICKS:
+            tick = json.loads(line)
+            clock.t = tick["t"]
+            names.append([t.name for t in mon.update(tick["pos"], tick["cmd"], tick["torque"], tick["temp"])])
+        self.assertEqual(names[:5], [[]] * 5)
+        self.assertEqual(names[5], ["limp"])  # tick 2439
+        self.assertEqual(sorted(names[6]), ["limp", "overspeed"])  # tick 2440
+        self.assertEqual(mon.limp.limp, {"shoulder_lift"})
+
+    @unittest.skipUnless(all_run_logs(), "no run logs in this checkout")
+    def test_no_run_logged_trips_limp(self):
+        # Every committed run (17k+ ticks with the untracked ones, 2026-11-08..14): approach, Dream chunks,
+        # holds. The closest healthy cases: 1.29 Nm at 3.1 deg behind (shoulder_lift, approach) and 1.8 deg
+        # behind at 0.16 Nm (elbow_flex, approach). Only 082911Z's drop trips, from its tick 2439.
+        for path in all_run_logs():
+            mon = self.mon()
+            for i, line in enumerate(path.read_text().splitlines()):
+                tick = json.loads(line)
+                if tick["phase"].startswith("stop") or tick.get("cmd") is None or tick.get("torque") is None:
+                    continue
+                trips = mon.update(tick["pos"], tick["cmd"], tick["torque"])
+                if path.parent.name == "rehearse-live-20261114T082911Z" and i >= 2439:
+                    break
+                self.assertEqual(trips, [], (path.parent.name, i))
+
+
 class HoldErrorTest(unittest.TestCase):
     def test_learns_the_standing_sag_and_a_short_push_barely_moves_it(self):
         hold = core.HoldError(tau_s=1.0, limit_deg=10.0)
@@ -386,7 +479,8 @@ class FakeCanRobot:
 
     def get_observation(self):
         self.pos["shoulder_lift"] -= self.fall
-        return {f"{m}.pos": v for m, v in self.pos.items()}
+        torque = {f"{m}.torque": 0.0 if (self.fall and m == "shoulder_lift") else 0.5 for m in self.pos}
+        return {f"{m}.pos": v for m, v in self.pos.items()} | torque | {f"{m}.temp": 30.0 for m in self.pos}
 
     def send_action(self, action):
         self.sent.append(dict(action))
@@ -410,7 +504,7 @@ class LabArmReturnTest(unittest.TestCase):
         speed = core.SpeedMonitor(30.0, 2)
         trips = []
 
-        def watch(pos):
+        def watch(pos, torque, temp, goal):
             trips.extend(found := speed.update(pos, time.monotonic()))
             return found
 
@@ -421,10 +515,29 @@ class LabArmReturnTest(unittest.TestCase):
         # 30 Hz reads merge into >= 40 ms windows, so two over-speed readings take ~4 setpoints (~0.14 s).
         self.assertLessEqual(len(robot.sent), 5)
 
+    def test_the_watch_sees_torque_temperature_and_the_setpoint_sent(self):
+        # The stop path's limp check needs torque against the goal the joint was last sent; before the first
+        # setpoint there is no goal (None), so a limp check cannot misfire on the planning read.
+        robot = FakeCanRobot(fall=1.0)
+        limp = core.LimpMonitor(0.25, 3.0, 1)
+        seen = []
+
+        def watch(pos, torque, temp, goal):
+            seen.append((dict(pos), dict(torque), dict(temp), goal))
+            return limp.update(pos, goal, torque) if goal is not None else []
+
+        ok, message = self.leg(robot, watch)
+        self.assertIsNone(seen[0][3])
+        self.assertTrue(all(set(g) == set(core.ARM) for *_, g in seen[1:] if g is not None))
+        self.assertEqual(seen[0][2]["shoulder_lift"], 30.0)
+        self.assertFalse(ok)
+        self.assertIn("limp", message)
+        self.assertEqual(limp.limp, {"shoulder_lift"})
+
     def test_missed_replies_do_not_end_the_leg(self):
         # The planning read misses once (retried); a read before a setpoint misses (skipped, not raised).
         robot = FakeCanRobot(miss=(1, 4))
-        ok, message = self.leg(robot, lambda pos: [])
+        ok, message = self.leg(robot, lambda pos, torque, temp, goal: [])
         self.assertTrue(ok, message)
         self.assertAlmostEqual(robot.pos["elbow_flex"], POSE["elbow_flex"] - 3.0)
 
@@ -605,6 +718,8 @@ class EpisodeOnFakesTest(unittest.TestCase):
         mutate=None,
         patch=None,
         settings_changes=None,
+        status_path=None,
+        bundle=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -662,8 +777,19 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 abort,
                 mutate=mutate,
                 arm_rest=arm_rest,
+                status_path=status_path,
+                wall=clock,
+                mirror_dir=bundle.mirror_dir(scenario) if bundle else None,
             )
-            return self.ep.run(), arm
+            summary = self.ep.run()
+            if bundle:
+                core.atomic_json(Path(tmp) / "summary.json", summary)
+                bundle.finish(Path(tmp))
+            ticks = Path(tmp) / "ticks.jsonl"
+            self.tick_rows = (
+                [json.loads(line) for line in ticks.read_text().splitlines()] if ticks.exists() else []
+            )
+            return summary, arm
 
     def assert_stopped_safely(self, arm, returned=True):
         """After engage: the arm re-anchored at its measured pose, the gripper released, then the return
@@ -671,6 +797,9 @@ class EpisodeOnFakesTest(unittest.TestCase):
         names = [e.split(":")[0] for e in arm.events]
         self.assertEqual(names[-1], "release")
         self.assertNotIn("SPRING-BACK", names)
+        # No false limp: a healthy arm's stop never reports a dead joint (the limp tests check theirs).
+        if arm.scenario != "limp":
+            self.assertNotIn("limp", self.ep.summary.get("stop") or {})
         stop = names[names.index("engage") + 1 :]
         self.assertEqual(stop[0], "drop cameras")  # the return reads the motors only (live 225249Z)
         stop = stop[1:]
@@ -872,8 +1001,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
             def stuck(pose, abort, speed, watch=None):
                 back(pose, abort, speed, watch)
                 arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0
-                arm.limp.add("shoulder_lift")
-                arm.FALL_DEG_PER_TICK = 0.0
+                arm.stuck.add("shoulder_lift")
                 return False, "shoulder_lift still 25.0 deg away"
 
             arm.return_to_rest = stuck
@@ -926,7 +1054,12 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assertAlmostEqual(
             first_from["shoulder_pan"], summary["stop"]["reanchor"]["goal"]["shoulder_pan"], 1
         )
-        self.assertAlmostEqual(arm.leg_starts[0]["shoulder_pan"], measured["shoulder_pan"], places=2)
+        # The leg starts physically from where the arm is: the measured pose, settled at most its offset
+        # toward the re-anchored goal (the fake settles on the stop's limp-check reading).
+        offset = summary["stop"]["reanchor"]["offset_deg"]["shoulder_pan"]
+        self.assertAlmostEqual(
+            arm.leg_starts[0]["shoulder_pan"], measured["shoulder_pan"], delta=abs(offset) + 0.01
+        )
         self.assert_stopped_safely(arm)
 
     @staticmethod
@@ -950,6 +1083,146 @@ class EpisodeOnFakesTest(unittest.TestCase):
         self.assert_held_until_the_second_signal(summary, arm, "during leg 1: overspeed")
         self.assertEqual(stop["hold_reanchor"]["attempts"], 1)  # held where it is, not at the old goal
         self.assertEqual([e.split(":")[0] for e in arm.events].count("re-anchor"), 2)
+
+    def test_a_motor_that_cuts_out_trips_limp_at_once_and_is_not_held(self):
+        # Rehearsal 20261114T082911Z: the shoulder's torque went to 0.00 Nm in one tick and the arm fell;
+        # only the overspeed trip saw it, and the stop re-anchored and returned against a dead motor.
+        summary, arm = self.episode("limp", max_calls=5, after=self.second_signal_at(1030))
+        names = [t["name"] for t in summary["trips"]]
+        self.assertIn("limp", names)
+        self.assertIn("shoulder_lift", summary["trips"][names.index("limp")]["detail"])
+        at = summary["at_trip"]
+        self.assertEqual(at["torque_nm"]["shoulder_lift"], 0.0)
+        self.assertEqual(set(at["temp_c"]), set(core.MOTORS))
+        self.assertGreater(abs(at["lag_deg"]["shoulder_lift"]), 3.0)
+        # The first limp tick is no later than the first overspeed tick.
+        loop = [r for r in self.tick_rows if not r["phase"].startswith("stop")]
+        first = {n: next(i for i, r in enumerate(loop) if n in r["trips"]) for n in ("limp",)}
+        self.assertEqual(first["limp"], len(loop) - 1)
+        stop = summary["stop"]
+        self.assertEqual(stop["not_held"], ["shoulder_lift"])
+        self.assertEqual(stop["legs"], [])  # no return motion with a dead joint
+        self.assertEqual(arm.returns, [])
+        self.assertIn("stop: LIMP", summary["phases"])
+        self.assert_held_until_the_second_signal(summary, arm, "shoulder_lift went limp")
+        self.assertIn("holding is not possible; support the arm", stop["returned"])
+        # The dead motor is never re-enabled: engage happened once, before the run.
+        self.assertEqual([e.split(":")[0] for e in arm.events].count("engage"), 1)
+
+    def test_the_stop_path_and_the_hold_are_in_the_tick_log(self):
+        summary, _ = self.episode("limp", max_calls=5, after=self.second_signal_at(1030))
+        phases = [r["phase"] for r in self.tick_rows]
+        held = [r for r in self.tick_rows if r["phase"] == "stop: HOLDING"]
+        self.assertIn("stop: check", phases)
+        self.assertGreater(len(held), 10)  # ~10 Hz until the second signal
+        for row in held:
+            self.assertEqual(set(row["pos"]), set(core.MOTORS))
+            self.assertEqual(set(row["torque"]), set(core.MOTORS))
+            self.assertEqual(set(row["temp"]), set(core.MOTORS))
+            self.assertEqual(set(row["cmd"]), set(core.ARM))
+        # A healthy stop logs its return legs too, to the last reading before the release.
+        summary, _ = self.episode(max_calls=1)
+        legs = {r["phase"] for r in self.tick_rows if r["phase"].startswith("stop: return leg")}
+        self.assertGreaterEqual(len(legs), 1)
+        self.assertEqual(len(legs), len(summary["stop"]["legs"]))
+
+    def test_the_status_file_follows_the_run_through_a_limp_joint(self):
+        # stop_button.py shows this file (Gavin: "the arm will suddenly die, but the line under the big stop
+        # button still says alive"). Snapshot it on every sleep of a run whose shoulder cuts out.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "dream_real.pid.status.json"
+            seen = []
+
+            def after(clock, stop, abort):
+                if path.exists():
+                    seen.append(json.loads(path.read_text()))
+                if clock.t > 1030:
+                    abort.set()
+
+            self.episode("limp", max_calls=5, after=after, status_path=path)
+            final = json.loads(path.read_text())
+        states = [st["state"] for st in seen]
+        self.assertIn("running", states)
+        self.assertIn("holding", states)
+        running = next(st for st in seen if st["state"] == "running")
+        self.assertEqual(set(running["joints"]), set(core.ARM))
+        self.assertFalse(any(j["limp"] for j in running["joints"].values()))
+        self.assertIsNotNone(running["joints"]["shoulder_lift"]["temp_c"])
+        held = [st for st in seen if st["state"] == "holding"]
+        self.assertTrue(all(st["limp"] == ["shoulder_lift"] for st in held))
+        self.assertTrue(held[-1]["joints"]["shoulder_lift"]["limp"])
+        self.assertEqual(held[-1]["joints"]["shoulder_lift"]["torque_nm"], 0.0)
+        self.assertFalse(held[-1]["joints"]["elbow_flex"]["limp"])
+        self.assertGreater(held[-1]["last_reading"], held[0]["last_reading"])  # the hold keeps reading
+        self.assertEqual(final["state"], "released")
+        self.assertIn("all torque off", final["message"])
+        self.assertEqual(final["limp"], ["shoulder_lift"])
+        self.assertEqual(final["pid"], __import__("os").getpid())
+        self.assertEqual(core.STATUS_SUFFIX, __import__("stop_button").STATUS_SUFFIX)
+
+    def test_a_fake_run_writes_its_raw_bundle_through_the_stop_and_the_hold(self):
+        import run_data
+
+        with tempfile.TemporaryDirectory() as root:
+            bundle = run_data.RunBundle.start(
+                "rehearse-dry-20261114T120000Z", Path(root), meta={"kind": "test"}
+            )
+            bundle.tee()
+            try:
+                print("hello from the run")
+                bundle.copy_input(core.KEEPOUT_FILE)
+                self.episode("limp", max_calls=5, after=self.second_signal_at(1030), bundle=bundle)
+            finally:
+                bundle.finish()  # idempotent: the harness finished it already
+            path = Path(root) / "rehearse-dry-20261114T120000Z"
+            meta = json.loads((path / "meta.json").read_text())
+            self.assertEqual(meta["kind"], "test")
+            self.assertTrue(meta["git_sha"])
+            self.assertIn("argv", meta)
+            console = (path / "console.log").read_text()
+            self.assertIn("hello from the run", console)
+            self.assertIn("LIMP: shoulder_lift went limp", console)
+            self.assertTrue((path / "inputs" / core.KEEPOUT_FILE.name).is_file())
+            ticks = [json.loads(line) for line in (path / "limp" / "ticks.jsonl").read_text().splitlines()]
+            self.assertEqual(ticks, self.tick_rows)  # the mirror is the run's log, line for line
+            self.assertIn("stop: HOLDING", {t["phase"] for t in ticks})
+            self.assertTrue((path / "run" / "summary.json").is_file())
+            self.assertFalse((path / "run" / "ticks.jsonl").exists())  # mirrored live, not copied twice
+            self.assertFalse((path / run_data.ACTIVE).exists())
+            self.assertIs(sys.stdout.__class__.__name__ == "_Tee", False)
+
+    def test_a_joint_going_limp_while_held_is_announced(self):
+        # Held after a stuck leg; then the shoulder's motor cuts out under the hold.
+        def patch(arm):
+            back = arm.return_to_rest
+
+            def stuck(pose, abort, speed, watch=None):
+                back(pose, abort, speed, watch)
+                arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25.0
+                arm.stuck.add("shoulder_lift")
+                return False, "shoulder_lift still 25.0 deg away"
+
+            arm.return_to_rest = stuck
+
+        def after(clock, stop, abort):
+            if clock.t > 1035 and "shoulder_lift" not in self.arm.dead:
+                self.arm.stuck.discard("shoulder_lift")
+                self.arm.limp.add("shoulder_lift")
+                self.arm.dead.add("shoulder_lift")
+            if clock.t > 1045:
+                abort.set()
+
+        def keep(arm):
+            self.arm = arm
+            patch(arm)
+
+        summary, arm = self.episode(max_calls=1, patch=keep, after=after)
+        stop = summary["stop"]
+        self.assertTrue(stop["returned"].startswith("held leg 1 ended 25.0 deg off its target"))
+        self.assertEqual(stop["not_held"], ["shoulder_lift"])
+        self.assertEqual(stop["limp"]["shoulder_lift"]["phase"], "stop: HOLDING")
+        self.assertEqual(stop["limp"]["shoulder_lift"]["torque_nm"]["shoulder_lift"], 0.0)
+        self.assertTrue(self.release_after_abort)
 
     def test_a_sagging_arm_stopped_far_from_the_start_reaches_the_rest_before_release(self):
         # The real shoulder settles 7.45 deg short at the start pose: more than the return helper's 6 deg,
@@ -979,8 +1252,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 arm.pos["shoulder_lift"] = (
                     pose["shoulder_lift"] - 25.0
                 )  # caught on something, past its 20 deg lag trip
-                arm.limp.add("shoulder_lift")
-                arm.FALL_DEG_PER_TICK = 0.0  # stays there
+                arm.stuck.add("shoulder_lift")  # stays there, making torque
                 return False, "shoulder_lift still 25.0 deg away"
 
             arm.return_to_rest = stuck
@@ -1163,6 +1435,77 @@ class StopButtonTest(unittest.TestCase):
         self.assertEqual(len(self.kills), 1)
         logic.press(from_key=False)
         self.assertEqual(self.kills, [(4242, signal.SIGTERM)] * 2)
+
+    def status(self, state="running", limp=(), written=100.0, last=100.0, pid=4242, **extra):
+        joints = {
+            m: {"limp": m in limp, "torque_nm": 0.0 if m in limp else 1.0, "temp_c": 30.0} for m in core.ARM
+        }
+        return {
+            "pid": pid,
+            "state": state,
+            "phase": "hold",
+            "limp": list(limp),
+            "joints": joints,
+            "written": written,
+            "last_reading": last,
+            "message": "m",
+        } | extra
+
+    def test_the_view_says_what_is_wrong(self):
+        import stop_button
+
+        self.tmp = tempfile.TemporaryDirectory()  # tearDown's
+        view = stop_button.status_view
+        now = 100.4
+        self.assertEqual(view(4242, "runner pid 4242 alive", self.status(), now)[:2], ("RUNNING: hold", "ok"))
+        headline, level, _ = view(4242, "", self.status("holding", limp=["shoulder_lift"]), now)
+        self.assertEqual((headline, level), ("SHOULDER WENT LIMP: SUPPORT THE ARM, then RELEASE", "alarm"))
+        # Limp beats holding; and it is shown while running too (the loop saw it before the stop).
+        self.assertIn("WENT LIMP", view(4242, "", self.status("running", limp=["elbow_flex"]), now)[0])
+        self.assertEqual(
+            view(4242, "", self.status("holding"), now)[0],
+            "HOLDING MID-AIR: support the arm, then press RELEASE",
+        )
+        # The file stops being written while the pid is alive; or it is written but no reading is fresh.
+        self.assertEqual(
+            view(4242, "", self.status(written=98.0), now)[:2], ("NO DATA FROM THE RUN", "nodata")
+        )
+        self.assertEqual(view(4242, "", self.status("holding", last=98.0), now)[0], "NO DATA FROM THE RUN")
+        self.assertEqual(view(4242, "", self.status("returning"), now)[0], "RETURNING TO REST")
+        # Released is final and plain, limp or not; with no live pid it is still released.
+        for pid in (4242, None):
+            self.assertEqual(
+                view(pid, "", self.status("released", limp=["shoulder_lift"], written=50.0), now)[:2],
+                ("RELEASED: torque off", "ok"),
+            )
+        # The runner died while energized: say so, never "alive".
+        self.assertEqual(view(None, "", self.status("holding"), now)[1], "alarm")
+        # Missing, corrupt or another run's status: today's pid line.
+        self.assertEqual(view(4242, "runner pid 4242 alive", None, now)[2], "runner pid 4242 alive")
+        self.assertEqual(view(4242, "line", self.status(pid=1), now)[0], "RUNNER ALIVE (no status)")
+
+    def test_the_button_reads_a_missing_or_corrupt_status_file_without_failing(self):
+        logic = self.logic()
+        status = Path(f"{logic.pid_file}.status.json")
+        logic.wall = lambda: 100.4
+        self.assertEqual(logic.view()[0], "RUNNER ALIVE (no status)")
+        status.write_text("{not json")
+        self.assertEqual(logic.view()[0], "RUNNER ALIVE (no status)")
+        status.write_text(json.dumps(self.status("holding", limp=["shoulder_lift"])))
+        self.assertIn("SHOULDER WENT LIMP", logic.view()[0])
+
+    def test_while_the_runner_holds_a_click_releases_and_a_key_does_not(self):
+        import signal
+
+        logic = self.logic()
+        logic.wall = lambda: 100.4
+        Path(f"{logic.pid_file}.status.json").write_text(json.dumps(self.status("holding")))
+        logic.view()
+        self.assertIn("RELEASE ALL TORQUE NOW", logic.label)
+        self.assertIn("click the button", logic.press(from_key=True))
+        self.assertEqual(self.kills, [])
+        logic.press(from_key=False)  # no lockout: there was no STOP press to double-click past
+        self.assertEqual(self.kills, [(4242, signal.SIGTERM)])
 
     def test_never_signals_a_dead_or_foreign_pid(self):
         for pid_text, command in ((None, "x"), ("4242", None), ("4242", "/usr/bin/vim notes.txt")):
