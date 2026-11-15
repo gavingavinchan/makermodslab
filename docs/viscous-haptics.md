@@ -147,6 +147,31 @@ restore paths in the DAgger runner.
   confirmation header wraps on desktop/mobile. Powered Mac acceptance
   remains pending. Item-to-commit/test evidence: ~/dream-page-ref/REPORT.md.
   Local commits only, no push/hardware/Dream network or approvals.
+  Fix round 2 (same date): Gavin: “every stop goes through the red button and
+  behaves the same; release ... only by a deliberate physical click.” Review
+  found that a reopened button's leftover request, an internal hold before the
+  next status refresh, or a NaN freezing torque status could turn a STOP into
+  mid-air release. Release therefore moved to its own signal: supervised
+  SIGTERM/INT/HUP only STOP, physical-click SIGUSR1 alone aborts return/hold and
+  releases all torque. Terminal two-signal semantics are retained. Requests
+  bind to runner pid/time and predate neither runner nor button; a transient
+  lookup does not reset STOP count. The button writes an atomic Tk heartbeat;
+  after the first heartbeat, >2 s without progress internally stops the runner
+  (never aborting its existing return/hold). Lab passes button creation time to
+  reject reused pids, warns on a stop unconsumed for 1 s, and handles Terminal
+  SIGHUP in launcher/worker. The Mac button holds Apple's documented App Nap
+  activity assertion through existing PyObjC when available; heartbeat is the
+  fallback. No new dependency or machine preference change. Non-finite status
+  is null; write failure is loud and shows no status. These are B3 safety
+  corrections, with offline FakeArm/real-handler regression proof; physical
+  Mac/hardware acceptance remains pending. Full item/commit/test evidence is
+  appended under “Fix round 2” in the same external report.
+  Fix round 2 verified: 379 focused tests; full pytest 5,008 passed,
+  25 skipped, same two profile-fixture/Pinocchio failures. Frontend lint and
+  both TypeScript projects pass (same 34 lint warnings); frontend source is
+  unchanged, so no build was needed. Ruff and diff checks pass. One repeated
+  full run stalled in an existing fake-clock test; the diagnostic full rerun
+  and that isolated test pass, recorded in the report. No push.
 
 - *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:
   "the reason i did not spot that problem was because i dont have a preview".

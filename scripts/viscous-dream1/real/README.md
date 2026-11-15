@@ -17,7 +17,7 @@ Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-t
 | File | What it is |
 |---|---|
 | `dream_real.py` | The runner: `--dry-run` (default), `--preview`, `--live`; `--rehearse` (no Dream) alone or with `--live` |
-| `stop_button.py` | The big red button: an always-on-top window that sends SIGTERM to the runner's `--pid-file` pid |
+| `stop_button.py` | The big red button: STOP via SIGTERM, physical-click release via SIGUSR1 |
 | `run_data.py` | Raw run bundles outside git (a ring of the last 10, KEEP to keep one forever) and their CLI |
 | `dream_real_core.py` | Pure helpers: frame maps, limits, retiming, workspace box, trips, refusals, ledger, images |
 | `make_tank_arm.py` | Generates the tank IK model below, with provenance |
@@ -144,15 +144,19 @@ phase (each phase prints a `phase:` line as it starts):
 
 ```bash
 .venv/bin/python scripts/viscous-dream1/real/stop_button.py --pid-file /tmp/dream_real.pid &   # the red button
+button_pid=$!
+button_start=$(.venv/bin/python -c 'import psutil,sys; print(psutil.Process(int(sys.argv[1])).create_time())' "$button_pid")
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --live --arm-file ~/viscous-dream-real/station/arms/viscous-waterproof-tank.json \
   --overhead <camera> --plan-id <id> \
-  --max-calls 10 --pid-file /tmp/dream_real.pid
-kill -TERM "$(cat /tmp/dream_real.pid)"   # the same as the button: stop; a second signal aborts the return and releases
+  --max-calls 10 --pid-file /tmp/dream_real.pid \
+  --stop-button-pid "$button_pid" --stop-button-start-time "$button_start"
+kill -TERM "$(cat /tmp/dream_real.pid)"   # STOP only in supervised mode; repeated TERM never releases
 ```
 
 The button: first press (or Space / Enter / Escape with the window focused) is STOP; it then reads
 RELEASE ALL TORQUE NOW (arm drops), and a click on it (at least 1 s later; keys never do this, so a
-held key cannot skip the return) sends the second SIGTERM. It shows whether the pid is alive and
+held key cannot skip the return) sends SIGUSR1. A click while the runner is already holding may
+release immediately, without the one-second lockout. It shows whether the pid is alive and
 refuses to signal a pid that is gone or is not `dream_real.py`. It is its own process, so it works
 even if the runner's loop is stuck.
 
@@ -214,11 +218,11 @@ and limp trips. A leg that stops short but within the 10 deg lag trip of its tar
 on every arm joint (a fresh reading after it) counts as arrived and the return goes on: the shoulder
 holds the start pose 7.45 deg short, more than the helper's 6 deg settle band; (d) `remote_can.release`
 (zero effort, torque off, cameras closed), at the rest. **The arm is never released mid-air** except by
-the second signal: a leg that ends further off than the lag trip, an overspeed during the return, a
+the release signal (SIGUSR1 in supervised mode; the second stop signal in terminal mode): a leg that ends further off than the lag trip, an overspeed during the return, a
 failed or missing fresh reading, or a path the guard does not clear all HOLD: the goals re-anchored at
 the fresh measured pose (+ standing error; with no fresh reading, the last goal held and the re-anchor
 retried every 0.1 s), torque on, `RETURN HELD (...): HOLDING ... Support the arm, then press the stop
-button again`, until the second signal (the button's RELEASE ALL).
+button again`, until the release signal (the button's physical-click RELEASE ALL).
 
 Per row: IK radians to motor degrees (J1 + 180, J5 sign), grip 0..1 to motor -2.9 (closed) ..
 -115.1 (open), jump check, clamp 1 deg inside the limits, then **retimed** into equal 20 Hz substeps so
@@ -258,18 +262,18 @@ each row's floor lift (`floor_lift_mm`, beside the per_key AS SOLVED, i.e. after
 | Tank guard | substep rejected, or measured pose into the keep-out beyond its allowance |
 | Lag | measured vs commanded > 10 deg on an arm joint for 2 ticks (gripper excluded) |
 | Torque | > 12 Nm for 2 ticks (instant; RS00 peak 14), or > 6.5 Nm for 5 s (sustained; the approach lift holds ~6 Nm for 5-6 s). Visitors may push about 10 Nm for up to 5 s; the start pose holds at ~3.9 Nm on the shoulder. Was 5 Nm / 4.5 Nm for 2 s |
-| Overspeed | any arm joint's MEASURED speed (successive fresh positions over their timestamps) > 30 deg/s for 2 readings, gripper excluded; in the loop and during every return leg (there it ends the return and HOLDS until the second signal). The 2026-11-08 rehearsals peaked at 20.3 deg/s on one reading, 18.0 over two, at <= 15 deg/s commanded |
+| Overspeed | any arm joint's MEASURED speed (successive fresh positions over their timestamps) > 30 deg/s for 2 readings, gripper excluded; in the loop and during every return leg (there it ends the return and HOLDS until the release signal). The 2026-11-08 rehearsals peaked at 20.3 deg/s on one reading, 18.0 over two, at <= 15 deg/s commanded |
 | Temperature | >= 80 C (warn 70; the driver stops at 85) |
 | Feedback | no fresh reply, motor fault, camera read error |
 | Dream | error, malformed or non-finite chunk; inputs not checked (refused locally, not billed) |
 | Start gate | rest more than 5 deg outside a limit or refused by the guard; Dream start pose outside the limits or the box; approach substep rejected by the guard: never energized |
 | Speed | a planned arm substep faster than 15 deg/s (cannot happen by construction; checked before every send) |
-| Stop | `stop_button.py`, SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them): re-anchor at the measured pose, gripper torque off at once, return legs to the rest at <= 15 deg/s, then all torque off at the rest (anything that keeps the arm from the rest holds instead). A second press / signal aborts the return or the hold and releases everything |
+| Stop | `stop_button.py`, SIGINT / SIGTERM / SIGHUP (handlers installed, so `nohup` cannot swallow them): re-anchor at the measured pose, gripper torque off at once, return legs to the rest at <= 15 deg/s, then all torque off at the rest (anything that keeps the arm from the rest holds instead). Supervised: SIGUSR1 from a physical click alone aborts return/hold and releases everything; repeated TERM/INT/HUP never release. Terminal mode without `--stop-button-pid` keeps two-stop-signal release |
 | Billing | `--max-calls` (<= 20) per run and `runs/ledger.json` (cap 100, raised only by editing it) |
 
 If the guard says a return leg's straight path is not clear, or anything else keeps the return from
-the rest (above), the arm holds (torque on, gripper already limp) and waits for a second signal (the
-button's RELEASE ALL), so a person can support it before torque goes off.
+the rest (above), the arm holds (torque on, gripper already limp) and waits for the release signal (the
+button's physical-click SIGUSR1 in supervised mode), so a person can support it before torque goes off.
 
 ## Safety layers (Gavin: "not impact with momentum onto glass in any circumstances")
 
@@ -370,25 +374,61 @@ Additive flags for Lab:
   check. Other sessions and tank measurement still refuse. Lab supplies the
   id after claiming the run and attaching its lease.
 
-These outputs do not approve inputs, alter safety settings, or send stop
-signals. The separate `stop_button.py` remains unchanged.
+These view outputs do not approve inputs, alter safety settings, or send stop
+signals. Stop coordination is described below.
 
-### Lab stop coordination (2026-11-15)
+### Lab stop coordination (2026-11-15; fix round 2)
 
 For Lab runs the red button is the only process that signals the runner.
-Lab's page, lease expiry, shutdown and supervision errors write atomic JSON
-requests under `<pid-file>.press/`. Requests arriving before the runner pid
-is ready remain queued; the runner publishes its pid after installing signal
-handlers. The button polls this mailbox on its
-existing 250 ms Tk timer and applies each request as a key press: STOP once,
-never release. Each remote request and its source are logged to the window
-and stdout. Files avoid Python signal handlers interacting with Tk, queue
-requests before the next timer tick, and preserve sources across Lab exit.
-Physical clicks keep the existing one-second lockout before release-all;
-Space/Enter/Escape and remote presses can never release.
+Lab's page, lease expiry, shutdown (including Terminal SIGHUP) and supervision
+errors write atomic JSON requests under `<pid-file>.press/`. Each contains the
+target runner pid, request wall time and source. A request made after launch
+but before signal-handler readiness remains queued; the runner publishes its
+pid only after installing the handlers. The button ignores requests for a
+different pid or from before the current runner **or button process** started,
+so reopening the button cannot replay its predecessor's leftover stop.
 
-Lab always passes `--stop-button-pid` on live launches. If that process
-exits, the runner takes its normal graceful stop internally with reason
-`stop button gone`, without consuming a stop signal. Terminal runs without
-this flag keep the existing first/second signal behaviour. The physical
-power switch remains the hard stop.
+The existing 250 ms Tk timer consumes requests as key presses, logs each
+source, and sends SIGTERM only once per runner pid. A missed pid lookup never
+resets that count; only a different live runner does. Keys and remote requests
+can never send SIGUSR1, even with missing, stale or incorrect status. A physical
+click sends SIGUSR1 only after a STOP plus one second, or while the runner is
+holding. Window labels and the release-all action remain the same.
+
+**Supervised mode (`--stop-button-pid`):** SIGTERM is always STOP. During
+return/hold it is a logged no-op; it never sets the release/abort event.
+SIGINT/SIGHUP are also stop-only in this mode. Only the physical-click
+SIGUSR1 aborts the return/hold and performs the existing all-torque-off cleanup.
+This separate release signal prevents stale button status or a reopened button
+from dropping an arm. **Terminal mode (no `--stop-button-pid`):** the existing
+first/second SIGTERM and Ctrl-C behaviour is unchanged. SIGUSR1 is additionally
+handled so a manually opened button still releases through its click path.
+At a successful return to rest, normal torque cleanup remains automatic.
+
+Lab passes `--stop-button-start-time` with the pid, and the runner compares
+that creation time before energizing and on each Dream-loop liveness check.
+A reused pid is never accepted as the original button. Process exit is an
+internal graceful stop (`stop button gone`), without counting a signal.
+Each button tick atomically writes `<pid-file>.button.json` with
+`{pid, start_time, wall, mono}`. After the first matching heartbeat, age above
+`--stop-button-timeout-s` (default **2.0 s**, finite/positive) takes the same
+internal stop with reason `stop button not responding`. Missing/corrupt
+heartbeats after the first one expire too. A stop already returning or holding
+is unaffected by further heartbeat/process loss. This check is in the Dream
+loop; it does not preempt a blocked hardware/client call.
+
+On macOS the button holds an `NSProcessInfo` activity token with
+`NSActivityUserInitiated` through the already-available PyObjC Foundation bridge.
+[Apple documents this activity as preventing App Nap/deferred work](https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/PrioritizeWorkAtTheAppLevel.html).
+No dependency is installed or machine preference changed. If Foundation or the
+assertion is unavailable, the button logs that fact and relies on the heartbeat
+backstop. Mac locked-screen/covered-window behaviour still needs desktop
+acceptance; Linux fake tests prove the assertion's acquire/retain/release path.
+
+Lab status shows **“the red button is not responding: use it directly or cut
+power”** through the page's existing error alert if a request remains
+unconsumed for one second, even while the button pid exists. Non-finite runner
+status telemetry becomes JSON null. A failed status write is logged loudly;
+the old file is removed when possible, and the button says “no status” (or
+reports expired status if removal also fails). Status never decides whether a
+key/remote input may release. The physical power switch remains the hard stop.
