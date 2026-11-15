@@ -70,7 +70,7 @@ No replay media is bundled in git. On gavin-linux the provided source is:
 MAKERMODSLAB_DREAM_REPLAY="$HOME/dream-page-ref/run-data/live-20261114T091037Z" uv run makermodslab --dev
 ```
 
-Open `/dream?demo=1` (or click **Replay demo**). Play/pause and scrub the 59-second aquarium run; swap camera tiles and expand telemetry/phases. Replay opens no camera, imports no Dream client, starts no subprocess and claims no session. Motion/approval controls are disabled. It never changes the current live-run pointer.
+Open `/dream?demo=1` (or click **Replay demo**). Play/pause and scrub the 59-second aquarium run; swap camera tiles and expand telemetry/phases. Replay opens no camera, imports no Dream client, starts no subprocess and claims no session. Motion/approval controls are disabled. It never changes the current live-run pointer. An active Dream session takes priority over demo display, including a stale `?demo=1` URL.
 
 Raw saved JPEGs already have the record rotation applied, so replay uses the same crop/resize/JPEG helpers without rotating twice. The old bundle predates exact-request outputs: replay images are explicitly labelled **reconstructed Dream crop**, not original request bytes. Telemetry follows recorded monotonic timestamps. Console phases are recorded; call timestamps are aligned from the chunk ledger, so the reconstruction is approximate between console events.
 

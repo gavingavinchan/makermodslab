@@ -70,7 +70,7 @@ export default function Dream() {
   useUnloadWarning(live);
 
   useEffect(() => {
-    if (live) { setShowLastRun(true); setPreview(null); }
+    if (live) { setDemo(false); setShowLastRun(true); setPreview(null); }
   }, [live]);
 
   useEffect(() => {
@@ -208,7 +208,7 @@ export default function Dream() {
           const src = hasSnapshot ? `${baseUrl}/api/v1/dream/view/${encodeURIComponent(run!)}/${slot}?v=${view?.images_written ?? 0}` :
             showRaw ? `${baseUrl}/api/v1/camera-preview/${cam.camera_index ?? 0}?rotation=${cam.rotation ?? 0}&unique_id=${encodeURIComponent(cam.unique_id ?? "")}` : null;
           return <figure key={slot} className={cn("min-w-0 space-y-3", i === 1 ? "order-first col-span-2 md:order-none md:col-span-1" : "")} data-slot={slot}>
-            <div className={cn("relative overflow-hidden rounded-2xl border border-border/40 bg-black shadow-sm", i === 1 ? "aspect-[320/176]" : "aspect-[320/176] md:opacity-90")}>
+            <div className={cn("relative overflow-hidden rounded-2xl border border-border/40 bg-black shadow-sm", i === 1 ? "aspect-[320/176]" : "aspect-[320/176]")}>
               {src && <img key={src.split("?v=")[0]} src={src} alt={`${labels[slot]} · ${source ?? slot}`} className={cn("h-full w-full object-fill", showRaw && "object-contain")}
                 style={showRaw ? { objectFit: "contain" } : undefined}
                 onError={() => setError(t("dream.imageUnavailable"))}
