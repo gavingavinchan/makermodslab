@@ -720,6 +720,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         settings_changes=None,
         status_path=None,
         bundle=None,
+        stop_button_alive=None,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -779,6 +780,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 arm_rest=arm_rest,
                 status_path=status_path,
                 wall=clock,
+                stop_button_alive=stop_button_alive,
                 mirror_dir=bundle.mirror_dir(scenario) if bundle else None,
             )
             summary = self.ep.run()
@@ -790,6 +792,19 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 [json.loads(line) for line in ticks.read_text().splitlines()] if ticks.exists() else []
             )
             return summary, arm
+
+    def test_button_disappears_stops_internally_without_signal(self):
+        checks = [0]
+
+        def alive():
+            checks[0] += 1
+            return checks[0] < 20
+
+        summary, arm = self.episode(rehearse=True, stop_button_alive=alive)
+        self.assertEqual(summary["reason"], "stop button gone")
+        self.assertFalse(self.ep.stop_event.is_set())
+        self.assertFalse(self.ep.abort_event.is_set())
+        self.assert_stopped_safely(arm)
 
     def assert_stopped_safely(self, arm, returned=True):
         """After engage: the arm re-anchored at its measured pose, the gripper released, then the return

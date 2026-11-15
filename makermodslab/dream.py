@@ -25,7 +25,6 @@ import importlib
 import json
 import logging
 import re
-import signal
 import subprocess
 import sys
 import threading
@@ -55,6 +54,7 @@ _button = None
 _thread = None
 _stop_requested = False
 _term_sent = False
+_pid_file = None
 _latest_run = None
 _latest_robot = None
 _error = None
@@ -332,7 +332,7 @@ def _button_problem(pid_file):
 
 
 def _worker(request, settings, name, work):
-    global _proc, _button, _error, dream_active
+    global _proc, _button, _error, dream_active, _pid_file
     from . import sessions
     from .camera_preview import camera_preview_manager
 
@@ -350,6 +350,8 @@ def _worker(request, settings, name, work):
             session_id = session["id"]
         camera_preview_manager.stop_all()
         pid_file = work / "runner.pid"
+        with _lock:
+            _pid_file = pid_file
         log = (work / "supervisor.log").open("w")
         try:
             button = subprocess.Popen(
@@ -376,6 +378,8 @@ def _worker(request, settings, name, work):
                 [
                     *_argv(request.robot, settings, name, work),
                     "--live",
+                    "--stop-button-pid",
+                    str(button.pid),
                     "--plan-id",
                     request.plan_id,
                     "--pid-file",
@@ -389,19 +393,21 @@ def _worker(request, settings, name, work):
                 start_new_session=True,
             )
             _proc = proc
+        button_gone = False
         while proc.poll() is None:
             status = _read_view(name)
             if status and status["phase"] != phase:
                 phase = status["phase"]
                 session_events.notify_session_changed("dream", True, phase=phase)
-            if button.poll() is not None:
+            if button.poll() is not None and not button_gone:
+                button_gone = True
                 with _lock:
                     _error = (
                         "The standalone stop button closed. Return to rest requested. "
                         "If the runner is holding, support the arm and reopen the button: "
                         f"{sys.executable} {REAL / 'stop_button.py'} --pid-file {pid_file}"
                     )
-                handle_stop_dream()
+                handle_stop_dream(source="button died")
             with contextlib.suppress(subprocess.TimeoutExpired):
                 proc.wait(timeout=0.2)
         if proc.returncode:
@@ -415,7 +421,7 @@ def _worker(request, settings, name, work):
             _error = str(exc)
         # If supervision itself fails, stop ONCE and retain the claim until
         # the runner finishes its return or the person releases using the button.
-        handle_stop_dream()
+        handle_stop_dream(source="supervision error")
         if proc is not None:
             proc.wait()  # deliberately no timeout escalation, never SIGKILL
         phase = "error"
@@ -446,33 +452,28 @@ def _worker(request, settings, name, work):
                 session_events.notify_session_changed("dream", False, phase="error" if _error else "released")
 
 
-def handle_stop_dream():
+def handle_stop_dream(source="page/lease"):
     global _stop_requested, _term_sent
     with _lock:
+        first = not _stop_requested
         _stop_requested = True
-        status = _read_view(_latest_run)
-        already_stopping = (status or {}).get("state") in {"returning", "holding", "releasing", "released"}
-        if already_stopping:
-            _term_sent = True  # e.g. the independent button already requested the return
-        if _proc is not None and _proc.poll() is None and not _term_sent:
-            # Single atomic claim of Lab's signal across browser requests,
-            # lease expiry, lost button and shutdown. The independent button
-            # retains the runner's separate two-signal semantics.
+        if _pid_file is not None and not _term_sent:
+            # Only the button signals the runner. Its real key-press logic
+            # serializes physical and remote requests, with no release path.
+            _helpers()
+            importlib.import_module("stop_button").request_remote_press(_pid_file, source)
             _term_sent = True
-            with contextlib.suppress(ProcessLookupError):
-                _proc.send_signal(signal.SIGTERM)
-        if dream_active:
+        if dream_active and first:
             session_events.notify_session_changed("dream", True, phase="stopping")
     return {"success": True, "message": "Return to rest requested. The standalone button owns release-all."}
 
 
 def stop_for_shutdown():
-    if not dream_active:
-        return
-    handle_stop_dream()
-    thread = _thread
-    if thread is not None:
-        thread.join()  # a held arm remains held; the independent button still works
+    if dream_is_active():
+        handle_stop_dream(source="Lab shutdown")
+        logger.warning(
+            "Dream continues its stop independently under the red button; not waiting or escalating."
+        )
 
 
 def _bundle(run):

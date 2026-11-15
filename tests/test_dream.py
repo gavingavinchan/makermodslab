@@ -15,7 +15,6 @@
 
 import importlib
 import json
-import signal
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -39,6 +38,7 @@ def isolated(tmp_lerobot_home, tmp_path, monkeypatch):
         "dream_active": False,
         "checking_inputs": False,
         "_proc": None,
+        "_pid_file": None,
         "_button": None,
         "_thread": None,
         "_term_sent": False,
@@ -220,11 +220,12 @@ def test_changed_or_expired_plan_cannot_start(robot):
         dream.handle_start_dream(dream.DreamRequest("tank", "0123456789"))
 
 
-def test_repeated_stop_and_lease_expiry_only_send_one_term(monkeypatch):
+def test_repeated_stop_and_lease_expiry_only_send_one_term(monkeypatch, tmp_path):
     proc = Mock()
     proc.poll.return_value = None
     monkeypatch.setattr(dream, "_proc", proc)
     monkeypatch.setattr(dream, "dream_active", True)
+    monkeypatch.setattr(dream, "_pid_file", tmp_path / "runner.pid")
     session_events.notify_session_changed("dream", True, "running")
     snap = sessions.tracker.attach_lease("dream", "browser", 10)
     dream.handle_stop_dream()
@@ -233,7 +234,9 @@ def test_repeated_stop_and_lease_expiry_only_send_one_term(monkeypatch):
     session_events.notify_session_changed("dream", True, "return leg 1/3")
     sessions.check_expiry(snap["lease"]["deadline"] + 1)
     dream.handle_stop_dream()
-    proc.send_signal.assert_called_once_with(signal.SIGTERM)
+    dream.stop_for_shutdown()
+    assert len(list(tmp_path.glob("runner.pid.press/*.json"))) == 1
+    proc.send_signal.assert_not_called()
     assert dream.dream_active  # no release until child cleanup
     proc.kill.assert_not_called()
     proc.terminate.assert_not_called()
@@ -547,3 +550,50 @@ def test_stop_button_spawn_failure_explains_manual_recovery_without_launching_ru
     assert spawn.call_count == 1
     assert "Start it by hand" in dream._error and "arm has not been started" in dream._error
     assert not dream.dream_active and sessions.tracker.current() is None
+
+
+@pytest.mark.parametrize("order", ["page-key", "page-click", "button-page", "all-sources"])
+def test_remote_stop_sequences_use_real_button_logic(monkeypatch, tmp_path, order):
+    import signal
+
+    import stop_button
+
+    pid_file = tmp_path / "runner.pid"
+    pid_file.write_text("4242")
+    now, sent = [0.0], []
+    logic = stop_button.StopLogic(
+        pid_file,
+        command=lambda pid: "python dream_real.py",
+        clock=lambda: now[0],
+        kill=lambda pid, sig: sent.append((pid, sig)),
+    )
+    monkeypatch.setattr(dream, "_pid_file", pid_file)
+    monkeypatch.setattr(dream, "dream_active", True)
+    session_events.notify_session_changed("dream", True, "running")
+    lease = sessions.tracker.attach_lease("dream", "browser", 10)
+    if order == "button-page":
+        logic.press(from_key=True)
+    if order == "all-sources":
+        sessions.check_expiry(lease["lease"]["deadline"] + 1)
+    dream.handle_stop_dream()
+    if order == "all-sources":
+        dream.stop_for_shutdown()
+    messages = logic.poll_remote()
+    assert len(messages) == 1 and "REMOTE" in messages[0]
+    assert sent == [(4242, signal.SIGTERM)]
+    logic.press(from_key=True)
+    assert len(sent) == 1
+    if order == "page-click":
+        logic.press()  # double click still locked out
+        assert len(sent) == 1
+        now[0] = 1.0
+        logic.press()
+        assert sent == [(4242, signal.SIGTERM)] * 2
+
+
+def test_lab_has_no_runner_signal_paths():
+    import inspect
+
+    source = inspect.getsource(dream)
+    assert "send_signal" not in source and "os.kill" not in source
+    assert "proc.terminate(" not in source and "proc.kill(" not in source

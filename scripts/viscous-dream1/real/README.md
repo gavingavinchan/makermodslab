@@ -372,3 +372,21 @@ Additive flags for Lab:
 
 These outputs do not approve inputs, alter safety settings, or send stop
 signals. The separate `stop_button.py` remains unchanged.
+
+### Lab stop coordination (2026-11-15)
+
+For Lab runs the red button is the only process that signals the runner.
+Lab's page, lease expiry, shutdown and supervision errors write atomic JSON
+requests under `<pid-file>.press/`. The button polls this mailbox on its
+existing 250 ms Tk timer and applies each request as a key press: STOP once,
+never release. Each remote request and its source are logged to the window
+and stdout. Files avoid Python signal handlers interacting with Tk, queue
+requests before the next timer tick, and preserve sources across Lab exit.
+Physical clicks keep the existing one-second lockout before release-all;
+Space/Enter/Escape and remote presses can never release.
+
+Lab always passes `--stop-button-pid` on live launches. If that process
+exits, the runner takes its normal graceful stop internally with reason
+`stop button gone`, without consuming a stop signal. Terminal runs without
+this flag keep the existing first/second signal behaviour. The physical
+power switch remains the hard stop.

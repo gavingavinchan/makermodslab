@@ -124,6 +124,19 @@ restore paths in the DAgger runner.
 **B2. Policy data and rollouts** (ACT/SmolVLA, `scripts/record-rollouts.sh`).
 
 **B3. Dream-1 (DreamLabs' hosted world action model) on the Viscous arm.**
+- *2026-11-15, Dream page fix round (gavin-linux, offline):* Gavin:
+  "the red button should kill the arm, other stuff can trigger the red button,
+  but they must all behave the same way to kill it ... everything just needed
+  to kill the arm passes through the red button". All Lab stop sources now
+  request a remote key press through the button's atomic mailbox, polled on
+  its existing Tk timer. Only the button signals the runner: remote/key
+  presses STOP once and can never release; a physical click retains the
+  one-second release lockout. This removes the independent page/button
+  second-signal race that could drop an arm during its return. Button loss
+  triggers an internal graceful runner stop, not a signal. Sequence tests
+  use the real StopLogic with injected kill; the dead-man uses FakeArm.
+  Local commits only, no push/hardware/Dream network or approvals.
+
 - *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:
   "the reason i did not spot that problem was because i dont have a preview".
   The low side view and centre crop hid the arm. Building a Viscous-only Lab

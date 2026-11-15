@@ -40,6 +40,7 @@ The power switch is still the hard stop. Fallback without a display: kill -TERM 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import signal
@@ -70,6 +71,22 @@ COLOURS = {  # (background, text) of the status panel
     "alarm": ("#d00000", "white"),
     "nodata": ("#6a00a8", "white"),
 }
+
+
+def request_directory(pid_file):
+    return Path(f"{pid_file}.press")
+
+
+def request_remote_press(pid_file, source):
+    """Atomic mailbox; the Tk timer consumes requests on its own thread."""
+    import uuid
+
+    directory = request_directory(pid_file)
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{uuid.uuid4().hex}.json"
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps({"source": source}))
+    tmp.replace(path)
 
 
 def read_status(pid_file) -> dict | None:
@@ -223,6 +240,23 @@ class StopLogic:
             self.message = f"RELEASE ALL sent (SIGTERM #{self.presses} to {pid}): all torque off now"
         return self.message
 
+    def poll_remote(self):
+        """Remote presses are key presses: never a release, including while holding."""
+        messages = []
+        for path in sorted(request_directory(self.pid_file).glob("*.json")):
+            try:
+                source = str(json.loads(path.read_text()).get("source", "unknown"))[:160]
+            except (OSError, ValueError, AttributeError):
+                source = "unreadable request"
+            result = self.press(from_key=True)
+            message = f"REMOTE ({source}): {result}"
+            self.message = message
+            messages.append(message)
+            print(message, flush=True)
+            with contextlib.suppress(FileNotFoundError):
+                path.unlink()
+        return messages
+
     @property
     def label(self) -> str:
         return "RELEASE ALL TORQUE NOW\n(arm drops)" if self.presses >= 1 or self.holding else "STOP"
@@ -281,6 +315,11 @@ class App:
         )
 
     def tick(self):
+        try:
+            for message in self.logic.poll_remote():
+                self.note.configure(text=message)
+        except Exception as error:
+            self.note.configure(text=f"Remote press error: {error}")
         try:
             headline, level, detail = self.logic.view()
         except Exception as error:  # noqa: BLE001 - never let the panel stop the button

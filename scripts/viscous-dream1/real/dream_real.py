@@ -1052,6 +1052,7 @@ class Episode:
         mirror_dir=None,
         frame_sink=None,
         view=None,
+        stop_button_alive=None,
     ):
         if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
             raise RefusedError(
@@ -1067,6 +1068,7 @@ class Episode:
         )
         self.say = say
         self.view = view
+        self.stop_button_alive = stop_button_alive
         # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
         # seen limp is shown limp until all torque is off.
@@ -1397,6 +1399,8 @@ class Episode:
             legs = self.plan_approach(self.start_pose, self.dream_start)
             for k, steps in enumerate(legs, 1):
                 approach.extend((k, i == len(steps) - 1, step) for i, step in enumerate(steps))
+            if self.stop_button_alive is not None and not self.stop_button_alive():
+                raise RefusedError("stop button gone before energizing")
             if self.stop_event.is_set():
                 raise RefusedError("stop signal before energizing")
             self._phase("engage", "torque on, holding the measured rest")
@@ -1412,6 +1416,9 @@ class Episode:
             )
             next_tick = next_frame = self.clock()
             while True:
+                if self.stop_button_alive is not None and not self.stop_button_alive():
+                    reason = "stop button gone"
+                    break  # internal stop: never sets stop_event or abort_event
                 now = self.clock()
                 try:
                     reading = self.arm.read()
@@ -2413,6 +2420,19 @@ def rehearse_refusals(f: core.LiveFacts) -> list[str]:
     )
 
 
+def button_liveness(pid):
+    if pid is None:
+        return None  # terminal runs keep their existing signal semantics
+    import psutil
+
+    button = psutil.Process(pid)
+
+    def alive():
+        return button.is_running() and button.status() != psutil.STATUS_ZOMBIE
+
+    return alive
+
+
 def install_stop_signals(pid_file):
     """SIGINT/SIGTERM/SIGHUP (handlers installed, so nohup cannot swallow them): the first stops, a
     second aborts the return and releases. stop_button.py sends SIGTERM to the pid written here."""
@@ -2526,6 +2546,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         mirror_dir=bundle.mirror_dir() if (bundle := ctx.get("bundle")) else None,
         frame_sink=(bundle.record_frames() if bundle and not args.rehearse else None),
         view=ctx.get("view"),
+        stop_button_alive=button_liveness(args.stop_button_pid),
     )
     try:
         summary = episode.run()
@@ -2639,6 +2660,9 @@ def main(argv=None) -> int:
     )
     p.add_argument(
         "--lab-report-file", type=Path, help="dry run: write movement text and live refusals as JSON"
+    )
+    p.add_argument(
+        "--stop-button-pid", type=int, help="live: gracefully stop internally if this button exits"
     )
     p.add_argument("--pid-file")
     p.add_argument("--out", type=Path)
