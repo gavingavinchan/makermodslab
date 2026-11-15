@@ -346,3 +346,29 @@ under gravity. Supporting the arm before pressing RELEASE ALL is the person's jo
   motor pan 176.59, lift -122.9, elbow 99.34, flex 8.56, yaw -9.0, roll -3.99; tcp 462 mm out, 143 mm
   up, inside the box. Re-record with `record_start_pose.py` and regenerate if the scene changes.
 - Gripper mapping (closed -2.9, open -115.1) follows the Maker convention; confirm on the arm.
+
+## Lab Dream page outputs (2026-11-15, goal B3)
+
+The engine is still this runner. `dream_view/` in each live/preview raw bundle
+now contains the latest request's `overhead.jpg`, `wrist_l.jpg`, `wrist_r.jpg`
+and `status.json`. JPEGs are decoded from the request payload and atomically
+renamed, without re-encoding; the transport observer captures every request,
+including preflight requests refused before sending. Status is separate from
+the stop button's unchanged `<pid-file>.status.json`. It includes phases,
+call count/cap, prompt, last reason, measured/commanded motor degrees, peak
+absolute torque/temperature, and Dream's requested TCP path before the slide
+(in Dream base metres). Observation writes never raise into the safety path.
+
+Additive flags for Lab:
+
+- `--dream-view-dir <folder>` chooses the output directory, including in
+  `--preview`; otherwise it is `<bundle>/dream_view`.
+- `--lab-report-file <file>` in a dry run writes the plan id, the exact printed
+  “Joints that may move” block and the live-readiness refusals. It changes no
+  plan settings or plan id.
+- `--lab-session-id <id>` exempts exactly that `dream` session from the Lab-idle
+  check. Other sessions and tank measurement still refuse. Lab supplies the
+  id after claiming the run and attaching its lease.
+
+These outputs do not approve inputs, alter safety settings, or send stop
+signals. The separate `stop_button.py` remains unchanged.

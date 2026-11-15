@@ -124,6 +124,17 @@ restore paths in the DAgger runner.
 **B2. Policy data and rollouts** (ACT/SmolVLA, `scripts/record-rollouts.sh`).
 
 **B3. Dream-1 (DreamLabs' hosted world action model) on the Viscous arm.**
+- *2026-11-15, Dream page on `feat/viscous-dream-page` (gavin-linux):* Gavin:
+  "the reason i did not spot that problem was because i dont have a preview".
+  The low side view and centre crop hid the arm. Building a Viscous-only Lab
+  page around `dream_real.py`, with exact request JPEGs, explicit camera input
+  approval, a dry plan and human confirmation, the session lease, and the
+  unchanged independent red button. Additive runner outputs tested offline;
+  browser/session integration in progress. Separate worktree
+  `../makermodslab-dream-page`, base `2272b66a`; the original checkout is left
+  untouched. This brief overrides the normal sync rule: local commits only,
+  **no push**, no Mac changes, no hardware or Dream network/calls.
+
 - *Intent:* the Viscous arm is very close to the Maker Arm, which Dream-1
   officially supports, so Gavin wants Dream-1 to drive it, possibly through "a
   translation layer ... so that ... the Dream One model just pretends that it is

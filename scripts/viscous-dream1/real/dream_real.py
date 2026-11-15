@@ -48,6 +48,7 @@ import base64
 import collections
 import contextlib
 import dataclasses
+import io
 import json
 import math
 import os
@@ -65,6 +66,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import dream_real_core as core  # noqa: E402
 import run_data  # noqa: E402
+from dream_view import DreamView, ViewTransport  # noqa: E402
 
 REPO = core.ROOT
 DEFAULT_ARM_FILE = HERE / "tank_model/viscous_waterproof_tank_arm.json"
@@ -198,12 +200,14 @@ def add_dream_venv(venv: Path) -> str | None:
 # --- Lab-idle and port checks (read-only) --------------------------------------------
 
 
-def lab_holder(url: str, allow_down: bool) -> str | None:
+def lab_holder(url: str, allow_down: bool, lab_session_id: str | None = None) -> str | None:
     holders = []
     try:
         with urllib.request.urlopen(f"{url}/api/v1/sessions/current", timeout=3) as r:
             session = json.loads(r.read()).get("session")
-        if session:
+        if session and not (
+            lab_session_id and session.get("id") == lab_session_id and session.get("kind") == "dream"
+        ):
             holders.append(f"session {session.get('kind')} ({session.get('robot')})")
         with (
             contextlib.suppress(Exception),
@@ -218,7 +222,9 @@ def lab_holder(url: str, allow_down: bool) -> str | None:
             )
     sessions = sys.modules.get("makermodslab.sessions")  # only when imported into a Lab process
     if sessions is not None and (held := sessions.held_by()):
-        holders.append(f"in-process flag {held}")
+        current = sessions.tracker.current()
+        if not (lab_session_id and current and current["id"] == lab_session_id and held == "dream"):
+            holders.append(f"in-process flag {held}")
     return "; ".join(holders) or None
 
 
@@ -821,7 +827,9 @@ class SlideTransport:
 class DreamReal:
     """Dream's own client. offline=True patches the model lookup and the transport (no key, no network)."""
 
-    def __init__(self, arm_file: Path, log_dir: Path, *, offline: bool, scenario="nominal", api_ok=False):
+    def __init__(
+        self, arm_file: Path, log_dir: Path, *, offline: bool, scenario="nominal", api_ok=False, view=None
+    ):
         os.environ["DREAM_LOG_DIR"] = str(log_dir / "dream_logs")
         os.environ.setdefault(
             "JAX_COMPILATION_CACHE_DIR", str(Path("~/viscous-dream-real/.cache/jax").expanduser())
@@ -832,6 +840,7 @@ class DreamReal:
 
         warnings.filterwarnings("ignore", category=dream.DreamSlowNetworkWarning)
         self.dream = dream
+        self.view = view
         self.config = {
             "checkpoint": CHECKPOINT,
             "embodiment": YAM_EMBODIMENT,
@@ -864,6 +873,8 @@ class DreamReal:
             self.client.policy(self.config)
             self.stub = None
         floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()))
+        if view is not None:
+            self.client._policy._transport = ViewTransport(self.client._policy._transport, view)
         self.slide = SlideTransport(self.client._policy._transport, core.tcp_box_mm(BOX_FILE), floor)
         self.client._policy._transport = self.slide
         self.inputs_id = None
@@ -882,6 +893,8 @@ class DreamReal:
             self.sent_observation = obs
             self.inputs_id = input_check.inputs_id(obs)
             self.inputs_checked = input_check.checked(self.inputs_id)
+            if self.view is not None:
+                self.view.observation(obs, inputs_id=self.inputs_id, inputs_checked=self.inputs_checked)
             if not self.inputs_checked:
                 input_check.remind(obs)  # Dream's own warning, verbatim: never suppressed
                 print(
@@ -1038,6 +1051,7 @@ class Episode:
         wall=time.time,
         mirror_dir=None,
         frame_sink=None,
+        view=None,
     ):
         if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
             raise RefusedError(
@@ -1052,6 +1066,7 @@ class Episode:
             mutate,
         )
         self.say = say
+        self.view = view
         # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
         # seen limp is shown limp until all torque is off.
@@ -1111,6 +1126,8 @@ class Episode:
         is a Reading or a dict with pos/torque/temp; `cmd` the goal the joints were held at (None: unknown)."""
         if not isinstance(reading, dict):
             reading = {"pos": reading.pos, "torque": reading.torque, "temp": reading.temp}
+        if self.view is not None:
+            self.view.update(measured=reading.get("pos"), commanded=cmd)
         row = {"t": self.clock(), "phase": phase, **reading, "cmd": cmd, "trips": [t.name for t in trips]}
         with contextlib.suppress(Exception):  # a full disk must never break the stop path
             self._write(self.ticks, row | extra)
@@ -1146,6 +1163,11 @@ class Episode:
     def _status(self, reading=None, state=None, message=None) -> None:
         """Write the status file (stop_button.py shows it): on every phase, every loop tick, every reading
         the stop and the hold take, and once more when all torque is off. Never raises."""
+        view_measured = (
+            (reading.get("pos") if isinstance(reading, dict) else reading.pos)
+            if reading is not None
+            else None
+        )
         if reading is not None:
             if not isinstance(reading, dict):
                 reading = {"torque": reading.torque, "temp": reading.temp}
@@ -1156,6 +1178,29 @@ class Episode:
             self.run_state = state
         if message is not None:
             self.status_message = message
+        if self.view is not None:
+            torque = (self.status_reading or {}).get("torque") or {}
+            temp = (self.status_reading or {}).get("temp") or {}
+            self.view.update(
+                phase="pause"
+                if self.clock() < getattr(self, "view_pause_until", 0) and self.phase == "dream"
+                else self.status_phase,
+                state=self.run_state,
+                message=self.status_message,
+                call=self.worker.calls if self.worker else 0,
+                measured=view_measured or self.measured,
+                commanded=self.commanded
+                if not self.status_phase.startswith(("stop:", "return leg", "release"))
+                else self.view.status["commanded"],
+                last_reading=self.last_fresh_wall,
+                peak_torque_nm=max(
+                    self.view.status["peak_torque_nm"],
+                    max((abs(float(v)) for v in torque.values()), default=0.0),
+                ),
+                peak_temp_c=max(
+                    self.view.status["peak_temp_c"], max((float(v) for v in temp.values()), default=0.0)
+                ),
+            )
         if self.status_path is None:
             return
         torque = (self.status_reading or {}).get("torque") or {}
@@ -1185,6 +1230,8 @@ class Episode:
             )
 
     def _phase(self, name, detail=""):
+        if name == "pause" and self.view is not None:
+            self.view_pause_until = self.clock() + self.s.pause_s
         self.status_phase = name
         self._status(state=self._run_state(name), message=f"{name}: {detail}" if detail else name)
         self.summary["phases"].append(name)
@@ -1532,6 +1579,8 @@ class Episode:
         except Exception as error:  # noqa: BLE001
             reason = f"error: {error.__class__.__name__}: {error}"
         finally:
+            if self.view is not None:
+                self.view.update(last_reason=reason)
             self.summary["stop"] = self.stop(reason)
         self.summary.update(
             reason=reason,
@@ -2246,7 +2295,7 @@ def run_preview(args, ctx) -> int:
     deny_network()
     out = ctx["out"]
     out.mkdir(parents=True, exist_ok=True)
-    dream = DreamReal(ctx["arm_path"], out, offline=True)
+    dream = DreamReal(ctx["arm_path"], out, offline=True, view=ctx.get("view"))
     dream.install_gate("record")
     _, grab, close = open_cameras(ctx["record"], args.fake_cameras)
     rest = [float(v) for v in ctx["arm"]["rest"]]
@@ -2282,6 +2331,8 @@ def run_preview(args, ctx) -> int:
         out / "observation_as_sent.json",
         {"values": values, "inputs_id": dream.inputs_id, "slots": ctx["settings"].slots},
     )
+    if ctx.get("view") is not None:
+        ctx["view"].update(phase="preview", state="preview", message="Camera inputs ready for your review.")
     print("\n=== Inputs preview (no motor, no CAN/serial, no network, no billed call) ===")
     print(
         "frames as sent (oldest->newest, newest saved): "
@@ -2329,7 +2380,7 @@ def live_facts(args, ctx, ledger) -> core.LiveFacts:
         acked_signs=args.ack_unverified_sign or [],
         plan_id=ctx["plan"]["plan_id"],
         plan_id_given=args.plan_id,
-        lab_holder=lab_holder(args.lab_url, args.lab_down_ok),
+        lab_holder=lab_holder(args.lab_url, args.lab_down_ok, args.lab_session_id),
         port_holders=port_holders(ctx["record"]["follower_port"]),
         missing_slots=ctx["missing"],
         guard_problem=ctx["guard"].problem,
@@ -2388,6 +2439,8 @@ def run_live(args, ctx) -> int:
     facts = live_facts(args, ctx, ledger)
     refusals = rehearse_refusals(facts) if args.rehearse else core.live_refusals(facts)
     if refusals:
+        if ctx.get("view") is not None:
+            ctx["view"].update(phase="refused", state="refused", last_reason="; ".join(refusals))
         print(f"\n{'--rehearse ' if args.rehearse else ''}--live REFUSED:")
         for r in refusals:
             print(f"  - {r}")
@@ -2406,7 +2459,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     dream = worker = None
     if not args.rehearse:
         # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
-        dream = DreamReal(arm_path, out, offline=False)
+        dream = DreamReal(arm_path, out, offline=False, view=ctx.get("view"))
         dream.install_gate("preflight")
         _, grab, close = open_cameras(ctx["record"], fake=False)
         rest = [float(v) for v in arm["rest"]]
@@ -2427,13 +2480,17 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             close()
             dream.close()
         if not dream.inputs_checked:
+            if ctx.get("view") is not None:
+                ctx["view"].update(
+                    phase="refused", state="refused", last_reason="Camera inputs not approved."
+                )
             print(
                 f"\n--live REFUSED: inputs id {dream.inputs_id} is not in ~/.dreamlabs/inputs_checked. Run --preview, "
                 "look, and Gavin records it with python -m dream.input_check."
             )
             return 2
         print(f"inputs id {dream.inputs_id} checked.", flush=True)
-        dream = DreamReal(arm_path, out, offline=False)
+        dream = DreamReal(arm_path, out, offline=False, view=ctx.get("view"))
         dream.install_gate("gate")
         worker = Worker(
             dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
@@ -2466,6 +2523,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         status_path=f"{args.pid_file}{core.STATUS_SUFFIX}" if args.pid_file else None,
         mirror_dir=bundle.mirror_dir() if (bundle := ctx.get("bundle")) else None,
         frame_sink=(bundle.record_frames() if bundle and not args.rehearse else None),
+        view=ctx.get("view"),
     )
     try:
         summary = episode.run()
@@ -2570,6 +2628,15 @@ def main(argv=None) -> int:
         "--keep-arm-rest",
         action="store_true",
         help="use the arm file's own rest (dreamcli tcp writes zeros: a straight, level arm)",
+    )
+    p.add_argument("--lab-session-id", help="accept only this Lab dream session in the idle check")
+    p.add_argument(
+        "--dream-view-dir",
+        type=Path,
+        help="publish exact request JPEGs and status here (default: bundle/dream_view)",
+    )
+    p.add_argument(
+        "--lab-report-file", type=Path, help="dry run: write movement text and live refusals as JSON"
     )
     p.add_argument("--pid-file")
     p.add_argument("--out", type=Path)
@@ -2719,6 +2786,16 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         "out": out,
         "bundle": bundle,
     }
+    if args.live or args.preview or args.dream_view_dir:
+        directory = args.dream_view_dir or ((bundle.dir if bundle else out) / "dream_view")
+        ctx["view"] = DreamView(
+            directory,
+            run=out.name,
+            mode=kind,
+            prompt=settings.prompt,
+            max_calls=settings.max_calls,
+            slots=settings.slots,
+        )
     if not args.live and not args.preview:
         print(
             f"lab: {lab_holder(args.lab_url, True) or 'idle'}; follower port holders: "
@@ -2728,6 +2805,18 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         core.atomic_json(out / "plan.json", plan)
         facts = live_facts(args, ctx, core.Ledger(LEDGER, LEDGER_CAP))
         refusals = rehearse_refusals(facts) if args.rehearse else core.live_refusals(facts)
+        if args.lab_report_file:
+            text = io.StringIO()
+            with contextlib.redirect_stdout(text):
+                print_plan(plan)
+            movement = (
+                "Joints that may move"
+                + text.getvalue().split("Joints that may move", 1)[1].split("Right arm:", 1)[0]
+            )
+            core.atomic_json(
+                args.lab_report_file,
+                {"plan_id": plan["plan_id"], "movement": movement, "readiness": refusals},
+            )
         live = "--rehearse --live" if args.rehearse else "--live"
         print(f"{live} readiness: " + ("would proceed" if not refusals else f"{live} would REFUSE:"))
         for r in refusals:
