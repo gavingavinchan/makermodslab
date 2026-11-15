@@ -682,3 +682,101 @@ def test_active_identity_requires_start_time_and_runner_command(monkeypatch):
     assert not dream_process.alive({"pid": 42, "started": 11.0}, dream.REAL / "dream_real.py")
     process.cmdline.return_value = ["python", "/unrelated.py"]
     assert not dream_process.alive({"pid": 42, "started": 10.0}, dream.REAL / "dream_real.py")
+
+
+@pytest.mark.parametrize(
+    "holder",
+    [
+        "dream",
+        "teleoperation",
+        "recording",
+        "inference",
+        "replay",
+        "calibration",
+        "auto_calibration",
+        "wiggle",
+        "hosting",
+        "remote_teleoperation",
+        "remote_inference",
+        "tank_measurement",
+    ],
+)
+@pytest.mark.parametrize(
+    "path,body",
+    [
+        ("/api/v1/maker/probe-ports", {"arm_type": "maker"}),
+        ("/api/v1/maker/identify-arm", {"device_type": "robot", "arm_type": "maker"}),
+        ("/api/v1/identify-arm", {}),
+        ("/identify-arm", {}),
+    ],
+)
+def test_identification_refuses_every_holder_before_open(client, monkeypatch, holder, path, body):
+    from makermodslab import server
+
+    monkeypatch.setattr(server, "held_by", lambda: holder)
+    lookup = Mock(side_effect=AssertionError("must refuse before family/hardware lookup"))
+    monkeypatch.setattr(server.arm_registry, "get", lookup)
+    monkeypatch.setattr(server.arm_registry, "default", lookup)
+    response = client.post(path, json=body)
+    assert response.status_code == 409, response.text
+    assert response.json()["code"] == f"robot.busy.{holder}"
+    lookup.assert_not_called()
+
+
+def test_camera_reservation_acquired_during_identity_resolution_blocks_open(client, monkeypatch):
+    from makermodslab import server
+
+    def identify(*args):
+        dream.checking_inputs = True
+        return (0, "fake-camera")
+
+    monkeypatch.setattr(server, "identify_cv2_index", identify)
+    camera = Mock(side_effect=AssertionError("camera must not reopen after Dream claims it"))
+    monkeypatch.setattr(server.camera_preview_manager, "open_stream", camera)
+    response = client.get("/api/v1/camera-preview/0")
+    assert response.status_code == 409 and response.json()["code"] == "robot.busy.dream"
+    camera.assert_not_called()
+
+
+def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path):
+    from makermodslab.camera_preview import camera_preview_manager
+
+    request = dream.DreamRequest("tank", "0123456789")
+    request.start_gate.set()
+    monkeypatch.setattr(dream, "dream_active", True)
+    session_events.notify_session_changed("dream", True, "starting")
+    monkeypatch.setattr(camera_preview_manager, "stop_all", lambda: None)
+    button, runner = Mock(pid=10), Mock(pid=11, returncode=0)
+    button.poll.side_effect = [None, None, 1, 1, 1]
+    runner.poll.side_effect = [None, None, None, 0, 0]
+    monkeypatch.setattr(dream.dream_process, "spawn", Mock(side_effect=[button, runner]))
+    monkeypatch.setattr(dream, "_save_active", Mock())
+    monkeypatch.setattr(dream, "_read_view", lambda run: {"phase": "running"})
+    events = Mock(wraps=session_events.notify_session_changed)
+    monkeypatch.setattr(session_events, "notify_session_changed", events)
+    dream._worker(request, DreamSettings(), "live-test", tmp_path)
+    stopping = [call for call in events.call_args_list if call.kwargs.get("phase") == "stopping"]
+    assert len(stopping) == 1
+    argv = dream.dream_process.spawn.call_args.args[0]
+    assert argv[argv.index("--stop-button-pid") + 1] == "10"
+
+
+def test_remote_press_during_launch_is_retained_until_pid_ready(tmp_path):
+    import signal
+
+    import stop_button
+
+    pid_file = tmp_path / "runner.pid"
+    sent = []
+    logic = stop_button.StopLogic(
+        pid_file, command=lambda pid: "python dream_real.py", kill=lambda pid, sig: sent.append((pid, sig))
+    )
+    stop_button.request_remote_press(pid_file, "early page stop")
+    assert "waiting" in logic.poll_remote()[0]
+    assert logic.poll_remote() == []  # no repeated window/log messages while waiting
+    assert not sent
+    pid_file.write_text("4242")
+    assert "STOP sent" in logic.poll_remote()[0]
+    assert logic.poll_remote() == []
+    logic.press(from_key=True)
+    assert sent == [(4242, signal.SIGTERM)]

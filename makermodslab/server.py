@@ -4762,6 +4762,16 @@ class CanGripperWiggleRequest(BaseModel):
     leader_kind: str | None = None
 
 
+def _refuse_identification_while_busy():
+    holder = held_by()
+    if holder is not None:
+        raise ApiError(
+            status_code=409,
+            detail=f"Stop {holder} before probing or identifying ports.",
+            code=f"robot.busy.{holder}",
+        )
+
+
 @v1_router.post("/maker/probe-ports", response_model=MakerProbePortsResponse, tags=["system"])
 async def probe_maker_arm_ports(request: MakerProbePortsRequest):
     """Find which ports carry a Maker follower and which carry its Star 102 leader.
@@ -4778,6 +4788,7 @@ async def probe_maker_arm_ports(request: MakerProbePortsRequest):
     share one protocol (the SO-101) has nothing to ask a port and is told to
     identify by the gesture instead.
     """
+    _refuse_identification_while_busy()
     require_known_arm_type(request.arm_type)
     require_leader_kind(request.arm_type, request.leader_kind)
     family = arm_registry.get(request.arm_type)
@@ -4811,6 +4822,7 @@ async def identify_maker_arm(request: MakerIdentifyArmRequest):
     Read-only — no motor writes. Any registered family (each implements the
     gesture); an unknown id is a 400.
     """
+    _refuse_identification_while_busy()
     require_known_arm_type(request.arm_type)
     require_leader_kind(request.arm_type, request.leader_kind)
     family = arm_registry.get(request.arm_type)
@@ -4878,6 +4890,7 @@ async def release_can_torque(request: ReleaseCanTorqueRequest):
 async def identify_arm(request: IdentifyArmRequest):
     """The inverse of /wiggle: the user swings an arm's base (shoulder pan) by
     hand and we report which port saw the motion. Read-only — no motor writes."""
+    _refuse_identification_while_busy()
     # The SO-101's two halves share one bus driver, so the side is immaterial.
     return await arm_registry.default().identify_by_motion("robot", request.ports)
 
@@ -5198,7 +5211,9 @@ def camera_preview_stream(index: int, unique_id: str | None = None, rotation: in
         )
     resolved, key = identified
     try:
-        stream = camera_preview_manager.open_stream(resolved, key, rotation)
+        stream = dream.open_idle_preview(
+            resolved, key, rotation, open_stream=camera_preview_manager.open_stream
+        )
     except CameraOpenError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return StreamingResponse(stream, media_type="multipart/x-mixed-replace; boundary=frame")

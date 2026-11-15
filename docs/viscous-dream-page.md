@@ -85,3 +85,12 @@ The button launch check proves the process stays alive for a second, not that th
 `$MAKERMODSLAB_HOME/dream/active.json` records runner/button pids and process creation times, pid file, view status path, run/robot and session id. Startup and every `dream_is_active()` reconcile that record, checking the runner's start time and exact script command. A surviving runner retains the robot mutex and appears on the page under its original session id; stop still routes to the button mailbox. The record is removed only after the original runner exits (including pid reuse). Unreadable records/identities fail closed with a logged error. Monotonic browser leases cannot be restored across restart; the original button remains the independent supervisor and dead-man. Status/mutex reads reconcile exit and release the adopted claim.
 
 `--dev` watches only `makermodslab/`; saving runner scripts does not reload Lab. **Do not edit code during a run.** Editing backend files can still reload the server and request a stop.
+
+The server's camera-input approval is bound to the preview token, inputs id,
+robot-record digest and expiry, not to evidence of a particular browser click.
+An API caller with a valid token can approve it directly; the page's explicit
+"Inputs look right" action is an operator workflow, not server-side proof of
+a click. This design is unchanged. Port probing and both identification routes
+now refuse every robot holder with `robot.busy.*`, before opening adapters.
+Idle camera open and Dream reservation share a lock, so a check/run cannot
+claim cameras between the final busy check and capture acquisition.

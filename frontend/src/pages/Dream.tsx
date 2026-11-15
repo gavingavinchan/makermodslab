@@ -301,7 +301,7 @@ export default function Dream() {
       <p className="text-xs text-muted-foreground">{t("dream.review")}</p><Button variant="outline" className="rounded-full" onClick={() => setCamerasOpen(false)}>{t("dream.close")}</Button>
     </DialogContent></Dialog>
     <AlertDialog open={!!plan} onOpenChange={(open) => { if (!open && pending !== "start") setPlan(null); }}><AlertDialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto"><AlertDialogHeader><AlertDialogTitle>{t("dream.confirm")}</AlertDialogTitle><AlertDialogDescription>{t("dream.confirmNote")}</AlertDialogDescription></AlertDialogHeader>
-      <pre className="overflow-x-auto rounded-xl bg-muted p-4 text-xs leading-6">{plan?.movement}</pre>
+      <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap break-words rounded-xl bg-muted p-4 text-xs leading-6">{plan?.movement}</pre>
       <div className="space-y-2 text-sm"><h3 className="font-medium">{t("dream.readiness")}</h3><ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">{plan?.readiness.map((line) => <li key={line}>{line}</li>)}</ul><p className="text-xs text-muted-foreground">{t("dream.readinessNote")}</p></div>
       <AlertDialogFooter><AlertDialogCancel disabled={pending === "start"}>{t("dream.cancel")}</AlertDialogCancel><AlertDialogAction disabled={!!pending} onClick={(event) => { event.preventDefault(); void act("start", async () => {
         if (!plan || !robot) return;

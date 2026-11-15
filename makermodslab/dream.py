@@ -146,6 +146,15 @@ def dream_is_active() -> bool:
     return dream_active or checking_inputs or adopt_active()
 
 
+def open_idle_preview(index, key, rotation, *, open_stream):
+    # Same reservation lock used when a Dream check/run claims the cameras.
+    # open_stream acquires the capture before returning its generator.
+    with _lock:
+        if dream_is_active():
+            refuse("Dream owns the cameras. Use the Dream-view tiles.", ErrorCode.ROBOT_BUSY_DREAM)
+        return open_stream(index, key, rotation)
+
+
 def busy_response():
     if dream_is_active():
         return {
