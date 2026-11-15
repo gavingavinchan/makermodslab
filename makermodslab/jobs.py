@@ -6588,6 +6588,7 @@ class JobRegistry:
             from . import (
                 auto_calibrate as _auto_calibrate,
                 calibrate as _calibrate,
+                dream as _dream,
                 record as _record,
                 remote_inference as _remote_inference,
                 replay as _replay,
@@ -6596,6 +6597,8 @@ class JobRegistry:
                 wiggle as _wiggle,
             )
 
+            if _dream.dream_is_active():
+                return "a Dream session"
             if _record.recording_active:
                 return "a recording session"
             if _rollout.inference_active:

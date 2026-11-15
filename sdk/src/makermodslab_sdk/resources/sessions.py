@@ -643,6 +643,7 @@ class ActiveSession:
 # the kind's options model, so a new server kind (or option field) fails the
 # build here, named, until the SDK grows the matching sugar.
 SUGAR_BY_KIND: dict[str, str] = {
+    "dream": "dream",
     "hosting": "host",
     "remote_inference": "remote_infer",
     "remote_teleoperation": "remote_teleoperate",
@@ -1351,6 +1352,23 @@ class SessionsResource(Resource):
         )
 
     # --- remote kinds' sugar --------------------------------------------------
+
+    def dream(
+        self,
+        robot: str,
+        *,
+        plan_id: str,
+        owner: str | None = None,
+        lease_timeout_s: float | None = None,
+    ) -> ActiveSession:
+        """Start an explicitly reviewed Viscous Dream plan on this fork.
+
+        Pass the id from POST /api/v1/dream/plan only after a person reviews
+        its movement text. The server launches the standalone stop button
+        before the runner.
+        Leaving the context requests one graceful return to rest.
+        """
+        return self._start_managed("dream", robot, {"plan_id": plan_id}, owner, lease_timeout_s)
 
     def host(
         self,

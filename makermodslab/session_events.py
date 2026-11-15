@@ -53,6 +53,7 @@ SESSION_KINDS = frozenset(
         "auto_calibration",
         "wiggle",
         "hosting",
+        "dream",
         "remote_teleoperation",
     }
 )

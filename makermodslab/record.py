@@ -732,6 +732,11 @@ def handle_start_recording(request: RecordingRequest) -> dict[str, Any]:
         discard_requested, \
         connect_retry_attempt
 
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

@@ -179,6 +179,7 @@ def _busy_refusal() -> dict | None:
 
 
 _BUSY_CODES = {
+    "dream": ErrorCode.ROBOT_BUSY_DREAM,
     "teleoperation": ErrorCode.ROBOT_BUSY_TELEOPERATION,
     "recording": ErrorCode.ROBOT_BUSY_RECORDING,
     "inference": ErrorCode.ROBOT_BUSY_INFERENCE,

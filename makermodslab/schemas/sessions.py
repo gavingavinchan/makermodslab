@@ -37,6 +37,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from makermodslab.rollout import PolicyCameraDims
 
 from .action_filter import ActionFilterOptions
+from .dream import DreamOptions
 
 __all__ = [
     "LEASE_TIMEOUT_AUTO_CALIBRATION_S",
@@ -52,6 +53,7 @@ __all__ = [
     "EndedSessionInfo",
     "GpuLaunchResponse",
     "GpuStatusResponse",
+    "DreamOptions",
     "InferenceOptions",
     "PolicyCameraDims",
     "RecordingOptions",
@@ -346,6 +348,7 @@ class SessionStartBody(BaseModel):
         "auto_calibration",
         "hosting",
         "remote_inference",
+        "dream",
         "remote_teleoperation",
     ]
     robot: str

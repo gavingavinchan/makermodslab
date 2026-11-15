@@ -31,7 +31,18 @@ PLANNED: dict[str, frozenset[str]] = {
     "remote": frozenset(),
     "robots": frozenset(),
     "sfu": frozenset(),
-    "sessions": frozenset(),
+    # Fork-only Dream page; SDK callers can use sessions.start/dream with
+    # an already reviewed plan. Page-specific planning/preview stays here.
+    "sessions": frozenset(
+        {
+            "dream_plan",
+            "dream_preview",
+            "dream_inputs_approval",
+            "dream_status",
+            "dream_view_image",
+            "dream_replay",
+        }
+    ),
     # The Viscous fork's tank-measurement routes (2026-11-13 upstream sync):
     # bench tooling for one arm, not yet in the SDK.
     "system": frozenset(

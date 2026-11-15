@@ -519,6 +519,11 @@ def handle_start_hosting(request: HostingRequest, websocket_manager=None) -> dic
     Connect failures are reported synchronously (nothing is claimed)."""
     global hosting_active, hosting_thread, releasing, current_descriptor, current_teleop, seat, phase
     global last_cleanup_error, last_session_outcome, last_session_error
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

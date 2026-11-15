@@ -139,6 +139,10 @@
             "title": "Supports Dagger",
             "type": "boolean"
           },
+          "supports_dream": {
+            "title": "Supports Dream",
+            "type": "boolean"
+          },
           "supports_gripper_haptics": {
             "default": false,
             "title": "Supports Gripper Haptics",
@@ -183,7 +187,8 @@
           "supports_remote_inference",
           "supports_port_probe",
           "motion_identify_energizes_follower",
-          "supports_gripper_wiggle"
+          "supports_gripper_wiggle",
+          "supports_dream"
         ],
         "title": "ArmCapabilities",
         "type": "object"
@@ -1450,6 +1455,454 @@
           "error"
         ],
         "title": "DownloadStatusResponse",
+        "type": "object"
+      },
+      "DreamApprovalResponse": {
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "boolean"
+          },
+          "inputs_id": {
+            "title": "Inputs Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "inputs_id",
+          "approved"
+        ],
+        "title": "DreamApprovalResponse",
+        "type": "object"
+      },
+      "DreamInputsApproval": {
+        "additionalProperties": false,
+        "properties": {
+          "inputs_id": {
+            "pattern": "^[a-f0-9]{12}$",
+            "title": "Inputs Id",
+            "type": "string"
+          },
+          "preview_id": {
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Preview Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "preview_id",
+          "inputs_id"
+        ],
+        "title": "DreamInputsApproval",
+        "type": "object"
+      },
+      "DreamPlanBody": {
+        "additionalProperties": false,
+        "properties": {
+          "max_calls": {
+            "default": 10,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Max Calls",
+            "type": "integer"
+          },
+          "overhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overhead"
+          },
+          "pause_s": {
+            "default": 0.0,
+            "maximum": 600.0,
+            "minimum": 0.0,
+            "title": "Pause S",
+            "type": "number"
+          },
+          "prompt": {
+            "default": "put apple into the bowl",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "robot": {
+            "title": "Robot",
+            "type": "string"
+          },
+          "wrist_l": {
+            "default": "wrist",
+            "title": "Wrist L",
+            "type": "string"
+          },
+          "wrist_r": {
+            "default": "black",
+            "title": "Wrist R",
+            "type": "string"
+          }
+        },
+        "required": [
+          "robot"
+        ],
+        "title": "DreamPlanBody",
+        "type": "object"
+      },
+      "DreamPlanResponse": {
+        "properties": {
+          "movement": {
+            "title": "Movement",
+            "type": "string"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "readiness": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Readiness",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan_id",
+          "movement",
+          "readiness"
+        ],
+        "title": "DreamPlanResponse",
+        "type": "object"
+      },
+      "DreamPreviewResponse": {
+        "properties": {
+          "inputs_checked": {
+            "title": "Inputs Checked",
+            "type": "boolean"
+          },
+          "inputs_id": {
+            "title": "Inputs Id",
+            "type": "string"
+          },
+          "preview_id": {
+            "title": "Preview Id",
+            "type": "string"
+          },
+          "run": {
+            "title": "Run",
+            "type": "string"
+          }
+        },
+        "required": [
+          "preview_id",
+          "inputs_id",
+          "inputs_checked",
+          "run"
+        ],
+        "title": "DreamPreviewResponse",
+        "type": "object"
+      },
+      "DreamReplayResponse": {
+        "properties": {
+          "console": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Console",
+            "type": "array"
+          },
+          "duration_s": {
+            "title": "Duration S",
+            "type": "number"
+          },
+          "elapsed_s": {
+            "title": "Elapsed S",
+            "type": "number"
+          },
+          "run": {
+            "title": "Run",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DreamViewStatus"
+          }
+        },
+        "required": [
+          "run",
+          "duration_s",
+          "elapsed_s",
+          "status",
+          "console"
+        ],
+        "title": "DreamReplayResponse",
+        "type": "object"
+      },
+      "DreamStatusResponse": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "button_alive": {
+            "title": "Button Alive",
+            "type": "boolean"
+          },
+          "checking_inputs": {
+            "title": "Checking Inputs",
+            "type": "boolean"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "robot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Robot"
+          },
+          "run": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run"
+          },
+          "stale": {
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DreamViewStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "active",
+          "checking_inputs",
+          "run",
+          "robot",
+          "status",
+          "error",
+          "stale",
+          "button_alive"
+        ],
+        "title": "DreamStatusResponse",
+        "type": "object"
+      },
+      "DreamViewStatus": {
+        "properties": {
+          "call": {
+            "title": "Call",
+            "type": "integer"
+          },
+          "commanded": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commanded"
+          },
+          "images_written": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images Written"
+          },
+          "inputs_checked": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inputs Checked"
+          },
+          "inputs_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inputs Id"
+          },
+          "last_reading": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Reading"
+          },
+          "last_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Reason"
+          },
+          "max_calls": {
+            "title": "Max Calls",
+            "type": "integer"
+          },
+          "measured": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "live",
+              "preview",
+              "dry",
+              "replay"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "peak_temp_c": {
+            "title": "Peak Temp C",
+            "type": "number"
+          },
+          "peak_torque_nm": {
+            "title": "Peak Torque Nm",
+            "type": "number"
+          },
+          "phase": {
+            "title": "Phase",
+            "type": "string"
+          },
+          "pid": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pid"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "requested_tcp_path": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Requested Tcp Path",
+            "type": "array"
+          },
+          "run": {
+            "title": "Run",
+            "type": "string"
+          },
+          "slots": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Slots",
+            "type": "object"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "written": {
+            "title": "Written",
+            "type": "number"
+          }
+        },
+        "required": [
+          "run",
+          "mode",
+          "prompt",
+          "max_calls",
+          "slots",
+          "pid",
+          "phase",
+          "state",
+          "call",
+          "last_reason",
+          "measured",
+          "commanded",
+          "requested_tcp_path",
+          "peak_torque_nm",
+          "peak_temp_c",
+          "inputs_id",
+          "inputs_checked",
+          "images_written",
+          "written"
+        ],
+        "title": "DreamViewStatus",
         "type": "object"
       },
       "EndedSessionInfo": {
@@ -6960,6 +7413,7 @@
               "auto_calibration",
               "hosting",
               "remote_inference",
+              "dream",
               "remote_teleoperation"
             ],
             "title": "Kind",
@@ -11013,6 +11467,242 @@
         "summary": "Delete Dataset",
         "tags": [
           "datasets"
+        ]
+      }
+    },
+    "/api/v1/dream/inputs-approval": {
+      "post": {
+        "operationId": "dream_inputs_approval",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DreamInputsApproval"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DreamApprovalResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dream Inputs Approval",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/v1/dream/plan": {
+      "post": {
+        "operationId": "dream_plan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DreamPlanBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DreamPlanResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dream Plan",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/v1/dream/preview": {
+      "post": {
+        "operationId": "dream_preview",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DreamPlanBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DreamPreviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dream Preview",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/v1/dream/replay": {
+      "get": {
+        "operationId": "dream_replay",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "at_s",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 86400,
+              "minimum": 0,
+              "title": "At S",
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DreamReplayResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dream Replay",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/v1/dream/status": {
+      "get": {
+        "operationId": "dream_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DreamStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dream Status",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/v1/dream/view/{run}/{slot}": {
+      "get": {
+        "operationId": "dream_view_image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run",
+            "required": true,
+            "schema": {
+              "title": "Run",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "schema": {
+              "title": "Slot",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/jpeg": {}
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dream View Image",
+        "tags": [
+          "sessions"
         ]
       }
     },

@@ -3065,6 +3065,11 @@ def handle_start_inference(request: InferenceRequest) -> dict[str, Any]:
 
     # Mutex with every other feature that drives the same serial bus (see
     # CLAUDE.md's "State model & mutual exclusion").
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

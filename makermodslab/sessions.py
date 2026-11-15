@@ -68,6 +68,7 @@ from .schemas.sessions import (
     OWNER_MAX_LENGTH,
     AutoCalibrationOptions,
     CalibrationOptions,
+    DreamOptions,
     HostingOptions,
     InferenceOptions,
     RecordingOptions,
@@ -100,6 +101,7 @@ STARTABLE_KINDS = (
     "hosting",
     "remote_inference",
     "remote_teleoperation",
+    "dream",
 )
 
 # Kinds that never open the leader bus, mirroring the frontend's robotSetupGap
@@ -107,7 +109,7 @@ STARTABLE_KINDS = (
 # block them (bimanual = both followers, still no leaders). remote_inference is
 # in unconditionally — unlike inference it has no coaching exception, because a
 # remote session has no handover to a leader arm at all.
-_FOLLOWER_ONLY_KINDS = frozenset({"inference", "replay", "hosting", "remote_inference"})
+_FOLLOWER_ONLY_KINDS = frozenset({"inference", "replay", "hosting", "remote_inference", "dream"})
 
 # Kinds that never open the FOLLOWER bus: remote teleoperation drives a
 # station's follower with this node's leader, so a laptop record with no
@@ -121,6 +123,7 @@ _LEADER_ONLY_KINDS = frozenset({"remote_teleoperation"})
 _SETUP_KINDS = frozenset({"calibration", "auto_calibration"})
 
 _OPTIONS_MODELS = {
+    "dream": DreamOptions,
     "teleoperation": TeleoperationOptions,
     "recording": RecordingOptions,
     "inference": InferenceOptions,
@@ -447,6 +450,7 @@ def _held_by() -> str | None:
     from . import (
         auto_calibrate,
         calibrate,
+        dream,
         record,
         remote_host,
         remote_inference,
@@ -457,6 +461,8 @@ def _held_by() -> str | None:
         wiggle,
     )
 
+    if dream.dream_is_active():
+        return "dream"
     if teleoperate.teleoperation_active:
         return "teleoperation"
     if record.recording_active:
@@ -839,7 +845,14 @@ def _build_auto_calibration_request(record: dict, opts: AutoCalibrationOptions):
     )
 
 
+def _build_dream_request(record, opts):
+    from . import dream
+
+    return dream.build_request(record, opts)
+
+
 _REQUEST_BUILDERS = {
+    "dream": _build_dream_request,
     "teleoperation": _build_teleoperation_request,
     "recording": _build_recording_request,
     "inference": _build_inference_request,
@@ -866,6 +879,10 @@ def _dispatch_start(kind: str, request, websocket_manager) -> dict[str, Any]:
         teleoperate,
     )
 
+    if kind == "dream":
+        from . import dream
+
+        return dream.handle_start_dream(request)
     if kind == "teleoperation":
         return teleoperate.handle_start_teleoperation(request, websocket_manager)
     if kind == "hosting":
@@ -954,6 +971,13 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
     require_leader_kind(record["arm_type"], record["leader_kind"])
 
     from .arms import registry as arm_registry
+
+    if kind == "dream" and not arm_registry.get(record["arm_type"]).supports_dream:
+        raise ApiError(
+            status_code=400,
+            detail="Dream requires a supported Viscous follower.",
+            code=ErrorCode.ROBOT_NOT_READY,
+        )
 
     discover_teleop = kind == "teleoperation" and arm_registry.get(record["arm_type"]).teleop_usb_discovery
     if discover_teleop:
@@ -1096,17 +1120,19 @@ def handle_start_session(body: SessionStartBody, websocket_manager=None) -> dict
                 session = leased
                 _ensure_watchdog()
     except Exception:
-        if discover_teleop:
+        if discover_teleop or kind == "dream":
             try:
                 _dispatch_stop(kind)
             finally:
-                request._start_gate.set()
+                (request.start_gate if kind == "dream" else request._start_gate).set()
         raise
     # Warn-but-allow findings from the feature's start (teleoperation/replay
     # arm-identity checks) ride the 201 so the client can surface them — the
     # legacy start responses carried them and the sessions surface must not
     # drop them. The handlers join their findings into one `warning` string;
     # relay it verbatim as a single entry.
+    if kind == "dream":
+        request.start_gate.set()
     if discover_teleop:
         # No connection can fail/finish before the wrapper attributes its lease.
         request._start_gate.set()
@@ -1181,6 +1207,10 @@ def _dispatch_stop(kind: str) -> dict[str, Any]:
         teleoperate,
     )
 
+    if kind == "dream":
+        from . import dream
+
+        return dream.handle_stop_dream()
     if kind == "teleoperation":
         return teleoperate.handle_stop_teleoperation()
     if kind == "hosting":

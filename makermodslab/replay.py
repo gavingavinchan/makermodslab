@@ -177,6 +177,11 @@ def handle_start_replay(request: ReplayRequest, websocket_manager=None) -> dict[
     failure), mirroring rollout.py's InferenceRequest response shape."""
     global replay_active, replay_thread, _replay_started_at, _replay_meta
 
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

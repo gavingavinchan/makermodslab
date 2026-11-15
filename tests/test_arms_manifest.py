@@ -280,6 +280,7 @@ def test_calibration_config_routes_refuse_an_unknown_arm_type_query(
 # Options that pass each kind's schema; a guard test below keeps this table in
 # step with STARTABLE_KINDS so a new kind cannot slip past the gate untested.
 _VALID_OPTIONS: dict[str, dict] = {
+    "dream": {"plan_id": "0123456789"},
     "teleoperation": {},
     "recording": {"dataset_repo_id": "u/d", "single_task": "t"},
     "inference": {"policy_ref": "user/repo@checkpoints/000050"},
@@ -621,6 +622,7 @@ SO101_ENTRY = {
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
         "supports_gripper_haptics": False,
+        "supports_dream": False,
         "supports_tank_measurement": False,
     },
     "robot_types": ["so101_follower", "bi_so_follower"],
@@ -679,6 +681,7 @@ METAL_ENTRY = {
         "supports_teleop_speed_limit": False,
         "teleop_usb_discovery": False,
         "supports_gripper_haptics": False,
+        "supports_dream": False,
         "supports_tank_measurement": False,
     },
     "robot_types": ["metal_follower", "bi_metal_follower"],

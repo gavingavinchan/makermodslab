@@ -250,6 +250,11 @@ def handle_start_remote_teleoperation(
 ) -> dict[str, Any]:
     global remote_teleoperation_active, remote_teleoperation_thread, current_station, current_room
     global current_cameras, last_cleanup_error, last_session_outcome, last_session_error, _metrics_source
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

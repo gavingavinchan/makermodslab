@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 import httpx
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
@@ -5157,6 +5157,14 @@ def camera_preview_stream(index: int, unique_id: str | None = None, rotation: in
             status_code=422,
             detail=f"Unsupported rotation {rotation}; use one of {list(SUPPORTED_CAMERA_ROTATIONS)}.",
         )
+    from . import dream
+
+    if dream.dream_is_active():
+        raise ApiError(
+            status_code=409,
+            detail="Dream owns the cameras. Use the Dream-view tiles.",
+            code=ErrorCode.ROBOT_BUSY_DREAM,
+        )
     if record_state.recording_active:
         raise HTTPException(
             status_code=409,
@@ -5621,6 +5629,7 @@ async def shutdown_event():
         asyncio.to_thread(handle_stop_inference),
         asyncio.to_thread(stop_replay_and_wait),
         asyncio.to_thread(remote_inference.stop_for_shutdown),
+        asyncio.to_thread(dream_page.stop_for_shutdown),
         # Hosting drives the follower from an in-process thread like teleop
         # does — an engaged arm returns to rest, then torque is released.
         # Remote teleoperation only holds the leader, but it must leave the
@@ -5638,6 +5647,7 @@ async def shutdown_event():
         "inference",
         "replay",
         "remote inference",
+        "dream",
         "hosting",
         "remote teleoperation",
     )
@@ -5772,6 +5782,57 @@ def get_latest_tank_measurement(robot_name: str):
 
 
 # Flat mount first, then v1; both must precede the SPA mount below.
+from . import dream as dream_page  # noqa: E402
+from .schemas.dream import (  # noqa: E402
+    DreamApprovalResponse,
+    DreamInputsApproval,
+    DreamPlanBody,
+    DreamPlanResponse,
+    DreamPreviewResponse,
+    DreamReplayResponse,
+    DreamStatusResponse,
+)
+
+
+@v1_router.post("/dream/plan", response_model=DreamPlanResponse, tags=["sessions"])
+def dream_plan(body: DreamPlanBody):
+    return dream_page.plan(body)
+
+
+@v1_router.post("/dream/preview", response_model=DreamPreviewResponse, tags=["sessions"])
+def dream_preview(body: DreamPlanBody):
+    return dream_page.preview(body)
+
+
+@v1_router.post("/dream/inputs-approval", response_model=DreamApprovalResponse, tags=["sessions"])
+def dream_inputs_approval(body: DreamInputsApproval):
+    return dream_page.approve_inputs(body)
+
+
+@v1_router.get("/dream/status", response_model=DreamStatusResponse, tags=["sessions"])
+def dream_status(response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    return dream_page.status()
+
+
+@v1_router.get(
+    "/dream/view/{run}/{slot}",
+    response_class=FileResponse,
+    responses={200: {"content": {"image/jpeg": {}}}},
+    tags=["sessions"],
+)
+def dream_view_image(run: str, slot: str):
+    return FileResponse(
+        dream_page.image_path(run, slot), media_type="image/jpeg", headers={"Cache-Control": "no-store"}
+    )
+
+
+@v1_router.get("/dream/replay", response_model=DreamReplayResponse, tags=["sessions"])
+def dream_replay(response: Response, at_s: float = Query(0, ge=0, le=86400, allow_inf_nan=False)):
+    response.headers["Cache-Control"] = "no-store"
+    return dream_page.replay(at_s)
+
+
 app.include_router(router)
 # v1-only surface: included ONCE, versioned — never on the flat mount. It
 # joins /api/v1 BEFORE the shared router does, and that order is load-bearing:

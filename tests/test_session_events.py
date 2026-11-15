@@ -108,6 +108,7 @@ def test_session_kinds_match_the_mutex_features() -> None:
         "auto_calibration",
         "wiggle",
         "hosting",
+        "dream",
         "remote_teleoperation",
     } == session_events.SESSION_KINDS
 

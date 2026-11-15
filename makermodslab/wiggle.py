@@ -140,6 +140,11 @@ async def wiggle_gripper(port: str) -> dict:
 
     # Lazy imports to dodge circular imports at module load time (matches the
     # existing pattern in teleoperate.py/record.py/rollout.py).
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

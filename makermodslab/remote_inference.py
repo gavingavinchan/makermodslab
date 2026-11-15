@@ -1543,6 +1543,10 @@ def _busy_refusal() -> dict[str, Any] | None:
             "message": "The previous session is still shutting down. Try again in a few seconds.",
             "code": ErrorCode.ROBOT_BUSY_RELEASING,
         }
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
     if _teleoperate.teleoperation_active:
         return {
             "success": False,

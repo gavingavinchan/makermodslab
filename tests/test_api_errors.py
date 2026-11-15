@@ -84,6 +84,7 @@ BUSY_DISCRIMINANTS = frozenset(
         "releasing",
         "training",
         "hosting",
+        "dream",
         "remote_teleoperation",
     ]
 )

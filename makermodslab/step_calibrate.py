@@ -570,6 +570,11 @@ def _other_feature_busy() -> dict[str, Any] | None:
     these modules import each other, so a top-level import would close a cycle
     at load time.
     """
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

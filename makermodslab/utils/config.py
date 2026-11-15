@@ -62,6 +62,27 @@ def resolve_makermodslab_home(env: Mapping[str, str] | None = None) -> str:
 MAKERMODSLAB_HOME = resolve_makermodslab_home()
 HOME_IS_OVERRIDDEN = bool(os.environ.get("MAKERMODSLAB_HOME"))
 
+# Dream tools are deployment settings; credentials remain owned by Dream.
+DREAM_DIRECTORY = "dream"
+DREAM_VENV = Path(os.environ.get("MAKERMODSLAB_DREAM_VENV", "~/viscous-dream-real/.venv")).expanduser()
+DREAM_ARM_FILE = Path(
+    os.environ.get(
+        "MAKERMODSLAB_DREAM_ARM_FILE", "~/viscous-dream-real/station/arms/viscous-waterproof-tank.json"
+    )
+).expanduser()
+DREAM_LAB_URL = os.environ.get("MAKERMODSLAB_DREAM_LAB_URL", "http://127.0.0.1:8000")
+# None means run_data.RUN_DATA / the newest complete saved bundle there.
+DREAM_RUN_DATA = (
+    Path(os.environ["MAKERMODSLAB_DREAM_RUN_DATA"]).expanduser()
+    if os.environ.get("MAKERMODSLAB_DREAM_RUN_DATA")
+    else None
+)
+DREAM_REPLAY = (
+    Path(os.environ["MAKERMODSLAB_DREAM_REPLAY"]).expanduser()
+    if os.environ.get("MAKERMODSLAB_DREAM_REPLAY")
+    else None
+)
+
 # Define the calibration config paths (shared between features). These stay
 # under lerobot's cache: lerobot's device classes read their calibration from
 # there, and the library IS lerobot calibration data.

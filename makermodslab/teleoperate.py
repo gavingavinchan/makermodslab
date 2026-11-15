@@ -890,6 +890,11 @@ def handle_start_teleoperation(request: TeleoperateRequest, websocket_manager=No
     global releasing, rest_failed, _requires_verified_rest, last_session_outcome, last_session_error
     global _starting, connection_phase, last_connection_code, last_connection_details
 
+    from . import dream as _dream
+
+    if busy := _dream.busy_response():
+        return busy
+
     from . import (
         auto_calibrate as _auto_calibrate,
         calibrate as _calibrate,

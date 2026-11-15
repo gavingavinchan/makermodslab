@@ -73,6 +73,7 @@ class ErrorCode(StrEnum):
     # installed). Both 400; the detail names the remedy.
     ROBOT_LEADER_KIND_UNKNOWN = "robot.leader_kind.unknown"
     ROBOT_LEADER_KIND_UNAVAILABLE = "robot.leader_kind.unavailable"
+    ROBOT_BUSY_DREAM = "robot.busy.dream"
     ROBOT_BUSY_RECORDING = "robot.busy.recording"
     ROBOT_BUSY_TELEOPERATION = "robot.busy.teleoperation"
     ROBOT_BUSY_INFERENCE = "robot.busy.inference"

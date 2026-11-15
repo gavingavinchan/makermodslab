@@ -224,6 +224,11 @@ class _AutoCalArmRunner:
             # (see CLAUDE.md's "State model & mutual exclusion"). Lazy
             # imports to dodge circular imports at module load time (matches
             # the existing pattern in teleoperate.py/record.py/rollout.py).
+            from . import dream as _dream
+
+            if busy := _dream.busy_response():
+                return busy
+
             from . import (
                 calibrate as _calibrate,
                 record as _record,
@@ -659,6 +664,11 @@ class AutoCalibrationBatchManager:
             # later arm's own runner.start() hits the same check mid-loop
             # (belt-and-braces with that per-runner check). Lazy imports to
             # dodge circular imports at module load time.
+            from . import dream as _dream
+
+            if busy := _dream.busy_response():
+                return busy
+
             from . import (
                 calibrate as _calibrate,
                 record as _record,
