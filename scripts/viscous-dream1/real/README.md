@@ -91,9 +91,58 @@ client's seam helper from `--dream-venv`. `--stub-latency-s` sets virtual latenc
 idle time per request. These are simulated queue-idle times; real planning/IK
 cost and hardware tracking still require Gavin's supervised review/run.
 
-## Choosing Dream's arm slot (dry air only, 2026-11-17)
+## The recipe that first grasped (2026-11-17): use this, then change one thing at a time
 
-Gavin identified our arm as the RIGHT arm from its position in the overhead image.
+Dry air, waterproof arm on the desk. Two live runs, both grasped and lifted the cube:
+`live-20261117T073809Z` (grasp + lift at calls 8-9, released after the back-post guard blocked
+the pull-back) and `live-20261117T074056Z` (cube reached in 3 calls, grasped twice, holding it
+lifted at the end). Every earlier run (screwdriver, our arm as Dream's LEFT arm) closed the jaws
+in call 1 and never reached. What changed, in order of importance:
+
+1. **Our arm is Dream's RIGHT arm** (`--arm-slot right --wrist-r left --wrist-l black`). Gavin:
+   "this is so obviously the right arm!!! its based on the overhead camera placement relative to
+   the arm". Dream's own single-arm convention is also right (`dream_ik/specs.py:656`). As the
+   left arm, Dream drove the phantom right arm more than ours in 38 of 42 calls.
+2. **The object:** a 25 mm blue cube ("done many times before"), prompt `"pick up the blue
+   cube"`, its centre 32.5 cm forward of J1 (= 43.1 cm in front of the post's inner face) and
+   10 cm to the left seen from behind the arm (`gavin-linux:~/cube-spot/REPORT.md`: clear of the
+   post for a pick and pull-back, ~29 px in the wrist image).
+3. Jaws open at the start; nobody touches the object during the run.
+4. Already in place: the KD camera as `head` overhead (same pitch as the Maker station's), desk
+   floor -10 mm (`fdb8580a`), the camera lock (restart Lab after pulling), synchronous pacing,
+   `--dream-state measured`, 18 calls.
+
+```bash
+# dry run first: prints the plan id
+.venv/bin/python scripts/viscous-dream1/real/dream_real.py --speed-deg-s 45 --no-lag-trip \
+  --no-limp-trip --no-overspeed-trip --torque-trip-nm 14 --torque-cap-nm 14 --temp-trip-c 82 \
+  --environment dry_air --robot viscous_waterproof_01_dry_air \
+  --arm-file ~/viscous-dream-real/station/arms/viscous-waterproof-dry-air.json --keep-arm-rest \
+  --prompt "pick up the blue cube" --overhead head --wrist-r left --wrist-l black \
+  --arm-slot right --dream-state measured --max-calls 18 --pause-s 10
+# then the red button, then the same command + --live --plan-id <id> --pid-file /tmp/dream_real.pid
+.venv/bin/python scripts/viscous-dream1/real/stop_button.py --pid-file /tmp/dream_real.pid
+```
+
+What still limits it: after lifting, Dream pulls the hand back toward the base and the back-post
+guard skips those rows (calls 11/15/16 of the first run, 17 of the second), so it stalls mid-lift
+and may let go. Next: start pose ~5 cm further out/left (`cube-spot` report), then `--overlap`
+(reviewed, untested live), then empirical gravity compensation (branch
+`feat/viscous-gravity-comp`).
+
+**In the water tank** (`--environment tank`: 15 deg/s, torque/temperature/lag/limp/overspeed
+trips on, tank keep-out with the -28 mm floor): keep the recipe's slot, cameras, cube and prompt;
+use the tank arm file and the robot record whose cameras are the KD overhead (`head`) and the
+wrist camera (`left`, rotated 180): `--environment tank --robot viscous_waterproof_01_dry_air
+--arm-file ~/viscous-dream-real/station/arms/viscous-waterproof-tank.json --keep-arm-rest
+--prompt "pick up the blue cube" --overhead head --wrist-r left --wrist-l black --arm-slot right
+--dream-state measured --max-calls 18 --pause-s 10` (dry run, then `--live --plan-id`). Place the
+overhead camera so the arm appears on the RIGHT, as on the desk, and put the cube where the wrist
+camera sees it from the tank start pose.
+
+## Choosing Dream's arm slot (2026-11-17; tank allowed since 41feb738)
+
+Gavin identified our arm as the RIGHT arm from its position in the overhead image. Allowed in the tank too (41feb738).
 `--arm-slot right` sends our joints/grip as `state.right_*`, executes `q_r_chunk`
 from `action.right_*`, and clips/slides only the right EEF targets before IK.
 The left side is idle at the same arm-file rest/open grip previously used for

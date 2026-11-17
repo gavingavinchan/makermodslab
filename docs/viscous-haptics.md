@@ -143,6 +143,18 @@ restore paths in the DAgger runner.
 - *Status (2026-10-21):* resolved in sim. With a Maker-style wrist camera the
   Viscous puts the apple in the bowl 6/6, and one arm plus a parked second arm
   also 6/6. Details under "Findings".
+- *Status (2026-11-17): FIRST GRASPS, dry air.* With our arm sent as Dream's RIGHT arm
+  (Gavin: "so obviously the right arm ... based on the overhead camera placement"), a 25 mm blue
+  cube 32.5 cm forward / 10 cm left of J1 and "pick up the blue cube", Dream grasped and lifted it
+  in both live runs (`live-20261117T073809Z`, `live-20261117T074056Z`; Gavin: "it worked!!!!").
+  The recipe, commands and remaining limit (the post guard blocks the pull-back after the lift)
+  are in `scripts/viscous-dream1/real/README.md`, "The recipe that first grasped". Supporting
+  work the same night: desk floor -10 (`fdb8580a`), camera lock (`bc8354f6`), right slot
+  (`be9c0dad`, round-trip proof `check_slot_roundtrip.py`), right slot allowed in the tank
+  (`41feb738`), `--overlap` pacing (`973aa19f`, reviewed, not yet run live), stop button keeps
+  its place (`2ac0c210`). Analyses on gavin-linux: `~/grip-test/` (grip direction correct),
+  `~/elbow-test/` (IK/post), `~/cube-spot/` (cube placement), `~/dream-compare/` and
+  `~/dream-sim-restpose/` (Maker/Metal/Playground comparison, sim). Next: the water tank.
 - *Grace on one arm (relayed by Gavin 2026-11-16, said the weekend before):* "grace
   from dreamlabs says that one arm is now supported. even single camera is somewhat
   supported." This supersedes Ryan's earlier "one-arm operation is not supported"
