@@ -70,18 +70,13 @@ def test_right_state_and_commanded_slots_are_exact_side_swaps():
     assert commanded["q_l_chunk"] == [*rest, 1.0]
 
 
-def test_tank_refuses_right_before_any_io():
-    with mock.patch.object(runner.sys, "stdout"), mock.patch.object(runner, "load_record") as load:
-        with pytest.raises(SystemExit) as error:
-            runner.main(["--arm-slot", "right", "--internal-stub", "--no-run-data"])
-        assert error.value.code == 2
-        load.assert_not_called()
-    with pytest.raises(runner.RefusedError, match="arm-slot right"):
-        fixtures.EnvironmentTest().plan("tank", arm_slot="right")
-    with pytest.raises(runner.RefusedError, match="arm-slot right"):
-        fixtures.EpisodeOnFakesTest().episode(settings_changes={"arm_slot": "right"})
-    with pytest.raises(runner.RefusedError, match="arm-slot right"):
-        runner.DreamReal(Path("unused"), Path("unused"), offline=True, arm_slot="right")
+def test_tank_accepts_right_and_keeps_left_plan_ids():
+    # Gavin 2026-11-17, after the right slot grasped the cube in dry air: run it in the water tank too.
+    left = fixtures.EnvironmentTest().plan("tank")
+    right = fixtures.EnvironmentTest().plan("tank", arm_slot="right")
+    assert right["arm_slot"] == "right"
+    assert "arm_slot" not in left
+    assert left["plan_id"] != right["plan_id"]
 
 
 def test_right_camera_flag_names_are_literal():

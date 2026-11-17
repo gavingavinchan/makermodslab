@@ -936,8 +936,6 @@ class DreamReal:
         environment: Environment = TANK_ENVIRONMENT,
         arm_slot: str = "left",
     ):
-        if arm_slot == "right" and environment.name != "dry_air":
-            raise RefusedError("--arm-slot right requires --environment dry_air")
         core.chunk_key(arm_slot)
         os.environ["DREAM_LOG_DIR"] = str(log_dir / "dream_logs")
         os.environ.setdefault(
@@ -1261,8 +1259,6 @@ class Episode:
                 f"arm speed {settings.speed_deg_s} deg/s is above the hard {self.speed_cap} deg/s cap"
             )
         core.chunk_key(settings.arm_slot)
-        if settings.arm_slot == "right" and environment.name != "dry_air":
-            raise RefusedError("--arm-slot right requires --environment dry_air")
         if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
             raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
         if not 1 <= settings.replan_after <= 48:
@@ -2260,8 +2256,6 @@ def build_plan(
     if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
         raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
     core.chunk_key(settings.arm_slot)
-    if settings.arm_slot == "right" and environment.name != "dry_air":
-        raise RefusedError("--arm-slot right requires --environment dry_air")
     cameras = {
         c["name"]: {k: c.get(k) for k in ("camera_index", "unique_id", "width", "height", "fps", "rotation")}
         for c in record.get("cameras") or []
@@ -2992,7 +2986,7 @@ def main(argv=None) -> int:
         "--arm-slot",
         choices=("left", "right"),
         default="left",
-        help="our Dream arm slot; right requires dry_air; base frame stays unchanged",
+        help="our Dream arm slot (Gavin 2026-11-17: right, as the overhead camera sees it); base frame stays unchanged",
     )
     p.add_argument("--prompt", default="put apple into the bowl")
     p.add_argument("--overhead", help="record camera name for video.overhead (none in the record yet)")
@@ -3087,8 +3081,6 @@ def main(argv=None) -> int:
     p.add_argument("--no-run-data", action="store_true", help="write no raw bundle (tests)")
     args = p.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
-    if args.arm_slot == "right" and args.environment != "dry_air":
-        p.error("--arm-slot right requires --environment dry_air")
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")
     if args.environment != "dry_air" and (args.overlap or args.replan_after != 30):
