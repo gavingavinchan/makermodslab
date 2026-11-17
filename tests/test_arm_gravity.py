@@ -190,3 +190,22 @@ def test_vendored_collision_meshes_load_and_the_floor_is_enforced():
     assert CollisionChecker(VISCOUS_URDF, VISCOUS_URDF.parent, VISCOUS_ARM, floor_z=0.03).is_clear(folded)
     high_floor = CollisionChecker(VISCOUS_URDF, VISCOUS_URDF.parent, VISCOUS_ARM, floor_z=0.5)
     assert any(p.endswith("/floor") for p in high_floor.problems(folded))
+
+
+def test_motor_map_transforms_angles_and_torque_and_loads_from_fit(urdf, tmp_path):
+    import json
+    from makermodslab.gravity_feedforward import load_model
+    direct = GravityModel(urdf, JOINTS)
+    mapping = {"lift": {"sign": -1, "offset_deg": 17.0}}
+    mapped = GravityModel(urdf, JOINTS, joint_map=mapping)
+    motor = {"pan": 12.0, "lift": -60.0, "elbow": 80.0}
+    expected = direct.torque(dict(motor, lift=77.0))
+    expected["lift"] *= -1
+    assert mapped.torque(motor) == pytest.approx(expected)
+    path = tmp_path / "fit.json"
+    path.write_text(json.dumps({"urdf": str(urdf), "joints": JOINTS, "params": mapped.params.tolist(),
+                                "urdf_sha256": mapped.urdf_sha256, "joint_map": mapping}))
+    _, loaded = load_model(path)
+    assert loaded.torque(motor) == pytest.approx(expected)
+    with pytest.raises(ValueError, match="joint_map"):
+        GravityModel(urdf, JOINTS, joint_map={"lift": {"sign": 0}})

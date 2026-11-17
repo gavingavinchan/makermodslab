@@ -87,12 +87,15 @@ class GravityModel:
     """Gravity torque (N m) the motors must supply to hold the arm, from joint degrees.
 
     Joint angles are the follower's own degrees; the URDF's joint zeros and
-    positive directions must match them (checked by the fit: a mismatched joint
-    does not fit). Every URDF joint not in ``joints`` (the gripper's) is locked
+    positive directions default to identity. With ``joint_map``, URDF degrees =
+    sign * motor degrees + offset_deg; motor torque = sign * URDF torque.
+    Every URDF joint not in ``joints`` (the gripper's) is locked
     at zero and its mass carried by the body it hangs from.
     """
 
-    def __init__(self, urdf_path: str | Path, joints: Sequence[str], *, params=None, offsets=None):
+    def __init__(
+        self, urdf_path: str | Path, joints: Sequence[str], *, params=None, offsets=None, joint_map=None
+    ):
         pin = _pinocchio()
         full = pin.buildModelFromUrdf(str(urdf_path))
         missing = [name for name in joints if not full.existJointName(name)]
@@ -105,6 +108,18 @@ class GravityModel:
         if model.nq != len(joints) or model.nv != len(joints):
             raise ValueError("Every modelled joint must be a single-axis joint")
         self.joints = tuple(joints)
+        mapping = joint_map or {}
+        if set(mapping) - set(joints):
+            raise ValueError("joint_map contains unknown joints")
+        self.joint_map = {
+            name: {"sign": mapping.get(name, {}).get("sign", 1),
+                   "offset_deg": mapping.get(name, {}).get("offset_deg", 0.0)}
+            for name in joints
+        }
+        self._sign = np.array([self.joint_map[n]["sign"] for n in joints], dtype=float)
+        self._offset_deg = np.array([self.joint_map[n]["offset_deg"] for n in joints], dtype=float)
+        if not np.isin(self._sign, [-1, 1]).all() or not np.isfinite(self._offset_deg).all():
+            raise ValueError("joint_map needs signs +/-1 and finite offsets")
         self.urdf_sha256 = file_sha256(urdf_path)
         self._pin, self._model, self._data = pin, model, model.createData()
         dynamic = np.concatenate([model.inertias[j].toDynamicParameters() for j in range(1, model.njoints)])
@@ -118,7 +133,7 @@ class GravityModel:
             raise ValueError("Gravity parameters do not match this URDF")
 
     def q(self, positions_deg: dict[str, float]) -> np.ndarray:
-        return np.radians(_finite(positions_deg, self.joints, "Joint position"))
+        return np.radians(self._sign * _finite(positions_deg, self.joints, "Joint position") + self._offset_deg)
 
     def regressor(self, positions_deg: dict[str, float]) -> np.ndarray:
         """``Y`` with ``torque = Y @ params + offsets``; one row per joint."""
@@ -126,7 +141,7 @@ class GravityModel:
         y = self._pin.computeJointTorqueRegressor(
             self._model, self._data, self.q(positions_deg), zeros, zeros
         )
-        return np.array(y)[:, self._static_columns]
+        return self._sign[:, None] * np.array(y)[:, self._static_columns]
 
     def torque(self, positions_deg: dict[str, float], params=None) -> dict[str, float]:
         theta = self.params if params is None else params
