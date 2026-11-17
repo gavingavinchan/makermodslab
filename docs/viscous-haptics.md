@@ -587,6 +587,23 @@ restore paths in the DAgger runner.
   with its old plan id; dry air has a separate id. The plan prints the environment and both
   files, also recorded in summaries and run-data metadata. Pure/fake-arm tests and offline dry
   runs only; no hardware or Dream service calls. Claude reviews before Gavin runs the arm.
+  Later that evening, Gavin: "make it 45deg/s speed cap. remove the lag limp and overspeed trips".
+  This builds on Claude's `1e941965` (dry-air post clearance 15 mm) and `4cca758f` (elbow
+  box x maximum 91 mm); those geometry changes are retained.
+  Dry air now permits `--speed-deg-s 45` (default still 15), with an explicit 45 deg/s ceiling
+  through the planner, send check and CAN bus backstop. `--no-lag-trip --no-limp-trip
+  --no-overspeed-trip` disable only those reasons to end the run, across approach, pause,
+  Dream and rehearsal hold; the flags are refused in tank. Monitors still collect readings
+  and limp status. The stop still re-anchors using the standing-error estimate, uses lag to
+  judge arrival, and HOLDS on limp/overspeed instead of moving the other joints around a dead
+  shoulder. Stop returns and their bus limiter stay at <= 15 deg/s. Feedback, Dream, jump,
+  planned-speed, keep-out/box, start gate and refusals remain. The plan prints the cap and
+  each disabled trip with Gavin's decision date; dry-air plan ids bind the cap and all three
+  flags, while tank hash inputs and pinned ids stay unchanged. His earlier dry-air choices
+  remain explicit launch flags: `--torque-trip-nm 14 --torque-cap-nm 14 --temp-trip-c 82`
+  ("should not have any toque limits here as its not in a glass tank"; "no need temp limits
+  as the motor themselves have temp protection ... its very annoying"). Pure/fake tests and
+  internal-stub dry runs only; Claude reviews before Gavin runs hardware.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

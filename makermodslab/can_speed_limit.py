@@ -32,9 +32,12 @@ logger = logging.getLogger(__name__)
 
 
 class RateLimitedRobstrideBus:
-    def __init__(self, robot, speed_deg_s: float, *, clock=time.monotonic):
-        if not math.isfinite(speed_deg_s) or not 0 < speed_deg_s <= 30:
-            raise ValueError("Teleop target speed must be greater than zero and at most 30 deg/s")
+    def __init__(self, robot, speed_deg_s: float, *, clock=time.monotonic, max_speed_deg_s=30.0):
+        # Existing callers retain 30; only the dry-air runner explicitly opts into its 45 deg/s cap.
+        if not 0 < max_speed_deg_s <= 45:
+            raise ValueError("Bus speed ceiling must be in (0, 45] deg/s")
+        if not math.isfinite(speed_deg_s) or not 0 < speed_deg_s <= max_speed_deg_s:
+            raise ValueError(f"Target speed must be greater than zero and at most {max_speed_deg_s:g} deg/s")
         self._robot = robot
         self._base = robot.bus
         self.speed_limit_deg_s = float(speed_deg_s)
@@ -222,11 +225,11 @@ class RateLimitedRobstrideBus:
             return self._base.sync_write(data_name, values, *args, **kwargs)
 
 
-def install(robot, speed_deg_s: float) -> None:
+def install(robot, speed_deg_s: float, *, max_speed_deg_s=30.0) -> None:
     from .maker_rest_pose import maker_follower_arms
 
     for arm, _label in maker_follower_arms(robot):
-        arm.bus = RateLimitedRobstrideBus(arm, speed_deg_s)
+        arm.bus = RateLimitedRobstrideBus(arm, speed_deg_s, max_speed_deg_s=max_speed_deg_s)
 
 
 def rebase(robot, offsets: dict[str, float], *, max_offset_deg: float = 10.0) -> dict[str, float]:

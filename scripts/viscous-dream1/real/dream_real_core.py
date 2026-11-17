@@ -663,7 +663,7 @@ class TripLimits:
     def lag_for(self, motor: str) -> float:
         return self.shoulder_lag_deg if motor == "shoulder_lift" else self.lag_deg
 
-    def check(self) -> None:
+    def check(self, *, overspeed_trip: bool = True) -> None:
         if not 0 < self.lag_deg <= self.shoulder_lag_deg <= 20:
             raise ValueError("need 0 < lag trip <= shoulder lag trip <= 20 deg")
         if not 0 < self.torque_cap_nm <= self.torque_trip_nm <= 14:
@@ -672,7 +672,10 @@ class TripLimits:
             raise ValueError("sustained torque window must be in (0, 10] s")
         if not 0 < self.temp_trip_c <= 82:
             raise ValueError("temperature trip must be at most 82 C")
-        if not 15 < self.overspeed_deg_s <= 45 or not 1 <= self.overspeed_ticks <= 3:
+        minimum_speed = 15 if overspeed_trip else 0
+        if not minimum_speed < self.overspeed_deg_s <= 45 or not 1 <= self.overspeed_ticks <= 3:
+            if not overspeed_trip:
+                raise ValueError("stop overspeed threshold must be in (0, 45] deg/s for 1..3 ticks")
             raise ValueError(
                 "overspeed trip must be above the 15 deg/s command cap, at most 45, for 1..3 ticks"
             )

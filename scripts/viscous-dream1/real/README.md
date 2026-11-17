@@ -18,11 +18,27 @@ Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-t
 For the waterproof arm on its same mount on a desk, use `--environment dry_air` (2026-11-16):
 `configs/viscous/environments/dry_air_desk/keepout_viscous_waterproof_01.json` and
 `workspace_box_viscous_waterproof_01_dry_air.json` are selected together, including rehearsal,
-preview and floor slide. The post/near rules and every point's x maximum stay; Claude retained the
-floor (-28 mm, 20 mm press) and point z minima because the desk replaces the tank floor. Side/far/rim
+preview and floor slide. The post face stays at 106 mm; Claude's later dry-air adjustments
+use 15 mm post clearance and elbow x maximum 91 mm (commits `1e941965`, `4cca758f`). Other
+point x maxima stay. Claude retained the floor (-28 mm, 20 mm press) and point z minima
+because the desk replaces the tank floor. Side/far/rim
 planes and the other point bounds move outside model reach. The plan prints both files and records
 the environment in `plan.json`, summaries and raw bundle metadata. Each environment has its own plan
 id; use the id from a dry run with the same environment and settings.
+
+Gavin's dry-air decision (2026-11-16): `--speed-deg-s` may be up to **45 deg/s** (default remains
+15); the planner, planned-substep check and CAN bus backstop use that run speed/ceiling.
+`--no-lag-trip`, `--no-limp-trip`, `--no-overspeed-trip` turn off those reasons to end the run
+in approach, pause, Dream and rehearsal hold. Each flag requires `--environment dry_air`.
+The plan prints `speed cap 45 deg/s (dry air)` and each disabled trip with the decision date;
+the dry-air plan id binds the cap and all three flags. With overspeed disabled for the run,
+its threshold may be below the run cap; it still guards the stop. All monitors keep reading:
+the stop still re-anchors, judges arrival using lag, and HOLDS on limp or overspeed. **Returns
+and their CAN backstop stay at <= 15 deg/s**. Gripper speed, feedback, Dream, jump, planned-speed,
+keep-out/box, start gate and refusals remain. Tank retains its 15 deg/s cap, all trips and
+existing plan ids. The trip defaults below describe tank; the dry-air plan shows any overrides.
+The earlier dry-air torque/temperature choices remain explicit flags:
+`--torque-trip-nm 14 --torque-cap-nm 14 --temp-trip-c 82`.
 
 ```bash
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --internal-stub --environment dry_air --robot viscous_waterproof_01 --prompt "pick up the screwdriver"

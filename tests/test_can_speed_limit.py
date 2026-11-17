@@ -282,3 +282,20 @@ def test_slow_return_uses_same_cap_and_longer_time_budget(monkeypatch):
     VISCOUS.return_to_rest([(device, {"a": 0})])
     assert calls[0]["speed_deg_s"] == 7.5
     assert calls[0]["ceiling_s"] >= 48
+
+
+def test_dry_air_explicit_ceiling_allows_45_without_clipping_and_keeps_default_30():
+    _, base, robot, now = setup()
+    with pytest.raises(ValueError):
+        RateLimitedRobstrideBus(robot, 45)
+    with pytest.raises(ValueError):
+        RateLimitedRobstrideBus(robot, 46, max_speed_deg_s=45)
+    bus = RateLimitedRobstrideBus(robot, 45, max_speed_deg_s=45, clock=lambda: now[0])
+    bus.enable_torque()
+    now[0] = 0.05
+    bus.write("Goal_Position", "a", 80)
+    assert base.events[-1] == ("Goal_Position", "a", pytest.approx(12.25))
+    bus.speed_limit_deg_s = 15  # the runner lowers the same limiter for stop returns
+    now[0] = 0.10
+    bus.write("Goal_Position", "a", 80)
+    assert base.events[-1] == ("Goal_Position", "a", pytest.approx(13.0))

@@ -1599,7 +1599,7 @@ class SkipAheadReplayTest(unittest.TestCase):
 class EnvironmentTest(unittest.TestCase):
     """Boundary selection and compatibility without a client, camera or arm connection."""
 
-    def plan(self, environment=None, rehearse=False):
+    def plan(self, environment=None, rehearse=False, **changes):
         args = SimpleNamespace(rehearse=rehearse)
         if environment is not None:
             args.environment = environment
@@ -1619,6 +1619,7 @@ class EnvironmentTest(unittest.TestCase):
             0.0,
             3,
         )
+        settings = dataclasses.replace(settings, **changes)
         return dream_real.build_plan(
             args,
             {
@@ -1824,3 +1825,290 @@ class EnvironmentTest(unittest.TestCase):
                 self.assertEqual(tcp.call_args.args, (env.box_file,))
                 self.assertEqual(floor.call_args.args[1], env)
                 self.assertEqual(adapter.slide.floor.floor_mm, -28.0)
+
+
+class DryAirFastTest(unittest.TestCase):
+    """Gavin's 2026-11-16 run overrides; the stop keeps its independent monitors."""
+
+    episode = EpisodeOnFakesTest.episode
+
+    def test_cap_validation_and_planned_substep_boundary(self):
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        self.assertEqual(env.arm_speed_cap_deg_s, 45.0)
+        slots = dict.fromkeys(core.SLOTS, "black")
+        settings = dream_real.Settings("p", 48, 1, 45.0, 60.0, 20.0, 1.0, core.TripLimits(), slots)
+        for speed in (45.0, 46.0):
+            with self.subTest(speed=speed):
+                if speed == 46:
+                    with self.assertRaises(dream_real.RefusedError):
+                        dream_real.Episode(
+                            *[None] * 7,
+                            dataclasses.replace(settings, speed_deg_s=speed),
+                            FakeClock(),
+                            None,
+                            Path("."),
+                            None,
+                            None,
+                            environment=env,
+                        )
+                    with self.assertRaises(dream_real.RefusedError):
+                        dream_real.LabArm(Path("."), {}, speed, environment=env)
+                else:
+                    ep = dream_real.Episode(
+                        *[None] * 7,
+                        settings,
+                        FakeClock(),
+                        None,
+                        Path("."),
+                        None,
+                        None,
+                        environment=env,
+                    )
+                    ep.planned = dict(POSE)
+                    ep._check_speed(dict(POSE, elbow_flex=POSE["elbow_flex"] + 45 * core.ROW_DT_S))
+                    ep.planned = dict(POSE)
+                    with self.assertRaises(dream_real.TripStopError) as error:
+                        ep._check_speed(dict(POSE, elbow_flex=POSE["elbow_flex"] + 46 * core.ROW_DT_S))
+                    self.assertEqual(error.exception.trips[0].name, "speed")
+                    dream_real.LabArm(Path("."), {}, speed, environment=env)
+
+    def test_cli_accepts_45_and_trip_flags_only_in_dry_air(self):
+        from unittest import mock
+
+        record = {
+            "name": "viscous_waterproof_01",
+            "follower_port": "/dev/fake",
+            "follower_config": "waterproof",
+            "cameras": [],
+        }
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            mock.patch.object(dream_real, "load_record", return_value=record),
+            mock.patch.object(dream_real, "follower_limits", return_value=(LIMITS, "fixture")),
+            mock.patch.object(dream_real, "add_dream_venv", return_value="no client in test"),
+            mock.patch.object(dream_real, "lab_holder", return_value=None),
+            mock.patch.object(dream_real, "port_holders", return_value=[]),
+            mock.patch.object(dream_real, "run_dry", return_value=0) as run,
+            mock.patch.object(sys, "stdout", new=mock.MagicMock()),
+        ):
+            base = ["--internal-stub", "--no-run-data", "--out", tmp]
+            dream_real.main([*base, "--environment", "dry_air", "--speed-deg-s", "45"])
+            self.assertEqual(run.call_args.args[1]["settings"].speed_deg_s, 45)
+            dream_real.main([*base, "--environment", "dry_air"])
+            self.assertEqual(run.call_args.args[1]["settings"].speed_deg_s, 15)
+            for name in ("lag", "limp", "overspeed"):
+                flag = f"--no-{name}-trip"
+                dream_real.main([*base, "--environment", "dry_air", flag])
+                self.assertTrue(getattr(run.call_args.args[1]["settings"], f"no_{name}_trip"))
+                for tank in ([], ["--environment", "tank"]):
+                    with self.assertRaises(SystemExit):
+                        dream_real.main([*base, *tank, flag])
+            with self.assertRaises(SystemExit):
+                dream_real.main([*base, "--environment", "dry_air", "--speed-deg-s", "46"])
+            dream_real.main(
+                [
+                    *base,
+                    "--environment",
+                    "dry_air",
+                    "--speed-deg-s",
+                    "45",
+                    "--no-overspeed-trip",
+                    "--overspeed-deg-s",
+                    "10",
+                ]
+            )
+            self.assertEqual(run.call_args.args[1]["settings"].trips.overspeed_deg_s, 10)
+
+    def test_tank_episode_refuses_each_override_even_without_cli(self):
+        for name in ("lag", "limp", "overspeed"):
+            with self.subTest(name=name), self.assertRaises(dream_real.RefusedError):
+                self.episode(settings_changes={f"no_{name}_trip": True})
+
+    def test_each_fault_in_approach_pause_dream_and_rehearsal(self):
+        from unittest import mock
+
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        original_update = core.TripMonitor.update
+        for phase in ("approach", "pause", "dream", "hold"):
+            for scenario in ("lag", "limp", "overspeed"):
+                for disabled in (False, True):
+                    with self.subTest(phase=phase, scenario=scenario, disabled=disabled):
+                        seen = []
+                        arm_ref = []
+
+                        def after(clock, stop, abort, phase=phase, scenario=scenario, arm_ref=arm_ref):
+                            desired = "dream" if phase == "pause" else phase
+                            if self.ep.phase == desired:
+                                arm_ref[0].scenario = scenario
+                                arm_ref[0].ticks = max(70, arm_ref[0].ticks)
+                            if clock.t > 1030:
+                                abort.set()  # release a held stop; never ends the run on its own
+
+                        def update(monitor, *args, scenario=scenario, seen=seen):
+                            trips = original_update(monitor, *args)
+                            if any(t.name == scenario for t in trips):
+                                seen.extend(trips)
+                                self.ep.stop_event.set()
+                            return trips
+
+                        settings = {
+                            # Falling also crosses overspeed; isolate limp without masking lag/torque.
+                            "no_overspeed_trip": scenario == "limp",
+                            f"no_{scenario}_trip": disabled,
+                            "pause_s": 60 if phase == "pause" else 0,
+                            "trips": core.TripLimits(torque_trip_nm=14, torque_cap_nm=14, temp_trip_c=82),
+                        }
+                        with mock.patch.object(core.TripMonitor, "update", update):
+                            summary, arm = self.episode(
+                                environment=env,
+                                max_calls=5,
+                                rehearse=phase == "hold",
+                                hold_s=60,
+                                patch=arm_ref.append,
+                                after=after,
+                                settings_changes=settings,
+                            )
+                        self.assertTrue(seen, summary["reason"])
+                        if disabled:
+                            self.assertEqual(summary["reason"], "stop signal")
+                            self.assertEqual(summary["trips"], [])
+                        else:
+                            self.assertIn(scenario, [t["name"] for t in summary["trips"]])
+                        if scenario == "limp":
+                            self.assertIn("stop: HOLDING", summary["phases"])
+                            self.assertEqual(arm.returns, [])
+                            self.assertTrue(self.release_after_abort)
+                        if phase == "pause":
+                            self.assertEqual(summary["calls"], 0)
+
+    def test_45_degree_run_retimes_approach_and_keeps_returns_at_15(self):
+        summary, arm = self.episode(
+            environment=dream_real.ENVIRONMENTS["dry_air"],
+            settings_changes={"speed_deg_s": 45, "no_overspeed_trip": True},
+        )
+        self.assertEqual(summary["reason"], "call cap 2 reached")
+        steps = [
+            max(abs(b[m] - a[m]) for m in core.ARM) / core.ROW_DT_S
+            for a, b in zip([POSE, *self.sent], self.sent, strict=False)
+        ]
+        self.assertLessEqual(max(steps), 45 + 1e-6)
+        self.assertGreater(max(steps), 30)
+        self.assertTrue(arm.returns)
+        self.assertTrue(all(speed <= 15 for _, speed in arm.returns))
+        self.assertEqual(summary["stop"]["returned"], "at the rest")
+
+    def test_plan_binds_each_flag_cap_and_gentle_return(self):
+        from contextlib import redirect_stdout
+        from unittest import mock
+
+        plan = EnvironmentTest().plan
+        base = plan("dry_air")
+        self.assertEqual(base["speed"]["hard_arm_cap_deg_s"], 45)
+        ids = {base["plan_id"]}
+        for name in ("lag", "limp", "overspeed"):
+            changed = plan("dry_air", **{f"no_{name}_trip": True})
+            ids.add(changed["plan_id"])
+            self.assertTrue(changed["run_trip_overrides"][f"no_{name}_trip"])
+            self.assertTrue(changed["trips"][name].startswith("OFF (dry air, Gavin 2026-11-16)"))
+            self.assertIn("still guard the stop", changed["trips"][name])
+        self.assertEqual(len(ids), 4)
+        for name, field, value in (
+            ("lag", "lag_deg", 9),
+            ("limp", "limp_torque_nm", 0.3),
+            ("overspeed", "overspeed_deg_s", 25),
+        ):
+            flags = {f"no_{name}_trip": True}
+            self.assertNotEqual(
+                plan("dry_air", **flags)["plan_id"],
+                plan("dry_air", **flags, trips=dataclasses.replace(core.TripLimits(), **{field: value}))[
+                    "plan_id"
+                ],
+            )
+        fast = plan("dry_air", speed_deg_s=45)
+        self.assertNotIn(fast["plan_id"], ids)
+        self.assertEqual(fast["speed"]["bus_backstop_deg_s"], 45)
+        self.assertEqual(fast["speed"]["return_deg_s"], 15)
+        with mock.patch.object(dream_real, "DRY_AIR_ARM_SPEED_DEG_S", 44):
+            self.assertNotEqual(base["plan_id"], plan("dry_air")["plan_id"])
+        with redirect_stdout(io.StringIO()) as output:
+            dream_real.print_plan(fast)
+        self.assertIn("speed cap 45 deg/s (dry air)", output.getvalue())
+
+    def test_all_run_trips_off_still_holds_on_return_overspeed_or_excess_lag(self):
+        for fault in ("overspeed", "lag"):
+            with self.subTest(fault=fault):
+
+                def patch(arm, fault=fault):
+                    back = arm.return_to_rest
+
+                    def return_fault(pose, abort, speed, watch=None):
+                        if fault == "overspeed":
+                            arm.limp.add("shoulder_lift")  # slips making torque: return speed catches it
+                            return back(pose, abort, speed, watch)
+                        back(pose, abort, speed, watch)
+                        arm.pos["shoulder_lift"] = pose["shoulder_lift"] - 25
+                        arm.stuck.add("shoulder_lift")
+                        return False, "shoulder_lift still 25 deg away"
+
+                    arm.return_to_rest = return_fault
+
+                summary, arm = self.episode(
+                    environment=dream_real.ENVIRONMENTS["dry_air"],
+                    max_calls=1,
+                    patch=patch,
+                    settings_changes={
+                        "speed_deg_s": 45,
+                        "no_lag_trip": True,
+                        "no_limp_trip": True,
+                        "no_overspeed_trip": True,
+                    },
+                    after=lambda c, s, a: a.set() if c.t > 1040 else None,
+                )
+                self.assertEqual(summary["reason"], "call cap 1 reached")
+                self.assertEqual(summary["trips"], [])
+                self.assertIn("stop: HOLDING", summary["phases"])
+                self.assertTrue(self.release_after_abort)
+                self.assertEqual(len(arm.returns), 1)
+                if fault == "overspeed":
+                    self.assertEqual(summary["stop"]["return_trips"][0]["name"], "overspeed")
+                else:
+                    self.assertIn("ended 25.0 deg off its target", summary["stop"]["returned"])
+
+    def test_live_adapter_installs_45_backstop_and_lowers_it_for_return(self):
+        from unittest import mock
+
+        import lerobot.robots
+        from makermodslab import can_speed_limit, maker_rest_pose, remote_can
+        from makermodslab.utils import robot_factory
+
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        robot = FakeCanRobot()
+        robot.connect = mock.Mock()
+        robot.bus.disable_torque = mock.Mock()
+        arm = dream_real.LabArm(
+            Path("."),
+            {"name": "viscous_waterproof_01", "follower_port": "/dev/fake", "follower_config": "fixture"},
+            45,
+            cameras=False,
+            environment=env,
+        )
+        with (
+            mock.patch.dict(dream_real.os.environ),
+            mock.patch.object(robot_factory, "build_follower_config", return_value=SimpleNamespace(gains={})),
+            mock.patch.object(lerobot.robots, "make_robot_from_config", return_value=robot),
+            mock.patch.object(maker_rest_pose, "maker_follower_arms", return_value=[(robot, "")]),
+            mock.patch.object(remote_can, "prepare"),
+            mock.patch.object(remote_can, "neutralize"),
+            mock.patch.object(can_speed_limit, "install", wraps=can_speed_limit.install) as install,
+        ):
+            arm.connect()  # every hardware-facing constructor and connection is a fake
+        self.assertEqual(install.call_args, mock.call(robot, 45, max_speed_deg_s=45))
+        limiter = robot.bus
+        self.assertEqual(limiter.speed_limit_deg_s, 45)
+        limiter._last["shoulder_lift"] = 123  # prove the return does not replace/reset the limiter
+        with mock.patch.object(maker_rest_pose, "return_maker_to_pose", return_value=(True, "")) as back:
+            arm.return_to_rest({m: POSE[m] for m in core.ARM}, threading.Event(), 45)
+        self.assertIs(robot.bus, limiter)
+        self.assertEqual(limiter._last["shoulder_lift"], 123)
+        self.assertEqual(limiter.speed_limit_deg_s, 15)
+        self.assertEqual(back.call_args.kwargs["speed_deg_s"], 15)

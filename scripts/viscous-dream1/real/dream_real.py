@@ -82,6 +82,10 @@ class Environment:
     keepout_file: Path
     box_file: Path
 
+    @property
+    def arm_speed_cap_deg_s(self) -> float:
+        return DRY_AIR_ARM_SPEED_DEG_S if self.name == "dry_air" else HARD_ARM_SPEED_DEG_S
+
     def metadata(self) -> dict:
         return {
             "name": self.name,
@@ -110,8 +114,10 @@ YAM_EMBODIMENT = {
 MIN_CLIENT = (1, 1, 3)
 START_LIMIT_TOLERANCE_DEG = 5.0  # the arm rests a few degrees outside soft limits in the tank
 # Gavin 2026-11-08: "as long as we go slow, must keep the 15deg/s limits". Every arm motion the runner
-# commands (Dream substeps, the approach, every return leg) and the bus backstop under it are capped here.
+# commands in the tank and every stop-path return remain capped here.
 HARD_ARM_SPEED_DEG_S = 15.0
+# Gavin 2026-11-16: "make it 45deg/s speed cap" in dry air only; opt in with --speed-deg-s.
+DRY_AIR_ARM_SPEED_DEG_S = 45.0
 # MIT (kp, kd) overrides for this runner only (the Lab's defaults are untouched). The follower's shoulder/
 # elbow (30, 2) are untuned soft placeholders: at the start pose, in water, the shoulder sat 9.5 deg and
 # the elbow 5.4 deg below target, the hand ~12 cm under its command, and Dream chased that (live
@@ -532,9 +538,17 @@ class LabArm:
     cameras=False (--rehearse) opens the follower without the record's cameras.
     """
 
-    def __init__(self, home: Path, record: dict, backstop_deg_s: float, cameras: bool = True):
-        if not 0 < backstop_deg_s <= HARD_ARM_SPEED_DEG_S:
-            raise RefusedError(f"bus backstop {backstop_deg_s} deg/s is above the {HARD_ARM_SPEED_DEG_S} cap")
+    def __init__(
+        self,
+        home: Path,
+        record: dict,
+        backstop_deg_s: float,
+        cameras: bool = True,
+        environment: Environment = TANK_ENVIRONMENT,
+    ):
+        self.speed_cap = environment.arm_speed_cap_deg_s
+        if not 0 < backstop_deg_s <= self.speed_cap:
+            raise RefusedError(f"bus backstop {backstop_deg_s} deg/s is above the {self.speed_cap} cap")
         self.home, self.record, self.backstop = home, record, backstop_deg_s
         self.use_cameras = cameras
         self.robot = None
@@ -572,7 +586,7 @@ class LabArm:
         config = build_follower_config(request, cameras=_build_camera_configs(cameras, _platform_backend()))
         config.gains = {**config.gains, **FOLLOWER_GAINS}
         robot = make_robot_from_config(config)
-        can_speed_limit.install(robot, self.backstop)
+        can_speed_limit.install(robot, self.backstop, max_speed_deg_s=self.speed_cap)
         remote_can.prepare(robot)
         self.robot = robot
         try:
@@ -669,11 +683,14 @@ class LabArm:
         raises, which the helper (never-raises) turns into a leg that did not arrive, so the stop releases
         there. A missed reply before a setpoint is skipped, not raised: ending the ramp on one lost frame
         would release torque mid-air."""
-        from makermodslab import remote_can
+        from makermodslab import can_speed_limit, remote_can
         from makermodslab.maker_rest_pose import MAKER_RETURN_CEILING_S, return_maker_to_pose
 
         robot = self.robot
         speed = min(speed, HARD_ARM_SPEED_DEG_S)  # never the helper's 30 deg/s default
+        if isinstance(robot.bus, can_speed_limit.RateLimitedRobstrideBus):
+            # A stop only lowers the existing limiter: never re-wrap it or lose its last-sent reference.
+            robot.bus.speed_limit_deg_s = min(robot.bus.speed_limit_deg_s, speed)
         tripped = []
         goal = {}  # the last setpoint sent to each arm joint
 
@@ -1051,6 +1068,12 @@ class Settings:
     # What Dream is told the arm is at (see Episode.dream_pose): "commanded" (the last target, gripper as
     # measured) or "measured" (the reading, as before 2026-11-08).
     dream_state: str = "commanded"
+    no_lag_trip: bool = False
+    no_limp_trip: bool = False
+    no_overspeed_trip: bool = False
+
+    def disabled_run_trips(self) -> set[str]:
+        return {name for name in ("lag", "limp", "overspeed") if getattr(self, f"no_{name}_trip")}
 
 
 class Episode:
@@ -1082,10 +1105,14 @@ class Episode:
         frame_sink=None,
         environment: Environment = TANK_ENVIRONMENT,
     ):
-        if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
+        self.speed_cap = environment.arm_speed_cap_deg_s
+        if not 0 < settings.speed_deg_s <= self.speed_cap:
             raise RefusedError(
-                f"arm speed {settings.speed_deg_s} deg/s is above the hard {HARD_ARM_SPEED_DEG_S} deg/s cap"
+                f"arm speed {settings.speed_deg_s} deg/s is above the hard {self.speed_cap} deg/s cap"
             )
+        self.disabled_run_trips = settings.disabled_run_trips()
+        if self.disabled_run_trips and environment.name != "dry_air":
+            raise RefusedError("disabling lag, limp or overspeed trips requires --environment dry_air")
         self.arm, self.dream, self.worker, self.jmap, self.limits = arm, dream, worker, jmap, limits
         self.box, self.guard, self.s, self.clock, self.sleep = box, guard, settings, clock, sleep
         self.log_dir, self.stop_event, self.abort_event, self.mutate = (
@@ -1295,7 +1322,7 @@ class Episode:
         return legs
 
     def plan_chunk(self, reply) -> list[dict]:
-        """Dream's rows -> 20 Hz substeps at <= 15 deg/s, every substep through the workspace box and the
+        """Dream's rows -> 20 Hz substeps at the run speed, every substep through the workspace box and the
         tank guard. A row that cannot be reached (box, or the keep-out cut it) is SKIPPED and the arm heads
         for Dream's later rows from where it is, instead of the chunk being dropped there: Dream's chunks often
         open by continuing a motion into a limit and only then turn away (live 2026-11-08T223929Z: rows 0-10
@@ -1367,10 +1394,10 @@ class Episode:
 
     def _check_speed(self, target):
         """The hard cap on what is about to be sent, whatever planned it (a clamp is on the guard's line)."""
-        cap = HARD_ARM_SPEED_DEG_S * core.ROW_DT_S + 1e-6
+        cap = self.speed_cap * core.ROW_DT_S + 1e-6
         if fast := [m for m in core.ARM if abs(target[m] - self.planned[m]) > cap]:
             raise TripStopError(
-                [core.Trip("speed", f"{', '.join(fast)} would move faster than {HARD_ARM_SPEED_DEG_S} deg/s")]
+                [core.Trip("speed", f"{', '.join(fast)} would move faster than {self.speed_cap} deg/s")]
             )
         self.planned = dict(target)
 
@@ -1425,6 +1452,9 @@ class Episode:
                 self._status(reading)
                 if not trips:  # the tick that trips (a push, a drop) must not teach the stop its error
                     self.hold_error.update(reading.pos, self.commanded, now)
+                # Keep every monitor running for telemetry and the stop. Only suppress run termination;
+                # a disabled trip must not teach the re-anchor a fault as standing error.
+                trips = [t for t in trips if t.name not in self.disabled_run_trips]
                 self._write(
                     self.ticks,
                     {
@@ -1718,11 +1748,15 @@ class Episode:
                         break
                     travel = max(abs(target[m] - here[m]) for m in core.ARM)
                     self._phase(
-                        f"return leg {k}/{len(legs)}", f"{travel:.1f} deg max at {self.s.speed_deg_s:g} deg/s"
+                        f"return leg {k}/{len(legs)}",
+                        f"{travel:.1f} deg max at {min(self.s.speed_deg_s, HARD_ARM_SPEED_DEG_S):g} deg/s",
                     )
                     where[0] = f"stop: return leg {k}"
                     ok, message = self.arm.return_to_rest(
-                        {m: target[m] for m in core.ARM}, self.abort_event, self.s.speed_deg_s, watch
+                        {m: target[m] for m in core.ARM},
+                        self.abort_event,
+                        min(self.s.speed_deg_s, HARD_ARM_SPEED_DEG_S),
+                        watch,
                     )
                     if return_trips:  # the helper reports a raised trip as a plain failure
                         ok, message = False, "; ".join(f"{t.name}: {t.detail}" for t in return_trips)
@@ -1958,9 +1992,9 @@ def build_plan(
             "arm_target_deg_s": settings.speed_deg_s,
             "gripper_deg_s": settings.grip_deg_s,
             "retime": "each row and approach leg split into equal 20 Hz substeps, all joints arriving together",
-            "hard_arm_cap_deg_s": HARD_ARM_SPEED_DEG_S,
+            "hard_arm_cap_deg_s": environment.arm_speed_cap_deg_s,
             "bus_backstop_deg_s": settings.speed_deg_s,
-            "return_deg_s": settings.speed_deg_s,
+            "return_deg_s": min(settings.speed_deg_s, HARD_ARM_SPEED_DEG_S),
             "rows_per_chunk": settings.rows,
             "max_calls": settings.max_calls,
         },
@@ -2022,7 +2056,7 @@ def build_plan(
             "inputs_unchecked": "first request refused locally (nothing sent) unless ~/.dreamlabs/inputs_checked holds its id",
             "start_gate": f"measured rest within {START_LIMIT_TOLERANCE_DEG} deg of limits and through the guard; "
             "the Dream start pose inside the limits and the box",
-            "speed": f"any planned arm substep faster than {HARD_ARM_SPEED_DEG_S} deg/s -> stop",
+            "speed": f"any planned arm substep faster than {environment.arm_speed_cap_deg_s} deg/s -> stop",
             "stop": "every exit (trips, SIGINT/SIGTERM/SIGHUP, stop_button.py): the six arm joints re-anchored at "
             "their measured pose (+ standing error, no slew: no spring-back), gripper torque off at once, then "
             "the arm joints back to the measured rest leg by leg from the measured pose at the speed cap "
@@ -2045,6 +2079,22 @@ def build_plan(
         "box_points_mm": {k: v["box_mm"] for k, v in box_config["points"].items()},
         "dream_client": dream_status,
     }
+    if environment.name == "dry_air":
+        plan["run_trip_overrides"] = {
+            f"no_{name}_trip": name in settings.disabled_run_trips() for name in ("lag", "limp", "overspeed")
+        }
+        stop_thresholds = {
+            "lag": f"arrival {settings.trips.lag_deg} deg ({settings.trips.shoulder_lag_deg} on shoulder_lift)",
+            "limp": f"< {settings.trips.limp_torque_nm} Nm while > {settings.trips.limp_lag_deg} deg "
+            f"behind the goal for {settings.trips.limp_ticks} reading(s)",
+            "overspeed": f"> {settings.trips.overspeed_deg_s} deg/s for {settings.trips.overspeed_ticks} readings",
+        }
+        for name in settings.disabled_run_trips():
+            plan["trips"][name] = (
+                "OFF (dry air, Gavin 2026-11-16) for the run; readings still guard the stop "
+                f"(re-anchor, lag arrival, limp/overspeed HOLD); stop threshold: {stop_thresholds[name]}"
+            )
+        plan["trips"]["stop"] += " Return speed <= 15 deg/s, including the bus backstop."
     safety = {
         k: plan[k]
         for k in (
@@ -2070,6 +2120,7 @@ def build_plan(
     # Preserve the exact legacy tank hash input; other environments bind their identity as well as files.
     if environment.name != "tank":
         safety["environment"] = environment.metadata()
+        safety["run_trip_overrides"] = plan["run_trip_overrides"]
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2091,6 +2142,10 @@ def print_plan(plan):
     print(f"Right arm: {plan['right_arm']}")
     print(f"Dream state: {plan['dream_state']}")
     sp = plan["speed"]
+    if env["name"] == "dry_air":
+        print(
+            f"speed cap {sp['hard_arm_cap_deg_s']:g} deg/s (dry air); stop returns <= {sp['return_deg_s']:g} deg/s"
+        )
     print(
         f"Speed: arm targets <= {sp['arm_target_deg_s']} deg/s, gripper <= {sp['gripper_deg_s']} deg/s "
         f"({sp['retime']}); bus backstop {sp['bus_backstop_deg_s']} deg/s; {sp['rows_per_chunk']} rows/chunk, "
@@ -2117,7 +2172,7 @@ def print_plan(plan):
     )
     print("Safety trips:")
     for k, v in plan["trips"].items():
-        print(f"  {k:17s} {v}")
+        print(f"  {k}: {v}" if v.startswith("OFF (") else f"  {k:17s} {v}")
     print(f"Dream client: {plan['dream_client']}")
 
 
@@ -2507,7 +2562,9 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         flush=True,
     )
     speed = ctx["settings"].speed_deg_s
-    arm_io = LabArm(ctx["home"], ctx["record"], speed, cameras=not args.rehearse)
+    arm_io = LabArm(
+        ctx["home"], ctx["record"], speed, cameras=not args.rehearse, environment=ctx["environment"]
+    )
     episode = Episode(
         arm_io,
         dream,
@@ -2605,7 +2662,12 @@ def main(argv=None) -> int:
         help="the arm joints Dream is told: the last command (default; the arm sags under it) or the reading",
     )
     p.add_argument("--rows", type=int, default=48)
-    p.add_argument("--speed-deg-s", type=float, default=HARD_ARM_SPEED_DEG_S, help="arm cap, at most 15")
+    p.add_argument(
+        "--speed-deg-s",
+        type=float,
+        default=HARD_ARM_SPEED_DEG_S,
+        help="arm target speed, at most 15 in tank or 45 in dry air",
+    )
     p.add_argument("--grip-deg-s", type=float, default=60.0)
     p.add_argument("--max-jump-deg", type=float, default=20.0)
     p.add_argument("--limit-margin-deg", type=float, default=1.0)
@@ -2615,6 +2677,12 @@ def main(argv=None) -> int:
     p.add_argument("--torque-cap-nm", type=float, default=6.5, help="sustained tier, with --torque-cap-s")
     p.add_argument("--torque-cap-s", type=float, default=5.0)
     p.add_argument("--temp-trip-c", type=float, default=80.0)
+    for name in ("lag", "limp", "overspeed"):
+        p.add_argument(
+            f"--no-{name}-trip",
+            action="store_true",
+            help=f"dry air only: disable {name} as a run-ending trip; still guards the stop",
+        )
     p.add_argument("--overspeed-deg-s", type=float, default=30.0, help="measured arm joint speed trip")
     p.add_argument(
         "--scenario", default="nominal", choices=(*SCENARIOS, "all"), help="dry run: fault to inject"
@@ -2652,8 +2720,13 @@ def main(argv=None) -> int:
     sys.stdout.reconfigure(line_buffering=True)
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")
-    if not 0 < args.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
-        p.error(f"--speed-deg-s must be in (0, {HARD_ARM_SPEED_DEG_S:g}]: the hard arm speed cap")
+    speed_cap = ENVIRONMENTS[args.environment].arm_speed_cap_deg_s
+    if not 0 < args.speed_deg_s <= speed_cap:
+        p.error(f"--speed-deg-s must be in (0, {speed_cap:g}]: the hard arm speed cap")
+    if args.environment != "dry_air" and any(
+        getattr(args, f"no_{name}_trip") for name in ("lag", "limp", "overspeed")
+    ):
+        p.error("--no-lag-trip, --no-limp-trip and --no-overspeed-trip require --environment dry_air")
     if not 0 < args.grip_deg_s <= 90 or not 0 < args.max_jump_deg <= 20 or not 0 < args.hold_s <= 600:
         p.error("--grip-deg-s (0, 90], --max-jump-deg (0, 20], --hold-s (0, 600]")
     if args.max_stuck_calls < 1 or args.stuck_substeps < 0:
@@ -2732,7 +2805,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         overspeed_deg_s=args.overspeed_deg_s,
     )
     try:
-        trips.check()
+        trips.check(overspeed_trip=not args.no_overspeed_trip)
     except ValueError as error:
         p.error(str(error))
     settings = Settings(
@@ -2750,6 +2823,9 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         args.max_stuck_calls,
         stuck_substeps=args.stuck_substeps,
         dream_state=args.dream_state,
+        no_lag_trip=args.no_lag_trip,
+        no_limp_trip=args.no_limp_trip,
+        no_overspeed_trip=args.no_overspeed_trip,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     guard = Guard(environment)
