@@ -28,6 +28,20 @@ on the Viscous in MuJoCo only.
 No powered motion, port opening or Lab restart was done for this work. The
 real-run plan below is a proposal for Gavin to approve before any powered step.
 
+## Environments
+
+As of 2026-11-16, `dream_real.py --environment {tank,dry_air}` selects both boundary layers.
+`tank` remains the default with its existing files and plan ids. `dry_air` uses
+[`dry_air_desk/keepout_viscous_waterproof_01.json`](../configs/viscous/environments/dry_air_desk/keepout_viscous_waterproof_01.json)
+and [`workspace_box_viscous_waterproof_01_dry_air.json`](../scripts/viscous-dream1/real/workspace_box_viscous_waterproof_01_dry_air.json).
+Gavin: "the only boundary that is still important here is the back post, the rest of the bounding
+box does not matter here". Near/post protections and point x maxima remain exact; Claude also keeps
+the floor (-28 mm, 20 mm press) and point z minima because the same mount now stands on the desk.
+The retired side/far/rim and point bounds sit at ±2000 mm, beyond the conservative model reach.
+The aquarium `tank` reference supplies arm geometry and mappings only, so it adds no glass checks.
+The printed plan names the environment and both files; plan ids bind the selection for normal runs
+and rehearsals. See the [runner README](../scripts/viscous-dream1/real/README.md#environments).
+
 ## The box
 
 Code: [`makermodslab/tank_guard.py`](../makermodslab/tank_guard.py) (pure:
