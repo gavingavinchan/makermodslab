@@ -2,7 +2,7 @@
 # Waterproof arm empirical dry-air gravity fit
 
 339 static windows/holds, 8 CV groups. Provisional: True.
-Planning predictor only while provisional; never feedforward. Gripper locked at Pinocchio neutral.
+Provisional feedforward requires --allow-provisional-fit; environment installer refuses it. Gripper locked at Pinocchio neutral.
 Zero-centered ridge; CAD inertials appear only in the reference error. Directions are signed last motor motion.
 
 | Joint | R² | RMS Nm | Held-out Nm | CAD Nm | Max residual Nm | Coulomb Nm |

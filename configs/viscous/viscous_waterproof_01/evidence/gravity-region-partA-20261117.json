@@ -1,0 +1,450 @@
+{
+  "fake": true,
+  "fit_sha256": "272e60edbdd7c5aec2b775987624e7925280a83839ed3a8c3b85db581820cbbc",
+  "results": [
+    {
+      "scale": 0.25,
+      "claude_flags": false,
+      "plan_id": "87ccd7922b",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -4.351644001240433e-18,
+        "shoulder_lift": 2.1203229729848196,
+        "elbow_flex": 2.678004610916208,
+        "wrist_flex": 1.3154770763515924,
+        "wrist_yaw": -0.2356515793650976,
+        "wrist_roll": 0.28219109889684657
+      },
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.77,
+            "elbow_flex": 61.95,
+            "wrist_flex": -35.22,
+            "wrist_yaw": 4.29,
+            "wrist_roll": 5.43
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.27,
+            "elbow_flex": 0.35,
+            "wrist_flex": 0.52,
+            "wrist_yaw": -0.09,
+            "wrist_roll": 0.07
+          },
+          "goal": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -34.7,
+            "wrist_yaw": 4.2,
+            "wrist_roll": 5.5
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": ""
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    },
+    {
+      "scale": 0.25,
+      "claude_flags": true,
+      "plan_id": "c15c21ae17",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -4.351644001240433e-18,
+        "shoulder_lift": 2.1203229729848196,
+        "elbow_flex": 2.678004610916208,
+        "wrist_flex": 1.3154770763515924,
+        "wrist_yaw": -0.2356515793650976,
+        "wrist_roll": 0.28219109889684657
+      },
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.77,
+            "elbow_flex": 61.95,
+            "wrist_flex": -35.22,
+            "wrist_yaw": 4.29,
+            "wrist_roll": 5.43
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.27,
+            "elbow_flex": 0.35,
+            "wrist_flex": 0.52,
+            "wrist_yaw": -0.09,
+            "wrist_roll": 0.07
+          },
+          "goal": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -34.7,
+            "wrist_yaw": 4.2,
+            "wrist_roll": 5.5
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": ""
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    },
+    {
+      "scale": 0.5,
+      "claude_flags": false,
+      "plan_id": "57ad6011af",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -8.703288002480866e-18,
+        "shoulder_lift": 4.240645945969639,
+        "elbow_flex": 5.356009221832416,
+        "wrist_flex": 2.630954152703185,
+        "wrist_yaw": -0.4713031587301952,
+        "wrist_roll": 0.5643821977936931
+      },
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -69.07,
+            "elbow_flex": 62.06,
+            "wrist_flex": -35.77,
+            "wrist_yaw": 4.4,
+            "wrist_roll": 5.36
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.57,
+            "elbow_flex": 0.24,
+            "wrist_flex": 1.07,
+            "wrist_yaw": -0.2,
+            "wrist_roll": 0.14
+          },
+          "goal": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -34.7,
+            "wrist_yaw": 4.2,
+            "wrist_roll": 5.5
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": "settled"
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    },
+    {
+      "scale": 0.5,
+      "claude_flags": true,
+      "plan_id": "324c34f369",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -8.703288002480866e-18,
+        "shoulder_lift": 4.240645945969639,
+        "elbow_flex": 5.356009221832416,
+        "wrist_flex": 2.630954152703185,
+        "wrist_yaw": -0.4713031587301952,
+        "wrist_roll": 0.5643821977936931
+      },
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -69.07,
+            "elbow_flex": 62.06,
+            "wrist_flex": -35.77,
+            "wrist_yaw": 4.4,
+            "wrist_roll": 5.36
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.57,
+            "elbow_flex": 0.24,
+            "wrist_flex": 1.07,
+            "wrist_yaw": -0.2,
+            "wrist_roll": 0.14
+          },
+          "goal": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -34.7,
+            "wrist_yaw": 4.2,
+            "wrist_roll": 5.5
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": "settled"
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    },
+    {
+      "scale": 1.0,
+      "claude_flags": false,
+      "plan_id": "12010a9b0f",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -1.7406576004961732e-17,
+        "shoulder_lift": 6,
+        "elbow_flex": 6,
+        "wrist_flex": 5.26190830540637,
+        "wrist_yaw": -0.9426063174603904,
+        "wrist_roll": 1.1287643955873863
+      },
+      "stop": {
+        "reason": "trip: lag: wrist_flex 10.6 deg behind its target (> 10.0)",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 184.97,
+            "shoulder_lift": -143.69,
+            "elbow_flex": 107.17,
+            "wrist_flex": 17.04,
+            "wrist_yaw": 25.44,
+            "wrist_roll": -4.68
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.03,
+            "shoulder_lift": 4.19,
+            "elbow_flex": 1.54,
+            "wrist_flex": 2.44,
+            "wrist_yaw": -0.29,
+            "wrist_roll": 0.27
+          },
+          "goal": {
+            "shoulder_pan": 184.94,
+            "shoulder_lift": -139.5,
+            "elbow_flex": 108.71,
+            "wrist_flex": 19.48,
+            "wrist_yaw": 25.16,
+            "wrist_roll": -4.4
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": "settled"
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    },
+    {
+      "scale": 1.0,
+      "claude_flags": true,
+      "plan_id": "433e5db4ca",
+      "hub": {
+        "shoulder_pan": 179.90001886474968,
+        "shoulder_lift": -68.50002649264509,
+        "elbow_flex": 62.29999289575493,
+        "wrist_flex": -34.699985650728536,
+        "wrist_yaw": 4.2000098214269865,
+        "wrist_roll": 5.499993762799311
+      },
+      "w": 0.7809983590507183,
+      "factors": {
+        "shoulder_lift": 1.0,
+        "elbow_flex": 0.8036143101090119,
+        "wrist_flex": 0.9719438490479764,
+        "wrist_yaw": 1.0,
+        "wrist_roll": 0.999910857098304
+      },
+      "hub_ff_nm": {
+        "shoulder_pan": -1.7406576004961732e-17,
+        "shoulder_lift": 6,
+        "elbow_flex": 6,
+        "wrist_flex": 5.26190830540637,
+        "wrist_yaw": -0.9426063174603904,
+        "wrist_roll": 1.1287643955873863
+      },
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -35.83,
+            "wrist_yaw": 4.66,
+            "wrist_roll": 5.17
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": -0.0,
+            "wrist_flex": 1.13,
+            "wrist_yaw": -0.46,
+            "wrist_roll": 0.33
+          },
+          "goal": {
+            "shoulder_pan": 179.9,
+            "shoulder_lift": -68.5,
+            "elbow_flex": 62.3,
+            "wrist_flex": -34.7,
+            "wrist_yaw": 4.2,
+            "wrist_roll": 5.5
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": "settled"
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      }
+    }
+  ]
+}

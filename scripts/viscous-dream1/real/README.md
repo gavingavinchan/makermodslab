@@ -825,3 +825,31 @@ run hashes, fit refusals, changed-fit refusal before connect, ramp-in, hold and
 return support, zero at rest, mid-air HOLD, immediate second-signal release,
 ramp send/feedback faults, limp cancellation, floor sag and the FK report.
 Portable results: `configs/viscous/viscous_waterproof_01/evidence/gravity-comp-offline-20261117.json`.
+
+
+### Part 3 priority: measured region and live-input rehearsal (2026-11-17)
+
+The earlier default-record rehearsal IDs above are superseded for tonight's
+`viscous_waterproof_01_dry_air` run. This record uses follower calibration
+`viscous_waterproof_01`; the fit declares that exact dry-air record as an alias
+of the same physical unit. Arbitrary names still refuse; the plan binds the
+selected record, fit hash, five-joint `region_deg` and `fade_deg`.
+
+The fitter now derives region from measured min/max of the samples actually
+used, never the requested sweep box. Pan is ungated. Each gravity joint has
+weight 1 inside its measured interval, then `(1+cos(pi*d/fade))/2` for distance
+d outside, and 0 at/after fade (10 deg). The product multiplies all six arm
+feedforward torques at the measured pose, before the existing clamp/ramp.
+`ticks.jsonl` records `w`, `w_per_joint` and the latest sent `ff`. The hook
+stays installed through return/HOLD; region fading still applies there. The
+normal one-second rest ramp and immediate RELEASE ALL are unchanged.
+Full floor-sag allowance is retained because support can vanish outside the
+region; a global `(1-scale)` reduction is no longer justified.
+
+The logs-only fit was regenerated from the 339 committed selected windows.
+It remains provisional and requires `--allow-provisional-fit`. The hub is
+outside the strict region on elbow/flex/roll but inside their 10-degree fades.
+Six FakeArm rehearsals use the supplied live Lab home, arm file, keep-rest
+and right slot: scales 0.25/0.5/1, with both default trips and Claude's dry-air
+flags. Exact outputs, plan IDs, hub weights/torques and unexecuted live commands
+are in `~/codex_runs/gravity-p3/partA.md`. No hardware or Dream was used.

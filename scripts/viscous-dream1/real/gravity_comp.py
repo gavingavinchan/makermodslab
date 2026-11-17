@@ -42,7 +42,9 @@ def load(settings, robot, environment):
     fit, model = load_model(path)
     if file_sha256(path) != before:
         raise ValueError("gravity fit changed while being loaded")
-    if fit.get("robot") != robot:
+    if fit.get("fake"):
+        raise ValueError("fake gravity fit refused for real use")
+    if robot not in [fit.get("robot"), *fit.get("robot_aliases", [])]:
         raise ValueError(f"gravity fit robot {fit.get('robot')!r} does not match record {robot!r}")
     if fit.get("condition") != environment:
         raise ValueError("gravity fit condition must equal the run environment")
@@ -61,15 +63,28 @@ def load(settings, robot, environment):
         raise ValueError("gravity fit is for another arm URDF")
     if not np.isfinite(model.params).all() or not np.isfinite(model.offsets).all():
         raise ValueError("gravity fit parameters must be finite")
+    region = fit.get("region_deg")
+    if not isinstance(region, dict) or set(region) != set(core.ARM[1:]):
+        raise ValueError("gravity fit region_deg must name the five gravity joints (pan ungated)")
+    for bounds in region.values():
+        if len(bounds) != 2 or not all(math.isfinite(v) for v in bounds) or bounds[0] > bounds[1]:
+            raise ValueError("invalid gravity fit region_deg bounds")
+    fade = fit.get("fade_deg", 10.0)
+    if not math.isfinite(fade) or fade <= 0:
+        raise ValueError("gravity fit fade_deg must be positive and finite")
+    model.region_deg, model.fade_deg = region, fade
     identity = {
         "scale": settings.gravity_comp,
+        "region_deg": region,
+        "fade_deg": fade,
+        "weight": "product of cosine factors; measured motor degrees; pan ungated",
         "fit": stored_path(path),
         "fit_sha256": before,
         "robot": robot,
         "condition": environment,
         "provisional": bool(fit.get("provisional")),
         "allow_provisional_fit": settings.allow_provisional_fit,
-        "sag_mm_per_m2": core.SAG_MM_PER_M2 * (1 - settings.gravity_comp),
+        "sag_mm_per_m2": core.SAG_MM_PER_M2,
         "ramp_in_s": RAMP_S,
         "ramp_out_s": 1.0,
         "clamp_nm": CLAMP_NM,

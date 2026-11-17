@@ -66,7 +66,24 @@ def load_model(path: str | Path, *, telemetry_offsets: bool = False):
     )
     if model.urdf_sha256 != fit["urdf_sha256"]:
         raise ValueError(f"The URDF at {fit['urdf']} changed since this fit was made")
+    if "region_deg" in fit:
+        model.region_deg = fit["region_deg"]
+        model.fade_deg = fit.get("fade_deg", 10.0)
     return fit, model
+
+
+def region_weights(pose, region, fade=10.0):
+    """Cosine factors and their product in measured motor degrees; pan is ungated."""
+    if not math.isfinite(fade) or fade <= 0:
+        raise ValueError("fade_deg must be positive and finite")
+    factors = {}
+    for name, (lo, hi) in region.items():
+        value = pose[name]
+        if not math.isfinite(value):
+            return 0.0, dict.fromkeys(region, 0.0)
+        distance = max(lo - value, value - hi, 0.0)
+        factors[name] = 0.5 * (1 + math.cos(math.pi * distance / fade)) if distance < fade else 0.0
+    return math.prod(factors.values()), factors
 
 
 def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
@@ -90,7 +107,7 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
     bus._makermodslab_gravity_original_write = original_write
     joints = set(model.joints) - {"gripper"}
     state = {"started": None, "computed": -math.inf, "tau": {}, "logged": -math.inf}
-    status: dict = {"scale": scale, "feedforward_nm": {}, "stiffness_nm": {}}
+    status: dict = {"scale": scale, "feedforward_nm": {}, "stiffness_nm": {}, "w": 1.0, "w_per_joint": {}}
 
     def measured_degrees():
         # The follower's latest reading, in joint coordinates (raw + whole-turn correction).
@@ -114,10 +131,15 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
                 state["started"] = now
             if now - state["computed"] > FRESH_S:
                 try:
-                    state["tau"] = model.torque(measured_degrees())
+                    pose = measured_degrees()
+                    state["tau"] = model.torque(pose)
+                    status["w"], status["w_per_joint"] = region_weights(
+                        pose, getattr(model, "region_deg", {}), getattr(model, "fade_deg", 10.0)
+                    )
                 except Exception:
                     # No reading yet (first tick) or a non-finite one: hold with stiffness alone.
                     state["tau"] = {}
+                    status["w"] = 0.0
                 state["computed"] = now
             ramp = min(1.0, (now - state["started"]) / RAMP_S)
             scale = status["scale"]
@@ -125,7 +147,9 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
                 scale = 0.0  # a bad live value must not command torque
             predicted = state["tau"].get(name, 0.0)
             torque = (
-                max(-CLAMP_NM, min(CLAMP_NM, scale * ramp * predicted)) if math.isfinite(predicted) else 0.0
+                max(-CLAMP_NM, min(CLAMP_NM, scale * ramp * status["w"] * predicted))
+                if math.isfinite(predicted)
+                else 0.0
             )
             kp = bus._gains[name]["kp"]
             raw = robot._last_positions.get(name)
@@ -181,6 +205,8 @@ def install_from_env(robot, robot_name: str) -> dict | None:
     if fit.get("robot") != robot_name:
         logger.warning("Gravity fit %s is for %s, not %s; not applied", path, fit.get("robot"), robot_name)
         return None
+    if fit.get("fake"):
+        raise ValueError("Fake gravity fits are not empirical arm data")
     if fit.get("provisional"):
         raise ValueError("Provisional gravity fits are planning predictors only, not feedforward")
     scale = float(os.environ.get(ENV_SCALE, "1.0"))

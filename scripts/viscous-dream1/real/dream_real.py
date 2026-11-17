@@ -1045,7 +1045,9 @@ class DreamReal:
             self.client.policy(self.config)
             self.stub = None
         floor, self.floor_problem = make_floor_slide(
-            json.loads(Path(arm_file).read_text()), environment, gravity_scale=gravity_scale
+            json.loads(Path(arm_file).read_text()),
+            environment,
+            gravity_scale=0.0 if gravity_scale else gravity_scale,
         )
         self.slide = SlideTransport(
             self.client._policy._transport, core.tcp_box_mm(environment.box_file), floor, arm_slot
@@ -1453,6 +1455,8 @@ class Episode:
         row = {"t": self.clock(), "phase": phase, **reading, "cmd": cmd, "trips": [t.name for t in trips]}
         if self.s.gravity_comp:
             row["ff"] = dict(self.arm.gravity_status["feedforward_nm"])
+            row["w"] = self.arm.gravity_status["w"]
+            row["w_per_joint"] = dict(self.arm.gravity_status["w_per_joint"])
         with contextlib.suppress(Exception):  # a full disk must never break the stop path
             self._write(self.ticks, row | extra)
 
@@ -1932,7 +1936,11 @@ class Episode:
                         "temp": reading.temp,
                         "trips": [t.name for t in trips],
                         **(
-                            {"ff": dict(self.arm.gravity_status["feedforward_nm"])}
+                            {
+                                "ff": dict(self.arm.gravity_status["feedforward_nm"]),
+                                "w": self.arm.gravity_status["w"],
+                                "w_per_joint": dict(self.arm.gravity_status["w_per_joint"]),
+                            }
                             if self.s.gravity_comp
                             else {}
                         ),
@@ -2803,6 +2811,11 @@ def print_plan(plan):
             f"{'PROVISIONAL explicitly allowed' if ff['provisional'] else 'measured fit'}); "
             f"floor sag {ff['sag_mm_per_m2']:g} mm/m^2"
         )
+    if "gravity_comp" in plan:
+        print(
+            f"  Region motor deg: {ff['region_deg']}; fade {ff['fade_deg']:g} deg (cosine product; pan ungated)"
+        )
+        print("  Floor sag allowance retained in full because feedforward fades outside measured coverage")
     if "gravity_sweep" in plan:
         print("Joints that may move in sweep: " + ", ".join(plan["sweep_joints_that_move"]))
         print(
@@ -2921,6 +2934,7 @@ def run_dry(args, ctx) -> int:
             sag=START_POSE_SAG if scenario == "far" else None,
             heat_per_tick=0.0002 if ctx["settings"].sweep else 0.002,
         )
+        arm.record = ctx["record"]
         if args.rehearse:
             dream = None
         elif ctx["dream_problem"] is None and not args.internal_stub:
@@ -3009,6 +3023,8 @@ def run_dry(args, ctx) -> int:
             f"({', '.join(str(leg['ok']) for leg in stop['legs']) or 'none'}); {stop['returned']}; "
             f"release problems: {stop['release_problems']}"
         )
+        if stop.get("gravity_ramp"):
+            print(f"    feedforward stop: {stop['gravity_ramp']} before release")
         if at := s.get("at_trip"):
             print(
                 "    at the trip: torque "

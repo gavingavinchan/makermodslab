@@ -68,7 +68,16 @@ def episode(
     clock = module.VirtualClock()
     arm = module.FakeArm(module.TRACE_POSE, [], clock)
     stop, abort = threading.Event(), threading.Event()
-    arm_file = json.loads(module.DEFAULT_ARM_FILE.read_text())
+    arm_file = (
+        json.loads((Path.home() / "gc-machome/arms/viscous-waterproof-dry-air.json").read_text())
+        if config.gravity_comp
+        else json.loads(module.DEFAULT_ARM_FILE.read_text())
+    )
+    if config.gravity_comp:
+        arm.record = json.loads(
+            (Path.home() / "gc-machome/home/robots/viscous_waterproof_01_dry_air.json").read_text()
+        )
+        slot = "right"
     environment = module.ENVIRONMENTS[env]
     jmap = c.JointMap.load()
     stub = module.DreamInternalStub(jmap, arm_slot=slot) if dream else None
@@ -145,7 +154,7 @@ def test_provisional_requires_explicit_override_and_ids_bind_scale_hash_and_sag(
     fixture = runner_tests.EnvironmentTest()
     for scale in (0.25, 0.5, 1):
         plan = fixture.plan("dry_air", True, gravity_comp=scale, gravity_fit=fit_path)
-        assert plan["gravity_comp"]["sag_mm_per_m2"] == c.SAG_MM_PER_M2 * (1 - scale)
+        assert plan["gravity_comp"]["sag_mm_per_m2"] == c.SAG_MM_PER_M2
     first = fixture.plan("dry_air", True, gravity_comp=0.5, gravity_fit=fit_path)
     fit_path.write_text(fit_path.read_text() + "\n")
     second = fixture.plan("dry_air", True, gravity_comp=0.5, gravity_fit=fit_path)
@@ -202,8 +211,9 @@ def test_hold_and_return_keep_ff_then_ramp_to_zero_before_release(fit_path, tmp_
     ep, arm, result, rows = episode(tmp_path, settings(fit_path))
     assert result["reason"].startswith("held 2 s") and result["stop"]["returned"] == "at the rest"
     assert result["stop"]["gravity_ramp"] == "zero at rest after 1 s"
-    for phase in ("hold", "stop: return leg 1", "stop: return leg 2"):
-        assert any(abs(row["ff"].get("shoulder_lift", 0)) > 0 for row in rows if row["phase"] == phase)
+    assert any(abs(row["ff"].get("shoulder_lift", 0)) > 0 for row in rows if row["phase"] == "hold")
+    # The hook remains installed through return; its region may naturally fade to zero.
+    assert all("w" in row for row in rows if row["phase"].startswith("stop: return leg"))
     ramp = [row for row in rows if row["phase"] == "stop: gravity ramp down"]
     assert len(ramp) == 20 and ramp[-1]["ff"]["shoulder_lift"] == 0
     assert all(row["cmd"] == ramp[0]["cmd"] for row in ramp)
@@ -345,3 +355,33 @@ def test_ramp_io_failure_holds_remaining_ff_until_release_all(fit_path, tmp_path
     assert "interrupted" in result["stop"]["gravity_ramp"]
     assert any(isinstance(value, float) and value > 0 for value in seen)
     assert not arm.energized
+
+
+def test_cosine_product_at_live_hub_inside_zero_and_smooth():
+    from makermodslab.gravity_feedforward import region_weights
+
+    data = json.loads(gc.DEFAULT_FIT.read_text())
+    region = data["region_deg"]
+    hub = c.JointMap.load().to_motor(
+        json.loads((Path.home() / "gc-machome/arms/viscous-waterproof-dry-air.json").read_text())["rest"]
+    )
+    w, factors = region_weights(hub, region, data["fade_deg"])
+    assert 0 < w < 1 and factors["shoulder_lift"] == factors["wrist_yaw"] == 1
+    center = {n: sum(v) / 2 for n, v in region.items()}
+    assert region_weights(center, region)[0] == 1
+    for n, (_, hi) in region.items():
+        assert region_weights(center | {n: hi + 10}, region)[0] == 0
+        assert region_weights(center | {n: hi + 5}, region)[0] == pytest.approx(0.5)
+        epsilon = 1e-4
+        assert abs(region_weights(center | {n: hi + epsilon}, region)[0] - 1) < 1e-8
+        assert region_weights(center | {n: hi + 10 - epsilon}, region)[0] < 1e-8
+
+
+def test_live_hub_region_and_fade_bind_identity(fit_path):
+    cfg = dataclasses.replace(settings(fit_path), allow_provisional_fit=True)
+    first, _ = gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+    data = json.loads(fit_path.read_text())
+    data["fade_deg"] = 9
+    fit_path.write_text(json.dumps(data))
+    second, _ = gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+    assert first != second and first["fade_deg"] == 10 and second["fade_deg"] == 9

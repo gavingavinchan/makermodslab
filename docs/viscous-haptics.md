@@ -2968,3 +2968,13 @@ feedforward18, compensation23, right-slot12, slot mapping11, CAN-speed26,
 remote-CAN31); Ruff/diff checks pass. Portable numeric rehearsal evidence is
 `configs/viscous/viscous_waterproof_01/evidence/gravity-comp-offline-20261117.json`.
 The three part-1 baseline failures remain unrelated; no frontend/profile fixes.
+
+2026-11-17, part 3 priority (B1/B3): Gavin is at the arm; rebase onto dry-air
+7c6d5158 and deliver the provisional cosine fade/rehearsals before sweep work.
+Region is achieved measured coverage, never the sampling box. Product of five
+cosine factors gates all arm ff (pan ungated); tick weights accompany ff.
+The exact dry-air record is a declared same-unit alias (matching follower
+calibration), with full record identity bound to its plan. Full floor-sag
+allowance stays because region support fades to zero. Stop retains the hook
+through return/HOLD and ramps its scale to zero at rest before release;
+RELEASE ALL still skips it. Priority evidence: `~/codex_runs/gravity-p3/partA.md`.
