@@ -632,8 +632,26 @@ gravity by this filter, which is a limitation of the existing logs.
 PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/gravity_fit.py \
   ~/dream-run-archive/mac-run-data/live-20261117T*/ticks.jsonl \
   ~/dream-run-archive/mac-run-data/rehearse-live-20261117T*/ticks.jsonl \
+  --no-offsets --no-friction \
   --save-selected configs/viscous/viscous_waterproof_01/evidence/gravity-dry-air-selected.json
 ```
+
+**Offsets and friction are pinned to zero for the logs-only fit (2026-11-17).** On the narrow logged
+pocket a constant per-joint offset cannot be told from gravity: the first fit put -6.4/-7.8/-5.5 Nm into
+the shoulder/elbow/wrist offsets and +10.9/+13.7/+6.7 Nm into gravity at the start pose, and the
+feedforward (gravity terms only) would have commanded 2-2.5x the measured holding torque (2.98/4.61/0.54
+Nm at the 023712Z/024005Z holds). Refit: 2.95/4.37/1.34 Nm there. `gravity_comp.load` now refuses a fit
+with any offset above 0.3 Nm. The logs have one approach direction per pose, so friction is not
+separable either; the sweep (both directions) is what identifies it.
+
+**Measured-pose gate.** Between the logged poses, still inside every joint's range, the fit swung to
++-12 Nm: the logged poses lie along Dream's correlated trajectories, not across the box. So the fit
+carries `support` (every pose it was measured at) and the feedforward is multiplied by
+`gravity_feedforward.support_weight`: 1 within 4 deg (Euclidean over the five gravity joints) of the
+nearest measured pose, cosine to 0 at 12 deg, on top of the per-joint `region_deg` fade. A provisional
+fit without `support` is refused. About 60 % of tonight's energized dry-air Dream ticks lie within 4 deg
+of a measured pose (the start pose and the hover pocket); big moves between them run without
+feedforward.
 
 The output is `configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json`
 and its adjacent Markdown report. The selected windows are committed as

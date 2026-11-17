@@ -1,0 +1,6 @@
+{
+  "name": "viscous_waterproof_01_dry_air",
+  "mode": "single",
+  "arm_type": "viscous",
+  "follower_config": "viscous_waterproof_01"
+}

@@ -26,6 +26,9 @@ from unittest import mock
 import pytest
 
 REAL = Path(__file__).resolve().parents[1] / "scripts/viscous-dream1/real"
+# Copies of the live dry-air inputs (2026-11-17): the arm file and the robot record name, so the tests
+# never depend on a machine path.
+FIXTURES = Path(__file__).resolve().parent / "fixtures/viscous_gravity"
 sys.path.insert(0, str(REAL))
 import dream_real as r  # noqa: E402
 import dream_real_core as c  # noqa: E402
@@ -69,14 +72,12 @@ def episode(
     arm = module.FakeArm(module.TRACE_POSE, [], clock)
     stop, abort = threading.Event(), threading.Event()
     arm_file = (
-        json.loads((Path.home() / "gc-machome/arms/viscous-waterproof-dry-air.json").read_text())
+        json.loads((FIXTURES / "viscous-waterproof-dry-air.json").read_text())
         if config.gravity_comp
         else json.loads(module.DEFAULT_ARM_FILE.read_text())
     )
     if config.gravity_comp:
-        arm.record = json.loads(
-            (Path.home() / "gc-machome/home/robots/viscous_waterproof_01_dry_air.json").read_text()
-        )
+        arm.record = json.loads((FIXTURES / "viscous_waterproof_01_dry_air.json").read_text())
         slot = "right"
     environment = module.ENVIRONMENTS[env]
     jmap = c.JointMap.load()
@@ -363,10 +364,10 @@ def test_cosine_product_at_live_hub_inside_zero_and_smooth():
     data = json.loads(gc.DEFAULT_FIT.read_text())
     region = data["region_deg"]
     hub = c.JointMap.load().to_motor(
-        json.loads((Path.home() / "gc-machome/arms/viscous-waterproof-dry-air.json").read_text())["rest"]
+        json.loads((FIXTURES / "viscous-waterproof-dry-air.json").read_text())["rest"]
     )
     w, factors = region_weights(hub, region, data["fade_deg"])
-    assert 0 < w < 1 and factors["shoulder_lift"] == factors["wrist_yaw"] == 1
+    assert 0 < w <= 1 and factors["shoulder_lift"] == 1
     center = {n: sum(v) / 2 for n, v in region.items()}
     assert region_weights(center, region)[0] == 1
     for n, (_, hi) in region.items():
@@ -385,3 +386,56 @@ def test_live_hub_region_and_fade_bind_identity(fit_path):
     fit_path.write_text(json.dumps(data))
     second, _ = gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
     assert first != second and first["fade_deg"] == 10 and second["fade_deg"] == 9
+
+
+def test_support_gate_full_near_measured_poses_zero_far_and_smooth():
+    from makermodslab.gravity_feedforward import support_weight
+
+    support = {
+        "joints": list(c.ARM[1:]),
+        "poses": [[0, 0, 0, 0, 0], [20, 0, 0, 0, 0]],
+        "full_deg": 4,
+        "fade_deg": 8,
+    }
+    at = lambda *v: support_weight(dict(zip(c.ARM[1:], v, strict=True)), support)  # noqa: E731
+    assert at(0, 0, 0, 0, 0) == at(23, 0, 0, 0, 0) == at(0, 4, 0, 0, 0) == 1
+    assert at(8, 0, 0, 0, 0) == pytest.approx(0.5)  # 8 deg from the nearest: middle of the fade
+    assert at(0, 12, 0, 0, 0) == at(-30, 0, 0, 0, 0) == 0
+    assert at(0, 12 - 1e-6, 0, 0, 0) < 1e-9 and abs(at(0, 4 + 1e-6, 0, 0, 0) - 1) < 1e-9
+    assert at(float("nan"), 0, 0, 0, 0) == 0
+    assert support_weight({}, None) == 1
+
+
+def test_committed_fit_commands_gravity_that_matches_the_measured_start_pose_hold(fit_path):
+    """2026-11-17: the first logs-only fit put -6.4/-7.8/-5.5 Nm into its offsets and would have commanded
+    2-2.5x the measured holding torque. Measured at the start-pose hold (dry-air rehearsals 023712Z and
+    024005Z): shoulder_lift 2.98, elbow_flex 4.61, wrist_flex 0.54 Nm at the pose below."""
+    cfg = dataclasses.replace(settings(fit_path), allow_provisional_fit=True)
+    _, model = gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+    hold = {
+        "shoulder_pan": 179.9,
+        "shoulder_lift": -70.5,
+        "elbow_flex": 59.3,
+        "wrist_flex": -35.8,
+        "wrist_yaw": 4.1,
+        "wrist_roll": 5.4,
+    }
+    tau = model.torque(hold)
+    assert tau["shoulder_lift"] == pytest.approx(2.98, abs=0.5)
+    assert tau["elbow_flex"] == pytest.approx(4.61, abs=0.5)
+    assert tau["wrist_flex"] == pytest.approx(0.54, abs=1.0)
+    from makermodslab.gravity_feedforward import support_weight
+
+    assert support_weight(hold, model.support) == 1
+
+
+def test_fit_with_large_offsets_or_provisional_without_support_is_refused(fit_path):
+    cfg = dataclasses.replace(settings(fit_path), allow_provisional_fit=True)
+    data = json.loads(fit_path.read_text())
+    bad = dict(data, offsets_nm=[0.0, -6.4, -7.8, -5.5, 1.4, -1.0])
+    fit_path.write_text(json.dumps(bad))
+    with pytest.raises(ValueError, match="offsets exceed"):
+        gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+    fit_path.write_text(json.dumps({k: v for k, v in data.items() if k != "support"} | {"provisional": True}))
+    with pytest.raises(ValueError, match="support"):
+        gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")

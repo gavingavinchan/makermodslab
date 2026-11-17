@@ -21,9 +21,10 @@ import dream_real_core as core
 import numpy as np
 
 from makermodslab.arm_gravity import file_sha256, stored_path
-from makermodslab.gravity_feedforward import CLAMP_NM, RAMP_S, load_model
+from makermodslab.gravity_feedforward import CLAMP_NM, RAMP_S, load_model, support_weight
 
 DEFAULT_FIT = core.ROOT / "configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json"
+MAX_OFFSET_NM = 0.3  # RS00 telemetry bias measured on unit 1 was <= 0.05 Nm
 
 
 def check(scale, environment, sweep=False):
@@ -73,11 +74,39 @@ def load(settings, robot, environment):
     if not math.isfinite(fade) or fade <= 0:
         raise ValueError("gravity fit fade_deg must be positive and finite")
     model.region_deg, model.fade_deg = region, fade
+    # The feedforward commands the gravity terms only (never the fit's offsets or friction). On narrow
+    # data a large fitted offset is gravity the fit misfiled: 2026-11-17 the logs-only fit carried
+    # -6.4/-7.8/-5.5 Nm offsets and would have commanded 2-2.5x the measured holding torque.
+    if np.max(np.abs(model.offsets)) > MAX_OFFSET_NM or any(
+        abs(float(v)) > MAX_OFFSET_NM for v in (fit.get("offsets_nm") or [])
+    ):
+        raise ValueError(
+            f"gravity fit offsets exceed {MAX_OFFSET_NM} Nm: the commanded gravity terms would not match "
+            "the measured holding torque; refit with --no-offsets"
+        )
+    support = fit.get("support")
+    if fit.get("provisional") and not support:
+        raise ValueError("a provisional gravity fit needs a measured-pose support gate")
+    if support is not None:
+        if list(support.get("joints", [])) != list(core.ARM[1:]) or not support.get("poses"):
+            raise ValueError("gravity fit support must list measured poses of the five gravity joints")
+        if not all(len(p) == 5 and all(math.isfinite(v) for v in p) for p in support["poses"]):
+            raise ValueError("invalid gravity fit support poses")
+        support_weight(dict(zip(core.ARM[1:], support["poses"][0], strict=True)), support)  # validates
     identity = {
         "scale": settings.gravity_comp,
         "region_deg": region,
         "fade_deg": fade,
         "weight": "product of cosine factors; measured motor degrees; pan ungated",
+        "support": None
+        if support is None
+        else {
+            "poses": len(support["poses"]),
+            "full_deg": support["full_deg"],
+            "fade_deg": support["fade_deg"],
+            "weight": "x cosine of the distance to the nearest measured pose",
+        },
+        "max_offset_nm": MAX_OFFSET_NM,
         "fit": stored_path(path),
         "fit_sha256": before,
         "robot": robot,

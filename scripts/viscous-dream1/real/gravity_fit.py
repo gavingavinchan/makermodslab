@@ -37,6 +37,12 @@ DEFAULT_OUT = VISCOUS_URDF.parents[1] / "viscous_waterproof_01/gravity-dry-air-f
 KP = dict(zip(ARM, (60.0, 90.0, 90.0, 30.0, 30.0, 30.0), strict=True))
 
 
+# The feedforward's measured-pose gate (gravity_feedforward.support_weight): full strength within
+# 4 deg of a pose the fit was measured at, zero beyond 12 deg.
+SUPPORT_FULL_DEG = 4.0
+SUPPORT_FADE_DEG = 8.0
+
+
 def joint_map():
     return {
         n: {k: v[k] for k in ("sign", "offset_deg")}
@@ -171,16 +177,19 @@ def load_inputs(paths):
     return rows, sources
 
 
-def design(model, rows):
+def design(model, rows, fit_offsets=True, fit_friction=True):
+    """Static regressor, then per-joint offset and Coulomb columns. A term that is not fitted keeps
+    its columns at zero, so theta always has 24 + 6 + 6 entries and that term comes out exactly 0."""
     n = len(ARM)
     y = np.vstack([model.regressor(r["pos"]) for r in rows])
     direction = np.array([[r["direction"][n] for n in ARM] for r in rows])
-    coulomb = np.vstack([np.diag(d) for d in direction])
-    return y, np.hstack([y, np.tile(np.eye(n), (len(rows), 1)), coulomb])
+    coulomb = np.vstack([np.diag(d) for d in direction]) * float(fit_friction)
+    offsets = np.tile(np.eye(n), (len(rows), 1)) * float(fit_offsets)
+    return y, np.hstack([y, offsets, coulomb])
 
 
-def solve(model, rows, regularization=0.01):
-    y, a = design(model, rows)
+def solve(model, rows, regularization=0.01, fit_offsets=True, fit_friction=True):
+    y, a = design(model, rows, fit_offsets, fit_friction)
     # SVD of scaled static regressor only: coefficients in the right-singular
     # basis are identifiable combinations, not individual masses or COMs.
     scale = np.tile([0.3, 0.03, 0.03, 0.03], len(ARM))
@@ -207,10 +216,11 @@ def solve(model, rows, regularization=0.01):
     }
 
 
-def fit_rows(rows, sources, regularization=0.01):
+def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=True):
     model = GravityModel(VISCOUS_URDF, ARM, joint_map=joint_map())
-    theta, identification = solve(model, rows, regularization)
-    y, a = design(model, rows)
+    terms = {"fit_offsets": fit_offsets, "fit_friction": fit_friction}
+    theta, identification = solve(model, rows, regularization, **terms)
+    y, a = design(model, rows, **terms)
     measured = np.array([[r["torque"][n] for n in ARM] for r in rows])
     residual = measured - (a @ theta).reshape(-1, len(ARM))
     cad = measured - (y @ model.prior).reshape(-1, len(ARM))
@@ -220,8 +230,8 @@ def fit_rows(rows, sources, regularization=0.01):
     held = []
     for group in groups:
         train, test = [r for r in rows if r["group"] != group], [r for r in rows if r["group"] == group]
-        beta, _ = solve(model, train, regularization)
-        _, at = design(model, test)
+        beta, _ = solve(model, train, regularization, **terms)
+        _, at = design(model, test, **terms)
         held.extend(
             np.array([[r["torque"][n] for n in ARM] for r in test]) - (at @ beta).reshape(-1, len(ARM))
         )
@@ -251,6 +261,12 @@ def fit_rows(rows, sources, regularization=0.01):
         "condition": "dry_air",
         "robot_aliases": ["viscous_waterproof_01_dry_air"],
         "region_deg": {n: coverage[n] for n in ARM[1:]},
+        "support": {
+            "joints": list(ARM[1:]),
+            "poses": [[round(r["pos"][n], 2) for n in ARM[1:]] for r in rows],
+            "full_deg": SUPPORT_FULL_DEG,
+            "fade_deg": SUPPORT_FADE_DEG,
+        },
         "fade_deg": 10.0,
         "urdf": stored_path(VISCOUS_URDF),
         "urdf_sha256": model.urdf_sha256,
@@ -267,6 +283,7 @@ def fit_rows(rows, sources, regularization=0.01):
         "sources": sources,
         "provisional": all(s["kind"] == "logs" for s in sources),
         "regularization": regularization,
+        "fitted_terms": {"gravity": True, "offsets": fit_offsets, "friction": fit_friction},
         "prior": "ZERO, no CAD inertial prior",
         "identification": identification,
         "coverage_deg": coverage,
@@ -327,12 +344,23 @@ def main(argv=None):
     p.add_argument("inputs", nargs="+", type=Path)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--regularization", type=float, default=0.01)
+    p.add_argument(
+        "--no-offsets",
+        action="store_true",
+        help="pin the per-joint torque offsets to 0: on narrow coverage a constant offset cannot be told "
+        "from gravity, and the feedforward commands gravity only",
+    )
+    p.add_argument(
+        "--no-friction", action="store_true", help="pin the Coulomb terms to 0 (one-direction data)"
+    )
     p.add_argument("--save-selected", type=Path, help="portable evidence of selected windows")
     args = p.parse_args(argv)
     if not math.isfinite(args.regularization) or args.regularization <= 0:
         p.error("regularization must be positive and finite")
     rows, sources = load_inputs(args.inputs)
-    fit = fit_rows(rows, sources, args.regularization)
+    fit = fit_rows(
+        rows, sources, args.regularization, fit_offsets=not args.no_offsets, fit_friction=not args.no_friction
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(fit, indent=2, allow_nan=False) + "\n")
     args.out.with_suffix(".md").write_text(report(fit))

@@ -69,7 +69,32 @@ def load_model(path: str | Path, *, telemetry_offsets: bool = False):
     if "region_deg" in fit:
         model.region_deg = fit["region_deg"]
         model.fade_deg = fit.get("fade_deg", 10.0)
+    if "support" in fit:
+        model.support = fit["support"]
     return fit, model
+
+
+def support_weight(pose, support) -> float:
+    """1 within ``full_deg`` of the nearest pose the fit was measured at, cosine to 0 at
+    ``full_deg + fade_deg`` (Euclidean over ``support["joints"]``, measured motor degrees).
+
+    A per-joint box is not enough on narrow data: the logged poses lie along Dream's correlated
+    trajectories, and between them, still inside every joint's range, the fitted model swung to
+    +-12 Nm (2026-11-17). This gate keeps the feedforward to where it was measured."""
+    if not support:
+        return 1.0
+    full, fade = float(support["full_deg"]), float(support["fade_deg"])
+    if not (math.isfinite(full) and math.isfinite(fade) and full >= 0 and fade > 0):
+        raise ValueError("support full_deg/fade_deg must be finite, full >= 0, fade > 0")
+    here = [pose[n] for n in support["joints"]]
+    if not all(math.isfinite(v) for v in here):
+        return 0.0
+    nearest = min(math.dist(here, p) for p in support["poses"])
+    if nearest <= full:
+        return 1.0
+    if nearest >= full + fade:
+        return 0.0
+    return 0.5 * (1 + math.cos(math.pi * (nearest - full) / fade))
 
 
 def region_weights(pose, region, fade=10.0):
@@ -136,6 +161,8 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
                     status["w"], status["w_per_joint"] = region_weights(
                         pose, getattr(model, "region_deg", {}), getattr(model, "fade_deg", 10.0)
                     )
+                    status["w_support"] = support_weight(pose, getattr(model, "support", None))
+                    status["w"] *= status["w_support"]
                 except Exception:
                     # No reading yet (first tick) or a non-finite one: hold with stiffness alone.
                     state["tau"] = {}
