@@ -93,6 +93,9 @@ cost and hardware tracking still require Gavin's supervised review/run.
 
 ## The recipe that first grasped (2026-11-17): use this, then change one thing at a time
 
+For a NEW setup (e.g. back into the tank), first walk through [SETUP_RUNBOOK.md](SETUP_RUNBOOK.md): every
+step we took on 11-16/17 to get here, with what to redo and what went wrong.
+
 Dry air, waterproof arm on the desk. Two live runs, both grasped and lifted the cube:
 `live-20261117T073809Z` (grasp + lift at calls 8-9, released after the back-post guard blocked
 the pull-back) and `live-20261117T074056Z` (cube reached in 3 calls, grasped twice, holding it
