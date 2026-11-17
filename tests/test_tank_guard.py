@@ -458,10 +458,11 @@ def test_retired_planes_and_point_bounds_exceed_full_model_reach(dry_air):
     for name, point in dry["points"].items():
         old, new = tank["points"][name], point
         assert {k: v for k, v in old.items() if k != "box_mm"} == {
-            k: v for k, v in new.items() if k not in ("box_mm", "relaxed_bounds")
+            k: v for k, v in new.items() if k not in ("box_mm", "relaxed_bounds", "post_x_max_note")
         }
         a, b = old["box_mm"], new["box_mm"]
-        assert a["x"][1] == b["x"][1]
+        # 4cca758f relaxed the dry-air elbow x maximum to match its 15 mm post margin.
+        assert b["x"][1] == (91 if name == "elbow" else a["x"][1])
         assert a["z"][0] == b["z"][0]
         assert -b["x"][0] > reach and b["z"][1] > reach
         assert b["y"][0] < -reach and b["y"][1] > reach
