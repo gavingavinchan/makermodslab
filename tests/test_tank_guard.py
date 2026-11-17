@@ -411,7 +411,7 @@ def dry_air(guard):
 
 
 def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
-    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm", "link_rules"}
+    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm", "link_rules", "rest_allowance_mm"}
     assert {k: v for k, v in dry_air.config.items() if k not in changed} == {
         k: v for k, v in raw.items() if k not in changed
     }
@@ -539,3 +539,61 @@ def test_dry_air_box_elbow_follows_the_relaxed_post_rule():
     assert tank["points"]["elbow"]["box_mm"]["x"][1] == 36
     for name in ("tcp", "wrist", "wrist_pitch"):
         assert dry["points"][name]["box_mm"]["x"][1] == tank["points"][name]["box_mm"]["x"][1]
+
+
+# Gavin 2026-11-16, the arm resting against the back post: "make the rest pose check less strict".
+POST_REST = {
+    "shoulder_pan": 180.0,
+    "shoulder_lift": -58.2,
+    "elbow_flex": 39.9,
+    "wrist_flex": -34.9,
+    "wrist_yaw": 1.8,
+    "wrist_roll": 5.4,
+    "gripper": -47.4,
+}
+DRY_START = {
+    "shoulder_pan": 179.9,
+    "shoulder_lift": -68.5,
+    "elbow_flex": 62.3,
+    "wrist_flex": -34.7,
+    "wrist_yaw": 4.2,
+    "wrist_roll": 5.5,
+    "gripper": -47.4,
+}
+
+
+def test_tank_keeps_refusing_a_rest_inside_a_requirement(guard):
+    assert guard.rest_allowance_mm == 0.0
+    assert guard.rest_relax(POST_REST) is None
+    with pytest.raises(ValueError, match="Start pose refused"):
+        tg.GuardedTargets(guard, POST_REST)
+
+
+def test_dry_air_rest_against_the_post_starts_and_never_gets_closer(dry_air):
+    assert dry_air.rest_allowance_mm == 30.0
+    assert not dry_air.start_gate(POST_REST).ok  # strictly, it is inside the post margin
+    relax = dry_air.rest_relax(POST_REST)
+    assert relax and {face for _, face in relax} == {"near"}
+    targets = tg.GuardedTargets(dry_air, POST_REST)
+    # Away from the post (toward the start pose): granted in full, a few degrees at a time.
+    away = {**POST_REST, "shoulder_lift": -63.0}
+    assert targets.step(away).status == "ok"
+    # Back past the rest, toward the post: never closer than the rest was.
+    closer = {**POST_REST, "shoulder_lift": -52.0}
+    decision = tg.GuardedTargets(dry_air, POST_REST).step(closer)
+    assert decision.status in ("clamped", "rejected")
+    assert decision.target["shoulder_lift"] <= POST_REST["shoulder_lift"] + 0.5
+    # The stop's return may end exactly at the rest, with the run's relax, and not without it.
+    assert dry_air.check_return_segment(DRY_START, POST_REST, relax=targets.relax).ok
+    assert not dry_air.check_return_segment(DRY_START, POST_REST).ok
+    # The measured rest passes the monitor with the relax.
+    assert dry_air.monitor(POST_REST, relax=targets.relax).ok
+
+
+def test_dry_air_refuses_a_rest_deeper_than_its_allowance(dry_air):
+    deeper = {**POST_REST, "shoulder_lift": -40.0}
+    over = max(-v for v in dry_air.clearances(deeper).values())
+    assert over > dry_air.rest_allowance_mm
+    assert dry_air.rest_relax(deeper) is None
+    with pytest.raises(ValueError, match="Start pose refused"):
+        tg.GuardedTargets(dry_air, deeper)

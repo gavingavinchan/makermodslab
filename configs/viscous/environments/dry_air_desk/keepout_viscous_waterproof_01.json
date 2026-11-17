@@ -160,5 +160,10 @@
     "value": 789.1464615233423,
     "status": "conservative model bound",
     "source": "tank_guard.TankGuard._joint_reach_mm(): shoulder_pan downstream offset norms + furthest collision vertex norm + full finger slide = 731.7464615233423 mm, plus base_link to shoulder_pan origin norm 57.4 mm. Bounds every collision point in any rotation. Retired planes are at 2000 mm."
+  },
+  "rest_allowance_mm": {
+    "value": 30.0,
+    "status": "design",
+    "source": "Gavin 2026-11-16, with the arm resting against the back post (upper arm 6.8 mm past the modelled post face, forearm 1.7 mm from it): \"its close enough to its rest position . make the rest pose check less strict\". The measured rest may sit up to 30 mm inside a requirement; for the whole run nothing may come closer to that face than the rest is (tank_guard.TankGuard.rest_relax); every other requirement is unchanged."
   }
 }

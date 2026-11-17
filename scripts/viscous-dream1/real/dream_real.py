@@ -309,7 +309,7 @@ class Guard:
     def monitor(self, measured) -> str | None:
         if not self.available:
             return None
-        v = self.guard.monitor(measured)
+        v = self.guard.monitor(measured, relax=getattr(self.targets, "relax", None))
         return (
             None
             if v.ok
@@ -320,7 +320,8 @@ class Guard:
         """A stop's return leg: its start (the re-anchored goal, where the arm is) may sit up to the tracking
         allowance inside a requirement, and leaves it only along a path that never gets worse than the
         start (tank_guard.check_return_segment; live 20261114T084532Z held mid-air on a 1.84 mm overshoot)."""
-        return True if not self.available else self.guard.check_return_segment(a, b).ok
+        relax = getattr(self.targets, "relax", None)
+        return True if not self.available else self.guard.check_return_segment(a, b, relax=relax).ok
 
 
 # --- the arm: a fake for dry runs, the Lab's CAN machinery for live --------------------------

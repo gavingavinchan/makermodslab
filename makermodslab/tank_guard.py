@@ -114,6 +114,12 @@ class TankGuard:
         self.sweep_tol_mm = float(_value(config["sweep_tolerance_mm"]))
         self.tracking_allowance_mm = float(_value(config["tracking_allowance_mm"]))
         self.start_tolerance_deg = float(_value(config.get("start_limit_tolerance_deg", 0.0)))
+        # How far INSIDE its requirements a run's measured rest may already sit (0 = not at all, the tank).
+        # Dry air, Gavin 2026-11-16 ("make the rest pose check less strict"): the arm rests leaning on the
+        # back post. See rest_relax().
+        self.rest_allowance_mm = float(_value(config.get("rest_allowance_mm", 0.0)))
+        if not (math.isfinite(self.rest_allowance_mm) and 0 <= self.rest_allowance_mm <= 50):
+            raise ValueError("rest_allowance_mm must be in [0, 50]")
         if set(self.limits) != set(MOTORS) or any(lo >= hi for lo, hi in self.limits.values()):
             raise ValueError("joint_limits_deg must give a positive range for all seven motors")
         values = [*self.planes.values(), *margins.values(), press, self.max_jump_deg, self.sweep_tol_mm]
@@ -227,7 +233,9 @@ class TankGuard:
         """Prove the straight joint-space path q0 -> q1 clear, or say where not."""
         return self._scan(q0, q1, to_violation=False)[0]
 
-    def check_return_segment(self, q0: dict, q1: dict, *, eps_mm: float = RETURN_EPS_MM) -> Verdict:
+    def check_return_segment(
+        self, q0: dict, q1: dict, *, eps_mm: float = RETURN_EPS_MM, relax: dict | None = None
+    ) -> Verdict:
         """check_segment for a STOP's return leg, whose start may sit slightly inside a requirement.
 
         Why (live 20261114T084532Z): Dream's last target sat on the right-wall line (+0.04 mm, accepted);
@@ -250,14 +258,16 @@ class TankGuard:
         """
         _check_positions(q0)
         _check_positions(q1)
-        start = self.clearances(q0)
+        base = relax or {}  # the run's rest_relax(): already-lowered requirements (dry-air rest)
+        start = self.clearances(q0, base)
         over = {k: -v for k, v in start.items() if v < 0}
         if not over:
-            return self.check_segment(q0, q1)
+            return self._scan(q0, q1, to_violation=False, relax=base or None)[0]
         (link, face), worst = max(over.items(), key=lambda kv: kv[1])
         if worst > self.tracking_allowance_mm:
             return Verdict(False, -worst, link, face, 1)
-        return self._scan(q0, q1, to_violation=False, relax={k: d + eps_mm for k, d in over.items()})[0]
+        both = {k: base.get(k, 0.0) + over.get(k, -eps_mm) + eps_mm for k in set(base) | set(over)}
+        return self._scan(q0, q1, to_violation=False, relax=both)[0]
 
     def _scan(
         self, q0: dict, q1: dict, *, to_violation: bool = True, relax: dict | None = None
@@ -353,7 +363,24 @@ class TankGuard:
             if not self.limits[m][0] - tolerance_deg <= q[m] <= self.limits[m][1] + tolerance_deg
         ]
 
-    def start_gate(self, measured: dict) -> Verdict:
+    def rest_relax(self, rest: dict) -> dict | None:
+        """Requirements lowered so a run may start from (and end at) a rest that already sits inside some.
+
+        {} when the rest is clear of every requirement (then nothing changes). Otherwise each link/face the
+        rest is inside by d (all within rest_allowance_mm) is lowered by d + RETURN_EPS_MM for the WHOLE run:
+        no target may ever bring that link closer to that face than it is at rest, every other requirement is
+        unchanged, and the stop's return may end exactly at the rest. None: not allowed (the tank, or a rest
+        deeper than the allowance).
+        """
+        _check_positions(rest)
+        over = {k: -v for k, v in self.clearances(rest).items() if v < 0}
+        if not over:
+            return {}
+        if max(over.values()) > self.rest_allowance_mm:
+            return None
+        return {k: d + RETURN_EPS_MM for k, d in over.items()}
+
+    def start_gate(self, measured: dict, relax: dict | None = None) -> Verdict:
         """A run may start only from a pose inside the box and (nearly) inside limits.
 
         The arm rests in the tank a few degrees outside some soft limits, as
@@ -363,13 +390,15 @@ class TankGuard:
         _check_positions(measured)
         if out := self.outside_limits(measured, self.start_tolerance_deg):
             return Verdict(False, -math.inf, None, "joint_limit:" + ",".join(out))
-        return self.check_pose(measured)
+        return self.check_pose(measured, relax=relax)
 
-    def monitor(self, measured: dict) -> Verdict:
+    def monitor(self, measured: dict, relax: dict | None = None) -> Verdict:
         """The measured arm may eat into the margin by the tracking allowance only."""
-        return self.check_pose(measured, need_mm=-self.tracking_allowance_mm)
+        return self.check_pose(measured, need_mm=-self.tracking_allowance_mm, relax=relax)
 
-    def limit(self, previous: dict, requested: dict, allowed: dict | None = None) -> Decision:
+    def limit(
+        self, previous: dict, requested: dict, allowed: dict | None = None, relax: dict | None = None
+    ) -> Decision:
         """Grant as much of previous -> requested as is provably clear.
 
         previous must be a target this guard already accepted (or a pose that
@@ -397,10 +426,10 @@ class TankGuard:
         }
         target = {m: min(max(requested[m], bounds[m][0]), bounds[m][1]) for m in MOTORS}
         clipped = tuple(m for m in MOTORS if target[m] != requested[m])
-        start = self.check_pose(previous)
+        start = self.check_pose(previous, relax=relax)
         if not start.ok:
             return Decision("rejected", dict(previous), "previous_unsafe", 0.0, start, clipped)
-        whole, lo = self._scan(previous, target)
+        whole, lo = self._scan(previous, target, relax=relax)
         if whole.ok:
             status = "clamped" if clipped else "ok"
             return Decision(status, target, "joint_limit" if clipped else "", 1.0, whole, clipped)
@@ -416,16 +445,19 @@ class GuardedTargets:
     """Stateful wrapper an executor holds: the last accepted target and counts."""
 
     def __init__(self, guard: TankGuard, start: dict):
-        gate = guard.start_gate(start)
+        relax = guard.rest_relax(start)
+        gate = guard.start_gate(start, relax=relax)
         if not gate.ok:
             raise ValueError(f"Start pose refused: {gate}")
         self.guard = guard
+        self.relax = relax or None  # None in the tank: every check exactly as before
         self.target = {m: float(start[m]) for m in MOTORS}
         self.start = dict(self.target)
         self.counts = {"ok": 0, "clamped": 0, "rejected": 0}
 
     def step(self, requested: dict) -> Decision:
-        decision = self.guard.limit(self.target, requested, allowed=self.start)
+        relax = getattr(self, "relax", None)  # a hand-built instance (tests) has none
+        decision = self.guard.limit(self.target, requested, allowed=self.start, relax=relax)
         self.counts[decision.status] += 1
         self.target = decision.target
         return decision
