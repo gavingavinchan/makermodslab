@@ -52,6 +52,7 @@ import json
 import math
 import os
 import signal
+import statistics
 import subprocess
 import sys
 import threading
@@ -338,6 +339,16 @@ class Guard:
         except ValueError as error:
             return str(error)
         return None
+
+    def resume_from(self, commanded):
+        """Discard a prefetched tail without changing the start gate or its relaxation.
+
+        plan_chunk advances GuardedTargets through the whole planned chunk. On a
+        splice its last *planned* target is ahead of the arm; prove the new segment
+        from the already accepted command the arm actually reached instead.
+        """
+        if self.available:
+            self.targets.target = dict(commanded)
 
     def step(self, target):
         if not self.available:
@@ -1001,6 +1012,18 @@ class DreamReal:
     def request(self, commanded):
         return self.client.get_action(commanded=commanded)
 
+    def cancel_request(self):
+        # close() alone need not wake a socket blocked in recv. Shutdown wakes it without
+        # waiting for the policy lock; the worker owns normal client teardown after joining.
+        import socket
+
+        channel = self.slide.real
+        connection = getattr(channel, "_connection", None)
+        sock = getattr(connection, "sock", None)
+        if sock is not None:
+            with contextlib.suppress(OSError):
+                sock.shutdown(socket.SHUT_RDWR)
+
     def close(self):
         with contextlib.suppress(Exception):
             self.client.close()
@@ -1044,11 +1067,21 @@ class Worker:
         self.busy = False
         self.result = None
         self.ready_at = None
+        self.clock_epsilon = 0.0  # preserve the legacy tank virtual-clock behavior
+        self.started_at = self.finished_at = None
+        self.thread = self.cleanup_thread = None
+        self.cancelled = threading.Event()
 
     def _call(self, commanded):
+        if self.cancelled.is_set():
+            return None, "request cancelled before send", None
         request = self.ledger.reserve(self.run_id, self.max_calls) if self.ledger else None
         while True:
             try:
+                if self.cancelled.is_set():
+                    if request:
+                        self.ledger.finish(request["id"], "not_sent")
+                    return None, "request cancelled before send", request
                 reply = self.dream.request(commanded)
                 if request:
                     self.ledger.finish(request["id"], "billed")
@@ -1060,29 +1093,91 @@ class Worker:
             except Exception as error:  # noqa: BLE001
                 if getattr(error, "reason", None) == "pool_warming" and request:
                     self.ledger.finish(request["id"], "pool_warming")
-                    time.sleep(min(getattr(error, "retry_after_s", None) or 10, 30))
+                    if self.cancelled.wait(min(getattr(error, "retry_after_s", None) or 10, 30)):
+                        return None, "request cancelled", request
                     request = self.ledger.reserve(self.run_id, self.max_calls)
                     continue
                 return None, f"{error.__class__.__name__}: {error}", request
 
     def start(self, commanded):
+        if self.busy or self.cancelled.is_set():
+            raise RuntimeError("request already in flight or worker stopped")
+        self.started_at, self.finished_at = self.clock(), None
         self.busy, self.result = True, None
         self.calls += 1
         if self.threaded:
 
             def run():
-                self.result = self._call(commanded)
+                try:
+                    result = self._call(commanded)
+                except Exception as error:  # reserve failures must reach the control loop too
+                    result = None, f"{error.__class__.__name__}: {error}", None
+                self.finished_at = self.clock()
+                self.result = result  # publish last
 
-            threading.Thread(target=run, daemon=True).start()
+            self.thread = threading.Thread(target=run, name="dream-request", daemon=True)
+            self.thread.start()
         else:
-            self.result = self._call(commanded)
+            try:
+                self.result = self._call(commanded)
+            except Exception as error:
+                self.result = None, f"{error.__class__.__name__}: {error}", None
             self.ready_at = self.clock() + self.latency
+            self.finished_at = self.ready_at
 
     def take(self):
-        if not self.busy or self.result is None or (not self.threaded and self.clock() < self.ready_at):
+        if (
+            not self.busy
+            or self.result is None
+            or (not self.threaded and self.clock() + self.clock_epsilon < self.ready_at)
+        ):
             return None
         self.busy = False
+        if self.thread is not None:
+            self.thread.join()
         return self.result
+
+    def shutdown(self):
+        """Stop immediately; a reaper joins the request and closes its client off the arm thread.
+
+        Python cannot kill a thread in IK or a connect syscall. A sent reservation stays
+        chargeable even if the process exits before that request's result becomes known.
+        """
+        self.cancelled.set()
+
+        def cleanup():
+            if self.thread is not None and self.thread.is_alive():
+                cancel = getattr(self.dream, "cancel_request", None)
+                if cancel is not None:
+                    with contextlib.suppress(Exception):
+                        cancel()
+                self.thread.join()
+            self.dream.close()
+
+        self.cleanup_thread = threading.Thread(target=cleanup, name="dream-request-join", daemon=True)
+        self.cleanup_thread.start()
+
+
+class OverlapPacing:
+    """The brief's median lead and 700 ms cutoff (the client's Pacer uses a minimum lead)."""
+
+    def __init__(self, replan_after):
+        self.replan_after = replan_after
+        self.recent = collections.deque(maxlen=5)
+
+    @property
+    def median(self):
+        return statistics.median(self.recent) if self.recent else 0.0
+
+    @property
+    def synchronous(self):
+        return self.median > 0.700 + 1e-9
+
+    def due(self, executed, remaining):
+        return not remaining or (
+            not self.synchronous
+            and executed >= max(1, self.replan_after - math.ceil(self.median / core.ROW_DT_S - 1e-9))
+        )
 
 
 # --- the episode ---------------------------------------------------------------------
@@ -1111,6 +1206,8 @@ class Settings:
     no_lag_trip: bool = False
     no_limp_trip: bool = False
     no_overspeed_trip: bool = False
+    overlap: bool = False
+    replan_after: int = 30
 
     def disabled_run_trips(self) -> set[str]:
         return {name for name in ("lag", "limp", "overspeed") if getattr(self, f"no_{name}_trip")}
@@ -1144,12 +1241,25 @@ class Episode:
         mirror_dir=None,
         frame_sink=None,
         environment: Environment = TANK_ENVIRONMENT,
+        seam_join=None,
     ):
         self.speed_cap = environment.arm_speed_cap_deg_s
         if not 0 < settings.speed_deg_s <= self.speed_cap:
             raise RefusedError(
                 f"arm speed {settings.speed_deg_s} deg/s is above the hard {self.speed_cap} deg/s cap"
             )
+        if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
+            raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
+        if not 1 <= settings.replan_after <= 48:
+            raise RefusedError("--replan-after must be in 1..48")
+        self.pacing = OverlapPacing(settings.replan_after) if settings.overlap else None
+        if worker is not None and environment.name == "dry_air":
+            worker.clock_epsilon = 1e-9  # virtual 50 ms ticks must not add a roundoff-only idle tick
+        if settings.overlap:
+            # Use the installed client's exact seam algorithm, never a second implementation.
+            if seam_join is None:
+                from dream import seam_join
+            self.seam_join = seam_join
         self.disabled_run_trips = settings.disabled_run_trips()
         if self.disabled_run_trips and environment.name != "dry_air":
             raise RefusedError("disabling lag, limp or overspeed trips requires --environment dry_air")
@@ -1371,11 +1481,18 @@ class Episode:
         speed-capped; IK flips are judged row to row on Dream's own chunk. Jumps, bad rows and other guard
         refusals still stop the run."""
         rows = np.array(reply["q_l_chunk"], float)[: self.s.rows]
+        if getattr(self, "pacing", None) and not len(rows):
+            self.plan_row_ends = []
+            return []
         rows[:, 6] = np.clip(rows[:, 6], 0.0, 1.0)
         if self.mutate:
             rows = self.mutate(rows)
         out, prev, ref, skipped = [], dict(self.commanded), dict(self.commanded), []
+        if getattr(self, "pacing", None) and (resume := getattr(self.guard, "resume_from", None)):
+            resume(self.commanded)
+        self.plan_row_ends = []
         for i, row in enumerate(rows):
+            before = len(out)
             if not np.isfinite(row).all() or row.shape != (7,):
                 raise TripStopError([core.Trip("bad_chunk", f"row {i} is {row.tolist()}")])
             target = core.ik_row_to_motor(row, self.jmap)
@@ -1422,6 +1539,8 @@ class Episode:
                 if status == "clamped" and reason == "keepout":
                     why = "tank keep-out (cut at the line)"
                     break
+            if len(out) > before:
+                self.plan_row_ends.append(len(out))
             if why:
                 skipped.append((i, why))
         self.summary["rows_planned"] += len(rows)
@@ -1431,6 +1550,30 @@ class Episode:
             self.summary.setdefault("overrides", []).append({"call": self.summary["calls"], "why": note})
             self._phase("override", f"call {self.summary['calls']}: {note}")
         return out
+
+    def splice_reply(self, reply, queue, moving):
+        """Drop latency-aged rows, join to actual guarded commands, then use plan_chunk as usual.
+
+        The client's internal smoothing knows its IK plan, not our retimed/clipped commands.
+        Re-anchor with its seam primitives at the actual takeover. Holding calls install whole.
+        """
+        rows = np.asarray(reply["q_l_chunk"], dtype=float)[: self.s.rows].copy()
+        if rows.ndim != 2 or rows.shape[1] != 7 or not np.isfinite(rows).all():
+            raise TripStopError([core.Trip("bad_chunk", "expected finite [rows, 7] chunk")])
+        elapsed = max(0.0, self.clock() - self.worker.started_at)
+        dropped = min(len(rows), int(round(elapsed / core.ROW_DT_S))) if moving else 0
+        rows = rows[dropped:]
+        if len(rows) and moving:
+            old = [self.commanded, *list(queue)[:3]]
+            old = np.array([core.motor_to_ik_row(q, self.jmap) for q in old])
+            times = np.arange(len(old), dtype=float) - 1 if len(old) > 1 else np.zeros(1)
+            now, velocity = self.seam_join.fit_motion(old, times)
+            count = min(self.seam_join.RAMP_ROWS + 1, len(rows))
+            if count > 1:
+                rows[:count] = self.seam_join.velocity_blend(now, velocity, rows[:count])
+            else:
+                rows[0] = now
+        return {**reply, "q_l_chunk": rows.tolist()}, dropped
 
     def _check_speed(self, target):
         """The hard cap on what is about to be sent, whatever planned it (a clamp is on the guard's line)."""
@@ -1447,6 +1590,12 @@ class Episode:
         hold_until = None
         dream_after = 0.0
         stuck = 0
+        executed_rows = chunk_substeps = 0
+        row_ends = collections.deque()
+        request_moving = False
+        timeline = []
+        if self.environment.name == "dry_air":
+            self.summary["pacing_timeline"] = timeline
         self._phase("connect")
         self.arm.connect()
         try:
@@ -1538,6 +1687,12 @@ class Episode:
                     self.commanded = queue.popleft()
                     self._check_speed(self.commanded)
                     self.summary["substeps_sent"] += 1
+                    chunk_substeps += 1
+                    while row_ends and row_ends[0] <= chunk_substeps:
+                        row_ends.popleft()
+                        executed_rows += 1
+                elif self.worker is not None and self.worker.busy and timeline:
+                    timeline[-1]["idle_s"] += core.ROW_DT_S
                 self.arm.send(self.commanded, previous)  # an empty queue re-sends the hold target
                 if self.phase == "approach" and not approach:
                     if self.dream is None:
@@ -1554,27 +1709,64 @@ class Episode:
                         self._phase("dream", "start pose reached; Dream calls from here")
                 if (
                     self.phase == "dream"
-                    and not queue
+                    and (self.pacing.due(executed_rows, len(queue)) if self.pacing else not queue)
                     and not self.worker.busy
                     and frames_fed >= core.FRAMES_IN_WINDOW
                     and now >= dream_after
                 ):
-                    if self.worker.calls >= self.s.max_calls:
+                    if self.worker.calls >= self.s.max_calls and not queue:
                         reason = f"call cap {self.s.max_calls} reached"
                         break
+                    # Drain the final chunk before stopping at the cap.
+                    if self.worker.calls < self.s.max_calls:
+                        request_moving = bool(queue)
+                        if self.pacing:
+                            # Refresh state at the request tick even between camera-window ticks.
+                            self.dream.set_observation(
+                                core.slot_frames(reading.frames, self.s.slots),
+                                core.dream_state(
+                                    self.dream_pose(reading.pos), self.jmap, self.right_rest, self.s.prompt
+                                ),
+                                now,
+                            )
                     # The client reads only the arm joints of this row (the IK seed and the seam join), and
                     # they are the command in either mode; with "commanded" the grip is Dream's state's too.
                     told = (
                         self.commanded if self.s.dream_state == "measured" else self.dream_pose(reading.pos)
                     )
                     row = core.motor_to_ik_row(told, self.jmap)
-                    self.worker.start({"q_l_chunk": row, "q_r_chunk": [*self.right_rest, 1.0]})
+                    if self.worker.calls < self.s.max_calls:
+                        self.worker.start({"q_l_chunk": row, "q_r_chunk": [*self.right_rest, 1.0]})
+                        timeline.append(
+                            {
+                                "call": self.worker.calls,
+                                "sent_s": now - self.t0,
+                                "executed_rows": executed_rows,
+                                "remaining_substeps": len(queue),
+                                "idle_s": 0.0,
+                            }
+                        )
                 result = self.worker.take() if self.phase == "dream" else None
                 if result is not None:
                     reply, error, request = result
                     if error:
                         raise TripStopError([core.Trip("dream", error)])
                     self.summary["calls"] += 1
+                    if timeline:
+                        timeline[-1]["reply_s"] = now - self.t0
+                        timeline[-1]["rtt_s"] = self.worker.finished_at - self.worker.started_at
+                    dropped = 0
+                    if self.pacing:
+                        was_sync = self.pacing.synchronous
+                        self.pacing.recent.append(self.worker.finished_at - self.worker.started_at)
+                        if was_sync != self.pacing.synchronous:
+                            mode = "synchronous fallback" if self.pacing.synchronous else "overlapped"
+                            self._phase(
+                                "pacing",
+                                f"{mode}: median round trip {self.pacing.median * 1000:.0f} ms; cutoff 700 ms",
+                            )
+                        reply, dropped = self.splice_reply(reply, queue, request_moving)
+                        timeline[-1]["dropped_rows"] = dropped
                     slide = getattr(self.dream, "slide", None)
                     slid = slide.clamped_rows[-1] if slide is not None and slide.clamped_rows else 0
                     lifts = slide.lifts_mm[-1] if slide is not None and slide.lifts_mm else []
@@ -1619,7 +1811,11 @@ class Episode:
                             "substeps": plan,
                         },
                     )
+                    if self.pacing:
+                        queue.clear()
                     queue.extend(plan)
+                    executed_rows = chunk_substeps = 0
+                    row_ends = collections.deque(getattr(self, "plan_row_ends", ()))
                     stuck = 0 if len(plan) > self.s.stuck_substeps else stuck + 1
                     if stuck >= self.s.max_stuck_calls:
                         reason = (
@@ -1647,6 +1843,8 @@ class Episode:
         except Exception as error:  # noqa: BLE001
             reason = f"error: {error.__class__.__name__}: {error}"
         finally:
+            if self.pacing and self.worker is not None:
+                self.worker.shutdown()  # never put request teardown ahead of the arm's stop
             self.summary["stop"] = self.stop(reason)
         self.summary.update(
             reason=reason,
@@ -2009,6 +2207,8 @@ def build_plan(
     dream_status,
 ):
     environment = ENVIRONMENTS[getattr(args, "environment", "tank")]
+    if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
+        raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
     cameras = {
         c["name"]: {k: c.get(k) for k in ("camera_index", "unique_id", "width", "height", "fps", "rotation")}
         for c in record.get("cameras") or []
@@ -2120,6 +2320,7 @@ def build_plan(
         "dream_client": dream_status,
     }
     if environment.name == "dry_air":
+        plan["pacing"] = {"overlap": settings.overlap, "replan_after": settings.replan_after}
         plan["run_trip_overrides"] = {
             f"no_{name}_trip": name in settings.disabled_run_trips() for name in ("lag", "limp", "overspeed")
         }
@@ -2161,6 +2362,7 @@ def build_plan(
     if environment.name != "tank":
         safety["environment"] = environment.metadata()
         safety["run_trip_overrides"] = plan["run_trip_overrides"]
+        safety["pacing"] = plan["pacing"]
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2181,6 +2383,12 @@ def print_plan(plan):
         )
     print(f"Right arm: {plan['right_arm']}")
     print(f"Dream state: {plan['dream_state']}")
+    pacing = plan.get("pacing", {})
+    print(
+        f"pacing: overlapped, replan after {pacing['replan_after']} rows"
+        if pacing.get("overlap")
+        else "pacing: synchronous"
+    )
     sp = plan["speed"]
     if env["name"] == "dry_air":
         print(
@@ -2278,7 +2486,7 @@ def run_dry(args, ctx) -> int:
         # `far` stops at the call cap right after its rolled chunk (> 10 deg from the start pose).
         settings = dataclasses.replace(ctx["settings"], max_calls=1) if scenario == "far" else ctx["settings"]
         worker = (
-            Worker(dream, clock, threaded=False, latency_s=1.5, max_calls=settings.max_calls)
+            Worker(dream, clock, threaded=False, latency_s=args.stub_latency_s, max_calls=settings.max_calls)
             if dream is not None
             else None
         )
@@ -2308,7 +2516,7 @@ def run_dry(args, ctx) -> int:
             mutate={"jump": jump_mutation, "far": far_mutation()}.get(scenario),
             arm_rest=ctx["arm"]["rest"],
             environment=ctx["environment"],
-            say=print if args.rehearse else None,
+            say=print if args.rehearse or settings.overlap else None,
             mirror_dir=ctx["bundle"].mirror_dir(scenario) if ctx.get("bundle") else None,
         )
         summary = episode.run()
@@ -2316,7 +2524,7 @@ def run_dry(args, ctx) -> int:
             summary["run_data"] = str(ctx["bundle"].dir)
         summary["fake_arm_events"] = arm.events
         summary["inputs_id"] = getattr(dream, "inputs_id", None)
-        if dream is not None:
+        if dream is not None and not settings.overlap:
             dream.close()
         core.atomic_json(out / "summary.json", summary)
         results.append((scenario, summary))
@@ -2654,7 +2862,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     try:
         summary = episode.run()
     finally:
-        if dream is not None:
+        if dream is not None and not ctx["settings"].overlap:
             dream.close()
     if bundle:
         summary["run_data"] = str(bundle.dir)
@@ -2726,6 +2934,9 @@ def main(argv=None) -> int:
         default="commanded",
         help="the arm joints Dream is told: the last command (default; the arm sags under it) or the reading",
     )
+    p.add_argument("--overlap", action="store_true", help="dry air only: ask Dream while motion continues")
+    p.add_argument("--replan-after", type=int, default=30, help="overlap takeover horizon in rows (1..48)")
+    p.add_argument("--stub-latency-s", type=float, default=1.5, help="dry-run virtual round trip (no sleep)")
     p.add_argument("--rows", type=int, default=48)
     p.add_argument(
         "--speed-deg-s",
@@ -2785,6 +2996,12 @@ def main(argv=None) -> int:
     sys.stdout.reconfigure(line_buffering=True)
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")
+    if args.environment != "dry_air" and (args.overlap or args.replan_after != 30):
+        p.error("--overlap and non-default --replan-after require --environment dry_air")
+    if not 1 <= args.replan_after <= 48:
+        p.error("--replan-after must be in 1..48")
+    if not math.isfinite(args.stub_latency_s) or args.stub_latency_s < 0:
+        p.error("--stub-latency-s must be finite and nonnegative")
     speed_cap = ENVIRONMENTS[args.environment].arm_speed_cap_deg_s
     if not 0 < args.speed_deg_s <= speed_cap:
         p.error(f"--speed-deg-s must be in (0, {speed_cap:g}]: the hard arm speed cap")
@@ -2891,8 +3108,15 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         no_lag_trip=args.no_lag_trip,
         no_limp_trip=args.no_limp_trip,
         no_overspeed_trip=args.no_overspeed_trip,
+        overlap=args.overlap,
+        replan_after=args.replan_after,
     )
     dream_problem = add_dream_venv(args.dream_venv)
+    if args.overlap:
+        try:
+            from dream import seam_join  # noqa: F401
+        except ImportError:
+            p.error("--overlap needs dream.seam_join from --dream-venv, including with --internal-stub")
     guard = Guard(environment)
     plan = build_plan(
         args,
