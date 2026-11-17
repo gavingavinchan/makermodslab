@@ -28,7 +28,7 @@ import { useUnloadWarning } from "@/hooks/useUnloadWarning";
 import { apiRequest } from "@/lib/apiClient";
 import { getCurrentSession, startSession, stopSession, type SessionInfo } from "@/lib/sessionApi";
 import { tabOwnerId } from "@/lib/sessionOwner";
-import { DREAM_DEFAULTS, DREAM_EXAMPLES, dreamCropBand, dreamApprove, dreamPlan, dreamPreview, type DreamPlan, type DreamPreview, type DreamReplay, type DreamSettings, type DreamSlot, type DreamStatus } from "@/lib/dreamApi";
+import { DREAM_DEFAULTS, DREAM_EXAMPLES, dreamCropBand, dreamApprove, dreamPlan, dreamPreview, type DreamEnvironment, type DreamPlan, type DreamPreview, type DreamReplay, type DreamSettings, type DreamSlot, type DreamStatus } from "@/lib/dreamApi";
 import { cn } from "@/lib/utils";
 
 const SELECT = "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
@@ -140,6 +140,7 @@ export default function Dream() {
   const view = demo ? replay?.status : status.status;
   const run = demo ? replay?.run : live ? status.run : preview?.run ??
     (showLastRun && status.robot === robot?.name && status.status?.mode === "live" ? status.run : null);
+  const environment = view && view.run === run ? view.environment : settings.environment;
   const snapshot = !!run && (demo || live || !!preview || status.status?.mode === "live");
   const labels: Record<DreamSlot, string> = { overhead: t("dream.front"), wrist_l: t("dream.left"), wrist_r: t("dream.right") };
   const sourceFor = (slot: DreamSlot): string | null => {
@@ -272,6 +273,7 @@ export default function Dream() {
         {alarm && <p role="alert" className="whitespace-pre-wrap break-words rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">{alarm}</p>}
         {badReason && <p role="alert" className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive">{reason}</p>}
         <div role="status" className="space-y-1 text-center text-xs text-muted-foreground">
+          <p>{t("dream.environment")}: {t(environment === "dry_air" ? "dream.dryAir" : "dream.tank")}</p>
           <p>{pending === "plan" ? t("dream.planning") : pending === "check" ? t("dream.checking") : view ? `${view.phase}${view.call ? ` · ${t("dream.call", { call: view.call, cap: view.max_calls })}` : ""}` : t("dream.idle")}</p>
           {reason && !badReason && <p>{reason}</p>}
           {view && <p>{t("dream.peak", { torque: view.peak_torque_nm.toFixed(2), temperature: view.peak_temp_c.toFixed(1) })}</p>}
@@ -292,6 +294,9 @@ export default function Dream() {
     </main>
 
     <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}><DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md"><DialogHeader><DialogTitle>{t("dream.settings")}</DialogTitle><DialogDescription>{t("dream.betaOnly")}</DialogDescription></DialogHeader>
+      <label className="space-y-2 text-sm"><span>{t("dream.environment")}</span><select aria-label={t("dream.environment")} className={SELECT} value={settings.environment} disabled={locked || demo} onChange={(e) => change({ environment: e.target.value as DreamEnvironment })}>
+        <option value="tank">{t("dream.tank")}</option><option value="dry_air">{t("dream.dryAir")}</option>
+      </select></label>
       <label className="space-y-2 text-sm"><span>{t("dream.maxCalls")}</span><input type="number" className={SELECT} min={1} max={20} step={1} value={settings.max_calls} disabled={locked || demo} onChange={(e) => change({ max_calls: Number(e.target.value) })} /></label>
       <label className="space-y-2 text-sm"><span>{t("dream.pause")}</span><input type="number" className={SELECT} min={0} max={600} step={1} value={settings.pause_s} disabled={locked || demo} onChange={(e) => change({ pause_s: Number(e.target.value) })} /></label>
       <h3 className="mt-2 text-sm font-medium">{t("dream.mapping")}</h3>{cameraMapping}
@@ -305,7 +310,7 @@ export default function Dream() {
       <div className="space-y-2 text-sm"><h3 className="font-medium">{t("dream.readiness")}</h3><ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">{plan?.readiness.map((line) => <li key={line}>{line}</li>)}</ul><p className="text-xs text-muted-foreground">{t("dream.readinessNote")}</p></div>
       <AlertDialogFooter><AlertDialogCancel disabled={pending === "start"}>{t("dream.cancel")}</AlertDialogCancel><AlertDialogAction disabled={!!pending} onClick={(event) => { event.preventDefault(); void act("start", async () => {
         if (!plan || !robot) return;
-        const started = await startSession(baseUrl, fetchWithHeaders, { kind: "dream", robot: robot.name, owner, options: { plan_id: plan.plan_id } });
+        const started = await startSession(baseUrl, fetchWithHeaders, { kind: "dream", robot: robot.name, owner, options: { plan_id: plan.plan_id, environment: inputs.environment } });
         setSession(started.session); setPlan(null);
       }); }}>{t("dream.confirmRun")}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>

@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 export default {
+  environment: "环境", tank: "水箱", dryAir: "干燥空气",
   noCodeEdits: "运行期间请勿编辑代码。",
-  open: "Dream-1 Playground", activity: "Dream-1 运行", title: "Dream-1", subtitle: "Viscous · 水族箱",
+  open: "Dream-1 Playground", activity: "Dream-1 运行", title: "Dream-1", subtitle: "Viscous · Dream-1",
   robot: "机器人", chooseRobot: "选择 Viscous 机器人", noRobot: "请先在 Lab 中添加 Viscous 机器人，以使用 Dream-1。",
   settings: "设置", cameras: "摄像头", front: "前方", left: "左侧", right: "右侧", swap: "将{{camera}}移到中央",
   imageUnavailable: "摄像头画面不可用。请检查摄像头连接或运行器状态。",

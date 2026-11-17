@@ -236,6 +236,7 @@ export interface RemoteTeleoperationSessionOptions {
 }
 
 export interface DreamSessionOptions {
+  environment?: "tank" | "dry_air";
   plan_id: string;
 }
 

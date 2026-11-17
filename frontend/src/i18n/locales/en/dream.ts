@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 export default {
+  environment: "Environment", tank: "Tank", dryAir: "Dry air",
   noCodeEdits: "Do not edit code during a run.",
-  open: "Dream-1 Playground", activity: "a Dream-1 run", title: "Dream-1", subtitle: "Viscous · Aquarium",
+  open: "Dream-1 Playground", activity: "a Dream-1 run", title: "Dream-1", subtitle: "Viscous · Dream-1",
   robot: "Robot", chooseRobot: "Select a Viscous robot", noRobot: "Add a Viscous robot in Lab to use Dream-1.",
   settings: "Settings", cameras: "Cameras", front: "Front", left: "Left", right: "Right", swap: "Bring {{camera}} to the centre",
   imageUnavailable: "Camera image unavailable. Check the camera connection or the runner status.",

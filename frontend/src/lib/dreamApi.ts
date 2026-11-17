@@ -13,8 +13,10 @@
 // limitations under the License.
 import { apiRequest, type Fetcher } from "./apiClient";
 
+export type DreamEnvironment = "tank" | "dry_air";
 export type DreamSlot = "overhead" | "wrist_l" | "wrist_r";
 export interface DreamSettings {
+  environment: DreamEnvironment;
   prompt: string;
   overhead: string | null;
   wrist_l: string;
@@ -23,14 +25,14 @@ export interface DreamSettings {
   pause_s: number;
 }
 export const DREAM_DEFAULTS: DreamSettings = {
-  prompt: "", overhead: null, wrist_l: "wrist", wrist_r: "black", max_calls: 10, pause_s: 0,
+  environment: "tank", prompt: "", overhead: null, wrist_l: "wrist", wrist_r: "black", max_calls: 10, pause_s: 0,
 };
 // Prompts are model input data, kept byte-identical in every language.
 export const DREAM_EXAMPLES = ["put apple into the bowl", "pick up the screwdriver", "move the sponge to the left"];
 export interface DreamPlan { plan_id: string; movement: string; readiness: string[] }
 export interface DreamPreview { preview_id: string; inputs_id: string; inputs_checked: boolean; run: string }
 export interface DreamView {
-  run: string; mode: "live" | "preview" | "dry" | "replay"; prompt: string;
+  environment: DreamEnvironment; run: string; mode: "live" | "preview" | "dry" | "replay"; prompt: string;
   max_calls: number; slots: Record<DreamSlot, string>; pid: number | null; phase: string; state: string;
   call: number; last_reason: string | null; measured: Record<string, number> | null;
   commanded: Record<string, number> | null; requested_tcp_path: number[][];
