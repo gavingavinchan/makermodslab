@@ -2742,6 +2742,60 @@ An in-memory comparison with `05fd83d8` verifies identical tank plan JSON,
 summary, tick records and fake-arm events. This task is authorized only in this
 worktree; the other clone and the Mac were not touched.
 
+### Dry-air Dream right slot (2026-11-17, goal B3)
+
+Gavin: “this is so obviously the right arm!!! its based on the overhead camera
+placement relative to the arm”. The arm appears on the right in `head`, while
+our runner had always sent it as Dream's left and discarded the right reply.
+The brief reports the phantom right moved more in 38/42 real calls. Add an
+opt-in `--arm-slot right` on `feat/viscous-dream1-dry-air`, only in this worktree;
+Claude reviews before Gavin runs it. Default left keeps its plan JSON/ids and
+fake-arm behavior; tank refuses right before any device/client access.
+
+Right maps our state, commanded IK seed, executed reply, overlap seam and
+pre-IK box/floor slide to right. Idle left reports the same arm-file rest/open
+grip as idle right did and its reply is dropped. Camera flags are literal:
+`--overhead head --wrist-r left --wrist-l black`; a bare named wrist_r camera
+is now accepted alongside the existing `camera:<name>` spelling. Chunk logs
+identify our slot and retain both raw client chunks/per_key before overlap,
+so phantom activity remains measurable. No safety number, geometry, guard,
+stop-button, ledger or camera-lock change.
+
+Client source audit and the sim thread's `preflight_slot.py` agree: custom
+`arm_file.register` uses one ArmSpec on both sides; its poses are relative to
+that file's base, and it supplies no side-base transform. `dream_base` remains
+the same physical frame, Rz(pi) from base_link, and IK pan = motor pan - 180.
+No right-specific mirror/translation or tool calibration rewrite is needed.
+The idle side uses the same custom file to preserve the former report, rather
+than switching to a different YAM model. YAM-trained custom-arm joint slots
+are still zeroed by ClientIK; the measured EEF and grip are on the chosen side.
+
+The self-contained `real/check_slot_roundtrip.py` reads committed feedback,
+blocks networking, checks independent URDF FK and physical-base FK against
+ClientIK.observe, then ClientIK.solve returns the same joints within numerical
+solver tolerance for both sides (tick and trajectory). With tonight's actual
+arm file and recorded measured pose, maximum 48-row trajectory errors are
+0.0064 deg and 0.009 mm TCP; the left/right result is identical. This validates
+the software frame mapping, retaining the existing physical calibration.
+
+Four internal-stub dry runs (left/right, sync/overlap, 18 calls, measured state,
+45 deg/s and tonight's 14/14/82 flags) reach the call cap, return to rest and
+release with no trips. Local record lacks camera names head/left; readiness
+still refuses them, and all captures are fake. Report and complete plans:
+`~/dry-air-ref/REPORT-right-slot.md`. Tests cover slot state/command/execution,
+ignored malicious phantom, slide isolation, literal cameras, overlap raw
+logging, jump stop, tank refusal and real installed-client round trips.
+No hardware, live mode, Dream network/billed call, API key or input-check/check
+command was used. The other clone and the Mac were not touched, as directed.
+Validation: 12 new tests; targeted 283 passed plus 31 subtests; full 4,740 passed,
+24 skipped, with only the same missing commissioned-profile and optional
+Pinocchio baseline failures (31 subtests). Ruff and scoped diff checks pass.
+An in-memory comparison to `973aa19f` confirms identical entire default left
+plan JSON/ids, summaries, ticks, states, commanded rows and fake-arm events in
+both environments. Fixture ids: tank `c6c40272db`, dry air `bbbd9962e4`.
+Tonight's stub plans: left sync `f9b5d6adfe`, left overlap `2d42652a8a`, right
+sync `5cf362f07d`, right overlap `bb86d9a0da`. Implementation: `3f88f102`.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.

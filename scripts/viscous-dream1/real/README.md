@@ -91,6 +91,57 @@ client's seam helper from `--dream-venv`. `--stub-latency-s` sets virtual latenc
 idle time per request. These are simulated queue-idle times; real planning/IK
 cost and hardware tracking still require Gavin's supervised review/run.
 
+## Choosing Dream's arm slot (dry air only, 2026-11-17)
+
+Gavin identified our arm as the RIGHT arm from its position in the overhead image.
+`--arm-slot right` sends our joints/grip as `state.right_*`, executes `q_r_chunk`
+from `action.right_*`, and clips/slides only the right EEF targets before IK.
+The left side is idle at the same arm-file rest/open grip previously used for
+idle right, and its answers are dropped. The default `--arm-slot left` preserves
+existing state, motion, plan JSON and ids. Tank refuses right at the CLI, plan,
+client-adapter and episode boundaries. A right plan explicitly binds the slot.
+Overlap uses the chosen side for its commanded seed, stale-row removal and seam.
+
+Camera flags name Dream slots independently of the arm flag. To put the physical
+wrist camera called `left` on Dream's right: `--overhead head --wrist-r left
+--wrist-l black --arm-slot right`. `--wrist-r camera:left` remains supported;
+`--wrist-r copy` still copies wrist_l. No automatic camera swap occurs.
+
+A custom arm file is registered by Dream's client as the same ArmSpec on both
+sides, with no side-base placement. Each EEF is in that file's base frame.
+`dream_base` remains x-forward/y-left/z-up on our existing mount, with its
+180-degree turn relative to the physical `base_link`. No extra right-side
+translation, reflection, YAM mount offset or URDF edit is required. The idle
+left also uses this custom model, preserving the former idle-right report.
+Dream's YAM-trained checkpoint still receives zero joint slots for a custom
+arm; its EEF/grip are our measured FK/grip (or the existing commanded-state
+option). Changing the slot does not change that client convention.
+
+`chunks.jsonl` includes `arm_slot`, both returned joint chunks, and `raw_reply`
+(both chunks and per_key before our overlap splice). The idle side's joint and
+EEF replies remain unaltered, including on a planner refusal. The top-level
+working chunk is the one actually offered to the planner after any splice;
+substeps remain the guarded/retimed motor commands. The raw EEF values here
+are the client's reply, after SlideTransport; the idle EEF side is never slid.
+
+Offline proof, no DreamClient, transport, API key, hardware or cameras:
+
+```bash
+.venv/bin/python scripts/viscous-dream1/real/check_slot_roundtrip.py
+# Optional: --arm-file <arm.json> --ticks <recorded-ticks.jsonl> --solve tick|traj --out <proof.json>
+```
+
+The checker blocks network calls before loading Dream, uses recorded measured
+feedback, compares client FK to independent URDF FK and to the physical base
+frame, then feeds those EEF poses through ClientIK.solve for both slots.
+It checks joint/TCP numerical error and identical left/right results. Default
+inputs are committed; the installed Dream client is optional in pytest. On
+tonight's 2026-11-17 dry-air recording and actual arm file, the trajectory solve
+stays within 0.0064 deg and 0.009 mm TCP error over 48 rows; small nonzero drift
+comes from the client's regularized solver. Detailed evidence and the complete
+dry-run plan blocks: `~/dry-air-ref/REPORT-right-slot.md`. Claude reviews before
+Gavin's powered run. This change has only been exercised offline.
+
 ## Files
 
 | File | What it is |
@@ -99,6 +150,7 @@ cost and hardware tracking still require Gavin's supervised review/run.
 | `stop_button.py` | The big red button: an always-on-top window that sends SIGTERM to the runner's `--pid-file` pid |
 | `run_data.py` | Raw run bundles outside git (a ring of the last 10, KEEP to keep one forever) and their CLI |
 | `dream_real_core.py` | Pure helpers: frame maps, limits, retiming, workspace box, trips, refusals, ledger, images |
+| `check_slot_roundtrip.py` | Offline measured-FK/EEF/IK proof for both slots, including the physical base transform |
 | `make_tank_arm.py` | Generates the tank IK model below, with provenance |
 | `tank_model/viscous_waterproof_tank.urdf` | The arm URDF with a `dream_base` root turned 180 deg and the unit's own limits |
 | `tank_model/viscous_waterproof_tank.provenance.json` | Sources, hashes, checks and `approval` (approved by Gavin 2026-11-08, provisionally, on condition every live motion stays <= 15 deg/s) |
