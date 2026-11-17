@@ -1765,8 +1765,7 @@ class EnvironmentTest(unittest.TestCase):
         for i, row in enumerate(poses):
             pose = dict(zip(core.MOTORS, row, strict=True))
             self.assertTrue(guard.start_gate(pose).ok)
-            # The dry-air tcp is held 20 cm in front of J1 (2026-11-17); only that bound may apply here.
-            self.assertEqual([v for v in box.violations(pose) if not v.startswith("tcp.x")], [])
+            self.assertEqual(box.violations(pose), [])
             tcp = box.positions_mm(pose)["tcp"]
             self.assertTrue([tcp[1] < -207, tcp[1] > 227, tcp[2] > 414][i])
 

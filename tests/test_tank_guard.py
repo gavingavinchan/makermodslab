@@ -468,9 +468,8 @@ def test_retired_planes_and_point_bounds_exceed_full_model_reach(dry_air):
             k: v for k, v in new.items() if k not in ("box_mm", "relaxed_bounds", "post_x_max_note")
         }
         a, b = old["box_mm"], new["box_mm"]
-        # 4cca758f relaxed the dry-air elbow x maximum to match its 15 mm post margin; 2026-11-17 the dry-air
-        # tcp must stay 20 cm in front of J1 so Dream's post-grasp pull-back is clipped, not skipped.
-        assert b["x"][1] == {"elbow": 91, "tcp": -200}.get(name, a["x"][1])
+        # 4cca758f relaxed the dry-air elbow x maximum to match its 15 mm post margin.
+        assert b["x"][1] == (91 if name == "elbow" else a["x"][1])
         assert a["z"][0] == b["z"][0]
         assert -b["x"][0] > reach and b["z"][1] > reach
         assert b["y"][0] < -reach and b["y"][1] > reach
@@ -551,11 +550,8 @@ def test_dry_air_box_elbow_follows_the_relaxed_post_rule():
     tank = json.loads((real / "workspace_box_viscous_waterproof_01.json").read_text())
     assert dry["points"]["elbow"]["box_mm"]["x"][1] == 91
     assert tank["points"]["elbow"]["box_mm"]["x"][1] == 36
-    for name in ("wrist", "wrist_pitch"):
+    for name in ("tcp", "wrist", "wrist_pitch"):
         assert dry["points"][name]["box_mm"]["x"][1] == tank["points"][name]["box_mm"]["x"][1]
-    # 2026-11-17: the dry-air hand stays 20 cm in front of J1 (Dream's post-grasp pull-back is clipped).
-    assert dry["points"]["tcp"]["box_mm"]["x"][1] == -200
-    assert tank["points"]["tcp"]["box_mm"]["x"][1] == -120
 
 
 # Gavin 2026-11-16, the arm resting against the back post: "make the rest pose check less strict".
