@@ -36,7 +36,9 @@ from makermodslab.arm_gravity import VISCOUS_URDF, GravityModel  # noqa: E402
 @pytest.fixture(scope="module")
 def context():
     env = runner.ENVIRONMENTS["dry_air"]
-    arm_file = json.loads(runner.DEFAULT_ARM_FILE.read_text())
+    arm_file = json.loads(
+        (REAL.parents[2] / "tests/fixtures/viscous_gravity/viscous-waterproof-dry-air.json").read_text()
+    )
     jmap = core.JointMap.load()
     hub = {**jmap.to_motor(arm_file["rest"]), "gripper": -47.35}
     limits = core.keepout_limits(env.keepout_file)
@@ -51,7 +53,9 @@ def test_seed_deterministic_and_resume_keeps_the_same_poses(context):
     env, _, hub, limits, box, settings, visits, report = context
     again, report2 = sweep.plan(settings, hub, limits, box, runner.Guard(env), 15, pool=48)
     assert again == visits
-    assert report2 == report
+    assert {k: v for k, v in report2.items() if k != "planning_time_s"} == {
+        k: v for k, v in report.items() if k != "planning_time_s"
+    }
     resumed, _ = sweep.plan(
         dataclasses.replace(settings, start_at=1), hub, limits, box, runner.Guard(env), 15, pool=48
     )
@@ -135,7 +139,7 @@ def episode(
         mirror_dir=tmp_path / "raw",
         status_path=tmp_path / "status.json",
     )
-    (tmp_path / "raw").mkdir()
+    (tmp_path / "raw").mkdir(parents=True)
     arm.sent = []
     original_send, original_read = arm.send, arm.read
 
@@ -461,3 +465,108 @@ def test_button_wins_during_torque_retrace(context, tmp_path):
     assert result["reason"] == "stop signal"
     assert result["stop"]["returned"] == "at the rest"
     assert not arm.energized
+
+
+def test_narrow_defaults_and_hub_cap_exemption_keep_other_hub_checks(context):
+    from types import SimpleNamespace
+
+    env, _, hub, limits, box, settings, _, _ = context
+    assert sweep.SweepSettings().poses == 14
+    assert sweep.DEFAULT_BOX["shoulder_lift"] == (-86, -50)
+    predictor = SimpleNamespace(
+        torque=lambda q: dict.fromkeys(core.ARM, 6.03),
+        sagged=lambda q: dict(q),
+    )
+    proof = sweep.Proof(settings, hub, limits, box, runner.Guard(env), 15, predictor, None)
+    assert proof.checked(hub) is None
+    with pytest.raises(ValueError, match="cap:"):
+        proof.checked(hub | {"elbow_flex": hub["elbow_flex"] + 1})
+    with pytest.raises(ValueError, match="stop_path"):
+        sweep.Proof(settings, hub, limits, box, runner.Guard(env), 15, predictor, lambda q: False)
+
+
+@pytest.fixture
+def saved_plan(context, tmp_path):
+    env, _, hub, limits, box, settings, visits, report = context
+    path = tmp_path / "sweep-plan.json"
+    sweep.save_plan(path, settings, hub, visits, report, 15)
+    return dataclasses.replace(settings, plan_file=path)
+
+
+def test_saved_plan_reproves_without_search_and_binds_file_hash(context, saved_plan):
+    env, _, hub, limits, box, settings, visits, _ = context
+    with mock.patch.object(sweep, "plan", side_effect=AssertionError("candidate search")):
+        loaded, report = sweep.load_plan(saved_plan, hub, limits, box, runner.Guard(env), 15)
+    assert loaded == visits
+    assert report["both_direction_poses"] == 2 and report["reproof_time_s"] > 0
+    before = saved_plan.identity()
+    saved_plan.plan_file.write_text(saved_plan.plan_file.read_text() + "\n")
+    assert before["plan_sha256"] != saved_plan.identity()["plan_sha256"]
+    assert sweep.saved_identity(saved_plan) == sweep.saved_identity(settings)
+
+
+@pytest.mark.parametrize(
+    "bad", ["hub", "speed", "nan", "pan", "box", "direction", "empty", "endpoint", "settings"]
+)
+def test_saved_plan_tampering_refuses_before_engage(context, saved_plan, tmp_path, bad):
+    data = json.loads(saved_plan.plan_file.read_text())
+    route = data["visits"][0]["routes"][0]
+    if bad == "hub":
+        data["hub"]["shoulder_lift"] += 0.51
+    elif bad == "speed":
+        route["into"][0]["elbow_flex"] += 10
+    elif bad == "nan":
+        route["into"][0]["wrist_roll"] = float("nan")
+    elif bad == "pan":
+        route["into"][0]["shoulder_pan"] += 0.1
+    elif bad == "box":
+        data["visits"][0]["pose"]["wrist_yaw"] = 11
+    elif bad == "direction":
+        data["visits"][0]["routes"].pop()
+    elif bad == "empty":
+        route["into"] = []
+    elif bad == "endpoint":
+        route["settle"][-1]["wrist_roll"] += 0.1
+    elif bad == "settings":
+        data["settings"]["max_torque_nm"] = 5
+    saved_plan.plan_file.write_text(json.dumps(data))
+    items = list(context)
+    items[5] = saved_plan
+    _, arm, result = episode(tuple(items), tmp_path / "run")
+    assert result["reason"].startswith("refused:")
+    assert not any(e.startswith("engage:") for e in arm.events)
+
+
+@pytest.mark.parametrize("failure", ["sag", "return", "stop"])
+def test_loaded_substeps_repeat_sag_and_stop_proofs(context, saved_plan, failure):
+    env, _, hub, limits, box, _, _, _ = context
+    guard = runner.Guard(env)
+    options = {}
+    if failure == "sag":
+        real_sag = sweep.Predictor.sagged
+
+        def sag(predictor, q):
+            return real_sag(predictor, q) | {"wrist_flex": 10000}
+
+        patch = mock.patch.object(sweep.Predictor, "sagged", sag)
+    elif failure == "return":
+        patch = mock.patch.object(guard.guard, "check_return_segment", return_value=mock.Mock(ok=False))
+    else:
+        options["stop_path_clear"] = lambda q: False
+        patch = mock.patch.object(sweep, "plan", side_effect=AssertionError("search"))
+    with patch, pytest.raises(ValueError):
+        sweep.load_plan(saved_plan, hub, limits, box, guard, 15, **options)
+
+
+
+
+
+
+def test_loader_compares_the_snapshot_hash_bound_by_the_printed_plan(context, saved_plan):
+    env, _, hub, limits, box, _, _, _ = context
+    digest = saved_plan.identity()["plan_sha256"]
+    saved_plan.plan_file.write_text(saved_plan.plan_file.read_text() + "\n")
+    with pytest.raises(ValueError, match="changed while loading"):
+        sweep.load_plan(saved_plan, hub, limits, box, runner.Guard(env), 15, expected_sha256=digest)
+
+

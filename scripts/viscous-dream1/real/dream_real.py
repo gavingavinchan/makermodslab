@@ -1853,7 +1853,9 @@ class Episode:
                 if self.s.sweep_identity is not None and self.s.sweep.identity() != self.s.sweep_identity:
                     raise RefusedError("sweep predictor inputs changed after the plan id was printed")
                 try:
-                    visits, report = gravity_sweep.plan(
+                    visits, report = (
+                        gravity_sweep.load_plan if self.s.sweep.plan_file else gravity_sweep.plan
+                    )(
                         self.s.sweep,
                         self.dream_start,
                         self.limits,
@@ -1862,14 +1864,33 @@ class Episode:
                         self.s.speed_deg_s,
                         say=self.say,
                         stop_path_clear=self._sweep_stop_clear,
+                        **(
+                            {"expected_sha256": self.s.sweep_identity["plan_sha256"]}
+                            if self.s.sweep.plan_file and self.s.sweep_identity
+                            else {}
+                        ),
                     )
-                except ValueError as error:
+                except (ValueError, OSError, KeyError, TypeError, IndexError) as error:
                     raise RefusedError(str(error)) from error
+                if self.s.sweep_identity is not None and self.s.sweep.identity() != self.s.sweep_identity:
+                    raise RefusedError("sweep inputs changed during start-gate proof")
                 report["total_duration_s"] = (
                     report["sweep_duration_s"] + sum(map(len, legs)) * core.ROW_DT_S * 2
                 )
                 self.summary["sweep"] = report
-                core.atomic_json(self.log_dir / "sweep-plan.json", {"report": report, "visits": visits})
+                gravity_sweep.save_plan(
+                    self.log_dir / "sweep-plan.json",
+                    self.s.sweep,
+                    self.dream_start,
+                    visits,
+                    report,
+                    self.s.speed_deg_s,
+                )
+                if self.mirror_dir:
+                    core.atomic_json(
+                        self.mirror_dir / "sweep-plan.json",
+                        json.loads((self.log_dir / "sweep-plan.json").read_text()),
+                    )
                 core.atomic_json(
                     self.log_dir / "meta.json",
                     {
@@ -2817,6 +2838,9 @@ def print_plan(plan):
         )
         print("  Floor sag allowance retained in full because feedforward fades outside measured coverage")
     if "gravity_sweep" in plan:
+        print(
+            "Sweep hub is exempt from the planning torque cap only; all hub safety checks and runtime trips stay enabled."
+        )
         print("Joints that may move in sweep: " + ", ".join(plan["sweep_joints_that_move"]))
         print(
             "Approach/returns: six arm joints; sweep pan fixed at hub; gripper command fixed as measured throughout."
@@ -3411,8 +3435,9 @@ def main(argv=None) -> int:
     p.add_argument("--gravity-comp", type=float, default=0.0, metavar="SCALE")
     p.add_argument("--gravity-fit", type=Path)
     p.add_argument("--allow-provisional-fit", action="store_true")
+    p.add_argument("--sweep-plan", type=Path, help="load and re-prove a saved sweep; no candidate search")
     p.add_argument("--sweep-seed", type=int, default=0)
-    p.add_argument("--sweep-poses", type=int, default=30)
+    p.add_argument("--sweep-poses", type=int, default=14)
     p.add_argument("--sweep-hold-s", type=float, default=2.0)
     p.add_argument("--sweep-max-torque-nm", type=float, default=6.0)
     p.add_argument("--sweep-hot-c", type=float, default=65.0)
@@ -3547,6 +3572,8 @@ def main(argv=None) -> int:
         p.error(str(error))
     if args.gravity_comp and args.preview:
         p.error("--gravity-comp requires rehearsal or Dream execution, not preview")
+    if args.sweep_plan and not args.gravity_sweep:
+        p.error("--sweep-plan requires --gravity-sweep")
     if args.gravity_sweep:
         if not args.rehearse or args.environment != "dry_air" or args.preview:
             p.error("--gravity-sweep requires --rehearse --environment dry_air")
@@ -3692,6 +3719,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
             args.sweep_start_at,
             args.sweep_box,
             args.sweep_fit or DEFAULT_OUT,
+            args.sweep_plan,
         )
         try:
             settings.sweep_identity = settings.sweep.identity()
