@@ -71,6 +71,11 @@ def dream_terminal_run_path(home: Path | None = None) -> Path:
     return DREAM_TERMINAL_RUN_FILE if home is None else home / DREAM_TERMINAL_RUN_RELATIVE_PATH
 
 
+# The red stop button's last window size and position (Gavin 2026-11-16: "i have to resize and reposition the
+# stop button every run"). A convenience only: a missing or bad file opens the default window.
+DREAM_STOP_BUTTON_GEOMETRY_FILE = Path(MAKERMODSLAB_HOME) / "dream" / "stop_button_geometry.json"
+
+
 # Define the calibration config paths (shared between features). These stay
 # under lerobot's cache: lerobot's device classes read their calibration from
 # there, and the library IS lerobot calibration data.

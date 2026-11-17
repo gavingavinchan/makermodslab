@@ -34,14 +34,21 @@ phase, the stop path and the hold included), not just "pid alive": a joint gone 
 HOLDING mid-air, no fresh data from the run, or released. While the runner HOLDS, the button is the
 RELEASE press (a click; keys never release). A missing or corrupt status file falls back to the pid check.
 
+The window reopens at the size and place it was last left (Gavin, 2026-11-16: "i have to resize and
+reposition the stop button every run"), saved in `utils.config.DREAM_STOP_BUTTON_GEOMETRY_FILE`. A missing,
+corrupt, tiny or far-off-screen saved geometry opens the default window instead; --reset-position forgets it.
+Saving or loading it can never keep the button from opening or working.
+
 The power switch is still the hard stop. Fallback without a display: kill -TERM "$(cat /tmp/dream_real.pid)".
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
+import re
 import signal
 import subprocess
 import time
@@ -63,6 +70,53 @@ JOINT_WORDS = {
     "wrist_yaw": "WRIST YAW",
     "wrist_roll": "WRIST ROLL",
 }
+DEFAULT_GEOMETRY = "580x480+40+40"
+MIN_SIZE = (240, 200)  # a saved window smaller than this is not restored: the button must stay easy to hit
+MAX_OFFSET = 20000  # px; further than this the saved place cannot be on any screen
+GEOMETRY_RE = re.compile(r"^(\d+)x(\d+)(\+-?\d+|-\d+)(\+-?\d+|-\d+)$")  # Tk's WxH+X+Y (X/Y may be +-N)
+
+
+def geometry_file() -> Path:
+    try:
+        from makermodslab.utils import config
+
+        return Path(config.DREAM_STOP_BUTTON_GEOMETRY_FILE)
+    except Exception:  # noqa: BLE001 - the button never depends on the package importing
+        home = os.environ.get("MAKERMODSLAB_HOME") or "~/.makermods/makermodslab"
+        return Path(home).expanduser() / "dream" / "stop_button_geometry.json"
+
+
+def valid_geometry(geometry) -> bool:
+    match = GEOMETRY_RE.match(geometry) if isinstance(geometry, str) else None
+    if not match:
+        return False
+    width, height, x, y = int(match[1]), int(match[2]), int(match[3].lstrip("+")), int(match[4].lstrip("+"))
+    return width >= MIN_SIZE[0] and height >= MIN_SIZE[1] and abs(x) <= MAX_OFFSET and abs(y) <= MAX_OFFSET
+
+
+def load_geometry(path: Path) -> str:
+    """The saved geometry when it is sane, else the default. Never raises."""
+    try:
+        geometry = json.loads(Path(path).read_text()).get("geometry")
+    except Exception:  # noqa: BLE001
+        return DEFAULT_GEOMETRY
+    return geometry if valid_geometry(geometry) else DEFAULT_GEOMETRY
+
+
+def save_geometry(path: Path, geometry: str) -> None:
+    """Atomic write; never raises (a full disk must not break the button)."""
+    if not valid_geometry(geometry):
+        return
+    try:
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+        tmp.write_text(json.dumps({"geometry": geometry}))
+        os.replace(tmp, path)
+    except Exception:  # noqa: BLE001
+        pass
+
+
 COLOURS = {  # (background, text) of the status panel
     "ok": ("#0b3d0b", "#66ff66"),
     "info": ("#1a1a1a", "#dddddd"),
@@ -229,14 +283,16 @@ class StopLogic:
 
 
 class App:
-    def __init__(self, logic: StopLogic):
+    def __init__(self, logic: StopLogic, geometry_path: Path | None = None):
         import tkinter as tk
 
         self.logic = logic
+        self.geometry_path = geometry_path
+        self._save_pending = None
         self.root = tk.Tk()
         self.root.title("Dream-1 STOP")
         self.root.attributes("-topmost", True)
-        self.root.geometry("580x480+40+40")
+        self.root.geometry(DEFAULT_GEOMETRY if geometry_path is None else load_geometry(geometry_path))
         self.root.configure(bg="black")
         # A Label, not a Button: macOS's native buttons ignore background colours.
         self.button = tk.Label(
@@ -265,8 +321,28 @@ class App:
         self.button.bind("<ButtonPress-1>", lambda _e: self.press(from_key=False))
         for key in ("<space>", "<Return>", "<KP_Enter>", "<Escape>"):
             self.root.bind(key, lambda _e: self.press(from_key=True))
+        if geometry_path is not None:
+            self.root.bind("<Configure>", self._moved)
+            self.root.protocol("WM_DELETE_WINDOW", self._close)
         self.root.focus_force()
         self.tick()
+
+    def _moved(self, event):
+        # Children report <Configure> too; only the window's own move/resize counts. Saved after it settles.
+        if event.widget is not self.root:
+            return
+        if self._save_pending is not None:
+            self.root.after_cancel(self._save_pending)
+        self._save_pending = self.root.after(500, self._save)
+
+    def _save(self):
+        self._save_pending = None
+        with contextlib.suppress(Exception):  # never let the convenience stop the button
+            save_geometry(self.geometry_path, self.root.geometry())
+
+    def _close(self):
+        self._save()
+        self.root.destroy()
 
     def press(self, from_key):
         self.note.configure(text=self.logic.press(from_key=from_key))
@@ -300,8 +376,13 @@ class App:
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--pid-file", default=DEFAULT_PID_FILE, help="the runner's --pid-file")
+    p.add_argument("--reset-position", action="store_true", help="forget the saved window size/place")
     args = p.parse_args(argv)
-    App(StopLogic(args.pid_file)).run()
+    path = geometry_file()
+    if args.reset_position:
+        with contextlib.suppress(OSError):
+            path.unlink(missing_ok=True)
+    App(StopLogic(args.pid_file), geometry_path=path).run()
     return 0
 
 
