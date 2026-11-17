@@ -83,6 +83,15 @@ DREAM_REPLAY = (
     else None
 )
 
+# Shared by the standalone runner and Lab; --lab-home may select a different root.
+DREAM_TERMINAL_RUN_RELATIVE_PATH = Path(DREAM_DIRECTORY) / "terminal_run.json"
+DREAM_TERMINAL_RUN_FILE = Path(MAKERMODSLAB_HOME) / DREAM_TERMINAL_RUN_RELATIVE_PATH
+
+
+def dream_terminal_run_path(home: Path | None = None) -> Path:
+    return DREAM_TERMINAL_RUN_FILE if home is None else home / DREAM_TERMINAL_RUN_RELATIVE_PATH
+
+
 # Define the calibration config paths (shared between features). These stay
 # under lerobot's cache: lerobot's device classes read their calibration from
 # there, and the library IS lerobot calibration data.

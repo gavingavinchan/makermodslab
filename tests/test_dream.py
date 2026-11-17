@@ -932,3 +932,14 @@ def test_environment_schema_defaults_and_rejects_unknown(client):
             model(**fields, environment="outside")
     response = client.post("/api/v1/dream/plan", json={"robot": "tank", "environment": "outside"})
     assert response.status_code == 422
+
+
+def test_terminal_camera_marker_counts_as_active(monkeypatch):
+    monkeypatch.setattr(dream, "terminal_run_active", lambda: True)
+    assert dream.dream_is_active()
+    assert dream.busy_response()["code"] == "robot.busy.dream"
+    with pytest.raises(ApiError) as error:
+        dream.open_idle_preview(0, 0, 0, open_stream=lambda *a: pytest.fail("must not open"))
+    assert error.value.code == "robot.busy.dream"
+    monkeypatch.setattr(dream, "terminal_run_active", lambda: False)
+    assert not dream.dream_is_active()

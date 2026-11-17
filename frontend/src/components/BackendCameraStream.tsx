@@ -35,7 +35,8 @@ const RETRY_MAX_MS = 12000;
  * into the server has no matching deviceId — this streams it from the backend
  * instead. Owns its whole failure lifecycle: on stream error it asks the
  * endpoint WHY (the 409/503 detail — "recording is using the cameras" etc.),
- * shows that on the tile, and retries with capped backoff; clicking the tile
+ * shows that on the tile, and retries with capped backoff (Dream's camera
+ * reservation pauses retries until clicked); clicking the tile
  * retries immediately. Parents should render it whenever a cameraIndex is
  * known and unmount it to pause/release (the img's detach handler clears its
  * src so the browser drops the HTTP connection and the server releases the
@@ -56,6 +57,7 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
   const [attempt, setAttempt] = useState(0);
   const [down, setDown] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
+  const [dreamBusy, setDreamBusy] = useState(false);
   const uniqueIdQuery = uniqueId
     ? `?unique_id=${encodeURIComponent(uniqueId)}`
     : "";
@@ -67,6 +69,7 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
     setAttempt(0);
     setDown(false);
     setReason(null);
+    setDreamBusy(false);
   }, [cameraIndex, uniqueId]);
 
   useEffect(() => {
@@ -103,6 +106,7 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
 
   const handleError = useCallback(() => {
     setDown(true);
+    let retry = true;
     // The <img> can't see WHY the stream died — probe the endpoint once for
     // the status detail so the tile can say "recording is using the cameras"
     // instead of a generic failure. Best-effort: any probe error is itself
@@ -122,6 +126,10 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
           return;
         }
         const data = await r.json().catch(() => ({}));
+        if (r.status === 409 && data.code === "robot.busy.dream") {
+          retry = false;
+          setDreamBusy(true);
+        }
         setReason(
           typeof data.detail === "string"
             ? data.detail
@@ -129,7 +137,9 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
         );
       })
       .catch(() => setReason("server unreachable"))
-      .finally(scheduleRetry);
+      .finally(() => {
+        if (retry) scheduleRetry();
+      });
   }, [baseUrl, fetchWithHeaders, cameraIndex, uniqueIdQuery, scheduleRetry]);
 
   const retryNow = useCallback(() => {
@@ -137,6 +147,7 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
     attemptRef.current += 1;
     setAttempt((a) => a + 1);
     setDown(false);
+    setDreamBusy(false);
   }, []);
 
   if (down) {
@@ -154,9 +165,11 @@ const BackendCameraStream: React.FC<BackendCameraStreamProps> = ({
         <span className="px-1 text-center text-[10px] leading-tight">
           {reason ?? t("shared.camera.previewFailed")}
         </span>
-        <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
-          <RefreshCw className="h-3 w-3" /> retrying...
-        </span>
+        {!dreamBusy && (
+          <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
+            <RefreshCw className="h-3 w-3" /> retrying...
+          </span>
+        )}
       </button>
     );
   }

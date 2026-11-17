@@ -647,6 +647,19 @@ restore paths in the DAgger runner.
   with its old plan id; dry air has a separate id. The plan prints the environment and both
   files, also recorded in summaries and run-data metadata. Pure/fake-arm tests and offline dry
   runs only; no hardware or Dream service calls. Claude reviews before Gavin runs the arm.
+- *Camera handoff (2026-11-16, terminal and Dream page).* Live run 5 on the Mac
+  failed before its first Dream call because Lab settings previews still held both USB
+  cameras. The runner now atomically claims `dream/terminal_run.json` under the selected
+  Lab home before preview/live cameras (also camera-free live rehearsal), asks
+  `POST /api/v1/camera-preview/release` to close Lab captures, and waits 2 seconds for
+  asynchronous OS release. A responding Lab that cannot confirm release refuses the run;
+  only an unreachable Lab may be skipped with `--lab-down-ok`. Lab checks the marker's
+  PID, birth time and `dream_real.py` command before and after preview/probe opens, closes
+  a raced capture, and returns `409 robot.busy.dream`. Tiles show the reason and pause
+  retries until clicked. The runner retains ownership through its existing stop and
+  removes the marker on exit; stale markers are cleaned by readers. Paths are shared
+  through `utils/config.py`. Tests use injected identities/clocks and fakes; signal tests
+  target only their own spawned stub processes. No hardware or Dream service calls.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the

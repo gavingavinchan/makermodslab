@@ -37,6 +37,7 @@ from pathlib import Path
 from . import dream_process, session_events
 from .api_errors import ApiError, ErrorCode
 from .arms import registry
+from .dream_camera_lock import terminal_run_active
 from .schemas.dream import DreamPlanBody, DreamSettings
 from .utils import config as cfg
 
@@ -143,7 +144,7 @@ def adopt_active():
 
 
 def dream_is_active() -> bool:
-    return dream_active or checking_inputs or adopt_active()
+    return dream_active or checking_inputs or adopt_active() or terminal_run_active()
 
 
 def open_idle_preview(index, key, rotation, *, open_stream):

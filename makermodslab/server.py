@@ -98,6 +98,7 @@ from .dagger_protocol import (
     CMD_RESUME,
     CMD_TAKEOVER,
 )
+from .dream_camera_lock import terminal_run_active
 from .jobs import (
     _KNOWN_FOUNDATION_BASE_REPO_IDS,
     CHECKPOINTS_STAGING_SUFFIX,
@@ -284,6 +285,7 @@ from .schemas.system import (
     ArmFamiliesResponse,
     AvailableCamerasResponse,
     AvailablePortsResponse,
+    CameraPreviewReleaseResponse,
     CanGripperWiggleResponse,
     ExtraStatus,
     HealthResponse,
@@ -4983,9 +4985,13 @@ def _generic_cv2_cameras(backend) -> list[dict[str, Any]]:
 
     cameras: list[dict[str, Any]] = []
     for i in range(10):
+        _refuse_dream_camera_preview()
         cap = cv2.VideoCapture(i, backend)
-        opened = cap.isOpened()
-        cap.release()
+        try:
+            _refuse_dream_camera_preview()
+            opened = cap.isOpened()
+        finally:
+            cap.release()
         if opened:
             cameras.append({"index": i, "name": f"Camera {i}", "available": True})
     return cameras
@@ -5114,6 +5120,8 @@ def get_available_cameras():
         import cv2
 
         return {"status": "success", "cameras": _generic_cv2_cameras(cv2.CAP_ANY)}
+    except ApiError:
+        raise
     except ImportError:
         logger.warning("OpenCV not available for camera detection")
         return {"status": "success", "cameras": []}
@@ -5134,6 +5142,23 @@ def recording_camera_preview(camera_name: str):
     if frame is None:
         raise HTTPException(status_code=503, detail="Waiting for a recording camera frame")
     return Response(frame, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+
+
+def _refuse_dream_camera_preview():
+    if terminal_run_active():
+        raise ApiError(409, "a Dream run is using the cameras", code=ErrorCode.ROBOT_BUSY_DREAM)
+    from . import dream
+
+    if dream.dream_is_active():
+        raise ApiError(
+            409, "Dream owns the cameras. Use the Dream-view tiles.", code=ErrorCode.ROBOT_BUSY_DREAM
+        )
+
+
+@v1_router.post("/camera-preview/release", response_model=CameraPreviewReleaseResponse, tags=["system"])
+def release_camera_previews():
+    """Hand server-side preview captures to a terminal runner before it opens devices."""
+    return {"success": True, "closed": camera_preview_manager.stop_all()}
 
 
 @router.get("/camera-preview/{index}")
@@ -5173,12 +5198,7 @@ def camera_preview_stream(index: int, unique_id: str | None = None, rotation: in
         )
     from . import dream
 
-    if dream.dream_is_active():
-        raise ApiError(
-            status_code=409,
-            detail="Dream owns the cameras. Use the Dream-view tiles.",
-            code=ErrorCode.ROBOT_BUSY_DREAM,
-        )
+    _refuse_dream_camera_preview()
     if record_state.recording_active:
         raise HTTPException(
             status_code=409,
@@ -5216,7 +5236,16 @@ def camera_preview_stream(index: int, unique_id: str | None = None, rotation: in
             resolved, key, rotation, open_stream=camera_preview_manager.open_stream
         )
     except CameraOpenError as exc:
+        _refuse_dream_camera_preview()
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    try:
+        _refuse_dream_camera_preview()
+    except ApiError:
+        # An unstarted frame generator's close() does not run its finally.
+        # Force-release the manager's captures if the run claimed during open.
+        camera_preview_manager.stop_all(timeout=0)
+        stream.close()
+        raise
     return StreamingResponse(stream, media_type="multipart/x-mixed-replace; boundary=frame")
 
 

@@ -224,6 +224,7 @@ V1_ONLY_ROUTES: frozenset[str] = frozenset(
         "GET /api/v1/dream/status",
         "GET /api/v1/dream/view/{run}/{slot}",
         "GET /api/v1/dream/replay",
+        "POST /api/v1/camera-preview/release",
         "POST /api/v1/tank-measure/start",
         "GET /api/v1/tank-measure/status",
         "POST /api/v1/tank-measure/capture",

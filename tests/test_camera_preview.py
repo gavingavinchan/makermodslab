@@ -527,3 +527,65 @@ def test_camera_preview_refused_while_hosting_owns_camera(client, monkeypatch, s
     response = client.get("/camera-preview/0")
     assert response.status_code == 409
     assert "Stop hosting" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("route", ["/api/v1/camera-preview/0", "/camera-preview/0"])
+def test_terminal_dream_blocks_preview_then_allows_again(client, monkeypatch, route):
+    active = True
+    monkeypatch.setattr(server_mod, "terminal_run_active", lambda: active)
+    opened = []
+    monkeypatch.setattr(
+        server_mod.camera_preview_manager, "open_stream", lambda *a: opened.append(a) or iter([])
+    )
+    response = client.get(route)
+    assert response.status_code == 409
+    assert response.json()["code"] == "robot.busy.dream"
+    assert response.json()["detail"] == "a Dream run is using the cameras"
+    assert opened == []
+    active = False
+    assert client.get(route).status_code == 200
+    assert len(opened) == 1
+
+
+def test_terminal_dream_claim_during_open_closes_capture(monkeypatch, fake_captures):
+    manager = CameraPreviewManager()
+    monkeypatch.setattr(server_mod, "camera_preview_manager", manager)
+    states = iter([False, True])
+    monkeypatch.setattr(server_mod, "terminal_run_active", lambda: next(states))
+    with pytest.raises(server_mod.ApiError) as error:
+        server_mod.camera_preview_stream(0)
+    assert error.value.status_code == 409
+    assert error.value.code == "robot.busy.dream"
+    assert fake_captures[0].released
+    assert not manager._captures
+
+
+@pytest.mark.parametrize("during_open", [False, True])
+def test_camera_picker_probe_dream_guard(client, monkeypatch, fake_captures, during_open):
+    import platform
+
+    monkeypatch.setattr(platform, "system", lambda: "Other")
+    states = iter([False, True] if during_open else [True])
+    monkeypatch.setattr(server_mod, "terminal_run_active", lambda: next(states))
+    response = client.get("/api/v1/available-cameras")
+    assert response.status_code == 409
+    assert response.json()["code"] == "robot.busy.dream"
+    assert len(fake_captures) == int(during_open)
+    if during_open:
+        assert fake_captures[0].released
+
+
+def test_release_route_counts_shared_captures(client, monkeypatch, fake_captures):
+    manager = CameraPreviewManager()
+    monkeypatch.setattr(server_mod, "camera_preview_manager", manager)
+    # Two clients, one capture. Avoid a real wait for client detach.
+    manager.open_stream(0)
+    manager.open_stream(0)
+    stop = manager.stop_all
+    monkeypatch.setattr(manager, "stop_all", lambda: stop(timeout=0))
+    response = client.post("/api/v1/camera-preview/release")
+    assert response.status_code == 200
+    assert response.json() == {"success": True, "closed": 1}
+    assert fake_captures[0].released
+    assert client.post("/api/v1/camera-preview/release").json()["closed"] == 0
+    assert client.post("/camera-preview/release").status_code == 405
