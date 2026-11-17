@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Dream-1 page for the aquarium Viscous arm
+# Dream-1 page for the Viscous arm
 
 Goal B3 in [viscous-haptics.md](viscous-haptics.md). Gavin missed the camera problem because the terminal runner had no preview. `/dream` now follows the Playground's camera stage and prompt flow, with the runner's exact request JPEGs and status. It is fork-only, enabled by the family's `supports_dream` capability. The engine remains `scripts/viscous-dream1/real/dream_real.py`; its safety settings and graceful return remain in the runner.
 
@@ -32,17 +32,19 @@ MAKERMODSLAB_HOME="$HOME/.makermods/makermodslab-viscous" uv run makermodslab --
 
 Open the frontend address printed by the launcher (normally `http://localhost:8080`); select **Dream-1 Playground** on the Launchpad, or open `/dream`. Development mode serves the new source without changing `frontend/dist`. This branch does not ship a hand-built dist bundle.
 
-1. Select the single Viscous follower record. This UI exposes the existing aquarium runner, whose tank model, tool point and boxes must already be commissioned for this rig. Adding another Viscous record is not commissioning another environment.
+1. Select the single Viscous follower record, including `viscous_waterproof_01_dry_air` for its own head camera. In **Settings → Environment**, choose **Tank** (the default) or **Dry air**. Dry air uses the approved same-mount desk configuration: the back post and desk floor remain protected; the retired tank sides and rim are beyond reach. The arm/tool calibration still must be commissioned for this rig. Robot names do not choose the environment automatically.
 2. Enter the task. Open **Settings** or **Cameras** and map Front (`overhead`), Left (`wrist_l`) and Right (`wrist_r`). Camera names are record data. Rotations come from Robot settings. Black slots are deliberate; the right slot can also copy Left.
 3. Idle tiles use Lab's existing rotated camera preview and mark the runner's integer-pixel 16:9 crop. Check that the arm is inside that band. These are labelled **live camera, crop shown**.
 4. Click **Check cameras**. Lab first reserves the cameras and closes its previews; the child runs `--preview`, opening only the record's cameras. The tiles now show the exact 320×176 JPEGs from the client's request observation, plus the inputs id. This does not connect the arm or contact Dream.
-5. Review the images, then click **Inputs look right** yourself. This is the only action that invokes `dream.input_check <id>`. A changed prompt or mapping clears the page's review, and a new run requires a fresh page camera check, so do the final review with the final settings. A failed/expired review requires another check.
+5. Review the images, then click **Inputs look right** yourself. This is the only action that invokes `dream.input_check <id>`. A changed environment, prompt or mapping clears the page's review, and a new run requires a fresh page camera check, so do the final review with the final settings. A failed/expired review requires another check.
 6. Click **Run**. This runs the dry run with the live settings on fakes, then opens a confirmation dialog containing the runner's verbatim **Joints that may move (ALL SEVEN)** block and live-readiness refusals. A plan expires after 20 minutes or a record change; it also expires at server restart. Only **Confirm and run** starts a session.
-7. After confirmation, Lab claims a `dream` session and attaches the tab's lease before letting the worker launch anything. It starts the standalone red stop button first. If the button cannot stay open, it reports how to start it by hand and never starts the runner. The live runner receives the plan id, pid file, and exactly its own Lab session id; every other idle/readiness refusal remains.
-8. Watch **Working on**, the phase/call count, last reason, peak torque/temperature, and the tiles. The page shows the newest JPEG in each actual request; it is not a continuously refreshed raw camera during a run. Telemetry is available below. The page heartbeats its own lease; leaving it abandoned causes the server to request a graceful return.
+7. After confirmation, Lab claims a `dream` session and attaches the tab's lease before letting the worker launch anything. It starts the standalone red stop button first. If the button cannot stay open, it reports how to start it by hand and never starts the runner. The live runner receives the same environment as the plan and camera check, the plan id, pid file, and exactly its own Lab session id; every other idle/readiness refusal remains.
+8. Watch **Working on**, the environment, phase/call count, last reason, peak torque/temperature, and the tiles. The page shows the newest JPEG in each actual request; it is not a continuously refreshed raw camera during a run. Telemetry is available below. The page heartbeats its own lease; leaving it abandoned causes the server to request a graceful return.
 9. **Return to rest**, lease expiry, shutdown and supervision errors request a remote key press from the independent red button. The button alone signals the runner: SIGTERM means STOP only; SIGUSR1 means physical-click release-all. Repeated remote requests and Space/Enter/Escape never release torque, including during a hold or with stale status. A physical click at least one second after STOP, or a click while the runner is holding, sends SIGUSR1. Every remote request logs its source in the button window and supervisor log. If the button disappears, the runner initiates its normal return internally (`stop button gone`), without a signal. A frozen button also triggers this internal stop after its first heartbeat becomes more than two seconds old (`stop button not responding`).
 
 The normal safety preparations from the [runner README](../scripts/viscous-dream1/real/README.md) and [tank plan](dream1-tank.md) still apply, including the base placement and supervision. This page does not commission the arm, validate the physical camera placement, or approve its own inputs.
+
+The Environment choice stays in page state, like the other run settings, and resets to Tank on reload. Live and replay status show the recorded environment. A start requesting a different environment from its cached plan is refused before launching supervision; the runner also binds the environment and both boundary-file hashes into its plan id. Tank retains its existing plan-id calculation.
 
 ## Deployment settings and saved data
 

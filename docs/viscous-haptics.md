@@ -2045,6 +2045,30 @@ Viscous frontend URDF is registered. Review and supervised Mac acceptance
 remain; this does not mark the powered B3 goal complete. Offline report and
 screenshots are in `~/dream-page-ref/REPORT.md` on gavin-linux.
 
+### Dry air in the Dream page (2026-11-16, B3, offline)
+
+Gavin demos Dream-1 to Stanford on 2026-11-17 and wants to run from Lab on
+his MacBook tonight. The approved dry-air commits are integrated into
+`feat/viscous-dream-page`, preserving the page's supervised stop/release,
+heartbeat, view and session identity hooks. Settings now selects Tank
+(default) or Dry air for plan, camera preview and live argv. Confirmation
+includes the selected environment and boundary paths; status records it.
+The start options must match the cached plan's environment before the worker
+can launch; the runner's environment-bound plan id remains the final gate.
+Settings stay in page state. The picker accepts any eligible Viscous record,
+including `viscous_waterproof_01_dry_air` with its different head camera.
+This selects the approved same-mount desk boundaries; it does not commission
+a new physical setup. No hardware, live runs, input approvals or Dream calls.
+Offline evidence and pushed SHA: `~/dream-page-ref/REPORT.md`, Dry air section.
+Validation: 479 targeted Python tests pass; final full pytest 5,037 pass,
+25 skip, only the same two baseline failures (commissioned cal-f fixture and
+optional Pinocchio). All 625 frontend tests pass; lint retains the same 34
+warnings, both TypeScript projects and an external-directory production build
+pass. OpenAPI regenerated and freshness checked. Default/explicit Tank stub
+plans are identical, id `59835f242e`; Dry air is `efc3252a7c`. No dist,
+lockfile, stop-button or run-media changes. Supervised Mac acceptance is still
+pending.
+
 ### To-do (open items, in priority order; tick and date them, don't delete)
 
 - [ ] **Dream-1 on the real arm in the tank** (Gavin, 2026-11-07: "can we now
