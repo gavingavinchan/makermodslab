@@ -47,7 +47,7 @@ def test_left_default_state_and_pinned_plan_ids():
     assert core.dream_state(fixtures.POSE, jmap, rest, "offline", "left") == expected
     plan = fixtures.EnvironmentTest().plan
     assert plan()["plan_id"] == "c6c40272db"
-    assert plan("dry_air")["plan_id"] == "bbbd9962e4"
+    assert plan("dry_air")["plan_id"] == "468746b661"  # 2026-11-17: dry-air tcp held 20 cm out
     assert plan("dry_air") == plan("dry_air", arm_slot="left")
     right = plan("dry_air", arm_slot="right")
     assert right["plan_id"] != plan("dry_air")["plan_id"]
