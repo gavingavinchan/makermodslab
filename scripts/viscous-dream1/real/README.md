@@ -529,3 +529,140 @@ under gravity. Supporting the arm before pressing RELEASE ALL is the person's jo
   motor pan 176.59, lift -122.9, elbow 99.34, flex 8.56, yaw -9.0, roll -3.99; tcp 462 mm out, 143 mm
   up, inside the box. Re-record with `record_start_pose.py` and regenerate if the scene changes.
 - Gripper mapping (closed -2.9, open -115.1) follows the Maker convention; confirm on the arm.
+
+## Empirical dry-air gravity sweep (offline build, 2026-11-17)
+
+Goal B1/B3: Gavin wants the waterproof unit's dry-air holding load measured
+empirically because the waterproof connectors make its CAD inertials inaccurate.
+`--rehearse --gravity-sweep --environment dry_air` replaces the rehearsal hold
+with a deterministic STAR around the arm file's Dream start pose. The executor
+is still `Episode`: its fresh readings, trips, status file/button, re-anchor,
+return, gripper release and HOLD-on-refusal are shared with rehearsal.
+
+```bash
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/dream_real.py \
+  --rehearse --gravity-sweep --environment dry_air --no-run-data --out /tmp/gravity-sweep
+```
+
+This form opens no hardware/cameras, imports no Dream client, reads no
+credentials and makes no Lab/network query. It plans in the torque-off start
+gate, prints the coverage/predictor/loads/duration, then runs the complete
+schedule on `FakeArm`. `--no-run-data` keeps this example's evidence in `/tmp`;
+omit it to retain the ordinary raw bundle. Fake samples are marked and the
+fitter refuses them. The fake's nominal heating is slowed for a long sweep;
+its telemetry is not an empirical load/thermal prediction.
+
+Sweep joints that may move: **shoulder_lift, elbow_flex, wrist_flex, wrist_yaw,
+wrist_roll**. Pan holds the hub's command during the STAR. The normal approach
+and returns may also move pan. Engage holds the measured gripper once; no
+subsequent gripper targets are sent during approach or sweep, and the ordinary
+stop releases it. Geometry uses its measured starting opening. As with the
+existing rehearsal, a person must not change the opening during execution.
+
+Defaults and checks:
+
+- `--sweep-seed 0 --sweep-poses 30 --sweep-hold-s 2 --sweep-max-torque-nm 6
+  --sweep-hot-c 65 --sweep-start-at 0`. Holds must be 1–60 s to provide a full
+  last second; planning torque may be lowered from 6 Nm and hub heat from 65 C.
+- Motor-degree box: hub +/-65 lift, +/-85 elbow, +/-70 flex, +/-40 yaw,
+  +/-90 roll, intersected with soft limits less 8 deg. `--sweep-box` accepts
+  JSON absolute bounds for exactly those five joints. The 6 deg +/- approach
+  applies to lift/elbow/flex together; approach endpoints also keep the 8 deg
+  limit margin. A pose whose other side fails retains its proved direction;
+  the report lists these poses by zero-based index.
+- Draw max(96, 24*count) candidates using numpy's seeded generator. Prove all
+  retained candidates before farthest-point thinning over all five joints,
+  then order nearest-first. Refuse if fewer than the requested count pass.
+  The STAR is hub -> plus approach -> pose/hold -> minus approach -> pose/hold
+  -> hub, omitting a refused side. A rejected side does not move the planner's
+  starting point for the other side.
+- Every 20 Hz STAR substep must pass strict limits, workspace and mesh guard
+  checks, including its predicted sag (`q - degrees(torque/kp)`, no clipping
+  through a limit). Holding load must fit the cap everywhere on the legs,
+  not just at the sampled poses. Each commanded and sagged substep proves a
+  straight return to the hub. The existing stop's within-lag shortcut to the
+  first reverse-approach waypoint is also proved, using its actual return
+  guard. These checks do not alter the normal stop or its runtime refusal.
+- Refuse tank, Dream mode, any trip-disabling flag, speed >15 deg/s, or weaker
+  trip thresholds than the runner defaults. The runtime torque tiers remain
+  12 Nm / 6.5 Nm for 5 s; lag, limp, overspeed and temperature remain enabled.
+  Approach, STAR and return all stay <=15 deg/s, including the CAN backstop.
+- At initial/subsequent hub visits, any winding >=65 C ends via `stop()` with
+  reason `sweep paused: hot`. The summary/phase prints `--sweep-start-at K`;
+  same seed/count/box/predictor gives the same poses, skipping the first K.
+  K equal to count means all poses are complete.
+- `ticks.jsonl` names every hold/direction. `samples.json` stores each completed
+  hold's zero-based pose index, last-motion sign per joint, approach side,
+  medians of pos/cmd/torque/temp over the last 1.0 s, and tick count. It is
+  mirrored atomically to the raw bundle as holds finish; a partial hold is
+  kept in ticks but not advertised as a completed sample. `sweep-plan.json`
+  records the actual checked poses and substeps. Runtime trips still use
+  measured feedback and are the protection against predictor error.
+
+The sweep plan id binds seed/count/hold/load/heat/resume/box, fixed delta and
+margin, candidate count, gains/map/CAD hash, predictor-file hash and fallback
+reference hash. Normal plans receive none of these fields: four pinned tank /
+dry-air x Dream / rehearsal IDs remain byte-identical. A changed file or
+robot record requires regenerating the id, including on a different station.
+
+### Fit and planning predictor
+
+`gravity_fit.py` accepts real dry-air `samples.json`, `ticks.jsonl` or their
+run folders; metadata must establish dry air, and fake runs are refused.
+For raw ticks it uses nonoverlapping >=0.5 s windows with every arm joint's
+position span <1 deg/s, no gaps >0.15 s or trips, and the entire window at
+least 1 s after a phase change. Only energized approach/Dream/hold/sweep
+phases qualify; stop/support readings do not. Last commanded motion per joint
+sets the Coulomb sign. Static external contact cannot be distinguished from
+gravity by this filter, which is a limitation of the existing logs.
+
+```bash
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/gravity_fit.py \
+  ~/dream-run-archive/mac-run-data/live-20261117T*/ticks.jsonl \
+  ~/dream-run-archive/mac-run-data/rehearse-live-20261117T*/ticks.jsonl \
+  --save-selected configs/viscous/viscous_waterproof_01/evidence/gravity-dry-air-selected.json
+```
+
+The output is `configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json`
+and its adjacent Markdown report. The selected windows are committed as
+portable evidence with source hashes. Inertia-free kinematic regressors use
+`motor_to_urdf.json` in both position and torque coordinates; Pinocchio locks
+the gripper at neutral. SVD identifies scaled static parameter combinations
+(columns and basis stored in JSON), then fits zero-centered ridge (0.01), six
+offsets and six signed Coulomb terms. Cross-validation recomputes the basis
+using training runs/poses only: leave one run out for logs, one pose out for
+sweep holds. CAD supplies only the reference RMS. Tests change every CAD
+mass/COM and verify that both the regressor and empirical solution stay the
+same. Existing unit-1 `GravityModel` callers retain identity coordinates.
+
+The log-only fit is **provisional and blocked from feedforward installation**.
+It has narrow coverage and poor wrist-roll R²; offsets/friction are weakly
+separated. Planner usability requires the matching robot/condition/map/URDF,
+finite parameters/friction/CV errors, static rank >=6 and worst held-out RMS
+<=1 Nm. Coulomb magnitude is added conservatively for load/sag planning. If
+unusable, CAD is scaled per joint against the nearest archived measured
+holding pose (not a fresh torque-off reading, which cannot measure holding
+load); near-zero CAD axes keep scale 1. The plan explicitly names this
+fallback and source. No new calibration measurement is claimed.
+
+No powered run, Dream call or OS signal was performed for this build. The
+later live command uses the same arguments plus `--live --plan-id <id>
+--pid-file /tmp/dream_real.pid`, after the separate review and Gavin's
+existing button/power-switch procedure. Never use the older October
+collector as this sweep's executor.
+
+Offline validation evidence:
+`configs/viscous/viscous_waterproof_01/evidence/gravity-sweep-offline-20261117.json`
+contains the 30 checked poses, coverage/loads, 36 completed fake holds, plan id
+`0c39930eda`, normal stop result and test counts. The fake ran for 331.05 s
+including approach and return. Focused files: runner 104, gravity model 10,
+sweep/fitter 22, feedforward 16 (152 passed). Ruff passes. Full suite:
+4,784 passed, 18 skipped, three failures described in `docs/viscous-haptics.md`.
+
+To reproduce full-suite validation while keeping the offline signal/device/
+network rules (the helper is opt-in and leaves ordinary pytest unchanged):
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PWD:$PWD/scripts/viscous-dream1/real \
+  ~/Documents/makermodslab-viscous/.venv/bin/python -m pytest -q --maxfail=0 -p offline_test_guard tests/
+```

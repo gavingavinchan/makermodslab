@@ -2114,3 +2114,15 @@ class DryAirFastTest(unittest.TestCase):
         self.assertEqual(limiter._last["shoulder_lift"], 123)
         self.assertEqual(limiter.speed_limit_deg_s, 15)
         self.assertEqual(back.call_args.kwargs["speed_deg_s"], 15)
+
+
+def test_all_existing_environment_and_mode_plan_ids_are_pinned():
+    fixture = EnvironmentTest()
+    expected = {
+        ("tank", False): "c6c40272db",
+        ("tank", True): "ad64376fe7",
+        ("dry_air", False): "28cf40af5d",
+        ("dry_air", True): "80fcefd771",
+    }
+    for (env, rehearse), plan_id in expected.items():
+        assert fixture.plan(env, rehearse)["plan_id"].encode() == plan_id.encode()

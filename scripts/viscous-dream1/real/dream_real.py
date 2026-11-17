@@ -419,7 +419,8 @@ class FakeArm:
 
     # A real MIT-held joint settles short of its goal by its standing error: `sag` (deg, per arm joint)
     # is that error, e.g. {"shoulder_lift": 7.45} as measured at the start pose on 2026-11-08.
-    def __init__(self, start, cameras, clock, scenario="nominal", sag=None):
+    def __init__(self, start, cameras, clock, scenario="nominal", sag=None, heat_per_tick=0.002):
+        self.heat_per_tick = heat_per_tick
         self.pos = dict(start)
         self.target = dict(start)
         self.sag = dict.fromkeys(core.MOTORS, 0.0) | dict(sag or {})
@@ -476,7 +477,7 @@ class FakeArm:
             if self._drooping():
                 self.pos["elbow_flex"] -= 0.6  # cannot follow (weak or blocked): droops at 12 deg/s
         torque = self.torque()
-        temp = dict.fromkeys(core.MOTORS, 31.0 + 0.002 * self.ticks)
+        temp = dict.fromkeys(core.MOTORS, 31.0 + self.heat_per_tick * self.ticks)
         if self.scenario == "torque" and self.ticks > 70:
             torque["shoulder_lift"] = 12.8  # over the 12 Nm instant tier
         if self.scenario == "sustained" and self.ticks > 70:
@@ -555,7 +556,7 @@ class FakeArm:
                     self.pos[m] -= self.FALL_DEG_PER_TICK
                 elif m not in self.stuck:
                     self.pos[m] = start[m] + (self._settle(m, v) - start[m]) * i / steps
-            temp = dict.fromkeys(core.MOTORS, 31.0 + 0.002 * self.ticks)
+            temp = dict.fromkeys(core.MOTORS, 31.0 + self.heat_per_tick * self.ticks)
             if watch is not None and (trips := watch(dict(self.pos), self.torque(), temp, dict(self.target))):
                 self.events.append(f"return leg: ended by {trips[0].name} after {i}/{steps} steps")
                 return False, f"{trips[0].name}: {trips[0].detail}"
@@ -686,7 +687,7 @@ class LabArm:
 
         # MakerFollower.send_action writes only the motors in the action, so a released
         # gripper gets no further MIT frames from here.
-        motors = core.ARM if self.gripper_released else core.MOTORS
+        motors = core.ARM if self.gripper_released or getattr(self, "freeze_gripper", False) else core.MOTORS
         remote_can.send_action(
             self.robot,
             {f"{m}.pos": target[m] for m in motors},
@@ -1219,6 +1220,9 @@ class Settings:
     replan_after: int = 30
     arm_slot: str = "left"
 
+    sweep: object = None  # gravity_sweep.SweepSettings; opt-in only
+    sweep_identity: dict | None = None
+
     def disabled_run_trips(self) -> set[str]:
         return {name for name in ("lag", "limp", "overspeed") if getattr(self, f"no_{name}_trip")}
 
@@ -1253,7 +1257,11 @@ class Episode:
         environment: Environment = TANK_ENVIRONMENT,
         seam_join=None,
     ):
-        self.speed_cap = environment.arm_speed_cap_deg_s
+        self.speed_cap = 15.0 if settings.sweep else environment.arm_speed_cap_deg_s
+        if settings.sweep:
+            settings.sweep.check()
+            if environment.name != "dry_air" or dream is not None or settings.disabled_run_trips():
+                raise RefusedError("gravity sweep requires dry-air rehearsal with every trip enabled")
         if not 0 < settings.speed_deg_s <= self.speed_cap:
             raise RefusedError(
                 f"arm speed {settings.speed_deg_s} deg/s is above the hard {self.speed_cap} deg/s cap"
@@ -1329,6 +1337,10 @@ class Episode:
         self.t0 = clock()
         self.ticks = log_dir / "ticks.jsonl"
         self.chunks = log_dir / "chunks.jsonl"
+        self.sweep_observation = None
+        self.sweep_ticks = []
+        self.sweep_samples = []
+        self.sweep_direction = dict.fromkeys(core.ARM, 0)
 
     def _write(self, path, obj):
         line = json.dumps(obj, default=float) + "\n"
@@ -1596,6 +1608,60 @@ class Episode:
             )
         self.planned = dict(target)
 
+    def _sweep_stop_clear(self, pose):
+        first = self.legs_from(pose)[0]
+        if first == self.dream_start:
+            return True  # the planner already proves every substep -> hub
+        return self.guard.path_clear(pose, first)
+
+    def _save_sweep_samples(self):
+        data = {
+            "environment": self.environment.metadata(),
+            "robot": "viscous_waterproof_01",
+            "fake": isinstance(self.arm, FakeArm),
+            "samples": self.sweep_samples,
+        }
+        core.atomic_json(self.log_dir / "samples.json", data)
+        if self.mirror_dir is not None:
+            core.atomic_json(self.mirror_dir / "samples.json", data)
+
+    def _sweep_sample(self, now, reading):
+        """Observe the command sent on the preceding tick, after all trips passed."""
+        info = self.sweep_observation
+        if not info:
+            return None
+        if "hub" in info:
+            if max(reading.temp.values()) >= self.s.sweep.hot_c:
+                self.summary["sweep_resume_start_at"] = info["hub"]
+                self._phase("sweep paused: hot", f"resume with --sweep-start-at {info['hub']}")
+                return "sweep paused: hot"
+            return None
+        self.sweep_ticks.append(
+            {
+                "t": now,
+                "pos": reading.pos,
+                "cmd": dict(self.commanded),
+                "torque": reading.torque,
+                "temp": reading.temp,
+            }
+        )
+        if info["last"]:
+            tail = [r for r in self.sweep_ticks if r["t"] > now - 1.0 + 1e-8]
+            sample = {
+                "pose": info["pose"],
+                "direction": dict(self.sweep_direction),
+                "approach": info["direction"],
+                "ticks": len(tail),
+                **{
+                    key: {n: float(np.median([r[key][n] for r in tail])) for n in core.MOTORS}
+                    for key in ("pos", "cmd", "torque", "temp")
+                },
+            }
+            self.sweep_samples.append(sample)
+            self._save_sweep_samples()
+            self.sweep_ticks.clear()
+        return None
+
     def run(self) -> dict:
         frames_fed, queue, approach = 0, collections.deque(), collections.deque()
         reason = "finished"
@@ -1608,6 +1674,7 @@ class Episode:
         timeline = []
         if self.environment.name == "dry_air":
             self.summary["pacing_timeline"] = timeline
+        sweep_queue = collections.deque()
         self._phase("connect")
         self.arm.connect()
         try:
@@ -1619,10 +1686,51 @@ class Episode:
                 measured = ", ".join(f"{m} {v:.1f}" for m, v in self.start_pose.items())
                 raise RefusedError(f"start pose refused (measured {measured}): " + "; ".join(problems))
             legs = self.plan_approach(self.start_pose, self.dream_start)
+            if self.s.sweep:
+                import gravity_sweep
+
+                if self.s.sweep_identity is not None and self.s.sweep.identity() != self.s.sweep_identity:
+                    raise RefusedError("sweep predictor inputs changed after the plan id was printed")
+                try:
+                    visits, report = gravity_sweep.plan(
+                        self.s.sweep,
+                        self.dream_start,
+                        self.limits,
+                        self.box,
+                        self.guard,
+                        self.s.speed_deg_s,
+                        say=self.say,
+                        stop_path_clear=self._sweep_stop_clear,
+                    )
+                except ValueError as error:
+                    raise RefusedError(str(error)) from error
+                report["total_duration_s"] = (
+                    report["sweep_duration_s"] + sum(map(len, legs)) * core.ROW_DT_S * 2
+                )
+                self.summary["sweep"] = report
+                core.atomic_json(self.log_dir / "sweep-plan.json", {"report": report, "visits": visits})
+                core.atomic_json(
+                    self.log_dir / "meta.json",
+                    {
+                        "environment": self.environment.metadata(),
+                        "fake": isinstance(self.arm, FakeArm),
+                        "kind": "rehearse-dry" if isinstance(self.arm, FakeArm) else "rehearse-live",
+                        "robot": "viscous_waterproof_01",
+                    },
+                )
+                self._save_sweep_samples()
+                if self.say:
+                    self.say("Sweep plan: " + json.dumps(report, default=str))
+                sweep_queue.append(("sweep: initial hub", self.dream_start, {"hub": self.s.sweep.start_at}))
+                sweep_queue.extend(gravity_sweep.actions(visits, self.s.sweep))
             for k, steps in enumerate(legs, 1):
                 approach.extend((k, i == len(steps) - 1, step) for i, step in enumerate(steps))
             if self.stop_event.is_set():
                 raise RefusedError("stop signal before energizing")
+            if self.s.sweep:
+                # Engage holds the measured gripper once; no subsequent gripper
+                # targets during the sweep or its approach. Stop still releases it.
+                self.arm.freeze_gripper = True
             self._phase("engage", "torque on, holding the measured rest")
             self.commanded = self.arm.engage()
             self.energized = True
@@ -1689,6 +1797,14 @@ class Episode:
                 if self.stop_event.is_set():
                     reason = "stop signal"
                     break
+                if self.s.sweep and self.phase.startswith("sweep"):
+                    paused = self._sweep_sample(now, reading)
+                    if paused:
+                        reason = paused
+                        break
+                    if not sweep_queue:
+                        reason = "gravity sweep complete"
+                        break
                 if self.phase == "hold" and now >= hold_until:
                     reason = f"held {self.s.hold_s:g} s at the Dream start pose"
                     break
@@ -1699,6 +1815,17 @@ class Episode:
                     self.summary["approach_substeps"] += 1
                     if leg_end:
                         self.trail.append(dict(self.commanded))
+                elif self.s.sweep and sweep_queue:
+                    phase, self.commanded, self.sweep_observation = sweep_queue.popleft()
+                    if phase != self.phase:
+                        self.phase = phase
+                        self._phase(phase)
+                    for n in core.ARM:
+                        delta = self.commanded[n] - previous[n]
+                        if abs(delta) > 1e-8:
+                            self.sweep_direction[n] = int(np.sign(delta))
+                    self._check_speed(self.commanded)
+                    self.summary["substeps_sent"] += 1
                 elif queue:
                     self.commanded = queue.popleft()
                     self._check_speed(self.commanded)
@@ -1711,7 +1838,10 @@ class Episode:
                     timeline[-1]["idle_s"] += core.ROW_DT_S
                 self.arm.send(self.commanded, previous)  # an empty queue re-sends the hold target
                 if self.phase == "approach" and not approach:
-                    if self.dream is None:
+                    if self.s.sweep:
+                        self.phase = "sweep"
+                        self._phase("sweep", "STAR from the Dream start pose; all trips enabled")
+                    elif self.dream is None:
                         self.phase, hold_until = "hold", now + self.s.hold_s
                         self._phase(
                             "hold", f"at the Dream start pose until a stop signal or {self.s.hold_s:g} s"
@@ -2417,6 +2547,14 @@ def build_plan(
         safety["pacing"] = plan["pacing"]
     if settings.arm_slot == "right":
         safety["arm_slot"] = "right"
+    if settings.sweep:
+        plan["gravity_sweep"] = settings.sweep.identity()
+        plan["sweep_joints_that_move"] = list(core.ARM[1:])
+        plan["run"] = "rehearse: approach, empirical gravity STAR sweep, normal stop; no Dream"
+        plan["speed"]["hard_arm_cap_deg_s"] = 15.0
+        plan["trips"]["speed"] = "any planned arm substep faster than 15 deg/s -> stop"
+        safety["run"] = plan["run"]
+        safety["gravity_sweep"] = plan["gravity_sweep"]
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2429,7 +2567,16 @@ def print_plan(plan):
         f"Environment: {env['name']}\n  keep-out: {env['keepout_file']}"
         f"\n  workspace box: {env['workspace_box_file']}"
     )
-    print("Joints that may move (ALL SEVEN): motor limits / commanded window / IK limits / sign")
+    if "gravity_sweep" in plan:
+        print("Joints that may move in sweep: " + ", ".join(plan["sweep_joints_that_move"]))
+        print(
+            "Approach/returns: six arm joints; sweep pan fixed at hub; gripper command fixed as measured throughout."
+        )
+    print(
+        "Joint limits / commanded window / IK limits / sign"
+        if "gravity_sweep" in plan
+        else "Joints that may move (ALL SEVEN): motor limits / commanded window / IK limits / sign"
+    )
     for m, j in plan["joints_that_move"].items():
         print(
             f"  {m:13s} {j['motor_limits_deg']} -> {j['commanded_within_deg']}  IK {j['ik_limits_deg']}  "
@@ -2530,7 +2677,14 @@ def run_dry(args, ctx) -> int:
         cameras = (
             [] if args.rehearse else [c["name"] for c in ctx["record"].get("cameras") or []] + ["(fake)"]
         )
-        arm = FakeArm(start, cameras, clock, scenario, sag=START_POSE_SAG if scenario == "far" else None)
+        arm = FakeArm(
+            start,
+            cameras,
+            clock,
+            scenario,
+            sag=START_POSE_SAG if scenario == "far" else None,
+            heat_per_tick=0.0002 if ctx["settings"].sweep else 0.002,
+        )
         if args.rehearse:
             dream = None
         elif ctx["dream_problem"] is None and not args.internal_stub:
@@ -2554,11 +2708,19 @@ def run_dry(args, ctx) -> int:
             else None
         )
 
-        def sleep(dt, clock=clock, stop_event=stop_event, abort_event=abort_event, scenario=scenario):
+        def sleep(
+            dt,
+            clock=clock,
+            stop_event=stop_event,
+            abort_event=abort_event,
+            scenario=scenario,
+            settings=settings,
+        ):
             clock.sleep(dt)
             if scenario == "signal" and clock.t > 1006.0:
                 stop_event.set()
-            if clock.t > 1900.0:  # a dry run never waits forever (a held return): the fake RELEASE ALL
+            ceiling = 1900.0 + (settings.sweep.poses * 120 if settings.sweep else 0)
+            if clock.t > ceiling:  # a dry run never waits forever (a held return): the fake RELEASE ALL
                 stop_event.set()
                 abort_event.set()
 
@@ -2778,7 +2940,7 @@ def _run_preview(args, ctx) -> int:
 def live_facts(args, ctx, ledger) -> core.LiveFacts:
     arm, urdf = ctx["arm"], ctx["urdf_bytes"]
     dream_tcp = None
-    if ctx["dream_problem"] is None:
+    if not ctx["settings"].sweep and ctx["dream_problem"] is None:
         from dream import arm_file
 
         dream_tcp = arm_file.tool_point_problem(arm, urdf)  # Dream's own verdict as well as the mirror
@@ -2789,16 +2951,23 @@ def live_facts(args, ctx, ledger) -> core.LiveFacts:
         acked_signs=args.ack_unverified_sign or [],
         plan_id=ctx["plan"]["plan_id"],
         plan_id_given=args.plan_id,
-        lab_holder=lab_holder(args.lab_url, args.lab_down_ok),
-        port_holders=port_holders(ctx["record"]["follower_port"]),
+        lab_holder="not checked offline"
+        if ctx["settings"].sweep and not args.live
+        else lab_holder(args.lab_url, args.lab_down_ok),
+        port_holders=[]
+        if ctx["settings"].sweep and not args.live
+        else port_holders(ctx["record"]["follower_port"]),
         missing_slots=ctx["missing"],
         guard_problem=ctx["guard"].problem,
         dream_problem=ctx["dream_problem"],
         ledger_remaining=ledger.remaining(),
         max_calls=args.max_calls,
         arm_file_explicit=args.arm_file is not None,
-        credentials_present=bool(os.environ.get("DREAM_API_KEY"))
-        or Path("~/.dreamlabs/credentials").expanduser().is_file(),
+        credentials_present=False
+        if ctx["settings"].sweep
+        else (
+            bool(os.environ.get("DREAM_API_KEY")) or Path("~/.dreamlabs/credentials").expanduser().is_file()
+        ),
     )
 
 
@@ -2909,8 +3078,8 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
         )
     print(
-        f"{'REHEARSAL (no Dream, no billed call). ' if args.rehearse else ''}Energizing next: ALL SEVEN joints may "
-        f"move (plan {ctx['plan']['plan_id']}), arm <= {ctx['settings'].speed_deg_s:g} deg/s. Stop: the red button "
+        f"{'REHEARSAL (no Dream, no billed call). ' if args.rehearse else ''}Energizing next: "
+        f"{'shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, wrist_yaw, wrist_roll (sweep pan fixed at hub; gripper held as measured)' if ctx['settings'].sweep else 'ALL SEVEN joints may move'} (plan {ctx['plan']['plan_id']}), arm <= {ctx['settings'].speed_deg_s:g} deg/s. Stop: the red button "
         f"(stop_button.py --pid-file {args.pid_file or '<none>'}), Ctrl-C or kill -TERM {os.getpid()}; a second press "
         "releases all torque at once; the power switch is the hard stop.",
         flush=True,
@@ -2969,6 +3138,17 @@ def main(argv=None) -> int:
     p.add_argument(
         "--hold-s", type=float, default=DEFAULT_HOLD_S, help="--rehearse: hold time at the start pose"
     )
+    p.add_argument(
+        "--gravity-sweep", action="store_true", help="dry-air rehearsal: empirical gravity STAR sweep"
+    )
+    p.add_argument("--sweep-seed", type=int, default=0)
+    p.add_argument("--sweep-poses", type=int, default=30)
+    p.add_argument("--sweep-hold-s", type=float, default=2.0)
+    p.add_argument("--sweep-max-torque-nm", type=float, default=6.0)
+    p.add_argument("--sweep-hot-c", type=float, default=65.0)
+    p.add_argument("--sweep-start-at", type=int, default=0)
+    p.add_argument("--sweep-box", type=json.loads, help="JSON motor-degree bounds for the five sweep joints")
+    p.add_argument("--sweep-fit", type=Path, help="planning predictor JSON; default waterproof dry-air fit")
     p.add_argument("--robot", default="viscous_waterproof_01")
     p.add_argument(
         "--environment",
@@ -3089,6 +3269,26 @@ def main(argv=None) -> int:
         p.error("--replan-after must be in 1..48")
     if not math.isfinite(args.stub_latency_s) or args.stub_latency_s < 0:
         p.error("--stub-latency-s must be finite and nonnegative")
+    if args.gravity_sweep:
+        if not args.rehearse or args.environment != "dry_air" or args.preview:
+            p.error("--gravity-sweep requires --rehearse --environment dry_air")
+        if any(getattr(args, f"no_{name}_trip") for name in ("lag", "limp", "overspeed")):
+            p.error("--gravity-sweep keeps EVERY trip enabled")
+        if args.speed_deg_s > 15:
+            p.error("--gravity-sweep speed must be <=15 deg/s")
+        # The sweep retains the runner's default protection thresholds; do not let
+        # an inherited dry-air launch line silently weaken them.
+        defaults = {
+            "lag_trip_deg": 10.0,
+            "shoulder_lag_trip_deg": 20.0,
+            "torque_trip_nm": 12.0,
+            "torque_cap_nm": 6.5,
+            "torque_cap_s": 5.0,
+            "temp_trip_c": 80.0,
+            "overspeed_deg_s": 30.0,
+        }
+        if any(getattr(args, n) > v for n, v in defaults.items()):
+            p.error("--gravity-sweep must not weaken default trip thresholds")
     speed_cap = ENVIRONMENTS[args.environment].arm_speed_cap_deg_s
     if not 0 < args.speed_deg_s <= speed_cap:
         p.error(f"--speed-deg-s must be in (0, {speed_cap:g}]: the hard arm speed cap")
@@ -3199,7 +3399,24 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         replan_after=args.replan_after,
         arm_slot=args.arm_slot,
     )
-    dream_problem = add_dream_venv(args.dream_venv)
+    if args.gravity_sweep:
+        from gravity_sweep import DEFAULT_OUT, SweepSettings
+
+        settings.sweep = SweepSettings(
+            args.sweep_seed,
+            args.sweep_poses,
+            args.sweep_hold_s,
+            args.sweep_max_torque_nm,
+            args.sweep_hot_c,
+            args.sweep_start_at,
+            args.sweep_box,
+            args.sweep_fit or DEFAULT_OUT,
+        )
+        try:
+            settings.sweep_identity = settings.sweep.identity()
+        except ValueError as error:
+            p.error(str(error))
+    dream_problem = "not used in gravity sweep" if settings.sweep else add_dream_venv(args.dream_venv)
     if args.overlap:
         try:
             from dream import seam_join  # noqa: F401
@@ -3244,10 +3461,13 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         "bundle": bundle,
     }
     if not args.live and not args.preview:
-        print(
-            f"lab: {lab_holder(args.lab_url, True) or 'idle'}; follower port holders: "
-            f"{port_holders(record['follower_port']) or 'none'}"
-        )
+        if settings.sweep:
+            print("offline sweep: Lab and port readiness deferred to live preflight")
+        else:
+            print(
+                f"lab: {lab_holder(args.lab_url, True) or 'idle'}; follower port holders: "
+                f"{port_holders(record['follower_port']) or 'none'}"
+            )
         out.mkdir(parents=True, exist_ok=True)
         core.atomic_json(out / "plan.json", plan)
         facts = live_facts(args, ctx, core.Ledger(LEDGER, LEDGER_CAP))

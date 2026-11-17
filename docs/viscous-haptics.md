@@ -2897,3 +2897,35 @@ the evidence is available in a fresh clone. Full report:
 No hardware, camera, Dream client/call, API key, stop button or process signal
 was used for this work. The other checkout was read only. The empirical sweep
 and its offline validation are documented in the real runner's README.
+
+2026-11-17, offline empirical sweep (B1/B3, branch `feat/viscous-gravity-comp`):
+added a dry-air-only STAR within the real runner's rehearsal, rather than
+executing with the October collector (which lacks the runner's guards/button).
+All candidates are planned before engage, with command/sag checks and return
+proofs at each 20 Hz step, including the existing stop's near-hub shortcut.
+Five sweep joints are explicitly listed; pan holds the hub and gripper targets
+stop after the measured-position engage. Holds save last-second medians and
+per-joint approach signs. Heat at a hub uses the normal stop and a resumable
+pose index. The log predictor is provisional, uses kinematics + zero-prior
+SVD/ridge, and cannot be installed as feedforward. Fallback is explicitly
+anchored to the nearest archived holding pose because a fresh torque-off
+start cannot supply holding torques. See
+[sweep operation and fitter details](../scripts/viscous-dream1/real/README.md#empirical-dry-air-gravity-sweep-offline-build-2026-11-17).
+
+Full-suite offline validation completed: 4,784 passed, 18 skipped, 3 unrelated
+failures (the `cal-f` Viscous profile fixture and two frontend LFS mesh-pointer
+checks). Four of the skips explicitly avoid tests that signal real subprocesses;
+14 are the suite's existing skips. The audit guard prevented real signals,
+hardware-device opens and external network connects; local test sockets were
+allowed. An initial over-broad socket block hit the repository's ten-failure
+cutoff, then the corrected complete run finished with the three failures above.
+No unrelated profile/frontend changes were made. Focused results and final
+fake sweep output are recorded with the sweep evidence next to the fit.
+
+Final focused checks: runner 104, gravity model 10, new sweep/fitter 22,
+feedforward 16 = **152 passed**; Ruff passes. The default FakeArm sweep:
+30 poses / 36 holds / 331.05 s with normal return and torque off, plan
+`0c39930eda`. The full test audit helper is committed as opt-in
+`offline_test_guard.py`; exact reproduction commands and complete numeric
+coverage/load evidence live in the README and
+`configs/viscous/viscous_waterproof_01/evidence/gravity-sweep-offline-20261117.json`.
