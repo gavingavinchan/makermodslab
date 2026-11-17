@@ -54,11 +54,29 @@ def report(path, arm_file=None):
         ik = dict(zip(core.ARM, jmap.to_ik(q), strict=True))
         return float((core.fk(joints, "dream_base", "wrist_roll_link", ik) @ tcp)[2] * 1000)
 
+    from gravity_fit import KP
+
     table = {
         n: {
             "cmd_minus_pos_deg": float(np.median([r["cmd"][n] - r["pos"][n] for r in holds])),
             "torque_nm": float(np.median([r["torque"][n] for r in holds])),
             "ff_nm": float(np.median([r.get("ff", {}).get(n, 0.0) for r in holds])),
+            # Telemetry is total motor effort, including ff. Means make the signed effort balance
+            # additive; medians above retain the original sag report's settled summary.
+            "mean_ff_nm": float(np.mean([r.get("ff", {}).get(n, 0.0) for r in holds])),
+            "mean_stiffness_nm": float(
+                np.mean([KP[n] * np.radians(r["cmd"][n] - r["pos"][n]) for r in holds])
+            ),
+            "mean_torque_minus_effort_nm": float(
+                np.mean(
+                    [
+                        r["torque"][n]
+                        - KP[n] * np.radians(r["cmd"][n] - r["pos"][n])
+                        - r.get("ff", {}).get(n, 0.0)
+                        for r in holds
+                    ]
+                )
+            ),
         }
         for n in core.ARM
     }
@@ -84,6 +102,12 @@ def main(argv=None):
     print(f"{'joint':14s} {'cmd-pos deg':>12s} {'torque Nm':>12s} {'ff Nm':>12s}")
     for n, v in data["joints"].items():
         print(f"{n:14s} {v['cmd_minus_pos_deg']:12.3f} {v['torque_nm']:12.3f} {v['ff_nm']:12.3f}")
+    print("Signed effort balance (means, Nm; settled velocity term omitted):")
+    for n, v in data["joints"].items():
+        print(
+            f"{n:14s} kp*err {v['mean_stiffness_nm']:+.3f} ff {v['mean_ff_nm']:+.3f} "
+            f"torque - (kp*err + ff) {v['mean_torque_minus_effort_nm']:+.3f}"
+        )
     print(f"Hand vertical sag: {data['vertical_sag_mm']:.3f} mm (command TCP z - measured TCP z)")
     return 0
 

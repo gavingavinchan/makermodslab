@@ -1,0 +1,13 @@
+{
+  "baseline": {
+    "run": "rehearse-live-20261117T024005Z",
+    "ticks_sha256": "9eb3a1a2aee9953105cc7657930bd923864599d5be9ebe12819cdc4c8bb4f0a3",
+    "rows": 413
+  },
+  "gc25": {
+    "run": "rehearse-live-20261117T090749Z",
+    "ticks_sha256": "c732cc512e4a5c28776d968ca68d7029100c974c8ccb52ce148beef7f0d2e4ad",
+    "rows": 416
+  },
+  "fit_sha256": "272e60edbdd7c5aec2b775987624e7925280a83839ed3a8c3b85db581820cbbc"
+}

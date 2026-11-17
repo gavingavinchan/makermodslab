@@ -2978,3 +2978,18 @@ calibration), with full record identity bound to its plan. Full floor-sag
 allowance stays because region support fades to zero. Stop retains the hook
 through return/HOLD and ramps its scale to zero at rest before release;
 RELEASE ALL still skips it. Priority evidence: `~/codex_runs/gravity-p3/partA.md`.
+
+
+2026-11-17, gc25 incident analysis (B1/B3, offline): the archived 25% run
+commanded the post-scale/post-ramp/post-weight/clamp ff, not raw predictions.
+The old fit omitted -6.38/-7.82/-5.54 Nm nuisance offsets when commanding,
+producing 2.42/3.08/1.57 Nm shoulder/elbow/wrist support. The specified baseline
+actually measured 3.02/4.58/0.52 Nm in settled hold. Wrist effort increased to
+2.89 Nm between runs, while within the compensated hold its positive ff ramp
+reduced its lag. There is no basis for flipping wrist_flex's motor sign; the
+runs also differ in gripper configuration and approach history. Keep provisional
+wrist feedforward off (7340f21b), reject the bad fit through both command-model
+entry points, and report signed total-effort balance. Portable incident fixtures
+and regressions reproduce the data without Mac paths or hardware. Gravity and
+runner checks: 198 passed +31 subtests. Full numbers, limitations and provenance:
+[gc25 incident report](gravity-gc25.md). No hardware or live Dream/API calls.
