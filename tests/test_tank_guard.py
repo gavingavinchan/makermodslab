@@ -527,3 +527,14 @@ def test_dry_air_accepts_the_rest_the_arm_settles_in(dry_air):
     verdict = dry_air.start_gate(rest)
     assert verdict.ok and verdict.link == "upper_arm_link" and verdict.face == "near"
     assert verdict.slack_mm == pytest.approx(7.0, abs=0.5)
+
+
+def test_dry_air_box_elbow_follows_the_relaxed_post_rule():
+    # The box's elbow point stops 15 mm from the post (106) in dry air, like the mesh rule; the tank keeps 36.
+    real = geo.ROOT / "scripts/viscous-dream1/real"
+    dry = json.loads((real / "workspace_box_viscous_waterproof_01_dry_air.json").read_text())
+    tank = json.loads((real / "workspace_box_viscous_waterproof_01.json").read_text())
+    assert dry["points"]["elbow"]["box_mm"]["x"][1] == 91
+    assert tank["points"]["elbow"]["box_mm"]["x"][1] == 36
+    for name in ("tcp", "wrist", "wrist_pitch"):
+        assert dry["points"][name]["box_mm"]["x"][1] == tank["points"][name]["box_mm"]["x"][1]

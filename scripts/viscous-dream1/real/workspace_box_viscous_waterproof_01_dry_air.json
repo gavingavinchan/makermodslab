@@ -35,7 +35,7 @@
       "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
     }
   },
-  "rule": "Every point keeps its original x maximum (post/base side) and z minimum (floor). All other bounds are outside model reach at \u00b12000 mm. The tcp stays at least 120 mm in front of J1. See configs/viscous/environments/dry_air_desk/README.md for the conservative reach derivation.",
+  "rule": "Every point keeps its original x maximum (post/base side) and z minimum (floor). All other bounds are outside model reach at ±2000 mm. The tcp stays at least 120 mm in front of J1. See configs/viscous/environments/dry_air_desk/README.md for the conservative reach derivation.",
   "points": {
     "tcp": {
       "link": "wrist_roll_link",
@@ -139,7 +139,7 @@
       "box_mm": {
         "x": [
           -2000,
-          36
+          91
         ],
         "y": [
           -2000,
@@ -159,7 +159,8 @@
           "y maximum",
           "z maximum"
         ]
-      }
+      },
+      "post_x_max_note": "Gavin 2026-11-16, \"the back post limit is too strict\": the dry-air keep-out lets the upper arm and forearm come within 15 mm of the post face (106), so this point (the forearm_link origin) stops at 106 - 15 = 91 mm and the mesh guard is the binding post check; the tank box keeps 36. His recorded start pose puts the elbow at +59 mm."
     }
   },
   "z_shift_2026_11_08": "Gavin raised the arm's base: every z lower bound moved down 25 mm with the floor and every upper bound down 16 mm with the rim, so each point keeps the clearance to the glass it was designed with. The first live Dream call (runs/live-20261108T205544Z) asked for tcp z = 16 mm, ~47 mm above the real floor, and the old box refused it.",
