@@ -3,7 +3,7 @@
   "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
   "schema_version": 1,
   "name": "dry_air_desk keep-out for viscous_waterproof_01",
-  "purpose": "Waterproof arm on its same base mount, out of the aquarium on a desk. Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\". Claude retains the floor because the same mount now stands on the desk surface.",
+  "purpose": "Waterproof arm on its same base mount, out of the aquarium on a desk. Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\". The desk is 10 mm below base_link, under the mount floor plate; see planes_mm.floor.",
   "robot": "viscous_waterproof_01",
   "tank": "configs/viscous/environments/aquarium_landen_75/tank.json",
   "frame": "base_link",
@@ -35,9 +35,9 @@
       "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\". Finite 2000 mm bound exceeds the conservative 789.15 mm base-frame reach plus 70 mm clearance; see README.md."
     },
     "floor": {
-      "value": -28.0,
-      "status": "measured",
-      "source": "Live run 2026-11-08T213138Z: the gripper tip's lowest mesh point plateaued at -27.3..-28.3 mm for the last ~4 s while commands kept asking lower, i.e. the jaws resting on the floor glass (Gavin saw them touch and pressed STOP). Gavin: \"Floor line from -31 to -28 mm\" is fine. Was -31 (the arm lying at rest after the base was raised; the model reads a few mm low there)."
+      "value": -10.0,
+      "status": "cad",
+      "source": "Gavin 2026-11-16 (dry air): \"the bottom of the base arm (the one part that also has the back post), is in contact with the top of the table\". The L-bracket floor plate stands directly on the desk; Gavin's mount 3MF (2026-11-13) has a 10 mm thick floor plate (mesh y = -10..0), with the arm bolted on top. The arm model base_link collision mesh has z min = 0, its bottom face on the plate. Therefore the desk is z = -10 mm in base_link. Was -28, measured on the OLD aquarium base: Live run 2026-11-08T213138Z: the gripper tip's lowest mesh point plateaued at -27.3..-28.3 mm for the last ~4 s while commands kept asking lower, i.e. the jaws resting on the floor glass (Gavin saw them touch and pressed STOP). Gavin: \"Floor line from -31 to -28 mm\" is fine. Was -31 (the arm lying at rest after the base was raised; the model reads a few mm low there)."
     },
     "rim": {
       "value": 2000.0,
@@ -57,9 +57,9 @@
     "source": "Gavin aquarium follow-up 2026-11-07: 30 mm moving-link wall/rim margin (tank.json surface_margins_mm). Covers FK error, tracking lag and the residual yaw; it does NOT cover the loose base sliding (~30 mm under a hand push), which must be clamped."
   },
   "floor_press_mm": {
-    "value": 20.0,
+    "value": 10.0,
     "status": "design",
-    "source": "Floor is the one allowed contact surface (Gavin 2026-11-07). A target may put a vertex at most this far below the floor bound, so a command can never ask for a deep push into the floor glass. Padding does not apply to the floor. Was 10; raised to 20 on 2026-11-14 after the start gate refused the arm lying on the glass at its rest (wrist_yaw_link mesh 13.7 mm under the -28 line with J5 at +24 deg, i.e. the FK floor error varies by pose by more than 10 mm). Gavin: the pose was fine, the check \"too strict\". Dream's own floor slide target (floor + 10 mm + sag) is unchanged; only the guard's backstop depth moved."
+    "source": "Dry air desk, 2026-11-16: a hard desk needs a shallow backstop, especially with lag/limp trips disabled and torque trip/cap at 14 Nm for the run. Every checked vertex may be at most 10 mm below the -10 mm desk line (backstop z = -20 mm); the floor slide targets the desk line plus predicted sag. Padding does not apply to the floor. Was 20, inherited from the aquarium: Floor is the one allowed contact surface (Gavin 2026-11-07). A target may put a vertex at most this far below the floor bound, so a command can never ask for a deep push into the floor glass. Padding does not apply to the floor. Was 10; raised to 20 on 2026-11-14 after the start gate refused the arm lying on the glass at its rest (wrist_yaw_link mesh 13.7 mm under the -28 line with J5 at +24 deg, i.e. the FK floor error varies by pose by more than 10 mm). Gavin: the pose was fine, the check \"too strict\". Dream's own floor slide target (floor + 10 mm + sag) is unchanged; only the guard's backstop depth moved."
   },
   "padding_mm": {
     "value": {

@@ -20,8 +20,12 @@ For the waterproof arm on its same mount on a desk, use `--environment dry_air` 
 `workspace_box_viscous_waterproof_01_dry_air.json` are selected together, including rehearsal,
 preview and floor slide. The post face stays at 106 mm; Claude's later dry-air adjustments
 use 15 mm post clearance and elbow x maximum 91 mm (commits `1e941965`, `4cca758f`). Other
-point x maxima stay. Claude retained the floor (-28 mm, 20 mm press) and point z minima
-because the desk replaces the tank floor. Side/far/rim
+point x maxima stay. The desk floor is -10 mm with 10 mm press (vertex backstop -20 mm):
+Gavin confirms the mount bottom stands on the desk, below its 10 mm CAD floor plate;
+base_link collision z min is 0. Was -28 mm from the old aquarium base. FloorSlide
+reads the selected keep-out floor. Point z minima stay as coarse tool/origin bounds;
+the mesh guard binds the floor. The shallow press matters with lag/limp trips off
+and torque trip/cap at 14 Nm. Side/far/rim
 planes and the other point bounds move outside model reach. The plan prints both files and records
 the environment in `plan.json`, summaries and raw bundle metadata. Each environment has its own plan
 id; use the id from a dry run with the same environment and settings.

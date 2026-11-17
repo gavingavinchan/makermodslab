@@ -25,9 +25,9 @@
       "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
     },
     "floor_z": {
-      "value": -31,
-      "status": "bound",
-      "source": "keepout_viscous_waterproof_01.json, after Gavin raised the base 2026-11-08 (was -6)"
+      "value": -10,
+      "status": "cad",
+      "source": "Dry-air keep-out planes_mm.floor: desk under the 10 mm mount floor plate, base_link bottom z = 0 (Gavin 2026-11-16). Was -31, inherited from the old aquarium base raised 2026-11-08."
     },
     "rim_z": {
       "value": 2000,
@@ -168,5 +168,5 @@
   "floor_lowered_2026_11_08": "Gavin: decrease the floor limit by 3 cm. tcp and wrist z min -5 -> -35, so the grasp centre can reach a golf ball's centre on the floor (~-10). The tank guard is then the binding floor limit: every mesh vertex at most 10 mm below the -31 mm floor line (gentle press, ~5 N at the hand with the 90/4 gains).",
   "mount_shift_2026_11_13": "New base mount (CAD from Gavin's 3MF, 2026-11-13): the back plane is the truss post's face 106 mm behind J1 (was 80), and with the post centred on Gavin's marker lines the side walls are +227 / -207 (were 210 / -224). Only the limits that were derived from a wall moved, each by the wall's own shift so it keeps its designed distance: elbow x max +10 -> +36 and wrist_pitch +20 -> +46 (+26, still 70 / 60 mm from the plane), and every point's y range [-154, 140] -> [-137, 157] (+17, still 70 mm from each side wall; the -y limit tightens because that wall is now closer). tcp (-120) and wrist (-60) x maxima are J1-relative and stay. The x minima (-624, -600) still come from the old -694 far estimate and now sit past the far glass (-616): on the far side the tank guard (every mesh vertex, 70 mm) is the only wall check. The base can still slide or rotate under a push on the glass; neither the box nor the guard can see that.",
   "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
-  "dry_air_floor_note": "The tank_mm floor_z (-31) and dated history below are inherited provenance. The guard floor remains -28 mm with 20 mm press; every point z minimum stays exactly as in the tank box. Claude retained the floor because the same mount now stands on the desk."
+  "dry_air_floor_note": "Desk z = -10 mm in base_link: Gavin 2026-11-16 confirms the mount bottom stands on the desk; the CAD floor plate is 10 mm thick and the arm bottom is base_link z = 0. The guard floor is -10 mm with 10 mm press (vertex backstop -20 mm), and FloorSlide reads that same floor. Point z minima stay tcp/wrist -35 and wrist_pitch/elbow -25 mm: these coarse tool/origin boxes are not physical surface measurements; moving them by the old aquarium floor shift would add an arbitrary point constraint. The mesh guard is the binding floor backstop and the floor slide accounts for hand orientation and sag. The dated aquarium entries below are inherited provenance, not the dry-air floor. The earlier +6 mm resting-pose estimate was wrong: the folded hand rests on the mount, not the desk."
 }

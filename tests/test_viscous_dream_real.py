@@ -1675,7 +1675,7 @@ class EnvironmentTest(unittest.TestCase):
                 slide, problem = dream_real.make_floor_slide(arm, env)
             self.assertTrue(guard.available)
             self.assertIsNone(problem)
-            self.assertEqual(slide.floor_mm, -28.0)
+            self.assertEqual(slide.floor_mm, -10.0 if env.name == "dry_air" else -28.0)
             self.assertEqual(load.call_args_list, [mock.call(env.keepout_file)] * 2)
 
     def test_cli_defaults_and_rehearsal_select_both_layers_and_record_metadata(self):
@@ -1755,9 +1755,11 @@ class EnvironmentTest(unittest.TestCase):
         guard = tank_guard.TankGuard.from_file(env.keepout_file)
         box = core.WorkspaceBox.load(env.box_file, dream_real.SRC_URDF, core.JointMap.load(), arm["tcp"])
         # Deterministic real FK fixtures, all inside the unchanged motor limits.
+        # The +y fixture lifts its shoulder 2 deg for the corrected desk backstop:
+        # its old wrist_pitch vertex was z=-26.20 mm (6.20 mm below the new bound).
         poses = [
             [-85.31145, -28.43941, 226.80412, -31.56850, 71.52915, 6.71367, -41.95682],
-            [13.82442, -12.22447, 220.18041, -52.94369, 71.05889, 108.03909, -43.48437],
+            [13.82442, -14.22447, 220.18041, -52.94369, 71.05889, 108.03909, -43.48437],
             [176.30321, -113.92285, 203.72147, -44.10438, 26.15655, -132.79380, -80.16313],
         ]
         for i, row in enumerate(poses):
@@ -1824,7 +1826,7 @@ class EnvironmentTest(unittest.TestCase):
                     )
                 self.assertEqual(tcp.call_args.args, (env.box_file,))
                 self.assertEqual(floor.call_args.args[1], env)
-                self.assertEqual(adapter.slide.floor.floor_mm, -28.0)
+                self.assertEqual(adapter.slide.floor.floor_mm, -10.0 if env.name == "dry_air" else -28.0)
 
 
 class DryAirFastTest(unittest.TestCase):

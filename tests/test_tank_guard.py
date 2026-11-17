@@ -410,8 +410,16 @@ def dry_air(guard):
     return tg.TankGuard(json.loads(path.read_text()), guard.model)
 
 
-def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
-    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm", "link_rules", "rest_allowance_mm"}
+def test_dry_air_changes_only_documented_boundaries(raw, dry_air):
+    changed = {
+        "name",
+        "purpose",
+        "planes_mm",
+        "dry_air_reach_mm",
+        "link_rules",
+        "rest_allowance_mm",
+        "floor_press_mm",
+    }
     assert {k: v for k, v in dry_air.config.items() if k not in changed} == {
         k: v for k, v in raw.items() if k not in changed
     }
@@ -423,10 +431,9 @@ def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
     for link in ("upper_arm_link", "forearm_link"):
         assert rules[link]["faces"] == {"near": {"margin": 15.0, "padding": 0.0}}
     assert dry_air.tracking_allowance_mm == 15.0
-    for face in ("near", "floor"):
-        assert dry_air.config["planes_mm"][face] == raw["planes_mm"][face]
+    assert dry_air.config["planes_mm"]["near"] == raw["planes_mm"]["near"]
     assert dry_air.planes["near"] == 106.0
-    assert dry_air.planes["floor"] == -28.0
+    assert dry_air.planes["floor"] == -10.0
     for link in dry_air.links:
         assert dry_air.required[link]["near"] == (
             None
@@ -437,7 +444,7 @@ def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
             if not link.startswith("gripper_")
             else 30
         )
-        assert dry_air.required[link]["floor"] == (None if link == "yaw_link" else -20.0)
+        assert dry_air.required[link]["floor"] == (None if link == "yaw_link" else -10.0)
 
 
 def test_retired_planes_and_point_bounds_exceed_full_model_reach(dry_air):
@@ -503,8 +510,14 @@ def test_dry_air_rejects_below_floor_press_bound(dry_air, monkeypatch):
     r, t = transforms[link]
     t = t.copy()
     lowest_z = (dry_air.model.vertices[link] @ r.T + t)[:, 2].min() * 1000
-    # -28 floor with 20 mm permitted press: -48 is the exact vertex backstop.
-    t[2] += (-48.01 - lowest_z) / 1000
+    # -10 desk floor with 10 mm permitted press: -20 is the exact vertex backstop.
+    t[2] += (-19.99 - lowest_z) / 1000
+    transforms[link] = r, t
+    monkeypatch.setattr(geo, "forward_kinematics", lambda *_: transforms)
+    assert dry_air.check_pose(WORK).ok
+    # Crossing the same backstop by 0.01 mm refuses both the pose and start gate.
+    t[2] -= (-19.99 - lowest_z) / 1000
+    t[2] += (-20.01 - lowest_z) / 1000
     transforms[link] = r, t
     monkeypatch.setattr(geo, "forward_kinematics", lambda *_: transforms)
     verdict = dry_air.check_pose(WORK)
@@ -597,3 +610,12 @@ def test_dry_air_refuses_a_rest_deeper_than_its_allowance(dry_air):
     assert dry_air.rest_relax(deeper) is None
     with pytest.raises(ValueError, match="Start pose refused"):
         tg.GuardedTargets(dry_air, deeper)
+
+
+def test_tank_floor_is_unchanged(raw, guard):
+    # Dry-air CAD correction must never change the aquarium measurement/backstop.
+    assert raw["planes_mm"]["floor"]["value"] == -28.0
+    assert raw["planes_mm"]["floor"]["status"] == "measured"
+    assert raw["floor_press_mm"]["value"] == 20.0
+    assert guard.planes["floor"] == -28.0
+    assert all(guard.required[link]["floor"] == -20.0 for link in guard.links if link != "yaw_link")

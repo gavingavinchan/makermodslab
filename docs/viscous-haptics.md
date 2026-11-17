@@ -604,6 +604,39 @@ restore paths in the DAgger runner.
   ("should not have any toque limits here as its not in a glass tank"; "no need temp limits
   as the motor themselves have temp protection ... its very annoying"). Pure/fake tests and
   internal-stub dry runs only; Claude reviews before Gavin runs hardware.
+- *Dry-air desk floor correction (2026-11-16; B3 real-arm Dream safety).* Gavin:
+  "the bottom of the base arm (the one part that also has the back post), is in
+  contact with the top of the table". The mount floor plate stands on the desk,
+  is 10 mm thick in his 2026-11-13 CAD (mesh y = -10..0), and the arm bolts on
+  top; base_link collision z min = 0. Therefore dry air uses floor **-10 mm**,
+  replacing the inherited -28 mm measured on the OLD aquarium base (18 mm too
+  low for this desk). This supersedes the initial dry-air floor decision above.
+  The earlier +6 mm estimate from resting poses was wrong: the folded hand
+  rests on the mount, not the desk. Press **10 mm** replaces 20: a hard desk,
+  with lag/limp trips off and torque trip/cap 14 Nm, needs a shallow backstop
+  (checked vertices >= -20 mm). No other safety number changes. FloorSlide
+  already reads the selected keep-out floor; the workspace floor_z is -10.
+  Coarse point z minima stay (-35 tcp/wrist, -25 wrist_pitch/elbow): they are
+  tool/origin constraints, not measured surfaces; the mesh guard binds the
+  floor and FloorSlide accounts for hand orientation and sag. Tank files,
+  plan ids and tank-specific tests stay unchanged. Offline recorded-pose
+  checks, guard replay, pytest and internal stub only; no hardware or service
+  calls. Claude reviews before Gavin runs; the Mac plan id is re-derived there.
+  All five dry-air recordings 024118Z/024948Z/025317Z/030355Z/030700Z:
+  measured rest and approach-end start gates pass with post-only rest_relax
+  (no floor exception). FloorSlide would lift 0/288, 0/288, 24/288 and 2/288
+  Cartesian targets in the four Dream runs (max 9.364 and 1.356 mm in runs
+  3 and 4); run 5 stopped on a stale camera frame before any Dream call, so
+  has no IK rows, but its approach/hold/stop ticks were all checked. Replay
+  covers all 1,152 IK rows, 1,068 planned Dream substeps and 3,242 recorded
+  command-bearing ticks, and adds zero guard clamps or rejections. Lowest
+  measured hand z per run is +5.331/+5.720/+1.328/+4.455/+5.723 mm, all above
+  the -10 mm desk (zero sampled penetration). These non-contact records do
+  not establish a measured floor error. Targeted tests: 142 passed; full
+  pytest: 4,697 passed, 24 skipped, the same two baseline failures (commissioned
+  cal-f profile missing; pinocchio absent). Internal stub with run-5 flags
+  reaches 18 calls and completes fake return/release. Local bundles only;
+  no hardware or Dream calls. Claude re-derives the plan id on the Mac.
 - *Camera handoff (2026-11-16, terminal and Dream page).* Live run 5 on the Mac
   failed before its first Dream call because Lab settings previews still held both USB
   cameras. The runner now atomically claims `dream/terminal_run.json` under the selected
