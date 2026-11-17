@@ -558,8 +558,47 @@ def test_loaded_substeps_repeat_sag_and_stop_proofs(context, saved_plan, failure
         sweep.load_plan(saved_plan, hub, limits, box, guard, 15, **options)
 
 
+def test_group_weights_balance_logs_against_bidirectional_sweep():
+    rows = [{"group": "run", "kind": "logs"}] * 100
+    rows += [{"group": f"s:pose:{i}", "kind": "sweep"} for i in range(3) for _ in range(2)]
+    weights = fit.sample_weights(rows)
+    assert sum(weights[:100]) == pytest.approx(sum(weights[100:]))
+    assert sum(weights) == pytest.approx(len(rows))
+    assert weights[-1] == pytest.approx(weights[-3])
 
 
+def test_mixed_sweep_fit_pins_offsets_and_selects_joints_by_held_out_evidence(context):
+    model = GravityModel(VISCOUS_URDF, core.ARM, joint_map=fit.joint_map())
+    model.params = model.prior * 0.2
+    rows = []
+    # Exact kinematic gravity with known bidirectional Coulomb friction.
+    for i, visit in enumerate(context[6]):
+        for sign in (-1, 1):
+            pose = {n: visit["pose"][n] for n in core.ARM}
+            tau = model.torque(pose)
+            tau["shoulder_lift"] += sign * 0.1
+            # Wrist roll deliberately has unexplainable held-out load.
+            tau["wrist_roll"] = (i * 2 - 1) * 0.4
+            rows.append(
+                {
+                    "pos": pose,
+                    "cmd": pose,
+                    "torque": tau,
+                    "direction": dict.fromkeys(core.ARM, sign),
+                    "group": f"s:pose:{i}",
+                    "kind": "sweep",
+                }
+            )
+    rows += [dict(r, group=f"log{i}", kind="logs") for i, r in enumerate(rows[:2])]
+    result = fit.fit_rows(rows, [{"kind": "sweep"}, {"kind": "logs"}], fit_offsets=True, fit_friction=False)
+    assert result["offsets_nm"] == [0.0] * 6
+    assert result["fitted_terms"] == {"gravity": True, "offsets": False, "friction": True}
+    assert set(result["held_out_by_kind_nm"]) == {"sweep", "logs"}
+    assert len(result["support"]["poses"]) == len(rows)
+    assert "wrist_roll" not in result["feedforward_joints"]
+    assert result["coupled_loop_gain"]["spectral_radius"] < 0.5
+    for n in core.ARM[1:]:
+        assert result["region_deg"][n] == [min(r["pos"][n] for r in rows), max(r["pos"][n] for r in rows)]
 
 
 def test_loader_compares_the_snapshot_hash_bound_by_the_printed_plan(context, saved_plan):
@@ -570,3 +609,35 @@ def test_loader_compares_the_snapshot_hash_bound_by_the_printed_plan(context, sa
         sweep.load_plan(saved_plan, hub, limits, box, runner.Guard(env), 15, expected_sha256=digest)
 
 
+def test_sweep_fit_requires_logs_to_keep_the_measured_dream_pocket():
+    with pytest.raises(ValueError, match="log windows"):
+        fit.fit_rows([], [{"kind": "sweep"}])
+
+
+def test_sweep_fitter_refuses_an_accurate_but_overly_coupled_model():
+    model = GravityModel(VISCOUS_URDF, core.ARM, joint_map=fit.joint_map())
+    # Accurate hold prediction alone is insufficient: this synthetic heavy arm
+    # has a gravity slope large enough to overpower the commissioned stiffness.
+    model.params = model.prior * 20
+    arm = json.loads(
+        (REAL.parents[2] / "tests/fixtures/viscous_gravity/viscous-waterproof-dry-air.json").read_text()
+    )
+    hub = core.JointMap.load().to_motor(arm["rest"])
+    rng = np.random.default_rng(19)
+    rows = []
+    for i in range(16):
+        pose = {**hub, **{n: float(rng.uniform(*bounds)) for n, bounds in sweep.DEFAULT_BOX.items()}}
+        for sign in (-1, 1):
+            rows.append(
+                {
+                    "pos": pose,
+                    "cmd": pose,
+                    "torque": model.torque(pose),
+                    "direction": dict.fromkeys(core.ARM, sign),
+                    "group": f"s:pose:{i}",
+                    "kind": "sweep",
+                }
+            )
+    rows += [dict(row, group=f"log{i % 2}", kind="logs") for i, row in enumerate(rows[::2])]
+    with pytest.raises(ValueError, match="coupled loop gain .* must be below 0.5"):
+        fit.fit_rows(rows, [{"kind": "sweep"}, {"kind": "logs"}])

@@ -561,22 +561,19 @@ existing rehearsal, a person must not change the opening during execution.
 
 Defaults and checks:
 
-- `--sweep-seed 0 --sweep-poses 30 --sweep-hold-s 2 --sweep-max-torque-nm 6
+- `--sweep-seed 0 --sweep-poses 14 --sweep-hold-s 2 --sweep-max-torque-nm 6
   --sweep-hot-c 65 --sweep-start-at 0`. Holds must be 1–60 s to provide a full
   last second; planning torque may be lowered from 6 Nm and hub heat from 65 C.
-- Motor-degree box: the full five-joint soft range less 8 deg (the broad
-  hub box exceeds those limits). `--sweep-box` accepts
-  JSON absolute bounds for exactly those five joints. The approach uses a radial lift/elbow/flex vector with maximum
-  component 4 deg, then tries per-joint signs and a common 4 deg vector. Both
-  directions must plan; approach endpoints retain the 8 deg limit margin.
-- Draw max(96, 24*count) candidates using numpy's seeded generator. Prove all
-  retained candidates before farthest-point thinning over all five joints,
-  reserve six poses in tonight's measured pocket with varied yaw/roll and order
-  from that pocket outward. Conditional single-joint rays report the first
-  cap/guard/limit boundary from a pocket reference; these are conditional
-  bounds, not independent joint limits for arbitrary combinations. Half the
-  random pool retains the earlier narrower box for density. Refuse if fewer
-  than the requested count (or six pocket poses) pass.
+- Default motor-degree sampling box: lift [-86,-50], elbow [36,85], flex
+  [-55,-20], yaw/roll [-10,10]. Pan is fixed at the input hub. `--sweep-box`
+  overrides these five absolute bounds. Approach endpoints retain the 8-degree
+  soft-limit margin and use the existing radial/sign/common 4-degree vectors.
+- Draw max(64, 8*count) seeded candidates, one third inside the logged pocket.
+  Cheap limits/load/box/mesh/sag endpoint checks precede all path scans.
+  Reserve up to six pocket poses, then spread by farthest-point distance.
+  Prove full 20 Hz paths and every commanded/sagged return only for selected
+  endpoint survivors; try the next survivor if any proof fails. Exact geometry
+  clearances and completed substep proofs are cached only within this start gate.
   The STAR is hub -> plus approach -> pose/hold -> minus approach -> pose/hold
   -> hub, Both approaches are mandatory; a rejected direction rejects that vector
   or candidate. The sign label names the vector side; samples retain actual
@@ -584,7 +581,9 @@ Defaults and checks:
 - Every 20 Hz STAR substep must pass strict limits, workspace and mesh guard
   checks, including its predicted sag (`q - degrees(torque/kp)`, no clipping
   through a limit). Holding load must fit the cap everywhere on the legs,
-  not just at the sampled poses. Each commanded and sagged substep proves a
+  not just at the sampled poses. The measured-input hub alone is exempt from
+  the planning torque cap; all its other checks and runtime trips remain.
+  Each commanded and sagged substep proves a
   straight return to the hub. The existing stop's within-lag shortcut to the
   first reverse-approach waypoint is also proved, using its actual return
   guard. These checks do not alter the normal stop or its runtime refusal.
@@ -616,6 +615,64 @@ margin, candidate count, gains/map/CAD hash, predictor-file hash and fallback
 reference hash. Normal plans receive none of these fields: four pinned tank /
 dry-air x Dream / rehearsal IDs remain byte-identical. A changed file or
 robot record requires regenerating the id, including on a different station.
+
+### Narrow sweep and saved-plan replay (Brief 4, 2026-11-17)
+
+Every reported sweep uses the actual dry-air record, custom arm-file rest and
+right slot. Portable copies of those inputs live in `tests/fixtures/viscous_gravity/`;
+tests use them rather than paths in a home directory.
+
+```bash
+PYTHONPATH=$PWD:$PWD/scripts/viscous-dream1/real ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/dream_real.py \
+  --rehearse --gravity-sweep --environment dry_air --robot viscous_waterproof_01_dry_air \
+  --lab-home ~/gc-machome/home --arm-file ~/gc-machome/arms/viscous-waterproof-dry-air.json \
+  --keep-arm-rest --arm-slot right --no-run-data --out /tmp/gravity-pocket
+```
+
+The dry run writes `nominal/sweep-plan.json`: input hub, settings/predictor hashes,
+visits and every substep. A reviewed plan for these inputs is committed as
+`configs/viscous/viscous_waterproof_01/evidence/sweep-plan-dry-air-20261117.json`.
+Add `--sweep-plan` with that path to load it without candidate search. Its SHA256
+binds the printed plan ID. At the torque-off start gate every loaded step repeats
+limits, workspace/mesh step, speed, load, sag and commanded/sagged return proofs,
+including the ordinary stop's shortcut. The stored report is never trusted.
+A hub difference over 0.5 degrees on any arm joint refuses; smaller differences
+still need hub checks, speed-limited joins and return proofs to the input hub.
+The gripper coordinates are rebound to the fresh measured opening, and all mesh
+proofs use that opening. It remains undriven. Changed settings, predictor bytes,
+malformed routes or any failed proof refuse before engage. Resume skips execution
+only; all visits are proved again. Replay still uses the existing Episode/stop.
+
+The achieved hold coverage is narrower than the requested box. The post/desk,
+workspace, sag and both approach/return proofs determine which combinations pass;
+per-joint extrema do not certify every combination inside them. Runtime torque,
+heat, lag, limp and overspeed trips remain unchanged. The current provisional fit's
+elbow held-out RMS exceeds 1 Nm, so the planner explicitly reports the existing
+CAD-scaled-to-measured-hold fallback. This is a planning estimate, not a measured
+sweep result or feedforward validation.
+
+A subsequent empirical sweep fit must combine sweep holds with dry-air log
+windows. `gravity_fit.py --no-offsets <sweep/samples.json> <logs/ticks.jsonl> ...`
+forces offsets exactly to zero and fits signed friction whenever sweep data is
+present. Sweep/log sources get equal total fitting weight; runs/poses get equal
+weight within their kind, then rows within each group share its weight. CV
+recomputes that weighting and the identifiable basis from training rows only.
+The fit reports held-out RMS separately for sweep poses and log runs, measured
+load RMS and per-joint R². A sweep fit selects a joint only when R² > 0 and
+held-out RMS is below half its measured load RMS overall and within every source
+kind. Other joints receive zero effort, including when the selected list is empty.
+The achieved measured region and all measured support poses include both sources;
+the requested box is never substituted for observations.
+
+The fitter refuses a sweep fit if the maximum spectral radius of
+`K^-1 d(region_weight*support_weight*tau_selected)/dq` at any support pose is
+>=0.5. Central differences use radians and full coupled six-joint Jacobians,
+with the runner's bus Kp values (60/90/90/30/30/30 Nm/rad). The start gate repeats
+the check; the feedforward installer repeats it using the actual innermost bus
+gains before installing its hook. This local support-pose check does not prove
+stability between measurements or under delays. The existing >0.3 Nm offset
+refusal, measured-pose support gate and selected-joint commands remain in place.
+The committed provisional model and ordinary/tank plan IDs are unchanged.
 
 ### Fit and planning predictor
 

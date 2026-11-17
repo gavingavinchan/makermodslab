@@ -124,6 +124,69 @@ def region_weights(pose, region, fade=10.0):
     return math.prod(factors.values()), factors
 
 
+def coupled_loop_gain(model, kp):
+    """rho(K^-1 d(w*tau)/dq), q in radians, at every measured support pose.
+
+    Central differences include BOTH distance and region weights; rows for
+    uncommanded joints are zero. This is a local support-pose check, not a
+    stability proof for unsampled configurations or communication delays.
+    """
+    import numpy as np
+
+    support = getattr(model, "support", None)
+    if not support or not support.get("poses"):
+        raise ValueError("coupled loop gain requires measured support poses")
+    names = list(model.joints)
+    selected = set(getattr(model, "feedforward_joints", names))
+    gains = np.array([kp[n] for n in names], float)
+    if not np.isfinite(gains).all() or (gains <= 0).any():
+        raise ValueError("coupled loop gain requires positive finite bus Kp")
+    epsilon = 1e-5  # radians; derivative is Nm/rad, matching bus Nm/rad
+    worst, at = 0.0, None
+
+    def effort(q):
+        weight = region_weights(q, getattr(model, "region_deg", {}), getattr(model, "fade_deg", 10.0))[0]
+        weight *= support_weight(q, support)
+        tau = model.torque(q)
+        return np.array([weight * tau[n] if n in selected else 0.0 for n in names])
+
+    for index, values in enumerate(support["poses"]):
+        q = dict.fromkeys(names, 0.0)
+        q.update(zip(support["joints"], values, strict=True))
+        jacobian = np.column_stack(
+            [
+                (
+                    effort(q | {n: q[n] + math.degrees(epsilon)})
+                    - effort(q | {n: q[n] - math.degrees(epsilon)})
+                )
+                / (2 * epsilon)
+                for n in names
+            ]
+        )
+        radius = float(max(abs(np.linalg.eigvals(jacobian / gains[:, None]))))
+        if not math.isfinite(radius):
+            raise ValueError("nonfinite coupled loop gain")
+        if radius >= worst:
+            worst, at = radius, index
+    return {
+        "spectral_radius": worst,
+        "limit": 0.5,
+        "support_pose_index": at,
+        "poses_checked": len(support["poses"]),
+        "kp_nm_rad": dict(kp),
+        "difference_step_rad": epsilon,
+        "scale": 1.0,
+        "definition": "rho(K^-1 d(region_weight*support_weight*tau_selected)/dq), q radians",
+    }
+
+
+def require_coupled_gain(model, kp):
+    result = coupled_loop_gain(model, kp)
+    if result["spectral_radius"] >= result["limit"]:
+        raise ValueError(f"coupled loop gain {result['spectral_radius']:.6g} must be below 0.5")
+    return result
+
+
 def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
     """Wrap ``robot.bus.write`` so Goal_Position frames carry gravity torque.
 
@@ -141,10 +204,12 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
     bus = robot.bus
     while getattr(type(bus), "__getattr__", None) is not None and "_base" in vars(bus):
         bus = bus._base
+    if getattr(model, "support", None):
+        require_coupled_gain(model, {n: bus._gains[n]["kp"] for n in model.joints})
     original_write = bus.write
     bus._makermodslab_gravity_original_write = original_write
     # A fit may command only some joints (`feedforward_joints`); the rest hold with stiffness alone.
-    joints = set(getattr(model, "feedforward_joints", None) or model.joints) - {"gripper"}
+    joints = set(getattr(model, "feedforward_joints", model.joints)) - {"gripper"}
     state = {"started": None, "computed": -math.inf, "tau": {}, "logged": -math.inf}
     status: dict = {"scale": scale, "feedforward_nm": {}, "stiffness_nm": {}, "w": 1.0, "w_per_joint": {}}
 

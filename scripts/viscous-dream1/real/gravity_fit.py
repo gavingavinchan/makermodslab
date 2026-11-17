@@ -172,6 +172,7 @@ def load_inputs(paths):
         sources.append(source)
         for r in selected:
             r["source"] = path.parent.name
+            r["kind"] = kind
         rows.extend(selected)
     if not rows:
         raise ValueError("No quasi-static samples")
@@ -189,21 +190,48 @@ def design(model, rows, fit_offsets=True, fit_friction=True):
     return y, np.hstack([y, offsets, coulomb])
 
 
+def row_kind(row):
+    return row.get("kind", "sweep" if ":pose:" in row["group"] else "logs")
+
+
+def sample_weights(rows):
+    """Equal total sweep/log weight, equal groups within each kind, equal rows in a group.
+
+    A long log hold must not swamp two sweep directions. Mean weight is one,
+    preserving the ridge's scale. CV folds recompute weights on training only.
+    """
+    labels = [(row_kind(row), row["group"]) for row in rows]
+    groups = {}
+    for kind, group in labels:
+        groups.setdefault(kind, {}).setdefault(group, 0)
+        groups[kind][group] += 1
+    return np.array(
+        [len(rows) / (len(groups) * len(groups[kind]) * groups[kind][group]) for kind, group in labels]
+    )
+
+
 def solve(model, rows, regularization=0.01, fit_offsets=True, fit_friction=True):
     y, a = design(model, rows, fit_offsets, fit_friction)
     # SVD of scaled static regressor only: coefficients in the right-singular
     # basis are identifiable combinations, not individual masses or COMs.
     scale = np.tile([0.3, 0.03, 0.03, 0.03], len(ARM))
-    _, singular, vt = np.linalg.svd(y * scale, full_matrices=False)
+    root_weight = np.repeat(np.sqrt(sample_weights(rows)), len(ARM))
+    _, singular, vt = np.linalg.svd((y * scale) * root_weight[:, None], full_matrices=False)
     rank = int(np.sum(singular > singular[0] * 1e-6))
     basis = vt[:rank].T
     reduced = np.hstack([(y * scale) @ basis, a[:, len(scale) :]])
     tau = np.array([[r["torque"][n] for n in ARM] for r in rows]).ravel()
     weights = np.full(reduced.shape[1], math.sqrt(regularization))
     beta = np.linalg.lstsq(
-        np.vstack([reduced, np.diag(weights)]), np.r_[tau, np.zeros(len(weights))], rcond=None
+        np.vstack([reduced * root_weight[:, None], np.diag(weights)]),
+        np.r_[tau * root_weight, np.zeros(len(weights))],
+        rcond=None,
     )[0]
     theta = np.r_[scale * (basis @ beta[:rank]), beta[rank:]]
+    if not fit_offsets:
+        theta[24:30] = 0.0
+    if not fit_friction:
+        theta[30:] = 0.0
     return theta, {
         "rank": rank,
         "static_columns": len(scale),
@@ -218,6 +246,11 @@ def solve(model, rows, regularization=0.01, fit_offsets=True, fit_friction=True)
 
 
 def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=True):
+    has_sweep = any(s["kind"] == "sweep" for s in sources)
+    if has_sweep:
+        if not any(s["kind"] == "logs" and s.get("selected", 1) > 0 for s in sources):
+            raise ValueError("sweep fit requires dry-air log windows as well as sweep holds")
+        fit_offsets, fit_friction = False, True
     model = GravityModel(VISCOUS_URDF, ARM, joint_map=joint_map())
     terms = {"fit_offsets": fit_offsets, "fit_friction": fit_friction}
     theta, identification = solve(model, rows, regularization, **terms)
@@ -229,13 +262,16 @@ def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=
     if len(groups) < 2:
         raise ValueError("Cross-validation needs at least two runs/poses")
     held = []
+    held_by_kind = {"sweep": [], "logs": []}
     for group in groups:
         train, test = [r for r in rows if r["group"] != group], [r for r in rows if r["group"] == group]
         beta, _ = solve(model, train, regularization, **terms)
         _, at = design(model, test, **terms)
-        held.extend(
-            np.array([[r["torque"][n] for n in ARM] for r in test]) - (at @ beta).reshape(-1, len(ARM))
-        )
+        errors = np.array([[r["torque"][n] for n in ARM] for r in test]) - (at @ beta).reshape(-1, len(ARM))
+        held.extend(errors)
+        for row, error in zip(test, errors, strict=True):
+            kind = row_kind(row)
+            held_by_kind[kind].append(error)
 
     def rms(a):
         return dict(zip(ARM, np.sqrt(np.mean(np.array(a) ** 2, axis=0)).tolist(), strict=True))
@@ -255,7 +291,27 @@ def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=
             else None,
         }
     coverage = {n: [min(r["pos"][n] for r in rows), max(r["pos"][n] for r in rows)] for n in ARM}
-    return {
+    loads = rms(measured)
+    held_rms = rms(held)
+    by_kind = {kind: rms(errors) for kind, errors in held_by_kind.items() if errors}
+    evidence = {
+        n: {
+            "load_rms_nm": loads[n],
+            "held_out_rms_nm": held_rms[n],
+            "load_rms_by_kind_nm": {},
+            "held_out_rms_by_kind_nm": {kind: errors[n] for kind, errors in by_kind.items()},
+            "criterion": "R2 > 0 and held-out RMS < half measured RMS, in each available source kind",
+            "enabled": bool(r2[n] is not None and r2[n] > 0 and held_rms[n] < 0.5 * loads[n]),
+        }
+        for n in ARM[1:]
+    }
+    for n in evidence:
+        for kind, errors in by_kind.items():
+            subset = [r for r in rows if row_kind(r) == kind]
+            load = float(np.sqrt(np.mean([r["torque"][n] ** 2 for r in subset])))
+            evidence[n]["load_rms_by_kind_nm"][kind] = load
+            evidence[n]["enabled"] &= errors[n] < 0.5 * load
+    result = {
         "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
         "_license": json.loads(MAP_FILE.read_text())["_license"],
         "robot": "viscous_waterproof_01",
@@ -265,10 +321,15 @@ def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=
         # Only the joints whose fit carries real load and fits (2026-11-17, logs only): the wrist joints'
         # R^2 is below zero, their loads are <= ~0.5 Nm (about 1 deg of sag), and wrist_flex's fit is
         # 1.4 Nm high at the start pose, which at 100 % would hold it ~3 deg above its command.
-        "feedforward_joints": list(FEEDFORWARD_JOINTS),
+        "feedforward_joints": [n for n, e in evidence.items() if e["enabled"]]
+        if has_sweep
+        else list(FEEDFORWARD_JOINTS),
+        "feedforward_evidence": evidence,
+        "held_out_by_kind_nm": by_kind,
+        "weighting": "equal total weight per source kind; equal run/pose groups within kind; equal rows within group; mean weight one",
         "support": {
             "joints": list(ARM[1:]),
-            "poses": [[round(r["pos"][n], 2) for n in ARM[1:]] for r in rows],
+            "poses": [[r["pos"][n] for n in ARM[1:]] for r in rows],
             "full_deg": SUPPORT_FULL_DEG,
             "fade_deg": SUPPORT_FADE_DEG,
         },
@@ -298,6 +359,18 @@ def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=
         "gripper": "excluded from torques; locked at Pinocchio neutral",
         "validation": "leave-one-run-out for logs; leave-one-pose-out for sweeps",
     }
+    if has_sweep:
+        from makermodslab.gravity_feedforward import require_coupled_gain
+
+        model.params, model.offsets = theta[:24], np.zeros(len(ARM))
+        model.support, model.region_deg, model.fade_deg = (
+            result["support"],
+            result["region_deg"],
+            result["fade_deg"],
+        )
+        model.feedforward_joints = result["feedforward_joints"]
+        result["coupled_loop_gain"] = require_coupled_gain(model, KP)
+    return result
 
 
 def report(fit):
@@ -318,6 +391,15 @@ def report(fit):
             for k in ("r_squared", "rms_nm", "held_out_rms_nm", "cad_rms_nm", "max_residual_nm", "friction")
         ]
         lines.append(f"| {n} | " + " | ".join("n/a" if v is None else f"{v:.3f}" for v in values) + " |")
+    lines += [
+        "",
+        "Weighting: " + fit["weighting"],
+        "Feedforward joints: " + str(fit["feedforward_joints"]),
+        "Selection evidence: " + json.dumps(fit["feedforward_evidence"]),
+        "Held-out RMS by source kind: " + json.dumps(fit["held_out_by_kind_nm"]),
+    ]
+    if "coupled_loop_gain" in fit:
+        lines += ["Coupled loop gain: " + json.dumps(fit["coupled_loop_gain"])]
     ident = fit["identification"]
     lines += [
         "",

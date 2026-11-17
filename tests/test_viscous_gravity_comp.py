@@ -483,7 +483,7 @@ def test_only_the_fit_s_feedforward_joints_are_commanded(fit_path):
     frames = []
     robot = SimpleNamespace(_last_positions=dict(hold), _turn_offset={})
     robot.bus = SimpleNamespace(
-        _gains={n: {"kp": 30.0, "kd": 2.0} for n in hold},
+        _gains={n: {"kp": 90.0 if n in ("shoulder_lift", "elbow_flex") else 30.0, "kd": 2.0} for n in hold},
         _get_motor_name=lambda n: n,
         write=lambda *a: None,
         _mit_control=lambda motor, kp, kd, q, dq, tau: frames.append((motor, tau)),
@@ -497,3 +497,52 @@ def test_only_the_fit_s_feedforward_joints_are_commanded(fit_path):
     tau = dict(frames[-len(hold) :])
     assert tau["shoulder_lift"] > 1 and tau["elbow_flex"] > 1
     assert all(tau[n] == 0 for n in ("shoulder_pan", "wrist_flex", "wrist_yaw", "wrist_roll", "gripper"))
+
+
+def test_coupled_gain_uses_radians_off_diagonal_coupling_and_selected_joints():
+    from makermodslab.gravity_feedforward import require_coupled_gain
+
+    model = SimpleNamespace(
+        joints=["a", "b"],
+        feedforward_joints=["a", "b"],
+        support={"joints": ["a", "b"], "poses": [[0.0, 0.0]], "full_deg": 4.0, "fade_deg": 8.0},
+        torque=lambda q: {"a": 60 * math.radians(q["b"]), "b": 60 * math.radians(q["a"])},
+    )
+    # Both diagonal derivatives are zero; separate one-joint checks miss this gain.
+    with pytest.raises(ValueError, match="coupled loop gain"):
+        require_coupled_gain(model, {"a": 100.0, "b": 100.0})
+    model.feedforward_joints = ["a"]
+    assert require_coupled_gain(model, {"a": 100.0, "b": 100.0})["spectral_radius"] == 0
+    model.feedforward_joints = ["a", "b"]
+    assert require_coupled_gain(model, {"a": 200.0, "b": 200.0})["spectral_radius"] == pytest.approx(0.3)
+
+
+def test_empty_selected_joints_never_falls_back_to_commanding_all():
+    from makermodslab.gravity_feedforward import install
+
+    model = SimpleNamespace(joints=["a"], feedforward_joints=[], torque=lambda q: {"a": 4.0})
+    frames = []
+    robot = SimpleNamespace(_last_positions={"a": 0}, _turn_offset={})
+    robot.bus = SimpleNamespace(
+        _gains={"a": {"kp": 30.0, "kd": 2.0}},
+        _get_motor_name=lambda n: n,
+        write=lambda *a: None,
+        _mit_control=lambda *a: frames.append(a[-1]),
+    )
+    install(robot, model)
+    robot.bus.write("Goal_Position", "a", 0.0)
+    assert frames == [0.0]
+
+
+def test_installer_rechecks_coupled_gain_against_actual_bus_stiffness(fit_path):
+    from makermodslab.gravity_feedforward import install, load_model
+
+    _, model = load_model(fit_path)
+    original = lambda *a: None  # noqa: E731
+    robot = SimpleNamespace(
+        bus=SimpleNamespace(_gains={n: {"kp": 30.0, "kd": 2.0} for n in model.joints}, write=original)
+    )
+    with pytest.raises(ValueError, match="coupled loop gain"):
+        install(robot, model)
+    assert robot.bus.write is original
+    assert not hasattr(robot.bus, "_makermodslab_gravity_original_write")

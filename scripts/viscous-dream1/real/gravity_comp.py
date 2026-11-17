@@ -74,8 +74,8 @@ def load(settings, robot, environment):
         raise ValueError("gravity fit fade_deg must be positive and finite")
     model.region_deg, model.fade_deg = region, fade
     ff_joints = fit.get("feedforward_joints")
-    if ff_joints is not None and (not ff_joints or not set(ff_joints) <= set(core.ARM[1:])):
-        raise ValueError("gravity fit feedforward_joints must be a non-empty subset of the gravity joints")
+    if ff_joints is not None and not set(ff_joints) <= set(core.ARM[1:]):
+        raise ValueError("gravity fit feedforward_joints must be a subset of the gravity joints")
     support = fit.get("support")
     if fit.get("provisional") and not support:
         raise ValueError("a provisional gravity fit needs a measured-pose support gate")
@@ -85,6 +85,12 @@ def load(settings, robot, environment):
         if not all(len(p) == 5 and all(math.isfinite(v) for v in p) for p in support["poses"]):
             raise ValueError("invalid gravity fit support poses")
         support_weight(dict(zip(core.ARM[1:], support["poses"][0], strict=True)), support)  # validates
+    if support:
+        from gravity_fit import KP
+
+        from makermodslab.gravity_feedforward import require_coupled_gain
+
+        require_coupled_gain(model, KP)
     identity = {
         "scale": settings.gravity_comp,
         "region_deg": region,
@@ -99,7 +105,7 @@ def load(settings, robot, environment):
             "weight": "x cosine of the distance to the nearest measured pose",
         },
         "max_offset_nm": MAX_OFFSET_NM,
-        "feedforward_joints": list(ff_joints or core.ARM),
+        "feedforward_joints": list(core.ARM if ff_joints is None else ff_joints),
         "fit": stored_path(path),
         "fit_sha256": before,
         "robot": robot,

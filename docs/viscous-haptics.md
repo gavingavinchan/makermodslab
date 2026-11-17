@@ -2993,3 +2993,73 @@ entry points, and report signed total-effort balance. Portable incident fixtures
 and regressions reproduce the data without Mac paths or hardware. Gravity and
 runner checks: 198 passed +31 subtests. Full numbers, limitations and provenance:
 [gc25 incident report](gravity-gc25.md). No hardware or live Dream/API calls.
+
+2026-11-17, Brief 4 narrowed sweep (B1/B3, offline only): Gavin wants the logged
+Dream pocket plus the post-grasp lift, rather than broad exploration or a
+15-minute start gate. Default count is now 14; box motor degrees is lift
+[-86,-50], elbow [36,85], flex [-55,-20], yaw/roll [-10,10]. Pan stays at the
+input hub; both approaches are mandatory. Only the measured-input hub is
+exempt from the planning torque cap. Every other hub check and runtime trip
+stays active. Cheap endpoint filters and exact run-local geometry caches let
+farthest-point selection precede full path/stop-return proofs for survivors.
+
+Using the supplied dry-air record, keep-rest custom arm file and right slot,
+planning took **39.919 s**. The 14 poses include six in the logged pocket and
+28 directional holds; achieved lift -85.563..-67.868, elbow 44.953..81.957,
+flex -51.683..-20.993, yaw -9.902..9.511, roll -9.758..9.624 degrees. Post/desk
+and workspace restrictions exclude combinations in the requested box; retained
+visits also pass load, sag and both approach/stop-return proofs. Predicted maxima
+Nm: pan effectively 0, lift 4.572, elbow 4.913, flex 0.819, yaw 0.087, roll 0.005.
+The current provisional fit fails the existing planner's worst-held-out-error
+threshold (elbow 1.057 Nm >1), so the planner explicitly reports CAD scaled to
+an archived measured hold, not validated empirical sweep torques.
+
+The dry run writes a portable `sweep-plan.json` with its hub/settings and every
+substep. Reviewed live-input plan:
+`configs/viscous/viscous_waterproof_01/evidence/sweep-plan-dry-air-20261117.json`.
+`--sweep-plan FILE` skips candidate search, binds the exact file SHA256 to its
+plan ID, and re-proves every stored step before engage (limits, workspace/mesh
+step, speed, load, sag, returns including the existing stop shortcut). It
+checks both the input and saved hubs, refusing differences >0.5 degrees;
+smaller differences still need speed-limited joins and returns to the input
+hub. Gripper coordinates use the fresh measured opening and all geometry is
+re-proved at that opening. Changes during the gate also refuse. Resume skips
+execution only, never proof. No new stop mechanism was added.
+The saved-plan re-proof took **38.942 s**. Plan ID **667e3ce8fc**, source file
+SHA256 **652d9106dfc352e3f13fcba9ce4b2ebd6c65662d049a6fe4f33fdd119c357140**.
+Sweep 98.10 s; nominal total with approach/return 116.60 s. Both FakeArm runs
+completed all holds and returned to rest with torque off. These are offline
+results; no arm, camera, Dream request or OS signal was used.
+
+The sweep fitter requires both sweep holds and dry-air log windows so Dream's
+measured pocket remains supported. Offsets are exactly zero and signed friction
+is fitted. Sweep/log kinds receive equal total fit weight, run/pose groups equal
+weight within each kind, then rows share group weight. CV repeats this and the
+identifiable-basis fit using training rows only. Per-joint R², aggregate and
+source-specific held-out RMS/load evidence select feedforward joints: R² >0
+and held-out RMS <half measured load RMS overall and in each source kind.
+Region/support come from all observations, never the requested box. A local
+full coupled Jacobian check refuses spectral radius >=0.5 of
+K^-1 d(region-weight*support-weight*tau_selected)/dq (radians) at support poses.
+The fitter/runner use commissioned Kp, and the installer repeats the check with
+the actual innermost bus gains before hooking writes. The unchanged provisional
+fit's radius is 0.268477 at 60/90/90/30/30/30 Nm/rad; reducing all gains to 30
+makes it 0.805432 and refuses. This checks local support poses, not stability
+between measurements or with delays. Existing >0.3 Nm offset refusal, support
+gating and selected-joint commands remain. An empty selected list stays off.
+No real sweep fit was fabricated from FakeArm samples.
+
+Validation before push: focused **209 passed +31 subtests** (sweep/fitter 45,
+compensation 32, feedforward 18, arm gravity 10, runner 104). Full suite once:
+**4,876 passed, 18 skipped, 3 failed +31 subtests**, 182.08 s; the same documented
+`cal-f` profile and two frontend LFS mesh-pointer failures. The last two new
+regressions are included in the focused count. Ruff and scoped diff checks pass.
+Existing ordinary/tank plan IDs and zero-compensation behavior remain pinned.
+The full plan block, exact unexecuted live command, validation logs and pushed
+SHA are in `~/codex_runs/gravity-p4/report.md`; reproducible operation and fit
+rules are in the runner README. Work stayed in `gravity-comp-sweep`; the other
+agent's `gravity-comp` clone was not touched.
+After rebasing onto the concurrent gc25 analysis, the push gate also includes
+its ten regressions and a synthetic high-load fit that predicts its holds
+accurately but is refused for coupled gain 1.704 >=0.5. Those final counts
+and the rebased SHAs are recorded in the Brief-4 report.
