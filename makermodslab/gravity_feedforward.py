@@ -57,8 +57,13 @@ def load_model(path: str | Path, *, telemetry_offsets: bool = False):
 
     fit = json.loads(repo_path(path).read_text())
     offsets = fit.get("offsets_nm") if telemetry_offsets else None
-    model = GravityModel(repo_path(fit["urdf"]), fit["joints"], params=fit["params"], offsets=offsets,
-                         joint_map=fit.get("joint_map"))
+    model = GravityModel(
+        repo_path(fit["urdf"]),
+        fit["joints"],
+        params=fit["params"],
+        offsets=offsets,
+        joint_map=fit.get("joint_map"),
+    )
     if model.urdf_sha256 != fit["urdf_sha256"]:
         raise ValueError(f"The URDF at {fit['urdf']} changed since this fit was made")
     return fit, model

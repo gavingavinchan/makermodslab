@@ -112,8 +112,10 @@ class GravityModel:
         if set(mapping) - set(joints):
             raise ValueError("joint_map contains unknown joints")
         self.joint_map = {
-            name: {"sign": mapping.get(name, {}).get("sign", 1),
-                   "offset_deg": mapping.get(name, {}).get("offset_deg", 0.0)}
+            name: {
+                "sign": mapping.get(name, {}).get("sign", 1),
+                "offset_deg": mapping.get(name, {}).get("offset_deg", 0.0),
+            }
             for name in joints
         }
         self._sign = np.array([self.joint_map[n]["sign"] for n in joints], dtype=float)
@@ -133,7 +135,9 @@ class GravityModel:
             raise ValueError("Gravity parameters do not match this URDF")
 
     def q(self, positions_deg: dict[str, float]) -> np.ndarray:
-        return np.radians(self._sign * _finite(positions_deg, self.joints, "Joint position") + self._offset_deg)
+        return np.radians(
+            self._sign * _finite(positions_deg, self.joints, "Joint position") + self._offset_deg
+        )
 
     def regressor(self, positions_deg: dict[str, float]) -> np.ndarray:
         """``Y`` with ``torque = Y @ params + offsets``; one row per joint."""

@@ -2872,3 +2872,28 @@ How Gavin wants the work done. These apply to every agent and tool.
   scripts abort just below it (82 °C) and cool at 80 °C. On the dry arm keep
   planned loads ≤ ~3.5 Nm (see Results: the shoulder dropped the arm at ~5.6 Nm).
 
+
+### Empirical dry-air gravity for waterproof unit (2026-11-17, goal B3 / haptics)
+
+Gavin (2026-11-16): the waterproof connectors make the URDF masses/COMs
+"very inaccurate. so can we do it all empirically"; "empirically means to test
+it with the real arm". This task builds the measurement sweep offline; it does
+not claim new arm measurements or permission for a powered run. Work is in
+`feat/viscous-gravity-comp` on gavin-linux, separate from the installed checkout.
+
+`real/gravity_fit.py` uses only the URDF kinematics in its static regressor,
+with the commissioned motor-to-URDF map (including negative wrist yaw), an
+SVD base, zero-centered ridge, offsets and last-motion Coulomb terms. CAD is
+only the error reference and the planner's explicit fallback, never the fit
+prior. Gripper torque is excluded and its model angle locked at Pinocchio
+neutral. The 20261117 Mac logs yield 339 half-second static windows from eight
+runs, static rank 10/24; their narrow coverage and poor wrist-roll prediction
+make the saved fit provisional. The environment feedforward installer refuses
+provisional fits. The fit JSON records all SVD combinations/scales, source
+hashes, CV, friction and telemetry checks; selected windows are committed so
+the evidence is available in a fresh clone. Full report:
+[`gravity-dry-air-fit.md`](../configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.md).
+
+No hardware, camera, Dream client/call, API key, stop button or process signal
+was used for this work. The other checkout was read only. The empirical sweep
+and its offline validation are documented in the real runner's README.
