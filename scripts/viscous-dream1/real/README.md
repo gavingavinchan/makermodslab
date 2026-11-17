@@ -12,6 +12,22 @@ Tool point and camera check (Gavin's steps): [GAVIN_TCP_AND_INPUT_CHECK.md](GAVI
 Keep-out box and the real-run plan: [docs/dream1-tank.md](../../../docs/dream1-tank.md) (branch
 `feat/viscous-dream1-tank-box`).
 
+## Environments
+
+`--environment tank` is the default and keeps the existing aquarium files and plan id.
+For the waterproof arm on its same mount on a desk, use `--environment dry_air` (2026-11-16):
+`configs/viscous/environments/dry_air_desk/keepout_viscous_waterproof_01.json` and
+`workspace_box_viscous_waterproof_01_dry_air.json` are selected together, including rehearsal,
+preview and floor slide. The post/near rules and every point's x maximum stay; Claude retained the
+floor (-28 mm, 20 mm press) and point z minima because the desk replaces the tank floor. Side/far/rim
+planes and the other point bounds move outside model reach. The plan prints both files and records
+the environment in `plan.json`, summaries and raw bundle metadata. Each environment has its own plan
+id; use the id from a dry run with the same environment and settings.
+
+```bash
+.venv/bin/python scripts/viscous-dream1/real/dream_real.py --internal-stub --environment dry_air --robot viscous_waterproof_01 --prompt "pick up the screwdriver"
+```
+
 ## Files
 
 | File | What it is |

@@ -632,6 +632,21 @@ restore paths in the DAgger runner.
   stop and the hold, Dream chunks, meta with git SHA and diff stat, the inputs used, the run
   folder, and live the 5 Hz frames already read for Dream). Pruned to the newest 10 at each
   run's start; `run_data.py keep <run> [reason]` keeps one forever. See the runner README.
+- *Status (2026-11-16): dry air setup, offline, branch `feat/viscous-dream1-dry-air`.*
+  The waterproof arm (`viscous_waterproof_01`) is out of the aquarium on its same base mount,
+  now on a desk, for Dream-1's "pick up the screwdriver". Gavin: "the only boundary that is
+  still important here is the back post, the rest of the bounding box does not matter here".
+  `--environment dry_air` selects the new `dry_air_desk` keep-out and `_dry_air` workspace box
+  together. The near plane (106 mm), margins, all link rules (including the heel's 66 mm near
+  rule), point x maxima (tcp 120 mm in front of J1), and joint limits stay exact. Claude's
+  decision: keep the floor at -28 mm with 20 mm press and every point z minimum, because the
+  same mount now stands on the desk surface where the tank floor was. Left/right/far/rim,
+  point y bounds, x minima and z maxima move to finite ±2000 mm, beyond a conservative
+  789.15 mm model reach plus padding/margins. The `tank` reference supplies only the arm model
+  and joint mappings; no glass geometry remains active through it. `tank` stays the default
+  with its old plan id; dry air has a separate id. The plan prints the environment and both
+  files, also recorded in summaries and run-data metadata. Pure/fake-arm tests and offline dry
+  runs only; no hardware or Dream service calls. Claude reviews before Gavin runs the arm.
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
