@@ -722,6 +722,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         bundle=None,
         stop_button_alive=None,
         signal_events=None,
+        environment=dream_real.TANK_ENVIRONMENT,
     ):
         clock = dream_real.VirtualClock()
         jmap = core.JointMap.load()
@@ -744,7 +745,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
         if settings_changes:
             settings = dataclasses.replace(settings, **settings_changes)
         tcp = json.loads((TANK / "viscous_waterproof_tank_arm.json").read_text())["tcp"]
-        box = core.WorkspaceBox.load(dream_real.BOX_FILE, dream_real.SRC_URDF, jmap, tcp)
+        box = core.WorkspaceBox.load(environment.box_file, dream_real.SRC_URDF, jmap, tcp)
         stop, abort = signal_events or (threading.Event(), threading.Event())
         release = arm.release
         self.release_after_abort = None  # whether all torque went off only after the second signal
@@ -783,6 +784,7 @@ class EpisodeOnFakesTest(unittest.TestCase):
                 wall=clock,
                 stop_button_alive=stop_button_alive,
                 mirror_dir=bundle.mirror_dir(scenario) if bundle else None,
+                environment=environment,
             )
             summary = self.ep.run()
             if bundle:
@@ -1632,3 +1634,233 @@ class SkipAheadReplayTest(unittest.TestCase):
             self.assertTrue(guard.guard.check_pose(q).ok)
             self.assertLessEqual(max(abs(q[m] - prev[m]) for m in core.ARM), 15.0 * core.ROW_DT_S + 1e-6)
             prev = q
+
+
+class EnvironmentTest(unittest.TestCase):
+    """Boundary selection and compatibility without a client, camera or arm connection."""
+
+    def plan(self, environment=None, rehearse=False):
+        args = SimpleNamespace(rehearse=rehearse)
+        if environment is not None:
+            args.environment = environment
+        env = dream_real.ENVIRONMENTS[environment or "tank"]
+        arm = json.loads(dream_real.DEFAULT_ARM_FILE.read_text())
+        settings = dream_real.Settings(
+            "pick up the screwdriver",
+            8,
+            10,
+            15.0,
+            60.0,
+            20.0,
+            1.0,
+            core.TripLimits(),
+            dict.fromkeys(core.SLOTS, "black"),
+            120.0,
+            0.0,
+            3,
+        )
+        return dream_real.build_plan(
+            args,
+            {
+                "name": "viscous_waterproof_01",
+                "follower_port": "/dev/fake",
+                "follower_config": "waterproof",
+                "cameras": [],
+            },
+            core.keepout_limits(),
+            "fixture",
+            dream_real.DEFAULT_ARM_FILE,
+            arm,
+            (dream_real.DEFAULT_ARM_FILE.parent / arm["urdf"]).read_bytes(),
+            None,
+            settings.slots,
+            [],
+            core.JointMap.load(),
+            settings,
+            json.loads(env.box_file.read_text()),
+            dream_real.Guard(env),
+            "offline fixture",
+        )
+
+    def test_default_tank_plan_id_is_byte_for_byte_legacy(self):
+        # Captured from unmodified origin/feat/viscous-arm at 2272b66a, BEFORE this change.
+        # This fixture fixes every legacy hash input; no new implementation computes the expected id.
+        self.assertEqual(self.plan()["plan_id"].encode("ascii"), b"c6c40272db")
+        self.assertEqual(self.plan(), self.plan("tank"))
+        self.assertEqual(dream_real.TANK_ENVIRONMENT.keepout_file, core.KEEPOUT_FILE)
+        self.assertEqual(dream_real.TANK_ENVIRONMENT.box_file, dream_real.BOX_FILE)
+
+    def test_environment_binds_plan_id_even_with_identical_files(self):
+        from unittest import mock
+
+        tank = self.plan("tank")["plan_id"]
+        self.assertNotEqual(tank, self.plan("dry_air")["plan_id"])
+        same_files = dataclasses.replace(dream_real.TANK_ENVIRONMENT, name="dry_air")
+        with mock.patch.dict(dream_real.ENVIRONMENTS, dry_air=same_files):
+            self.assertNotEqual(tank, self.plan("dry_air")["plan_id"])
+        self.assertNotEqual(self.plan("tank", True)["plan_id"], self.plan("dry_air", True)["plan_id"])
+
+    def test_both_guard_loads_and_floor_slide_use_selected_file(self):
+        from unittest import mock
+
+        from makermodslab import tank_guard
+
+        arm = json.loads(dream_real.DEFAULT_ARM_FILE.read_text())
+        for env in dream_real.ENVIRONMENTS.values():
+            with mock.patch.object(
+                tank_guard.TankGuard, "from_file", wraps=tank_guard.TankGuard.from_file
+            ) as load:
+                guard = dream_real.Guard(env)
+                slide, problem = dream_real.make_floor_slide(arm, env)
+            self.assertTrue(guard.available)
+            self.assertIsNone(problem)
+            self.assertEqual(slide.floor_mm, -28.0)
+            self.assertEqual(load.call_args_list, [mock.call(env.keepout_file)] * 2)
+
+    def test_cli_defaults_and_rehearsal_select_both_layers_and_record_metadata(self):
+        from unittest import mock
+
+        record = {
+            "name": "viscous_waterproof_01",
+            "follower_port": "/dev/fake",
+            "follower_config": "waterproof",
+            "cameras": [],
+        }
+        for name, flags in [("tank", []), ("dry_air", ["--environment", "dry_air", "--rehearse"])]:
+            env = dream_real.ENVIRONMENTS[name]
+            with (
+                tempfile.TemporaryDirectory() as tmp,
+                mock.patch.object(dream_real, "load_record", return_value=record),
+                mock.patch.object(dream_real, "follower_limits", return_value=(LIMITS, "fixture")),
+                mock.patch.object(dream_real, "add_dream_venv", return_value="no client in test"),
+                mock.patch.object(dream_real, "lab_holder", return_value=None),
+                mock.patch.object(dream_real, "port_holders", return_value=[]),
+                mock.patch.object(dream_real, "run_dry", return_value=0) as run,
+                mock.patch.object(dream_real.run_data.RunBundle, "start") as bundle,
+                mock.patch.object(sys, "stdout", new=mock.MagicMock()),
+                mock.patch.object(core.WorkspaceBox, "load", wraps=core.WorkspaceBox.load) as load,
+            ):
+                dream_real.main(["--internal-stub", "--out", tmp, *flags])
+                ctx = run.call_args.args[1]
+                self.assertEqual(ctx["environment"], env)
+                self.assertEqual(load.call_args.args[0], env.box_file)
+                self.assertEqual(ctx["guard"].guard.config, json.loads(env.keepout_file.read_text()))
+                self.assertEqual(ctx["plan"]["environment"], env.metadata())
+                self.assertEqual(bundle.call_args.kwargs["meta"]["environment"], env.metadata())
+                inputs = [c.args[0] for c in bundle.return_value.copy_input.call_args_list]
+                self.assertIn(env.keepout_file, inputs)
+                self.assertIn(env.box_file, inputs)
+                printed = "\n".join(str(c.args[0]) for c in sys.stdout.write.call_args_list if c.args)
+                self.assertIn(f"Environment: {name}", printed)
+                self.assertIn(env.metadata()["keepout_file"], printed)
+                self.assertIn(env.metadata()["workspace_box_file"], printed)
+
+    def test_dry_air_cartesian_targets_beyond_old_walls_and_rim_pass_both_layers(self):
+        from unittest import mock
+
+        from makermodslab import tank_geometry as geo, tank_guard
+
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        arm = json.loads(dream_real.DEFAULT_ARM_FILE.read_text())
+        guard = tank_guard.TankGuard.from_file(env.keepout_file)
+        box = core.WorkspaceBox.load(env.box_file, dream_real.SRC_URDF, core.JointMap.load(), arm["tcp"])
+        tank = tank_guard.TankGuard.from_file()
+        tank_box = core.WorkspaceBox.load(
+            dream_real.BOX_FILE, dream_real.SRC_URDF, core.JointMap.load(), arm["tcp"]
+        )
+        # Inject FK to test the Cartesian boundaries independently of IK reachability. No claim that
+        # these simultaneous far/side/high TCP targets can be reached by this arm is made.
+        for y in (-400.0, 400.0):
+            target = np.array([-800.0, y, 550.0])
+            t = target / 1000 - np.array(arm["tcp"])
+            transforms = {link: (np.eye(3), t) for link in guard.links}
+            matrix = np.eye(4)
+            matrix[:3, 3] = t
+            with (
+                mock.patch.object(geo, "forward_kinematics", return_value=transforms),
+                mock.patch.object(core, "fk", return_value=matrix),
+            ):
+                np.testing.assert_allclose(box.positions_mm(POSE)["tcp"], target)
+                self.assertTrue(guard.check_pose(POSE).ok)
+                self.assertEqual(box.violations(POSE), [])
+                self.assertFalse(tank.check_pose(POSE).ok)
+                self.assertTrue(tank_box.violations(POSE))
+
+    def test_real_fk_poses_beyond_old_side_walls_and_rim_pass_both_layers(self):
+        from makermodslab import tank_guard
+
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        arm = json.loads(dream_real.DEFAULT_ARM_FILE.read_text())
+        guard = tank_guard.TankGuard.from_file(env.keepout_file)
+        box = core.WorkspaceBox.load(env.box_file, dream_real.SRC_URDF, core.JointMap.load(), arm["tcp"])
+        # Deterministic real FK fixtures, all inside the unchanged motor limits.
+        poses = [
+            [-85.31145, -28.43941, 226.80412, -31.56850, 71.52915, 6.71367, -41.95682],
+            [13.82442, -12.22447, 220.18041, -52.94369, 71.05889, 108.03909, -43.48437],
+            [176.30321, -113.92285, 203.72147, -44.10438, 26.15655, -132.79380, -80.16313],
+        ]
+        for i, row in enumerate(poses):
+            pose = dict(zip(core.MOTORS, row, strict=True))
+            self.assertTrue(guard.start_gate(pose).ok)
+            self.assertEqual(box.violations(pose), [])
+            tcp = box.positions_mm(pose)["tcp"]
+            self.assertTrue([tcp[1] < -207, tcp[1] > 227, tcp[2] > 414][i])
+
+    def test_dry_air_tcp_post_bound_and_all_point_floor_bounds_stay(self):
+        from unittest import mock
+
+        env = dream_real.ENVIRONMENTS["dry_air"]
+        arm = json.loads(dream_real.DEFAULT_ARM_FILE.read_text())
+        box = core.WorkspaceBox.load(env.box_file, dream_real.SRC_URDF, core.JointMap.load(), arm["tcp"])
+        safe = {name: np.array([-300.0, 0.0, 100.0]) for name in box.points}
+        with mock.patch.object(
+            box, "positions_mm", return_value={**safe, "tcp": np.array([-119.99, 0, 100])}
+        ):
+            self.assertTrue(any("tcp.x" in v for v in box.violations(POSE)))
+        for name, point in box.points.items():
+            below = np.array([-300.0, 0.0, point["box_mm"]["z"][0] - 0.01])
+            with mock.patch.object(box, "positions_mm", return_value={**safe, name: below}):
+                self.assertTrue(any(f"{name}.z" in v for v in box.violations(POSE)))
+
+    def test_fake_arm_summary_records_environment_including_rehearsal(self):
+        for env in dream_real.ENVIRONMENTS.values():
+            for rehearse in (False, True):
+                runner = EpisodeOnFakesTest()
+                summary, arm = runner.episode(
+                    environment=env,
+                    guard=dream_real.Guard(env),
+                    max_calls=1,
+                    rehearse=rehearse,
+                    hold_s=1,
+                )
+                self.assertEqual(summary["environment"], env.metadata())
+                self.assertEqual(summary["trips"], [])
+                self.assertTrue(any(event.startswith("release:") for event in arm.events))
+
+    def test_dream_adapter_selects_tcp_box_and_floor_slide(self):
+        from unittest import mock
+
+        # Entire Dream module/client is a stand-in; no real client or network is imported here.
+        client = mock.MagicMock()
+        module = SimpleNamespace(
+            DreamClient=mock.Mock(return_value=client), DreamSlowNetworkWarning=RuntimeWarning
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            for env in dream_real.ENVIRONMENTS.values():
+                with (
+                    mock.patch.dict(sys.modules, dream=module),
+                    mock.patch.dict(dream_real.os.environ),
+                    mock.patch.object(core, "tcp_box_mm", wraps=core.tcp_box_mm) as tcp,
+                    mock.patch.object(
+                        dream_real, "make_floor_slide", wraps=dream_real.make_floor_slide
+                    ) as floor,
+                ):
+                    adapter = dream_real.DreamReal(
+                        dream_real.DEFAULT_ARM_FILE,
+                        Path(tmp),
+                        offline=False,
+                        environment=env,
+                    )
+                self.assertEqual(tcp.call_args.args, (env.box_file,))
+                self.assertEqual(floor.call_args.args[1], env)
+                self.assertEqual(adapter.slide.floor.floor_mm, -28.0)
