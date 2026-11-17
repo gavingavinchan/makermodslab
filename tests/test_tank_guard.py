@@ -411,10 +411,18 @@ def dry_air(guard):
 
 
 def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
-    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm"}
+    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm", "link_rules"}
     assert {k: v for k, v in dry_air.config.items() if k not in changed} == {
         k: v for k, v in raw.items() if k not in changed
     }
+    # Gavin 2026-11-16 ("the back post limit is too strict"): in dry air the upper arm and forearm keep
+    # 15 mm from the post (the tracking allowance), every other link rule is the tank's.
+    rules, tank_rules = dry_air.config["link_rules"], raw["link_rules"]
+    assert set(rules) == set(tank_rules) | {"forearm_link"}
+    assert rules["yaw_link"] == tank_rules["yaw_link"]
+    for link in ("upper_arm_link", "forearm_link"):
+        assert rules[link]["faces"] == {"near": {"margin": 15.0, "padding": 0.0}}
+    assert dry_air.tracking_allowance_mm == 15.0
     for face in ("near", "floor"):
         assert dry_air.config["planes_mm"][face] == raw["planes_mm"][face]
     assert dry_air.planes["near"] == 106.0
@@ -423,8 +431,8 @@ def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
         assert dry_air.required[link]["near"] == (
             None
             if link == "yaw_link"
-            else 66
-            if link == "upper_arm_link"
+            else 15
+            if link in ("upper_arm_link", "forearm_link")
             else 70
             if not link.startswith("gripper_")
             else 30
@@ -502,3 +510,20 @@ def test_dry_air_rejects_below_floor_press_bound(dry_air, monkeypatch):
     assert not verdict.ok and verdict.face == "floor" and verdict.link == link
     assert verdict.slack_mm == pytest.approx(-0.01)
     assert not dry_air.start_gate(WORK).ok
+
+
+def test_dry_air_accepts_the_rest_the_arm_settles_in(dry_air):
+    # Read torque off on 2026-11-16 after two releases: the arm settles here by itself, the upper arm
+    # 22 mm and the forearm 30 mm from the post (Gavin: "there is 2cm gap between the elbow and the post").
+    rest = {
+        "shoulder_pan": 183.3,
+        "shoulder_lift": -70.3,
+        "elbow_flex": 6.9,
+        "wrist_flex": 39.0,
+        "wrist_yaw": 14.9,
+        "wrist_roll": 7.2,
+        "gripper": -50.4,
+    }
+    verdict = dry_air.start_gate(rest)
+    assert verdict.ok and verdict.link == "upper_arm_link" and verdict.face == "near"
+    assert verdict.slack_mm == pytest.approx(7.0, abs=0.5)
