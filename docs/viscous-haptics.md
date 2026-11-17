@@ -2929,3 +2929,17 @@ feedforward 16 = **152 passed**; Ruff passes. The default FakeArm sweep:
 `offline_test_guard.py`; exact reproduction commands and complete numeric
 coverage/load evidence live in the README and
 `configs/viscous/viscous_waterproof_01/evidence/gravity-sweep-offline-20261117.json`.
+
+2026-11-17, sweep correction (B1/B3): Gavin: "i want all technique to work on
+air first before water". Sweep and feedforward stay refused in tank. Following
+the rebase onto dry-air 5d594898, pin eight unchanged environment/mode/slot
+IDs against the base. Replace the common six-degree approach with checked
+four-degree radial/per-joint alternatives, require both directions, reserve
+six measured-pocket poses with yaw/roll variation and visit pocket outward.
+Fresh measured torque > sweep cap +0.5 Nm skips a pose by retracing the exact
+sent substeps, with all existing monitors/button active; two consecutive skips
+return normally after reaching the hub. Conditional pocket-ray boundary
+reasons and candidate/side rejection counts are emitted with the plan.
+No hardware, live mode, Dream, cameras or process signals. Part 1 evidence and
+the pushed SHA are in `~/codex_runs/gravity-fix/part1.md`. The three prior suite
+failures reproduce on base with the same LFS hydration state.

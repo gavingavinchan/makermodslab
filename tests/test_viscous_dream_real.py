@@ -2118,11 +2118,16 @@ class DryAirFastTest(unittest.TestCase):
 
 def test_all_existing_environment_and_mode_plan_ids_are_pinned():
     fixture = EnvironmentTest()
+    # Independently computed from unmodified base 5d594898 (both arm slots).
     expected = {
-        ("tank", False): "c6c40272db",
-        ("tank", True): "ad64376fe7",
-        ("dry_air", False): "28cf40af5d",
-        ("dry_air", True): "80fcefd771",
+        ("tank", False, "left"): "c6c40272db",
+        ("tank", False, "right"): "df0b885070",
+        ("tank", True, "left"): "ad64376fe7",
+        ("tank", True, "right"): "a7978ae4e3",
+        ("dry_air", False, "left"): "bbbd9962e4",
+        ("dry_air", False, "right"): "ce1d692b2e",
+        ("dry_air", True, "left"): "6969e38c8b",
+        ("dry_air", True, "right"): "5d194775b2",
     }
-    for (env, rehearse), plan_id in expected.items():
-        assert fixture.plan(env, rehearse)["plan_id"].encode() == plan_id.encode()
+    for (env, rehearse, slot), plan_id in expected.items():
+        assert fixture.plan(env, rehearse, arm_slot=slot)["plan_id"].encode() == plan_id.encode()

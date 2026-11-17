@@ -1340,6 +1340,9 @@ class Episode:
         self.sweep_observation = None
         self.sweep_ticks = []
         self.sweep_samples = []
+        self.sweep_skips = []
+        self.sweep_history = []
+        self.sweep_skip_streak = 0
         self.sweep_direction = dict.fromkeys(core.ARM, 0)
 
     def _write(self, path, obj):
@@ -1620,6 +1623,7 @@ class Episode:
             "robot": "viscous_waterproof_01",
             "fake": isinstance(self.arm, FakeArm),
             "samples": self.sweep_samples,
+            "skipped_poses": self.sweep_skips,
         }
         core.atomic_json(self.log_dir / "samples.json", data)
         if self.mirror_dir is not None:
@@ -1631,10 +1635,18 @@ class Episode:
         if not info:
             return None
         if "hub" in info:
+            self.sweep_history = [dict(self.dream_start)]
+            if info.get("skipped"):
+                if self.sweep_skip_streak >= 2:
+                    return "sweep ended: two consecutive torque skips"
+            else:
+                self.sweep_skip_streak = 0
             if max(reading.temp.values()) >= self.s.sweep.hot_c:
                 self.summary["sweep_resume_start_at"] = info["hub"]
                 self._phase("sweep paused: hot", f"resume with --sweep-start-at {info['hub']}")
                 return "sweep paused: hot"
+            return None
+        if info.get("motion") or info.get("retrace"):
             return None
         self.sweep_ticks.append(
             {
@@ -1661,6 +1673,56 @@ class Episode:
             self._save_sweep_samples()
             self.sweep_ticks.clear()
         return None
+
+    def _sweep_torque_skip(self, reading, queue):
+        info = self.sweep_observation
+        if not info or "pose" not in info or info.get("retrace"):
+            return
+        high = next(
+            (
+                (n, reading.torque[n])
+                for n in core.ARM
+                if abs(reading.torque[n]) > self.s.sweep.max_torque_nm + 0.5
+            ),
+            None,
+        )
+        if high is None:
+            return
+        pose, (joint, torque) = info["pose"], high
+        phase = f"sweep: pose {pose + 1} skipped (torque {joint} {torque:.1f} Nm)"
+        self._phase(phase)
+        self.sweep_skips.append(
+            {
+                "pose": pose,
+                "joint": joint,
+                "torque_nm": torque,
+                "phase": phase,
+                "t": self.clock(),
+                "pos": dict(reading.pos),
+            }
+        )
+        self.sweep_skip_streak += 1
+        self.sweep_ticks.clear()
+        self._save_sweep_samples()
+        # Remove only this visit. Reverse exactly the targets already sent,
+        # excluding the current command, ending at the hub. The usual loop
+        # still reads fresh feedback, checks every trip/guard and speed, and
+        # gives the button priority on every tick of this retrace.
+        while queue and (queue[0][2].get("pose") == pose or queue[0][2].get("hub") == pose + 1):
+            queue.popleft()
+        retrace = [
+            (phase + " retrace", q, {"pose": pose, "retrace": True})
+            for q in reversed(self.sweep_history[:-1])
+        ]
+        retrace.append(
+            (
+                f"sweep: hub after skipped pose {pose + 1}",
+                self.dream_start,
+                {"hub": pose + 1, "skipped": True},
+            )
+        )
+        queue.extendleft(reversed(retrace))
+        self.sweep_observation = {"pose": pose, "retrace": True}
 
     def run(self) -> dict:
         frames_fed, queue, approach = 0, collections.deque(), collections.deque()
@@ -1798,6 +1860,7 @@ class Episode:
                     reason = "stop signal"
                     break
                 if self.s.sweep and self.phase.startswith("sweep"):
+                    self._sweep_torque_skip(reading, sweep_queue)
                     paused = self._sweep_sample(now, reading)
                     if paused:
                         reason = paused
@@ -1825,6 +1888,15 @@ class Episode:
                         if abs(delta) > 1e-8:
                             self.sweep_direction[n] = int(np.sign(delta))
                     self._check_speed(self.commanded)
+                    if (
+                        self.sweep_observation
+                        and "pose" in self.sweep_observation
+                        and not self.sweep_observation.get("retrace")
+                    ):
+                        if not self.sweep_history:
+                            self.sweep_history = [dict(self.dream_start)]
+                        if self.commanded != self.sweep_history[-1]:
+                            self.sweep_history.append(dict(self.commanded))
                     self.summary["substeps_sent"] += 1
                 elif queue:
                     self.commanded = queue.popleft()

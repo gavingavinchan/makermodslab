@@ -108,7 +108,9 @@ def test_back_post_and_desk_candidates_are_dropped(context):
             )
 
 
-def episode(context, tmp_path, stop_after=None, hot=False):
+def episode(
+    context, tmp_path, stop_after=None, hot=False, torque_poses=(), torque_phase="hold", stop_retrace=False
+):
     env, arm_file, hub, limits, box, settings, visits, report = context
     clock = runner.VirtualClock()
     arm = runner.FakeArm(hub, [], clock, heat_per_tick=0)
@@ -134,11 +136,28 @@ def episode(context, tmp_path, stop_after=None, hot=False):
         status_path=tmp_path / "status.json",
     )
     (tmp_path / "raw").mkdir()
+    arm.sent = []
+    original_send, original_read = arm.send, arm.read
+
+    def send(target, previous):
+        arm.sent.append((ep.phase, dict(target)))
+        original_send(target, previous)
+
+    def read():
+        reading = original_read()
+        info = ep.sweep_observation or {}
+        if info.get("pose") in torque_poses and torque_phase in ep.phase and not info.get("retrace"):
+            reading.torque["elbow_flex"] = 7.1
+        return reading
+
+    arm.send, arm.read = send, read
 
     def sleep(dt):
         clock.sleep(dt)
         if stop_after is not None and ep.phase.startswith("sweep:") and arm.ticks >= stop_after:
             stop.set()  # the handler's event seam, never an OS signal
+        if stop_retrace and "retrace" in ep.phase:
+            stop.set()
         if hot and ep.phase.startswith("sweep: hub after"):
             old = arm.read
 
@@ -180,7 +199,9 @@ def test_holds_write_last_second_medians_and_mirror(context, tmp_path):
                 np.median([r[key]["shoulder_lift"] for r in rows[-20:]])
             )
         expected = -1 if hold["approach"] == "+" else 1
-        assert all(hold["direction"][n] == expected for n in sweep.APPROACH)
+        visit = context[6][hold["pose"]]
+        route = next(r for r in visit["routes"] if r["direction"] == hold["approach"])
+        assert all(hold["direction"][n] == expected * np.sign(route["delta_deg"][n]) for n in sweep.APPROACH)
     assert json.loads((tmp_path / "status.json").read_text())["state"] == "released"
 
 
@@ -405,3 +426,38 @@ def test_stop_shortcut_is_also_proved_before_engage(context, tmp_path):
         check.assert_called_once()
     with pytest.raises(ValueError, match="hub fails"):
         sweep.plan(settings, hub, limits, box, guard, 15, pool=1, stop_path_clear=lambda p: False)
+
+
+@pytest.mark.parametrize("phase", ["approach", "hold", "return hub"])
+def test_excess_sweep_torque_retraces_sent_substeps_and_continues(context, tmp_path, phase):
+    ep, arm, result = episode(context, tmp_path, torque_poses=(0,), torque_phase=phase)
+    assert result["reason"] == "gravity sweep complete"
+    assert result["stop"]["returned"] == "at the rest"
+    data = json.loads((tmp_path / "samples.json").read_text())
+    assert len(data["skipped_poses"]) == 1
+    assert data["skipped_poses"][0]["joint"] == "elbow_flex"
+    sent = [q for name, q in arm.sent if name.startswith("sweep: pose 1/2")]
+    # Consecutive holds resend the same target: only movement substeps are retraced.
+    unique = [context[2]]
+    for q in sent:
+        if q != unique[-1]:
+            unique.append(q)
+    retrace = [q for name, q in arm.sent if "retrace" in name]
+    assert retrace == list(reversed(unique[:-1]))
+    assert any(h["pose"] == 1 for h in data["samples"])
+    assert not arm.energized
+
+
+def test_two_torque_skips_end_at_hub_through_normal_stop(context, tmp_path):
+    ep, arm, result = episode(context, tmp_path, torque_poses=(0, 1))
+    assert result["reason"] == "sweep ended: two consecutive torque skips"
+    assert len(ep.sweep_skips) == 2
+    assert result["stop"]["returned"] == "at the rest"
+    assert not arm.energized
+
+
+def test_button_wins_during_torque_retrace(context, tmp_path):
+    ep, arm, result = episode(context, tmp_path, torque_poses=(0,), stop_retrace=True)
+    assert result["reason"] == "stop signal"
+    assert result["stop"]["returned"] == "at the rest"
+    assert not arm.energized

@@ -564,18 +564,23 @@ Defaults and checks:
 - `--sweep-seed 0 --sweep-poses 30 --sweep-hold-s 2 --sweep-max-torque-nm 6
   --sweep-hot-c 65 --sweep-start-at 0`. Holds must be 1–60 s to provide a full
   last second; planning torque may be lowered from 6 Nm and hub heat from 65 C.
-- Motor-degree box: hub +/-65 lift, +/-85 elbow, +/-70 flex, +/-40 yaw,
-  +/-90 roll, intersected with soft limits less 8 deg. `--sweep-box` accepts
-  JSON absolute bounds for exactly those five joints. The 6 deg +/- approach
-  applies to lift/elbow/flex together; approach endpoints also keep the 8 deg
-  limit margin. A pose whose other side fails retains its proved direction;
-  the report lists these poses by zero-based index.
+- Motor-degree box: the full five-joint soft range less 8 deg (the broad
+  hub box exceeds those limits). `--sweep-box` accepts
+  JSON absolute bounds for exactly those five joints. The approach uses a radial lift/elbow/flex vector with maximum
+  component 4 deg, then tries per-joint signs and a common 4 deg vector. Both
+  directions must plan; approach endpoints retain the 8 deg limit margin.
 - Draw max(96, 24*count) candidates using numpy's seeded generator. Prove all
   retained candidates before farthest-point thinning over all five joints,
-  then order nearest-first. Refuse if fewer than the requested count pass.
+  reserve six poses in tonight's measured pocket with varied yaw/roll and order
+  from that pocket outward. Conditional single-joint rays report the first
+  cap/guard/limit boundary from a pocket reference; these are conditional
+  bounds, not independent joint limits for arbitrary combinations. Half the
+  random pool retains the earlier narrower box for density. Refuse if fewer
+  than the requested count (or six pocket poses) pass.
   The STAR is hub -> plus approach -> pose/hold -> minus approach -> pose/hold
-  -> hub, omitting a refused side. A rejected side does not move the planner's
-  starting point for the other side.
+  -> hub, Both approaches are mandatory; a rejected direction rejects that vector
+  or candidate. The sign label names the vector side; samples retain actual
+  per-joint motion signs for the friction fit.
 - Every 20 Hz STAR substep must pass strict limits, workspace and mesh guard
   checks, including its predicted sag (`q - degrees(torque/kp)`, no clipping
   through a limit). Holding load must fit the cap everywhere on the legs,
@@ -587,6 +592,13 @@ Defaults and checks:
   trip thresholds than the runner defaults. The runtime torque tiers remain
   12 Nm / 6.5 Nm for 5 s; lag, limp, overspeed and temperature remain enabled.
   Approach, STAR and return all stay <=15 deg/s, including the CAN backstop.
+- On fresh feedback during a pose's legs or holds, measured arm torque
+  above the planning cap +0.5 Nm skips the pose. Its sent movement substeps
+  are replayed in reverse back to the hub, with fresh feedback, every trip,
+  measured guard and planned-speed check still active. The ordinary stop
+  button wins on any tick. Two consecutive skips end through the normal
+  stop after retracing to the hub. `samples.json` records `skipped_poses`;
+  partial holds remain in ticks.
 - At initial/subsequent hub visits, any winding >=65 C ends via `stop()` with
   reason `sweep paused: hot`. The summary/phase prints `--sweep-start-at K`;
   same seed/count/box/predictor gives the same poses, skipping the first K.

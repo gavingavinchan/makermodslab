@@ -19,6 +19,7 @@ straight return to the hub from every substep. No hardware or Dream imports.
 
 from __future__ import annotations
 
+import collections
 import dataclasses
 import json
 import math
@@ -35,7 +36,7 @@ MOVING = core.ARM[1:]
 APPROACH = MOVING[:3]
 # Broad motor-degree exploration around the hub, narrowed by soft limits,
 # post, desk, sag, return proofs and the empirical load cap.
-HALF_WIDTH = dict(zip(MOVING, (65.0, 85.0, 70.0, 40.0, 90.0), strict=True))
+HALF_WIDTH = dict(zip(MOVING, (180.0, 250.0, 180.0, 100.0, 180.0), strict=True))
 REFERENCE = DEFAULT_OUT.parent / "evidence/gravity-dry-air-selected.json"
 
 
@@ -76,7 +77,9 @@ class SweepSettings:
             "cad_sha256": file_sha256(VISCOUS_URDF),
             "joint_map": joint_map(),
             "kp_nm_rad": KP,
-            "delta_deg": 6.0,
+            "delta_deg": 4.0,
+            "approach": "radial then per-joint signs; require both",
+            "selection": "six pocket, axis bounds, farthest; pocket outward v2",
             "soft_margin_deg": 8.0,
             "half_width_deg": HALF_WIDTH,
             "candidate_pool": max(96, self.poses * 24),
@@ -147,32 +150,59 @@ def plan(
         if bounds[n][0] >= bounds[n][1]:
             raise ValueError(f"empty sweep box for {n}")
 
-    def pose_ok(p):
-        return (
-            all(limits[n][0] <= p[n] <= limits[n][1] for n in core.ARM)
-            and not box.violations(p)
-            and mesh.check_pose(p).ok
-        )
+    failures = collections.Counter()
+    last_failure = [None]
 
-    def checked(p):
+    def reject(reason):
+        last_failure[0] = reason
+        return False
+
+    def pose_ok(p, prefix=""):
+        for n in core.ARM:
+            if not limits[n][0] <= p[n] <= limits[n][1]:
+                return reject(prefix + "limit:" + n)
+        if box.violations(p):
+            return reject(prefix + "workspace")
+        verdict = mesh.check_pose(p)
+        if not verdict.ok:
+            return reject(prefix + "guard:" + str(verdict.face))
+        return True
+
+    checked_cache = {}
+
+    def checked_uncached(p):
         if not pose_ok(p):
             return False
         tau = predictor.torque(p)
-        if not all(math.isfinite(v) and abs(v) <= settings.max_torque_nm for v in tau.values()):
-            return False
+        for n, v in tau.items():
+            if not math.isfinite(v) or abs(v) > settings.max_torque_nm:
+                return reject("cap:" + n)
         sag = predictor.sagged(p)
-        if not (pose_ok(sag) and mesh.check_return_segment(sag, hub).ok):
+        if not pose_ok(sag, "sag:"):
             return False
-        # The existing stop may skip the hub when already within its lag band.
-        # Episode also proves that first leg, without changing the stop itself.
-        return stop_path_clear is None or (stop_path_clear(p) and stop_path_clear(sag))
+        verdict = mesh.check_return_segment(sag, hub)
+        if not verdict.ok:
+            return reject("sag:return:" + str(verdict.face))
+        if stop_path_clear is not None and not (stop_path_clear(p) and stop_path_clear(sag)):
+            return reject("stop_path")
+        return True
+
+    def checked(p):
+        key = tuple(p[n] for n in core.MOTORS)
+        if key not in checked_cache:
+            ok = checked_uncached(p)
+            checked_cache[key] = (ok, last_failure[0])
+        ok, last_failure[0] = checked_cache[key]
+        return ok
 
     if not checked(hub):
         raise ValueError("sweep hub fails limits/box/mesh/sag/torque/return checks")
 
     def leg(a, b):
         # Reject long unsafe segments before doing every substep's return proof.
-        if not mesh.check_segment(a, b).ok:
+        verdict = mesh.check_segment(a, b)
+        if not verdict.ok:
+            reject("path:guard:" + str(verdict.face))
             return None
         steps = core.retime(a, b, arm_deg_s=speed, grip_deg_s=60.0)
         previous = a
@@ -181,8 +211,10 @@ def plan(
                 return None
             decision = mesh.limit(previous, q)
             if decision.status != "ok" or decision.target != q:
+                reject("path:limit_or_guard")
                 return None
             if not mesh.check_return_segment(q, hub).ok:
+                reject("path:return")
                 return None
             previous = q
         return steps
@@ -190,47 +222,171 @@ def plan(
     rng = np.random.default_rng(settings.seed)
     candidates = []
     attempts = pool if pool is not None else max(96, settings.poses * 24)
-    for attempt in range(attempts):
+    pocket = {
+        **hub,
+        "shoulder_lift": -72.0,
+        "elbow_flex": 48.0,
+        "wrist_flex": -37.0,
+        "wrist_yaw": 0.0,
+        "wrist_roll": 0.0,
+    }
+
+    def in_pocket(p):
+        return (
+            -76 <= p["shoulder_lift"] <= -57 and 37 <= p["elbow_flex"] <= 60 and -45 <= p["wrist_flex"] <= -29
+        )
+
+    def candidate(pose):
+        if not all(bounds[n][0] <= pose[n] <= bounds[n][1] for n in MOVING):
+            failures["candidate:box_or_margin"] += 1
+            return None
+        if not checked(pose):
+            failures["candidate:" + last_failure[0]] += 1
+            return None
+        # A radial displacement respects the lift/elbow cancellation along the
+        # already proved hub ray. Try a 4 degree per-joint sign vector too.
+        radius = max(abs(pose[n] - hub[n]) for n in APPROACH)
+        vectors = [
+            {n: 4.0 * (pose[n] - hub[n]) / max(radius, 1.0) for n in APPROACH},
+            {n: 4.0 * (1 if pose[n] >= hub[n] else -1) for n in APPROACH},
+            dict.fromkeys(APPROACH, 4.0),
+        ]
+        for delta in vectors:
+            routes, here = [], hub
+            for sign in (1, -1):
+                approach = {**pose, **{n: pose[n] + sign * delta[n] for n in APPROACH}}
+                if not all(limits[n][0] + 8 <= approach[n] <= limits[n][1] - 8 for n in MOVING):
+                    failures["side:margin"] += 1
+                    break
+                into = leg(here, approach)
+                settle = leg(approach, pose) if into is not None else None
+                if into is None or settle is None:
+                    failures["side:" + str(last_failure[0])] += 1
+                    break
+                routes.append(
+                    {
+                        "direction": "+" if sign == 1 else "-",
+                        "delta_deg": delta,
+                        "into": into,
+                        "settle": settle,
+                    }
+                )
+                here = pose
+            if len(routes) == 2:
+                back = leg(pose, hub)
+                if back is not None:
+                    return {"pose": pose, "routes": routes, "back": back}
+        failures["candidate:no_both_routes"] += 1
+        return None
+
+    # Reserve actual measurements inside tonight's pocket, with yaw/roll varied.
+    pocket_candidates = []
+    if settings.box is None:
+        for attempt in range(96):
+            if say and attempt % 6 == 0:
+                say(f"sweep planning: pocket {attempt}/96, {len(pocket_candidates)} accepted")
+            pose = {
+                **pocket,
+                **dict(
+                    zip(
+                        MOVING,
+                        (
+                            rng.uniform(-74, -70),
+                            rng.uniform(48, 59),
+                            rng.uniform(-42, -32),
+                            rng.uniform(-20, 20),
+                            rng.uniform(-45, 45),
+                        ),
+                        strict=True,
+                    )
+                ),
+            }
+            if visit := candidate(pose):
+                pocket_candidates.append(visit)
+            if len(pocket_candidates) >= min(6, settings.poses):
+                break
+
+    # Conditional one-joint rays from the measured pocket: state the first
+    # limiting reason, rather than mistaking random sample extrema for limits.
+    coverage_bounds = {}
+    if settings.box is None and settings.poses >= 6:
+        for n in MOVING:
+            if say:
+                say(f"sweep planning: conditional boundary {n}")
+            coverage_bounds[n] = {}
+            for side, endpoint in zip(("low", "high"), bounds[n], strict=True):
+                last = dict(pocket)
+                reason = "sampling box / soft limit less 8 deg"
+                for value in np.linspace(
+                    pocket[n], endpoint, max(2, math.ceil(abs(endpoint - pocket[n]) / 2) + 1)
+                ):
+                    pose = {**pocket, n: float(value)}
+                    if not checked(pose):
+                        reason = last_failure[0]
+                        break
+                    verdict = mesh.check_segment(hub, pose)
+                    if not verdict.ok:
+                        reason = "path:guard:" + str(verdict.face)
+                        break
+                    # Diagnostic rays only locate a boundary. Retained visits
+                    # below still prove all 20 Hz steps, sag and stop returns.
+                    path = core.retime(hub, pose, arm_deg_s=speed, grip_deg_s=60.0)
+                    offending = next(
+                        (
+                            n
+                            for q in path
+                            for n, tau in predictor.torque(q).items()
+                            if abs(tau) > settings.max_torque_nm
+                        ),
+                        None,
+                    )
+                    if offending:
+                        reason = "path:cap:" + offending
+                        break
+                    last = pose
+                coverage_bounds[n][side] = {"degree": last[n], "reason": reason}
+                # Leave room for the bidirectional approach at the boundary.
+                edge = {
+                    **last,
+                    n: last[n] + math.copysign(min(6, abs(last[n] - pocket[n])), pocket[n] - last[n]),
+                }
+                if visit := candidate(edge):
+                    candidates.append(visit)
+
+    for attempt in range(0 if len(pocket_candidates) >= settings.poses else attempts):
         if say and attempt % 24 == 0:
             say(f"sweep planning: candidate {attempt}/{attempts}, {len(candidates)} accepted")
-        pose = {**hub, **{n: float(rng.uniform(*bounds[n])) for n in MOVING}}
-        if not checked(pose):
-            continue
-        routes, here = [], hub
-        for sign in (1, -1):
-            approach = {**pose, **{n: pose[n] + sign * 6.0 for n in APPROACH}}
-            if not all(limits[n][0] + 8 <= approach[n] <= limits[n][1] - 8 for n in MOVING):
-                continue
-            into, settle = leg(here, approach), leg(approach, pose)
-            if into is not None and settle is not None:
-                routes.append({"direction": "+" if sign == 1 else "-", "into": into, "settle": settle})
-                here = pose
-        if not routes:
-            continue
-        back = leg(pose, hub)
-        if back is not None:
-            candidates.append({"pose": pose, "routes": routes, "back": back})
-    if len(candidates) < settings.poses:
+        sample_bounds = bounds
+        if attempt % 2 and settings.box is None:
+            old_widths = dict(zip(MOVING, (65, 85, 70, 40, 90), strict=True))
+            sample_bounds = {
+                n: (max(bounds[n][0], hub[n] - old_widths[n]), min(bounds[n][1], hub[n] + old_widths[n]))
+                for n in MOVING
+            }
+        pose = {**hub, **{n: float(rng.uniform(*sample_bounds[n])) for n in MOVING}}
+        if visit := candidate(pose):
+            candidates.append(visit)
+    if settings.box is None and len(pocket_candidates) < min(6, settings.poses):
+        raise ValueError(f"only {len(pocket_candidates)} bidirectional pocket poses: {dict(failures)}")
+    if len(candidates) + len(pocket_candidates) < settings.poses:
         raise ValueError(
-            f"only {len(candidates)} checked poses for {settings.poses} requested; narrow box or reduce count"
+            f"only {len(candidates) + len(pocket_candidates)} checked poses for {settings.poses} requested; narrow box or reduce count"
         )
 
     def gap(a, b):
         return sum((a[n] - b[n]) ** 2 for n in MOVING)
 
-    # All candidates are already fully proved before farthest-point thinning.
-    chosen = [max(candidates, key=lambda c: gap(c["pose"], hub))]
-    candidates.remove(chosen[0])
+    chosen = list(pocket_candidates)
     while len(chosen) < settings.poses:
-        pick = max(candidates, key=lambda c: min(gap(c["pose"], v["pose"]) for v in chosen))
+        pick = max(
+            candidates,
+            key=lambda c: min(gap(c["pose"], v["pose"]) for v in chosen) if chosen else gap(c["pose"], hub),
+        )
         chosen.append(pick)
         candidates.remove(pick)
-    ordered, here = [], hub
-    while chosen:
-        pick = min(chosen, key=lambda c: gap(c["pose"], here))
-        ordered.append(pick)
-        chosen.remove(pick)
-        here = pick["pose"]
+    # Validate the predictor in its observed pocket before extrapolating. STAR
+    # visits each return to hub, so sorting by pocket distance adds no shortcut.
+    ordered = sorted(chosen, key=lambda c: (not in_pocket(c["pose"]), gap(c["pose"], pocket)))
     if settings.start_at > len(ordered):
         raise ValueError("start-at exceeds checked pose count")
     worst = dict.fromkeys(core.ARM, 0.0)
@@ -251,6 +407,11 @@ def plan(
     worst = {n: max(abs(predictor.torque(q)[n]) for q in all_steps) for n in core.ARM}
     duration += (1 + len(ordered) - settings.start_at) * core.ROW_DT_S
     report = {
+        "rejections": dict(sorted(failures.items())),
+        "coverage_bounds_from_pocket": coverage_bounds,
+        "coverage_reference_deg": pocket,
+        "pocket_poses": sum(in_pocket(v["pose"]) for v in ordered),
+        "both_direction_poses": sum(len(v["routes"]) == 2 for v in ordered),
         "planned_substeps": len(all_steps),
         "poses": len(ordered),
         "remaining_poses": len(ordered) - settings.start_at,
@@ -274,7 +435,7 @@ def actions(visits, settings):
         for route in visit["routes"]:
             direction = route["direction"]
             for q in route["into"] + route["settle"]:
-                yield f"{prefix} approach from {direction}", q, None
+                yield f"{prefix} approach from {direction}", q, {"pose": i, "motion": True}
             count = math.ceil(settings.hold_s / core.ROW_DT_S)
             for tick in range(count):
                 yield (
@@ -283,5 +444,5 @@ def actions(visits, settings):
                     {"pose": i, "direction": direction, "last": tick == count - 1},
                 )
         for q in visit["back"]:
-            yield f"{prefix} return hub", q, None
+            yield f"{prefix} return hub", q, {"pose": i, "motion": True}
         yield f"sweep: hub after pose {i + 1}/{len(visits)}", visit["back"][-1], {"hub": i + 1}
