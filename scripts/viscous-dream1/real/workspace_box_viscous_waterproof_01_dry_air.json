@@ -1,0 +1,171 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved. Apache-2.0.",
+  "status": "dry air desk, 2026-11-16; coarse second layer under makermodslab/tank_guard.py",
+  "frame": "physical J1 base frame of viscous_waterproof_01 (base_link of configs/viscous/model/viscous_arm.urdf), mm; the arm works toward -x",
+  "root": "base_link",
+  "tank_mm": {
+    "left_wall_y": {
+      "value": 2000,
+      "status": "not a constraint in dry air",
+      "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
+    },
+    "right_wall_y": {
+      "value": -2000,
+      "status": "not a constraint in dry air",
+      "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
+    },
+    "near_wall_x": {
+      "value": 106,
+      "status": "cad (2026-11-13): the mount's truss post face, flush on the glass at 118; not traced",
+      "source": "keepout_viscous_waterproof_01.json (was 80, stated by Gavin 2026-11-08)"
+    },
+    "far_wall_x": {
+      "value": -2000,
+      "status": "not a constraint in dry air",
+      "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
+    },
+    "floor_z": {
+      "value": -31,
+      "status": "bound",
+      "source": "keepout_viscous_waterproof_01.json, after Gavin raised the base 2026-11-08 (was -6)"
+    },
+    "rim_z": {
+      "value": 2000,
+      "status": "not a constraint in dry air",
+      "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\"."
+    }
+  },
+  "rule": "Every point keeps its original x maximum (post/base side) and z minimum (floor). All other bounds are outside model reach at \u00b12000 mm. The tcp stays at least 120 mm in front of J1. See configs/viscous/environments/dry_air_desk/README.md for the conservative reach derivation.",
+  "points": {
+    "tcp": {
+      "link": "wrist_roll_link",
+      "offset": "tcp",
+      "box_mm": {
+        "x": [
+          -2000,
+          -120
+        ],
+        "y": [
+          -2000,
+          2000
+        ],
+        "z": [
+          -35,
+          2000
+        ]
+      },
+      "relaxed_bounds": {
+        "status": "not a constraint in dry air",
+        "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
+        "bounds": [
+          "x minimum",
+          "y minimum",
+          "y maximum",
+          "z maximum"
+        ]
+      }
+    },
+    "wrist": {
+      "link": "wrist_roll_link",
+      "offset_m": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": {
+        "x": [
+          -2000,
+          -60
+        ],
+        "y": [
+          -2000,
+          2000
+        ],
+        "z": [
+          -35,
+          2000
+        ]
+      },
+      "relaxed_bounds": {
+        "status": "not a constraint in dry air",
+        "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
+        "bounds": [
+          "x minimum",
+          "y minimum",
+          "y maximum",
+          "z maximum"
+        ]
+      }
+    },
+    "wrist_pitch": {
+      "link": "wrist_pitch_link",
+      "offset_m": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": {
+        "x": [
+          -2000,
+          46
+        ],
+        "y": [
+          -2000,
+          2000
+        ],
+        "z": [
+          -25,
+          2000
+        ]
+      },
+      "relaxed_bounds": {
+        "status": "not a constraint in dry air",
+        "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
+        "bounds": [
+          "x minimum",
+          "y minimum",
+          "y maximum",
+          "z maximum"
+        ]
+      }
+    },
+    "elbow": {
+      "link": "forearm_link",
+      "offset_m": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": {
+        "x": [
+          -2000,
+          36
+        ],
+        "y": [
+          -2000,
+          2000
+        ],
+        "z": [
+          -25,
+          2000
+        ]
+      },
+      "relaxed_bounds": {
+        "status": "not a constraint in dry air",
+        "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
+        "bounds": [
+          "x minimum",
+          "y minimum",
+          "y maximum",
+          "z maximum"
+        ]
+      }
+    }
+  },
+  "z_shift_2026_11_08": "Gavin raised the arm's base: every z lower bound moved down 25 mm with the floor and every upper bound down 16 mm with the rim, so each point keeps the clearance to the glass it was designed with. The first live Dream call (runs/live-20261108T205544Z) asked for tcp z = 16 mm, ~47 mm above the real floor, and the old box refused it.",
+  "near_shift_2026_11_08": "Back wall moved from the 40 mm estimate to Gavin's 80 mm: elbow x max -30 -> +10 and wrist_pitch -20 -> +20 (same 70 / 60 mm from the wall as designed; the tank guard still checks every mesh vertex). The elbow limit cut 13 of 17 calls in live 20261108T212338Z while Dream's hand was 32-39 cm out.",
+  "floor_lowered_2026_11_08": "Gavin: decrease the floor limit by 3 cm. tcp and wrist z min -5 -> -35, so the grasp centre can reach a golf ball's centre on the floor (~-10). The tank guard is then the binding floor limit: every mesh vertex at most 10 mm below the -31 mm floor line (gentle press, ~5 N at the hand with the 90/4 gains).",
+  "mount_shift_2026_11_13": "New base mount (CAD from Gavin's 3MF, 2026-11-13): the back plane is the truss post's face 106 mm behind J1 (was 80), and with the post centred on Gavin's marker lines the side walls are +227 / -207 (were 210 / -224). Only the limits that were derived from a wall moved, each by the wall's own shift so it keeps its designed distance: elbow x max +10 -> +36 and wrist_pitch +20 -> +46 (+26, still 70 / 60 mm from the plane), and every point's y range [-154, 140] -> [-137, 157] (+17, still 70 mm from each side wall; the -y limit tightens because that wall is now closer). tcp (-120) and wrist (-60) x maxima are J1-relative and stay. The x minima (-624, -600) still come from the old -694 far estimate and now sit past the far glass (-616): on the far side the tank guard (every mesh vertex, 70 mm) is the only wall check. The base can still slide or rotate under a push on the glass; neither the box nor the guard can see that.",
+  "source": "Gavin 2026-11-16: \"the only boundary that is still important here is the back post, the rest of the bounding box does not matter here\".",
+  "dry_air_floor_note": "The tank_mm floor_z (-31) and dated history below are inherited provenance. The guard floor remains -28 mm with 20 mm press; every point z minimum stays exactly as in the tank box. Claude retained the floor because the same mount now stands on the desk."
+}
