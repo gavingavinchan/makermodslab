@@ -48,6 +48,46 @@ The earlier dry-air torque/temperature choices remain explicit flags:
 .venv/bin/python scripts/viscous-dream1/real/dream_real.py --internal-stub --environment dry_air --robot viscous_waterproof_01 --prompt "pick up the screwdriver"
 ```
 
+## Overlapping Dream calls (dry air only, 2026-11-17)
+
+Gavin: “can we make it fast enough?” `--overlap` asks for the next chunk while
+sending the current one. Default pacing stays synchronous. `--replan-after N`
+(default 30, 1..48) is the number of completed Dream rows before takeover; the
+request starts N minus the median round trip in rows early (at least one row).
+Speed-stretched substeps do not count as extra Dream rows. Both settings bind
+the dry-air plan id. Tank refuses overlap and a non-default replan horizon;
+its plan data and pinned ids stay unchanged.
+
+The median of the last five completed calls selects pacing: above 700 ms,
+finish the whole chunk before asking again; at or below 700 ms, overlap.
+A change is announced in the console. In particular, an 800 ms connection
+uses synchronous pacing under this rule. A late reply consumes the remaining
+chunk, then the arm holds its last commanded pose until it arrives. The first
+call and other calls sent while holding install whole. A call sent during
+motion drops `round(elapsed_seconds * 20)` stale rows, up to its whole horizon.
+
+The installed client's `dream.seam_join` fits/blends the new window onto the
+actual last command and the next guarded substeps. This extra anchor matters:
+client IK/smoothing does not know which rows our speed/box/keep-out checks
+stretched or clipped. Every blended row goes back through `plan_chunk` and its
+normal jump, limit, workspace, guard and speed checks. The stateful guard's
+planning reference returns to the actual command; its original start pose and
+clearance relaxation stay intact. Floor slide and box clipping still happen
+inside SlideTransport before IK. All stop and feedback paths remain active.
+
+Stopping sets cancellation immediately. A separate cleanup thread interrupts a
+connected socket, joins the in-flight worker and closes the client; the arm's
+existing stop never waits for the request. Python cannot force-cancel a thread
+in IK or connect; that background join may finish later. An uncertain sent call
+stays chargeable in the existing ledger. The worker never touches the arm.
+
+`--internal-stub --overlap` makes no Dream request but still needs the installed
+client's seam helper from `--dream-venv`. `--stub-latency-s` sets virtual latency
+(default 1.5 s) without sleeping. Dry-air `summary.json` includes
+`pacing_timeline`: send/reply times, completed/remaining rows, dropped rows and
+idle time per request. These are simulated queue-idle times; real planning/IK
+cost and hardware tracking still require Gavin's supervised review/run.
+
 ## Files
 
 | File | What it is |

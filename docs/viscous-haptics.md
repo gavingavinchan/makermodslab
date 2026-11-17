@@ -2701,6 +2701,43 @@ not running, port free.
   -2.2, roll -1.4, gripper -0.30 (inside its soft limits [-115.1, -0.03], at the
   closed end; the 2026-11-07 reading of +242.1 is gone).
 
+### Dry-air Dream pacing (2026-11-17, goal B3)
+
+Gavin: “can we make it fast enough?” For the Stanford demo, add opt-in
+`--overlap` in the separate `makermodslab-dry-air` worktree, preserving the tank
+runner's default plan data/ids and all safety thresholds. Requests run on the
+existing worker while the current guarded chunk drains. The lead is the last
+five calls' median latency, subtracted from `--replan-after` (30 Dream rows).
+Above 700 ms median the runner announces synchronous fallback, so the reported
+~800 ms link would still hold during calls. Installed Dream uses the minimum
+recent latency for its lead; the brief explicitly chooses median instead.
+
+Reuse `dream.seam_join` at the actual command/guarded queue, since the client's
+own remembered IK chunk misses our retiming and clipping. Drop latency-aged
+rows of moving requests; every kept/blended row goes through the same planner,
+jump/box/keep-out/speed checks. Restore GuardedTargets' planning reference to
+the actual command at takeover, retaining its start gate and relaxation.
+Stop immediately enters the existing arm stop while a background reaper cancels
+the connected socket and joins/closes the request. Reservations remain in the
+unchanged ledger even when a stopped request has not returned. No worker has
+access to the arm. No stop-button, camera-lock or safety-number changes.
+
+Offline fake-arm/Dream tests cover seams, median fallback, late hold, stale
+rows, guard reference and refusal, cap/accounting, prompt stop and deferred
+join, flag refusal and pinned tank id. Stub CLI timelines use tonight's
+14/14/82, measured state, 45 deg/s and 18-call flags. Evidence and detailed
+results: `~/dry-air-ref/REPORT-overlap.md`; pacing behavior and limitations are
+also in the committed runner README. No hardware, `--live`, Dream network,
+billed calls or input-check commands were used. Claude reviews before Gavin's
+hardware run. Validation: 18 new overlap tests; targeted 269 passed plus 31
+subtests; full 4,726 passed with only the two known profile/Pinocchio baseline
+failures (24 skipped). Offline 18-call timelines at 600 ms: request-idle time
+10.8 s synchronous versus 0.6 s overlapped (only the first call); at 800 ms and
+1.5 s the cutoff correctly keeps 14.4 s and 27.0 s of request-idle respectively.
+An in-memory comparison with `05fd83d8` verifies identical tank plan JSON,
+summary, tick records and fake-arm events. This task is authorized only in this
+worktree; the other clone and the Mac were not touched.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
