@@ -280,16 +280,6 @@ def test_thread_reserve_failure_is_reported_instead_of_waiting_forever(tmp_path)
     stub.request.assert_not_called()
 
 
-def test_cancel_wakes_the_transport_socket_without_calling_close_or_waiting_on_policy():
-    sock = mock.Mock()
-    client = SimpleNamespace(_policy=SimpleNamespace())
-    adapter = object.__new__(dream_real.DreamReal)
-    adapter.client = client
-    adapter.slide = SimpleNamespace(real=SimpleNamespace(_connection=SimpleNamespace(sock=sock)))
-    adapter.cancel_request()
-    sock.shutdown.assert_called_once()
-
-
 def test_tank_refuses_overlap_at_cli_and_episode_boundary():
     with pytest.raises(SystemExit):
         dream_real.main(["--overlap", "--internal-stub", "--no-run-data"])

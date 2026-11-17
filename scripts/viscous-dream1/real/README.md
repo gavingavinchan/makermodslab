@@ -75,11 +75,14 @@ planning reference returns to the actual command; its original start pose and
 clearance relaxation stay intact. Floor slide and box clipping still happen
 inside SlideTransport before IK. All stop and feedback paths remain active.
 
-Stopping sets cancellation immediately. A separate cleanup thread interrupts a
-connected socket, joins the in-flight worker and closes the client; the arm's
-existing stop never waits for the request. Python cannot force-cancel a thread
-in IK or connect; that background join may finish later. An uncertain sent call
-stays chargeable in the existing ledger. The worker never touches the arm.
+Stopping sets cancellation immediately to prevent another request. A separate
+cleanup thread lets the outstanding request finish or time out, joins retained
+worker handles and closes the client. It never interrupts the socket: doing so
+can trigger the transport's stale-connection POST retry outside the ledger.
+Reply collection polls thread completion without waiting. Cleanup-start failures
+are logged, and an inner finally guarantees the arm's existing stop still runs.
+The arm stop never waits for request teardown; the background join may finish
+later. An uncertain sent call stays chargeable in the existing ledger. The worker never touches the arm.
 
 `--internal-stub --overlap` makes no Dream request but still needs the installed
 client's seam helper from `--dream-venv`. `--stub-latency-s` sets virtual latency

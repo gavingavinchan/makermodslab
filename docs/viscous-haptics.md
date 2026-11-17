@@ -2717,9 +2717,13 @@ own remembered IK chunk misses our retiming and clipping. Drop latency-aged
 rows of moving requests; every kept/blended row goes through the same planner,
 jump/box/keep-out/speed checks. Restore GuardedTargets' planning reference to
 the actual command at takeover, retaining its start gate and relaxation.
-Stop immediately enters the existing arm stop while a background reaper cancels
-the connected socket and joins/closes the request. Reservations remain in the
-unchanged ledger even when a stopped request has not returned. No worker has
+Stop immediately enters the existing arm stop while a background reaper waits
+for the request to finish/time out, joins all retained worker handles, then
+closes the client. Review corrections (2026-11-17): cleanup startup errors are
+logged and cannot bypass the arm stop; reply collection only polls exiting
+threads; socket interruption is removed because it can trigger an extra POST
+inside the installed transport's stale-connection retry. Reservations remain in
+the unchanged ledger even when a stopped request has not returned. No worker has
 access to the arm. No stop-button, camera-lock or safety-number changes.
 
 Offline fake-arm/Dream tests cover seams, median fallback, late hold, stale

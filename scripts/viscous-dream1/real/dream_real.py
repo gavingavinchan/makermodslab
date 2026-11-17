@@ -1012,18 +1012,6 @@ class DreamReal:
     def request(self, commanded):
         return self.client.get_action(commanded=commanded)
 
-    def cancel_request(self):
-        # close() alone need not wake a socket blocked in recv. Shutdown wakes it without
-        # waiting for the policy lock; the worker owns normal client teardown after joining.
-        import socket
-
-        channel = self.slide.real
-        connection = getattr(channel, "_connection", None)
-        sock = getattr(connection, "sock", None)
-        if sock is not None:
-            with contextlib.suppress(OSError):
-                sock.shutdown(socket.SHUT_RDWR)
-
     def close(self):
         with contextlib.suppress(Exception):
             self.client.close()
@@ -1070,6 +1058,7 @@ class Worker:
         self.clock_epsilon = 0.0  # preserve the legacy tank virtual-clock behavior
         self.started_at = self.finished_at = None
         self.thread = self.cleanup_thread = None
+        self.threads = []  # retain published-but-still-exiting requests across refills
         self.cancelled = threading.Event()
 
     def _call(self, commanded):
@@ -1102,6 +1091,7 @@ class Worker:
     def start(self, commanded):
         if self.busy or self.cancelled.is_set():
             raise RuntimeError("request already in flight or worker stopped")
+        self._reap_finished()
         self.started_at, self.finished_at = self.clock(), None
         self.busy, self.result = True, None
         self.calls += 1
@@ -1117,6 +1107,7 @@ class Worker:
 
             self.thread = threading.Thread(target=run, name="dream-request", daemon=True)
             self.thread.start()
+            self.threads.append(self.thread)
         else:
             try:
                 self.result = self._call(commanded)
@@ -1133,9 +1124,18 @@ class Worker:
         ):
             return None
         self.busy = False
-        if self.thread is not None:
-            self.thread.join()
+        self._reap_finished()
         return self.result
+
+    def _reap_finished(self):
+        # Publication precedes thread-exit cleanup. Poll only; never wait on the arm thread.
+        alive = []
+        for thread in self.threads:
+            if thread.is_alive():
+                alive.append(thread)
+            else:
+                thread.join(timeout=0)
+        self.threads = alive
 
     def shutdown(self):
         """Stop immediately; a reaper joins the request and closes its client off the arm thread.
@@ -1146,12 +1146,11 @@ class Worker:
         self.cancelled.set()
 
         def cleanup():
-            if self.thread is not None and self.thread.is_alive():
-                cancel = getattr(self.dream, "cancel_request", None)
-                if cancel is not None:
-                    with contextlib.suppress(Exception):
-                        cancel()
-                self.thread.join()
+            # Let an outstanding POST finish/time out: socket interruption can trigger
+            # the installed transport's stale-connection retry outside ledger accounting.
+            for thread in self.threads:
+                thread.join()
+            self.threads = []
             self.dream.close()
 
         self.cleanup_thread = threading.Thread(target=cleanup, name="dream-request-join", daemon=True)
@@ -1843,9 +1842,17 @@ class Episode:
         except Exception as error:  # noqa: BLE001
             reason = f"error: {error.__class__.__name__}: {error}"
         finally:
-            if self.pacing and self.worker is not None:
-                self.worker.shutdown()  # never put request teardown ahead of the arm's stop
-            self.summary["stop"] = self.stop(reason)
+            try:
+                if self.pacing and self.worker is not None:
+                    try:
+                        self.worker.shutdown()
+                    except Exception as error:  # cleanup thread startup must never bypass the arm stop
+                        message = f"Dream cleanup failed: {error.__class__.__name__}: {error}"
+                        self.summary.setdefault("cleanup_errors", []).append(message)
+                        with contextlib.suppress(Exception):
+                            print(message, file=sys.stderr, flush=True)
+            finally:
+                self.summary["stop"] = self.stop(reason)
         self.summary.update(
             reason=reason,
             peak_torque_nm=self.monitor.peak_torque,
