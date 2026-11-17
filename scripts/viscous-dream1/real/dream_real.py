@@ -72,6 +72,35 @@ BOX_FILE = HERE / "workspace_box_viscous_waterproof_01.json"
 SRC_URDF = REPO / "configs/viscous/model/viscous_arm.urdf"
 LEDGER = HERE / "runs/ledger.json"
 LEDGER_CAP = 100  # total billed calls across all real-arm runs; raise it by editing the ledger file
+
+
+@dataclasses.dataclass(frozen=True)
+class Environment:
+    """The two boundary layers selected together for every runner path."""
+
+    name: str
+    keepout_file: Path
+    box_file: Path
+
+    def metadata(self) -> dict:
+        return {
+            "name": self.name,
+            "keepout_file": self.keepout_file.relative_to(REPO).as_posix(),
+            "workspace_box_file": self.box_file.relative_to(REPO).as_posix(),
+        }
+
+
+ENVIRONMENTS = {
+    "tank": Environment("tank", core.KEEPOUT_FILE, BOX_FILE),
+    "dry_air": Environment(
+        "dry_air",
+        REPO / "configs/viscous/environments/dry_air_desk/keepout_viscous_waterproof_01.json",
+        HERE / "workspace_box_viscous_waterproof_01_dry_air.json",
+    ),
+}
+TANK_ENVIRONMENT = ENVIRONMENTS["tank"]
+
+
 CHECKPOINT = "dreamlabs/dream-1-beta"
 YAM_EMBODIMENT = {
     "state": {"right_arm": [0, 6], "right_gripper": [6, 7], "left_arm": [7, 13], "left_gripper": [13, 14]},
@@ -238,14 +267,14 @@ def port_holders(port: str) -> list[str]:
 class Guard:
     """Adapter over the vertex-level tank keep-out guard, or a stand-in reporting its absence."""
 
-    def __init__(self):
+    def __init__(self, environment: Environment = TANK_ENVIRONMENT):
         self.problem = None
         self.guard = self.targets = None
         try:
             from makermodslab import tank_guard
 
             self.module = tank_guard
-            self.guard = tank_guard.TankGuard.from_file()
+            self.guard = tank_guard.TankGuard.from_file(environment.keepout_file)
         except Exception as error:  # noqa: BLE001
             self.problem = (
                 f"makermodslab.tank_guard is not available ({error.__class__.__name__}: {error}); "
@@ -762,12 +791,14 @@ def deny_network():
     sys.addaudithook(hook)
 
 
-def make_floor_slide(arm: dict) -> tuple[core.FloorSlide | None, str | None]:
+def make_floor_slide(
+    arm: dict, environment: Environment = TANK_ENVIRONMENT
+) -> tuple[core.FloorSlide | None, str | None]:
     """The floor slide for this arm file's tool point, on the tank guard's own mesh and floor line."""
     try:
         from makermodslab import tank_guard
 
-        model = tank_guard.TankGuard.from_file().model
+        model = tank_guard.TankGuard.from_file(environment.keepout_file).model
     except Exception as error:  # noqa: BLE001 - the plan reports it; the guard's own absence refuses --live
         return None, f"no tank model ({error.__class__.__name__}: {error})"
     if arm.get("flange") != "wrist_roll_link":
@@ -777,7 +808,7 @@ def make_floor_slide(arm: dict) -> tuple[core.FloorSlide | None, str | None]:
             core.HandMesh.from_model(model),
             core.tool_rotation(arm["approach"], arm["jaw"]),
             np.asarray(arm["tcp"], float),
-            core.keepout_floor_mm(),
+            core.keepout_floor_mm(environment.keepout_file),
         ),
         None,
     )
@@ -821,7 +852,16 @@ class SlideTransport:
 class DreamReal:
     """Dream's own client. offline=True patches the model lookup and the transport (no key, no network)."""
 
-    def __init__(self, arm_file: Path, log_dir: Path, *, offline: bool, scenario="nominal", api_ok=False):
+    def __init__(
+        self,
+        arm_file: Path,
+        log_dir: Path,
+        *,
+        offline: bool,
+        scenario="nominal",
+        api_ok=False,
+        environment: Environment = TANK_ENVIRONMENT,
+    ):
         os.environ["DREAM_LOG_DIR"] = str(log_dir / "dream_logs")
         os.environ.setdefault(
             "JAX_COMPILATION_CACHE_DIR", str(Path("~/viscous-dream-real/.cache/jax").expanduser())
@@ -863,8 +903,10 @@ class DreamReal:
         else:
             self.client.policy(self.config)
             self.stub = None
-        floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()))
-        self.slide = SlideTransport(self.client._policy._transport, core.tcp_box_mm(BOX_FILE), floor)
+        floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()), environment)
+        self.slide = SlideTransport(
+            self.client._policy._transport, core.tcp_box_mm(environment.box_file), floor
+        )
         self.client._policy._transport = self.slide
         self.inputs_id = None
         self.inputs_checked = None
@@ -1038,6 +1080,7 @@ class Episode:
         wall=time.time,
         mirror_dir=None,
         frame_sink=None,
+        environment: Environment = TANK_ENVIRONMENT,
     ):
         if not 0 < settings.speed_deg_s <= HARD_ARM_SPEED_DEG_S:
             raise RefusedError(
@@ -1051,6 +1094,7 @@ class Episode:
             abort_event,
             mutate,
         )
+        self.environment = environment
         self.say = say
         # The live status for stop_button.py (None: not written): run state, per-joint limp/torque/temp,
         # the wall time of the last fresh reading, one line for a person. `dead` is sticky: a joint once
@@ -1076,6 +1120,7 @@ class Episode:
         # through the joint map, the pose the approach brings the working arm to before the first call.
         self.right_rest = [float(v) for v in arm_rest]
         self.summary = {
+            "environment": environment.metadata(),
             "trips": [],
             "calls": 0,
             "rows_planned": 0,
@@ -1233,7 +1278,7 @@ class Episode:
         the guard clips (a rest outside a limit) is re-retimed from the last one, so no planned substep
         moves an arm joint faster than the cap; the clipped segment is the one the guard checked."""
         legs, prev = [], dict(rest)
-        for k, waypoint in enumerate(core.approach_waypoints(rest, start), 1):
+        for k, waypoint in enumerate(core.approach_waypoints(rest, start, self.environment.keepout_file), 1):
             steps = []
             for step in core.retime(
                 prev, waypoint, arm_deg_s=self.s.speed_deg_s, grip_deg_s=self.s.grip_deg_s
@@ -1549,7 +1594,10 @@ class Episode:
         approach route reversed (core.return_waypoints)."""
         if self.phase == "approach":
             return list(reversed(self.trail))
-        return [self.dream_start, *core.return_waypoints(self.start_pose, self.dream_start)]
+        return [
+            self.dream_start,
+            *core.return_waypoints(self.start_pose, self.dream_start, self.environment.keepout_file),
+        ]
 
     def legs_from(self, here) -> list[dict]:
         """return_legs() from the MEASURED pose `here`. An arm holding a leg end sits off it by its
@@ -1886,6 +1934,7 @@ def build_plan(
     guard,
     dream_status,
 ):
+    environment = ENVIRONMENTS[getattr(args, "environment", "tank")]
     cameras = {
         c["name"]: {k: c.get(k) for k in ("camera_index", "unique_id", "width", "height", "fps", "rotation")}
         for c in record.get("cameras") or []
@@ -1893,6 +1942,7 @@ def build_plan(
     urdf_joints = {j.name: j for j in core.parse_urdf(urdf_bytes).values()}
     ik = {m: (math.degrees(urdf_joints[m].lower), math.degrees(urdf_joints[m].upper)) for m in core.ARM}
     plan = {
+        "environment": environment.metadata(),
         "robot": record["name"],
         "follower_port": record["follower_port"],
         "follower_config": record["follower_config"],
@@ -1943,12 +1993,12 @@ def build_plan(
             f"box's tcp limits {core.SLIDE_MARGIN_MM} mm inside (core.clamp_eef_rows), then its z raised just "
             "enough that the lowest mesh vertex of " + "/".join(core.HAND_LINKS) + " (at Dream's requested "
             "rot6 and grip; wrist_yaw_link bounded over every roll) sits at the keep-out floor line "
-            f"({core.keepout_floor_mm():g} mm) + {core.FLOOR_BUFFER_MM:g} mm + the predicted sag "
+            f"({core.keepout_floor_mm(environment.keepout_file):g} mm) + {core.FLOOR_BUFFER_MM:g} mm + the predicted sag "
             f"{core.SAG_MM_PER_M2:g} mm/m^2 x tcp reach^2 (core.FloorSlide); x, y, orientation and grip as Dream "
             "asked, so the hand follows Dream down to the floor line, then slides along it"
             if guard.available
             else f"box clip only; NO floor slide: {guard.problem}",
-            "workspace_box": f"{BOX_FILE.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: "
+            "workspace_box": f"{environment.box_file.name}: tcp/wrist/wrist_pitch/elbow boxes on every substep -> override: "
             "a row that cannot be reached is skipped and the arm heads for Dream's later rows; if none is reachable it holds until the next call",
             "tank_guard": "every substep through makermodslab.tank_guard GuardedTargets.step (keep-out -> override as "
             "above; any other rejection -> stop) and "
@@ -1991,7 +2041,7 @@ def build_plan(
             "dream_start_motor_deg": {m: round(v, 2) for m, v in jmap.to_motor(arm["rest"]).items()},
             "gripper": "as measured at the rest",
         },
-        "box_config_sha256": core.sha256_bytes(BOX_FILE.read_bytes()),
+        "box_config_sha256": core.sha256_bytes(environment.box_file.read_bytes()),
         "box_points_mm": {k: v["box_mm"] for k, v in box_config["points"].items()},
         "dream_client": dream_status,
     }
@@ -2016,7 +2066,10 @@ def build_plan(
     # The follower gains and the tank keep-out shape every motion too (both were left out until 2026-11-08,
     # so a floor move and a gain change kept the old plan id).
     safety["follower_gains_override"] = plan["follower_gains_override"]
-    safety["keepout_sha256"] = core.sha256_bytes(core.KEEPOUT_FILE.read_bytes())
+    safety["keepout_sha256"] = core.sha256_bytes(environment.keepout_file.read_bytes())
+    # Preserve the exact legacy tank hash input; other environments bind their identity as well as files.
+    if environment.name != "tank":
+        safety["environment"] = environment.metadata()
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2024,6 +2077,11 @@ def build_plan(
 def print_plan(plan):
     print(f"\n=== Dream-1 real-arm plan (plan id {plan['plan_id']}) ===")
     print(f"robot {plan['robot']}  port {plan['follower_port']}  limits from {plan['limits_source']}")
+    env = plan["environment"]
+    print(
+        f"Environment: {env['name']}\n  keep-out: {env['keepout_file']}"
+        f"\n  workspace box: {env['workspace_box_file']}"
+    )
     print("Joints that may move (ALL SEVEN): motor limits / commanded window / IK limits / sign")
     for m, j in plan["joints_that_move"].items():
         print(
@@ -2115,7 +2173,9 @@ def run_dry(args, ctx) -> int:
         if args.rehearse:
             dream = None
         elif ctx["dream_problem"] is None and not args.internal_stub:
-            dream = DreamReal(ctx["arm_path"], out, offline=True, scenario=scenario)
+            dream = DreamReal(
+                ctx["arm_path"], out, offline=True, scenario=scenario, environment=ctx["environment"]
+            )
             dream.install_gate("record")
         else:
             dream = DreamInternalStub(ctx["jmap"], scenario)
@@ -2152,6 +2212,7 @@ def run_dry(args, ctx) -> int:
             abort_event,
             mutate={"jump": jump_mutation, "far": far_mutation()}.get(scenario),
             arm_rest=ctx["arm"]["rest"],
+            environment=ctx["environment"],
             say=print if args.rehearse else None,
             mirror_dir=ctx["bundle"].mirror_dir(scenario) if ctx.get("bundle") else None,
         )
@@ -2246,7 +2307,7 @@ def run_preview(args, ctx) -> int:
     deny_network()
     out = ctx["out"]
     out.mkdir(parents=True, exist_ok=True)
-    dream = DreamReal(ctx["arm_path"], out, offline=True)
+    dream = DreamReal(ctx["arm_path"], out, offline=True, environment=ctx["environment"])
     dream.install_gate("record")
     _, grab, close = open_cameras(ctx["record"], args.fake_cameras)
     rest = [float(v) for v in ctx["arm"]["rest"]]
@@ -2406,7 +2467,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     dream = worker = None
     if not args.rehearse:
         # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
-        dream = DreamReal(arm_path, out, offline=False)
+        dream = DreamReal(arm_path, out, offline=False, environment=ctx["environment"])
         dream.install_gate("preflight")
         _, grab, close = open_cameras(ctx["record"], fake=False)
         rest = [float(v) for v in arm["rest"]]
@@ -2433,7 +2494,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             )
             return 2
         print(f"inputs id {dream.inputs_id} checked.", flush=True)
-        dream = DreamReal(arm_path, out, offline=False)
+        dream = DreamReal(arm_path, out, offline=False, environment=ctx["environment"])
         dream.install_gate("gate")
         worker = Worker(
             dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
@@ -2462,6 +2523,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
         stop_event,
         abort_event,
         arm_rest=arm["rest"],
+        environment=ctx["environment"],
         say=lambda line: print(line, flush=True),
         status_path=f"{args.pid_file}{core.STATUS_SUFFIX}" if args.pid_file else None,
         mirror_dir=bundle.mirror_dir() if (bundle := ctx.get("bundle")) else None,
@@ -2497,6 +2559,12 @@ def main(argv=None) -> int:
         "--hold-s", type=float, default=DEFAULT_HOLD_S, help="--rehearse: hold time at the start pose"
     )
     p.add_argument("--robot", default="viscous_waterproof_01")
+    p.add_argument(
+        "--environment",
+        choices=tuple(ENVIRONMENTS),
+        default="tank",
+        help="boundary layers: tank (default), or dry_air on the same mount on a desk",
+    )
     p.add_argument(
         "--lab-home", help="MAKERMODSLAB_HOME (default: env, else ~/.makermods/makermodslab-viscous)"
     )
@@ -2608,6 +2676,7 @@ def main(argv=None) -> int:
                 args.run_data,
                 meta={
                     "kind": kind,
+                    "environment": ENVIRONMENTS[args.environment].metadata(),
                     "lab_home": str(home),
                     "robot": args.robot,
                     "follower_port": record.get("follower_port"),
@@ -2632,13 +2701,14 @@ def main(argv=None) -> int:
 
 
 def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> int:
+    environment = ENVIRONMENTS[args.environment]
     source_arm = (args.arm_file or DEFAULT_ARM_FILE).expanduser().resolve()
     arm_path, rest_note = effective_arm_file(source_arm, args.keep_arm_rest, out)
     arm = json.loads(arm_path.read_text())
     urdf_path = arm_path.parent / arm["urdf"]
     urdf_bytes = urdf_path.read_bytes()
     if bundle is not None:
-        for src in (core.KEEPOUT_FILE, BOX_FILE, source_arm, arm_path, urdf_path):
+        for src in (environment.keepout_file, environment.box_file, source_arm, arm_path, urdf_path):
             bundle.copy_input(src)
         bundle.copy_input(home / "robots" / f"{args.robot}.json", "robot_record.json")
     print(f"arm file: {source_arm}\n  {rest_note}")
@@ -2648,7 +2718,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
     ]
     provenance = next((json.loads(s.read_text()) for s in sidecars if s.is_file()), None)
     jmap = core.JointMap.load()
-    box = core.WorkspaceBox.load(BOX_FILE, SRC_URDF, jmap, tcp_m=arm["tcp"])
+    box = core.WorkspaceBox.load(environment.box_file, SRC_URDF, jmap, tcp_m=arm["tcp"])
     slots, missing = core.resolve_slots(
         [c["name"] for c in record.get("cameras") or []], args.overhead, args.wrist_l, args.wrist_r
     )
@@ -2682,7 +2752,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         dream_state=args.dream_state,
     )
     dream_problem = add_dream_venv(args.dream_venv)
-    guard = Guard()
+    guard = Guard(environment)
     plan = build_plan(
         args,
         record,
@@ -2696,12 +2766,13 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         missing,
         jmap,
         settings,
-        json.loads(BOX_FILE.read_text()),
+        json.loads(environment.box_file.read_text()),
         guard,
         dream_problem or f"Dream's client from {args.dream_venv}",
     )
     print_plan(plan)
     ctx = {
+        "environment": environment,
         "home": home,
         "record": record,
         "limits": limits,

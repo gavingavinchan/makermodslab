@@ -402,3 +402,103 @@ def test_the_14_nov_084532_stop_return_is_cleared(guard):
     verdict = guard.check_return_segment(here, leg1)
     assert verdict.ok, verdict
     assert never_worse_than_the_start(guard, here, leg1, step_deg=0.25)
+
+
+@pytest.fixture(scope="module")
+def dry_air(guard):
+    path = geo.ROOT / "configs/viscous/environments/dry_air_desk/keepout_viscous_waterproof_01.json"
+    return tg.TankGuard(json.loads(path.read_text()), guard.model)
+
+
+def test_dry_air_changes_only_retired_boundaries(raw, dry_air):
+    changed = {"name", "purpose", "planes_mm", "dry_air_reach_mm"}
+    assert {k: v for k, v in dry_air.config.items() if k not in changed} == {
+        k: v for k, v in raw.items() if k not in changed
+    }
+    for face in ("near", "floor"):
+        assert dry_air.config["planes_mm"][face] == raw["planes_mm"][face]
+    assert dry_air.planes["near"] == 106.0
+    assert dry_air.planes["floor"] == -28.0
+    for link in dry_air.links:
+        assert dry_air.required[link]["near"] == (
+            None
+            if link == "yaw_link"
+            else 66
+            if link == "upper_arm_link"
+            else 70
+            if not link.startswith("gripper_")
+            else 30
+        )
+        assert dry_air.required[link]["floor"] == (None if link == "yaw_link" else -20.0)
+
+
+def test_retired_planes_and_point_bounds_exceed_full_model_reach(dry_air):
+    # Triangle inequality: J1's origin norm plus the guard's downstream offset/vertex/slide bound.
+    j1 = next(j for j in dry_air.model.joints if j.name == "shoulder_pan")
+    reach = dry_air._reach["shoulder_pan"] + np.linalg.norm(j1.t) * 1000
+    assert reach == pytest.approx(789.1464615233423)
+    maximum_clearance = max(v for req in dry_air.required.values() for v in req.values() if v is not None)
+    for face in ("left", "right", "far", "rim"):
+        entry = dry_air.config["planes_mm"][face]
+        assert entry["status"] == "not a constraint in dry air"
+        assert abs(entry["value"]) > reach + maximum_clearance
+    real = geo.ROOT / "scripts/viscous-dream1/real"
+    tank = json.loads((real / "workspace_box_viscous_waterproof_01.json").read_text())
+    dry = json.loads((real / "workspace_box_viscous_waterproof_01_dry_air.json").read_text())
+    assert dry["points"].keys() == tank["points"].keys()
+    # Each TCP offset is shorter than the model's tool/finger reach; all point bounds fit this bound.
+    for name, point in dry["points"].items():
+        old, new = tank["points"][name], point
+        assert {k: v for k, v in old.items() if k != "box_mm"} == {
+            k: v for k, v in new.items() if k not in ("box_mm", "relaxed_bounds")
+        }
+        a, b = old["box_mm"], new["box_mm"]
+        assert a["x"][1] == b["x"][1]
+        assert a["z"][0] == b["z"][0]
+        assert -b["x"][0] > reach and b["z"][1] > reach
+        assert b["y"][0] < -reach and b["y"][1] > reach
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        "upper_arm_link",
+        "forearm_link",
+        "wrist_pitch_link",
+        "wrist_yaw_link",
+        "wrist_roll_link",
+        "gripper_left",
+        "gripper_right",
+    ],
+)
+def test_dry_air_rejects_each_link_inside_its_post_margin(dry_air, monkeypatch, link):
+    transforms = geo.forward_kinematics(dry_air.model, WORK)
+    assert dry_air.check_pose(WORK).ok
+    r, t = transforms[link]
+    t = t.copy()
+    furthest_x = (dry_air.model.vertices[link] @ r.T + t)[:, 0].max() * 1000
+    boundary = dry_air.planes["near"] - dry_air.required[link]["near"]
+    t[0] += (boundary + 0.01 - furthest_x) / 1000
+    transforms[link] = r, t
+    monkeypatch.setattr(geo, "forward_kinematics", lambda *_: transforms)
+    verdict = dry_air.check_pose(WORK)
+    assert not verdict.ok and verdict.face == "near" and verdict.link == link
+    assert verdict.slack_mm == pytest.approx(-0.01)
+    assert not dry_air.start_gate(WORK).ok
+    assert dry_air.limit(WORK, WORK).status == "rejected"
+
+
+def test_dry_air_rejects_below_floor_press_bound(dry_air, monkeypatch):
+    transforms = geo.forward_kinematics(dry_air.model, WORK)
+    link = "gripper_left"
+    r, t = transforms[link]
+    t = t.copy()
+    lowest_z = (dry_air.model.vertices[link] @ r.T + t)[:, 2].min() * 1000
+    # -28 floor with 20 mm permitted press: -48 is the exact vertex backstop.
+    t[2] += (-48.01 - lowest_z) / 1000
+    transforms[link] = r, t
+    monkeypatch.setattr(geo, "forward_kinematics", lambda *_: transforms)
+    verdict = dry_air.check_pose(WORK)
+    assert not verdict.ok and verdict.face == "floor" and verdict.link == link
+    assert verdict.slack_mm == pytest.approx(-0.01)
+    assert not dry_air.start_gate(WORK).ok

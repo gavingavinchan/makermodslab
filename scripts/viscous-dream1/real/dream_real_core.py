@@ -329,7 +329,9 @@ def keepout_limits(path: Path = KEEPOUT_FILE) -> dict:
     return {m: tuple(map(float, v)) for m, v in data.get("value", data).items()}
 
 
-def approach_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> list[dict]:
+def approach_waypoints(
+    rest: Mapping[str, float], start: Mapping[str, float], keepout_file: Path = KEEPOUT_FILE
+) -> list[dict]:
     """Motor-degree waypoints (all seven motors) from rest to start: rest excluded, start included.
     Each consecutive pair (rest -> wp[0] -> ... -> start) is a straight joint-space leg.
 
@@ -341,7 +343,7 @@ def approach_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) ->
     Leg 2, in the air, goes straight to the start. Relative to the given rest, so a rest a few degrees
     off still lifts the same way. The gripper keeps the rest's value throughout.
     """
-    limits = keepout_limits()
+    limits = keepout_limits(keepout_file)
     lift = {"shoulder_lift": APPROACH_LIFT_DEG, "elbow_flex": APPROACH_FOLD_DEG}
     up = {}
     for m in ARM:
@@ -359,14 +361,16 @@ def approach_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) ->
     return [end] if up == end else [up, end]
 
 
-def return_waypoints(rest: Mapping[str, float], start: Mapping[str, float]) -> list[dict]:
+def return_waypoints(
+    rest: Mapping[str, float], start: Mapping[str, float], keepout_file: Path = KEEPOUT_FILE
+) -> list[dict]:
     """The same route back: from start to rest, start excluded, rest included (the approach reversed).
 
     The arm joints retrace approach_waypoints exactly; the gripper keeps the
     start's value throughout (the runner returns arm joints and leaves the grip).
     """
     grip = float(start["gripper"])
-    back = [*approach_waypoints(rest, start)[-2::-1], rest]
+    back = [*approach_waypoints(rest, start, keepout_file)[-2::-1], rest]
     return [{**{m: float(wp[m]) for m in ARM}, "gripper": grip} for wp in back]
 
 
