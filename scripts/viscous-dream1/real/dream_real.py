@@ -56,6 +56,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -255,6 +256,44 @@ def lab_holder(url: str, allow_down: bool) -> str | None:
     if sessions is not None and (held := sessions.held_by()):
         holders.append(f"in-process flag {held}")
     return "; ".join(holders) or None
+
+
+def release_lab_previews(url, allow_down, *, urlopen=urllib.request.urlopen, sleep=time.sleep):
+    """Ask Lab to close captures, then let asynchronous OS teardown settle.
+
+    record.py allows 2 seconds for OS release on a cold re-open. Only a
+    connection failure can be waived; a responding Lab must confirm release.
+    """
+    request = urllib.request.Request(f"{url}/api/v1/camera-preview/release", method="POST")
+    try:
+        with urlopen(request, timeout=5) as response:
+            result = json.loads(response.read())
+        if result.get("success") is not True or type(result.get("closed")) is not int or result["closed"] < 0:
+            raise ValueError("Lab did not confirm camera release")
+    except Exception as error:  # noqa: BLE001 - refuse before any camera/arm open
+        if (
+            allow_down
+            and isinstance(error, urllib.error.URLError)
+            and not isinstance(error, urllib.error.HTTPError)
+        ):
+            return
+        raise RefusedError(
+            f"Lab camera release failed ({error}); close the camera previews in the Lab GUI"
+        ) from error
+    sleep(2.0)
+
+
+@contextlib.contextmanager
+def claim_terminal_run(args, ctx):
+    from makermodslab.dream_camera_lock import terminal_run
+    from makermodslab.utils.config import dream_terminal_run_path
+
+    mode = "rehearse-live" if args.rehearse else "live" if args.live else "preview"
+    with terminal_run(mode, ctx["out"].name, path=dream_terminal_run_path(ctx["home"])):
+        # Claim FIRST: Lab must refuse tile reconnects throughout release/open.
+        if not args.rehearse:
+            release_lab_previews(args.lab_url, args.lab_down_ok)
+        yield
 
 
 def port_holders(port: str) -> list[str]:
@@ -2345,18 +2384,42 @@ def open_cameras(record, fake):
             raise RefusedError(f"camera {entry['name']!r} ({entry.get('unique_id')}) is not attached")
         configs[entry["name"]] = {**cam, "camera_index": index}
     cameras = make_cameras_from_configs(_build_camera_configs(configs, _platform_backend()))
-    for cam in cameras.values():
-        cam.connect()
 
     def close():
         for cam in cameras.values():
             with contextlib.suppress(Exception):
                 cam.disconnect()
 
+    try:
+        for cam in cameras.values():
+            cam.connect()
+    except BaseException:
+        close()
+        raise
+
     return names, (lambda: {n: c.read_latest() for n, c in cameras.items()}), close
 
 
 def run_preview(args, ctx) -> int:
+    # Preview has no arm stop loop. Unwind its camera cleanup on signals too.
+    previous = {}
+
+    def on_signal(signum, _frame):
+        raise SystemExit(128 + signum)
+
+    try:
+        for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+            previous[sig] = signal.signal(sig, on_signal)
+        if args.fake_cameras:
+            return _run_preview(args, ctx)
+        with claim_terminal_run(args, ctx):
+            return _run_preview(args, ctx)
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+
+
+def _run_preview(args, ctx) -> int:
     if ctx["dream_problem"]:
         print(f"--preview needs Dream's client: {ctx['dream_problem']}")
         return 2
@@ -2514,7 +2577,8 @@ def run_live(args, ctx) -> int:
     core.atomic_json(out / "plan.json", ctx["plan"])
     stop_event, abort_event = install_stop_signals(args.pid_file)
     try:
-        return _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event)
+        with claim_terminal_run(args, ctx):
+            return _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event)
     finally:
         remove_pid_file(args.pid_file)
 

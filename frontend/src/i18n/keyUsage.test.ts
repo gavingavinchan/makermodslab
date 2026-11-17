@@ -23,7 +23,7 @@ const KEY_RE = new RegExp(
 
 /** i18next plural suffixes — a stem resolves through one of these. */
 // API error codes share the robot namespace but are wire data, never t() keys.
-const API_ERROR_CODES = new Set(["robot.unit_mismatch", "robot.identity_unverified"]);
+const API_ERROR_CODES = new Set(["robot.unit_mismatch", "robot.identity_unverified", "robot.busy.dream"]);
 const PLURAL_SUFFIXES = ["_one", "_other", "_zero", "_two", "_few", "_many"];
 
 /** Strips // line and block comments so prose can't masquerade as a key. */

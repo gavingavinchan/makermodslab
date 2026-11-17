@@ -374,3 +374,8 @@ class WandbCredentialsStatus(BaseModel):
 
     available: bool
     login_hint: str
+
+
+class CameraPreviewReleaseResponse(BaseModel):
+    success: bool
+    closed: int

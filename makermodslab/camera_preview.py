@@ -145,7 +145,7 @@ class CameraPreviewManager:
         entry = self._acquire(index, index if key is None else key)
         return self._frames(entry, rotation)
 
-    def stop_all(self, timeout: float = 1.0) -> None:
+    def stop_all(self, timeout: float = 1.0) -> int:
         """Stop every preview stream and release every capture.
 
         Sets each capture's stop event so client generators exit on their next
@@ -158,7 +158,7 @@ class CameraPreviewManager:
         with self._registry_lock:
             entries = list(self._captures.values())
         if not entries:
-            return
+            return 0
         for entry in entries:
             entry.stop.set()
         deadline = time.monotonic() + timeout
@@ -182,6 +182,7 @@ class CameraPreviewManager:
             with self._registry_lock:
                 if self._captures.get(entry.key) is entry:
                     del self._captures[entry.key]
+        return len(entries)
 
     def _acquire(self, index: int, key: str | int) -> _SharedCapture:
         with self._registry_lock:

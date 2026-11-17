@@ -218,6 +218,7 @@ def test_no_new_routes_outside_api_v1():
 # checks every entry actually exists so retired surface can't linger.
 V1_ONLY_ROUTES: frozenset[str] = frozenset(
     [
+        "POST /api/v1/camera-preview/release",
         "POST /api/v1/tank-measure/start",
         "GET /api/v1/tank-measure/status",
         "POST /api/v1/tank-measure/capture",

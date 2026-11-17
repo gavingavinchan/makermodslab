@@ -589,6 +589,24 @@
         "title": "CameraInfo",
         "type": "object"
       },
+      "CameraPreviewReleaseResponse": {
+        "properties": {
+          "closed": {
+            "title": "Closed",
+            "type": "integer"
+          },
+          "success": {
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success",
+          "closed"
+        ],
+        "title": "CameraPreviewReleaseResponse",
+        "type": "object"
+      },
       "CanGripperWiggleRequest": {
         "properties": {
           "arm_type": {
@@ -9519,6 +9537,28 @@
           }
         },
         "summary": "Calibration Status"
+      }
+    },
+    "/api/v1/camera-preview/release": {
+      "post": {
+        "description": "Hand server-side preview captures to a terminal runner before it opens devices.",
+        "operationId": "release_camera_previews",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraPreviewReleaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Release Camera Previews",
+        "tags": [
+          "system"
+        ]
       }
     },
     "/api/v1/camera-preview/{index}": {

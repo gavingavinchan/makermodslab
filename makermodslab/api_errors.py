@@ -74,6 +74,7 @@ class ErrorCode(StrEnum):
     ROBOT_LEADER_KIND_UNKNOWN = "robot.leader_kind.unknown"
     ROBOT_LEADER_KIND_UNAVAILABLE = "robot.leader_kind.unavailable"
     ROBOT_BUSY_RECORDING = "robot.busy.recording"
+    ROBOT_BUSY_DREAM = "robot.busy.dream"
     ROBOT_BUSY_TELEOPERATION = "robot.busy.teleoperation"
     ROBOT_BUSY_INFERENCE = "robot.busy.inference"
     ROBOT_BUSY_REPLAY = "robot.busy.replay"

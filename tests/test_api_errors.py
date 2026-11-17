@@ -70,6 +70,8 @@ DOMAINS = frozenset(
 BUSY_DISCRIMINANTS = frozenset(
     [
         "recording",
+        # Terminal Dream reservation: camera-preview mutex, no Lab session.
+        "dream",
         "teleoperation",
         "inference",
         # Remote inference: a policy on a remote GPU driving this node's arm.
