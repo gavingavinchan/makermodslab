@@ -1,18 +1,18 @@
 <!-- Copyright 2026 MakerMods. All rights reserved. Licensed under the Apache License, Version 2.0. -->
 # Waterproof arm empirical dry-air gravity fit
 
-583 static windows/holds, 13 CV groups. Provisional: True.
+619 static windows/holds, 14 CV groups. Provisional: True.
 Provisional feedforward requires --allow-provisional-fit; environment installer refuses it. Gripper locked at Pinocchio neutral.
 Zero-centered ridge; CAD inertials appear only in the reference error. Directions are signed last motor motion.
 
 | Joint | R² | RMS Nm | Held-out Nm | CAD Nm | Max residual Nm | Coulomb Nm |
 |---|---:|---:|---:|---:|---:|---:|
-| shoulder_pan | -0.015 | 0.228 | 0.228 | 0.228 | 0.838 | 0.000 |
-| shoulder_lift | 0.652 | 0.834 | 1.011 | 1.590 | 3.188 | 0.000 |
-| elbow_flex | 0.687 | 0.952 | 1.100 | 1.660 | 3.174 | 0.000 |
-| wrist_flex | -0.413 | 0.939 | 0.956 | 0.766 | 3.230 | 0.000 |
-| wrist_yaw | 0.312 | 0.235 | 0.344 | 0.327 | 0.852 | 0.000 |
-| wrist_roll | -2.868 | 0.175 | 0.174 | 0.091 | 0.554 | 0.000 |
+| shoulder_pan | -0.012 | 0.222 | 0.222 | 0.222 | 0.838 | 0.000 |
+| shoulder_lift | 0.662 | 0.808 | 0.970 | 1.551 | 3.204 | 0.000 |
+| elbow_flex | 0.705 | 0.919 | 1.057 | 1.639 | 3.195 | 0.000 |
+| wrist_flex | -0.203 | 0.973 | 0.998 | 0.854 | 3.348 | 0.000 |
+| wrist_yaw | 0.324 | 0.230 | 0.336 | 0.319 | 0.845 | 0.000 |
+| wrist_roll | -2.370 | 0.171 | 0.170 | 0.096 | 0.553 | 0.000 |
 
 Static rank 10/24; augmented rank 10.
 The JSON records every identified right-singular combination and scale. Individual masses/COMs are not identifiable.
@@ -30,12 +30,12 @@ Everything outside these ranges is unsampled, especially wrist yaw/roll and comb
 
 RS00 telemetry versus kp*(command-position), using Viscous defaults with runner overrides:
 
-- shoulder_pan: kp 60, slope 0.940843228882909, r 0.9954856073214378, RMS difference 0.063 Nm
-- shoulder_lift: kp 90, slope 0.9723898315705323, r 0.9998574293953022, RMS difference 0.085 Nm
-- elbow_flex: kp 90, slope 0.9806612407654794, r 0.9998900526942196, RMS difference 0.084 Nm
-- wrist_flex: kp 30, slope 0.9745909094216791, r 0.999894896277747, RMS difference 0.040 Nm
-- wrist_yaw: kp 30, slope 0.9468919696784441, r 0.9991093414034684, RMS difference 0.037 Nm
-- wrist_roll: kp 30, slope 0.8029361710014908, r 0.9930677184196693, RMS difference 0.038 Nm
+- shoulder_pan: kp 60, slope 0.9339472794057954, r 0.9954672480704551, RMS difference 0.063 Nm
+- shoulder_lift: kp 90, slope 0.9887793173130983, r 0.9190423161861488, RMS difference 0.568 Nm
+- elbow_flex: kp 90, slope 1.004847946938638, r 0.9097688831608116, RMS difference 0.727 Nm
+- wrist_flex: kp 30, slope 1.0484989401104738, r 0.9122452326883951, RMS difference 0.369 Nm
+- wrist_yaw: kp 30, slope 0.9039666348537226, r 0.9680221026013329, RMS difference 0.087 Nm
+- wrist_roll: kp 30, slope 0.6682260749847946, r 0.7114947570768785, RMS difference 0.074 Nm
 
 Sources (hashes and selected counts in JSON):
 - live-20261117T024118Z/ticks.jsonl: 31
@@ -51,3 +51,4 @@ Sources (hashes and selected counts in JSON):
 - live-20261117T082827Z/ticks.jsonl: 32
 - rehearse-live-20261117T023712Z/ticks.jsonl: 35
 - rehearse-live-20261117T024005Z/ticks.jsonl: 36
+- rehearse-live-20261117T090749Z/ticks.jsonl: 36

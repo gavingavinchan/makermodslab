@@ -45,6 +45,7 @@ ENV_FIT = "MAKERMODSLAB_GRAVITY_FF"
 ENV_SCALE = "MAKERMODSLAB_GRAVITY_FF_SCALE"
 RAMP_S = 2.0
 CLAMP_NM = 6.0
+MAX_OFFSET_NM = 0.3  # Larger nuisance offsets can hide gravity that commands would omit.
 LOG_PERIOD_S = 2.0
 FRESH_S = 0.005  # one model evaluation per send_action tick
 
@@ -56,7 +57,17 @@ def load_model(path: str | Path, *, telemetry_offsets: bool = False):
     from .arm_gravity import GravityModel, repo_path
 
     fit = json.loads(repo_path(path).read_text())
-    offsets = fit.get("offsets_nm") if telemetry_offsets else None
+    fitted_offsets = fit.get("offsets_nm") or []
+    if not telemetry_offsets and any(
+        not math.isfinite(float(v)) or abs(float(v)) > MAX_OFFSET_NM for v in fitted_offsets
+    ):
+        # Both the environment installer and rehearsal use this loader. A low total-fit residual
+        # does not validate gravity-only commands: the gc25 fit hid 5-8 Nm in omitted offsets.
+        raise ValueError(
+            f"gravity fit offsets exceed {MAX_OFFSET_NM} Nm: the commanded gravity terms would not match "
+            "the measured holding torque; refit with --no-offsets"
+        )
+    offsets = fitted_offsets if telemetry_offsets and fitted_offsets else None
     model = GravityModel(
         repo_path(fit["urdf"]),
         fit["joints"],
@@ -71,6 +82,8 @@ def load_model(path: str | Path, *, telemetry_offsets: bool = False):
         model.fade_deg = fit.get("fade_deg", 10.0)
     if "support" in fit:
         model.support = fit["support"]
+    if "feedforward_joints" in fit:
+        model.feedforward_joints = list(fit["feedforward_joints"])
     return fit, model
 
 
@@ -130,7 +143,8 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
         bus = bus._base
     original_write = bus.write
     bus._makermodslab_gravity_original_write = original_write
-    joints = set(model.joints) - {"gripper"}
+    # A fit may command only some joints (`feedforward_joints`); the rest hold with stiffness alone.
+    joints = set(getattr(model, "feedforward_joints", None) or model.joints) - {"gripper"}
     state = {"started": None, "computed": -math.inf, "tau": {}, "logged": -math.inf}
     status: dict = {"scale": scale, "feedforward_nm": {}, "stiffness_nm": {}, "w": 1.0, "w_per_joint": {}}
 

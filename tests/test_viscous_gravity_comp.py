@@ -463,3 +463,37 @@ def test_fit_with_large_offsets_or_provisional_without_support_is_refused(fit_pa
     fit_path.write_text(json.dumps({k: v for k, v in data.items() if k != "support"} | {"provisional": True}))
     with pytest.raises(ValueError, match="support"):
         gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+
+
+def test_only_the_fit_s_feedforward_joints_are_commanded(fit_path):
+    from makermodslab import gravity_feedforward
+
+    cfg = dataclasses.replace(settings(fit_path), allow_provisional_fit=True)
+    identity, model = gc.load(cfg, "viscous_waterproof_01_dry_air", "dry_air")
+    assert identity["feedforward_joints"] == ["shoulder_lift", "elbow_flex"]
+    hold = {
+        "shoulder_pan": 179.9,
+        "shoulder_lift": -70.5,
+        "elbow_flex": 59.3,
+        "wrist_flex": -35.8,
+        "wrist_yaw": 4.1,
+        "wrist_roll": 5.4,
+        "gripper": -45.0,
+    }
+    frames = []
+    robot = SimpleNamespace(_last_positions=dict(hold), _turn_offset={})
+    robot.bus = SimpleNamespace(
+        _gains={n: {"kp": 30.0, "kd": 2.0} for n in hold},
+        _get_motor_name=lambda n: n,
+        write=lambda *a: None,
+        _mit_control=lambda motor, kp, kd, q, dq, tau: frames.append((motor, tau)),
+    )
+    now = [0.0]
+    gravity_feedforward.install(robot, model, scale=1.0, clock=lambda: now[0])
+    robot.bus.write("Goal_Position", "shoulder_lift", hold["shoulder_lift"])  # starts the 2 s ramp-in
+    now[0] = 10.0  # past the ramp-in
+    for n in hold:
+        robot.bus.write("Goal_Position", n, hold[n])
+    tau = dict(frames[-len(hold) :])
+    assert tau["shoulder_lift"] > 1 and tau["elbow_flex"] > 1
+    assert all(tau[n] == 0 for n in ("shoulder_pan", "wrist_flex", "wrist_yaw", "wrist_roll", "gripper"))

@@ -40,6 +40,7 @@ KP = dict(zip(ARM, (60.0, 90.0, 90.0, 30.0, 30.0, 30.0), strict=True))
 # The feedforward's measured-pose gate (gravity_feedforward.support_weight): full strength within
 # 4 deg of a pose the fit was measured at, zero beyond 12 deg.
 SUPPORT_FULL_DEG = 4.0
+FEEDFORWARD_JOINTS = ("shoulder_lift", "elbow_flex")
 SUPPORT_FADE_DEG = 8.0
 
 
@@ -261,6 +262,10 @@ def fit_rows(rows, sources, regularization=0.01, fit_offsets=True, fit_friction=
         "condition": "dry_air",
         "robot_aliases": ["viscous_waterproof_01_dry_air"],
         "region_deg": {n: coverage[n] for n in ARM[1:]},
+        # Only the joints whose fit carries real load and fits (2026-11-17, logs only): the wrist joints'
+        # R^2 is below zero, their loads are <= ~0.5 Nm (about 1 deg of sag), and wrist_flex's fit is
+        # 1.4 Nm high at the start pose, which at 100 % would hold it ~3 deg above its command.
+        "feedforward_joints": list(FEEDFORWARD_JOINTS),
         "support": {
             "joints": list(ARM[1:]),
             "poses": [[round(r["pos"][n], 2) for n in ARM[1:]] for r in rows],

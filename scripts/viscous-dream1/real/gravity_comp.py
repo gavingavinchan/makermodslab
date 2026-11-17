@@ -21,10 +21,9 @@ import dream_real_core as core
 import numpy as np
 
 from makermodslab.arm_gravity import file_sha256, stored_path
-from makermodslab.gravity_feedforward import CLAMP_NM, RAMP_S, load_model, support_weight
+from makermodslab.gravity_feedforward import CLAMP_NM, MAX_OFFSET_NM, RAMP_S, load_model, support_weight
 
 DEFAULT_FIT = core.ROOT / "configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json"
-MAX_OFFSET_NM = 0.3  # RS00 telemetry bias measured on unit 1 was <= 0.05 Nm
 
 
 def check(scale, environment, sweep=False):
@@ -74,16 +73,9 @@ def load(settings, robot, environment):
     if not math.isfinite(fade) or fade <= 0:
         raise ValueError("gravity fit fade_deg must be positive and finite")
     model.region_deg, model.fade_deg = region, fade
-    # The feedforward commands the gravity terms only (never the fit's offsets or friction). On narrow
-    # data a large fitted offset is gravity the fit misfiled: 2026-11-17 the logs-only fit carried
-    # -6.4/-7.8/-5.5 Nm offsets and would have commanded 2-2.5x the measured holding torque.
-    if np.max(np.abs(model.offsets)) > MAX_OFFSET_NM or any(
-        abs(float(v)) > MAX_OFFSET_NM for v in (fit.get("offsets_nm") or [])
-    ):
-        raise ValueError(
-            f"gravity fit offsets exceed {MAX_OFFSET_NM} Nm: the commanded gravity terms would not match "
-            "the measured holding torque; refit with --no-offsets"
-        )
+    ff_joints = fit.get("feedforward_joints")
+    if ff_joints is not None and (not ff_joints or not set(ff_joints) <= set(core.ARM[1:])):
+        raise ValueError("gravity fit feedforward_joints must be a non-empty subset of the gravity joints")
     support = fit.get("support")
     if fit.get("provisional") and not support:
         raise ValueError("a provisional gravity fit needs a measured-pose support gate")
@@ -107,6 +99,7 @@ def load(settings, robot, environment):
             "weight": "x cosine of the distance to the nearest measured pose",
         },
         "max_offset_nm": MAX_OFFSET_NM,
+        "feedforward_joints": list(ff_joints or core.ARM),
         "fit": stored_path(path),
         "fit_sha256": before,
         "robot": robot,
