@@ -223,6 +223,8 @@ def _argv(robot, settings, name, work):
         str(run_root()),
         "--dream-view-dir",
         str(run_root() / name / "dream_view"),
+        "--environment",
+        settings.environment,
         "--prompt",
         settings.prompt,
         "--wrist-l",
@@ -354,11 +356,12 @@ def approve_inputs(body):
 class DreamRequest:
     robot: str
     plan_id: str
+    environment: str = "tank"
     start_gate: threading.Event = field(default_factory=threading.Event)
 
 
 def build_request(record, opts):
-    return DreamRequest(record["name"], opts.plan_id)
+    return DreamRequest(record["name"], opts.plan_id, environment=opts.environment)
 
 
 def handle_start_dream(request):
@@ -374,6 +377,8 @@ def handle_start_dream(request):
                 refuse("Plan expired or belongs to another robot. Make a new plan.", status=400)
             if item["record"] != _digest(record):
                 refuse("Robot settings changed since the plan. Make a new plan.", status=400)
+            if request.environment != item["settings"].environment:
+                refuse("Environment changed since the plan. Make a new plan.", status=400)
             name, work = _new_run("live")
             dream_active, _stop_requested, _term_sent = True, False, False
             _latest_run, _latest_robot, _error = name, request.robot, None
@@ -715,6 +720,7 @@ def replay(at_s):
         _bundle(run) / "dream_view",
         run=run,
         mode="replay",
+        environment=plan.get("environment", {}).get("name", "tank"),
         prompt=plan["prompt"],
         max_calls=plan["speed"]["max_calls"],
         slots=slots,

@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class DreamSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    environment: Literal["tank", "dry_air"] = "tank"
     prompt: str = Field("put apple into the bowl", min_length=1, max_length=4000)
     overhead: str | None = None
     wrist_l: str = "wrist"
@@ -37,6 +38,7 @@ class DreamOptions(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     plan_id: str = Field(pattern=r"^[a-f0-9]{10}$")
+    environment: Literal["tank", "dry_air"] = "tank"
 
 
 class DreamInputsApproval(BaseModel):
@@ -65,6 +67,7 @@ class DreamApprovalResponse(BaseModel):
 
 
 class DreamViewStatus(BaseModel):
+    environment: Literal["tank", "dry_air"] = "tank"
     run: str
     mode: Literal["live", "preview", "dry", "replay"]
     prompt: str

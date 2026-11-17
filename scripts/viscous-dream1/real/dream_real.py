@@ -2392,7 +2392,9 @@ def run_preview(args, ctx) -> int:
     deny_network()
     out = ctx["out"]
     out.mkdir(parents=True, exist_ok=True)
-    dream = DreamReal(ctx["arm_path"], out, offline=True, environment=ctx["environment"], view=ctx.get("view"))
+    dream = DreamReal(
+        ctx["arm_path"], out, offline=True, environment=ctx["environment"], view=ctx.get("view")
+    )
     dream.install_gate("record")
     _, grab, close = open_cameras(ctx["record"], args.fake_cameras)
     rest = [float(v) for v in ctx["arm"]["rest"]]
@@ -2985,6 +2987,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
             directory,
             run=out.name,
             mode=kind,
+            environment=environment.name,
             prompt=settings.prompt,
             max_calls=settings.max_calls,
             slots=settings.slots,
@@ -3002,10 +3005,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
             text = io.StringIO()
             with contextlib.redirect_stdout(text):
                 print_plan(plan)
-            movement = (
-                "Joints that may move"
-                + text.getvalue().split("Joints that may move", 1)[1].split("Right arm:", 1)[0]
-            )
+            movement = "Environment:" + text.getvalue().split("Environment:", 1)[1].split("Right arm:", 1)[0]
             core.atomic_json(
                 args.lab_report_file,
                 {"plan_id": plan["plan_id"], "movement": movement, "readiness": refusals},

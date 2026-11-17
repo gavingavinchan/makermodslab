@@ -1499,6 +1499,15 @@
       "DreamPlanBody": {
         "additionalProperties": false,
         "properties": {
+          "environment": {
+            "default": "tank",
+            "enum": [
+              "tank",
+              "dry_air"
+            ],
+            "title": "Environment",
+            "type": "string"
+          },
           "max_calls": {
             "default": 10,
             "maximum": 20.0,
@@ -1735,6 +1744,15 @@
               }
             ],
             "title": "Commanded"
+          },
+          "environment": {
+            "default": "tank",
+            "enum": [
+              "tank",
+              "dry_air"
+            ],
+            "title": "Environment",
+            "type": "string"
           },
           "images_written": {
             "anyOf": [

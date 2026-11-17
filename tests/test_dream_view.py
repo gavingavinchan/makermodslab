@@ -171,6 +171,7 @@ def test_preview_exports_exact_bytes_to_chosen_directory_and_never_approves(tmp_
     jmap = core.JointMap.load()
     ctx = {
         "dream_problem": None,
+        "environment": dream_real.TANK_ENVIRONMENT,
         "out": tmp_path,
         "arm_path": REAL / "tank_model/viscous_waterproof_tank_arm.json",
         "record": {},
@@ -187,7 +188,8 @@ def test_preview_exports_exact_bytes_to_chosen_directory_and_never_approves(tmp_
     close.assert_called_once()
 
 
-def test_new_cli_flags_report_the_verbatim_plan_without_changing_it(tmp_path, monkeypatch):
+@pytest.mark.parametrize("environment", ["tank", "dry_air"])
+def test_new_cli_flags_report_the_verbatim_plan_without_changing_it(tmp_path, monkeypatch, environment):
     from tests.test_viscous_dream_real import LIMITS
 
     record = {
@@ -215,6 +217,8 @@ def test_new_cli_flags_report_the_verbatim_plan_without_changing_it(tmp_path, mo
     capture = Output()
     monkeypatch.setattr(dream_real.sys, "stdout", capture)
     args = [
+        "--environment",
+        environment,
         "--dry-run",
         "--no-run-data",
         "--out",
@@ -243,10 +247,11 @@ def test_new_cli_flags_report_the_verbatim_plan_without_changing_it(tmp_path, mo
     report = json.loads((tmp_path / "report.json").read_text())
     assert report["plan_id"] == baseline["plan_id"]
     assert report["movement"] in capture.getvalue()
-    assert report["movement"].startswith("Joints that may move (ALL SEVEN)")
+    assert report["movement"].startswith(f"Environment: {environment}\n")
+    assert "Joints that may move (ALL SEVEN)" in report["movement"]
     assert "gripper" in report["movement"]
     assert any("plan-id" in item for item in report["readiness"])
-    assert (tmp_path / "chosen/status.json").is_file()
+    assert json.loads((tmp_path / "chosen/status.json").read_text())["environment"] == environment
     assert dry.call_count == 2
     assert dry.call_args.args[0].lab_session_id == "claimed"
 

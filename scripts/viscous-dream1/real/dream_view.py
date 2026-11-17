@@ -33,7 +33,7 @@ class DreamView:
     once and swallowed: a full disk must never interrupt a return to rest.
     """
 
-    def __init__(self, directory, *, run, mode, prompt, max_calls, slots, wall=time.time):
+    def __init__(self, directory, *, run, mode, prompt, max_calls, slots, environment="tank", wall=time.time):
         self.directory = Path(directory)
         self.wall = wall
         self.lock = threading.Lock()
@@ -42,6 +42,7 @@ class DreamView:
         self.status = {
             "run": run,
             "mode": mode,
+            "environment": environment,
             "prompt": prompt,
             "max_calls": max_calls,
             "slots": slots,

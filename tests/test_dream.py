@@ -140,7 +140,8 @@ def test_calibration_training_and_preview_reciprocal_gates(monkeypatch, client):
     assert response.json()["code"] == "robot.busy.dream"
 
 
-def test_plan_uses_live_settings_and_preserves_movement_verbatim(robot, monkeypatch):
+@pytest.mark.parametrize("environment", ["tank", "dry_air"])
+def test_plan_uses_live_settings_and_preserves_movement_verbatim(robot, monkeypatch, environment):
     calls = []
     movement = "Joints that may move (ALL SEVEN): motor limits / commanded window / IK limits / sign\n  exact spacing\n"
 
@@ -153,6 +154,7 @@ def test_plan_uses_live_settings_and_preserves_movement_verbatim(robot, monkeypa
     monkeypatch.setattr(dream, "_run", run)
     body = DreamPlanBody(
         robot="tank",
+        environment=environment,
         prompt="pick up the screwdriver",
         overhead="head",
         wrist_l="left",
@@ -165,6 +167,7 @@ def test_plan_uses_live_settings_and_preserves_movement_verbatim(robot, monkeypa
     args = calls[0]
     assert "--dry-run" in args and "--live" not in args
     for flag, value in [
+        ("--environment", environment),
         ("--max-calls", "6"),
         ("--pause-s", "10.0"),
         ("--overhead", "head"),
@@ -276,7 +279,8 @@ def test_missing_display_button_refuses_before_runner_launch(monkeypatch, tmp_pa
     assert not dream.dream_active and sessions.tracker.current() is None
 
 
-def test_camera_check_reserves_and_releases_previews_before_child(robot, monkeypatch):
+@pytest.mark.parametrize("environment", ["tank", "dry_air"])
+def test_camera_check_reserves_and_releases_previews_before_child(robot, monkeypatch, environment):
     from makermodslab.camera_preview import camera_preview_manager
 
     order = []
@@ -286,6 +290,7 @@ def test_camera_check_reserves_and_releases_previews_before_child(robot, monkeyp
     def run(args, **kwargs):
         assert order == ["release"] and dream.checking_inputs
         assert "--preview" in args and "--live" not in args
+        assert args[args.index("--environment") + 1] == environment
         view = module.DreamView(
             Path(args[args.index("--dream-view-dir") + 1]),
             run="preview-test",
@@ -301,7 +306,7 @@ def test_camera_check_reserves_and_releases_previews_before_child(robot, monkeyp
         )
 
     monkeypatch.setattr(dream, "_run", run)
-    preview = dream.preview(DreamPlanBody(robot="tank"))
+    preview = dream.preview(DreamPlanBody(robot="tank", environment=environment))
     assert preview["inputs_id"] == "abcdef123456"
     assert not dream.checking_inputs
     assert len(dream._previews) == 1
@@ -421,17 +426,24 @@ def replay_bundle(tmp_path, monkeypatch):
     return source
 
 
-def test_replay_uses_saved_frames_and_same_crop_without_claiming(client, monkeypatch, replay_bundle):
+@pytest.mark.parametrize("environment", [None, "dry_air"])
+def test_replay_uses_saved_frames_and_same_crop_without_claiming(
+    client, monkeypatch, replay_bundle, environment
+):
     import base64
 
     import numpy as np
     from PIL import Image
 
+    if environment is not None:
+        path = replay_bundle / "run/plan.json"
+        path.write_text(json.dumps({**json.loads(path.read_text()), "environment": {"name": environment}}))
     monkeypatch.setattr(dream.subprocess, "Popen", Mock(side_effect=AssertionError("replay must not spawn")))
     response = client.get("/api/v1/dream/replay?at_s=15")
     assert response.status_code == 200, response.text
     r = response.json()
     assert r["status"]["mode"] == "replay"
+    assert r["status"]["environment"] == (environment or "tank")
     assert r["status"]["phase"].startswith("pause")
     assert not dream.dream_active and sessions.tracker.current() is None
     frames, _, _, _, _, slots, start, _ = dream._load_replay(str(cfg.DREAM_REPLAY))
@@ -745,7 +757,8 @@ def test_camera_reservation_acquired_during_identity_resolution_blocks_open(clie
     camera.assert_not_called()
 
 
-def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path):
+@pytest.mark.parametrize("environment", ["tank", "dry_air"])
+def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path, environment):
     from makermodslab.camera_preview import camera_preview_manager
 
     request = dream.DreamRequest("tank", "0123456789")
@@ -762,11 +775,15 @@ def test_button_loss_emits_one_stopping_event(monkeypatch, tmp_path):
     monkeypatch.setattr(dream, "_read_view", lambda run: {"phase": "running"})
     events = Mock(wraps=session_events.notify_session_changed)
     monkeypatch.setattr(session_events, "notify_session_changed", events)
-    dream._worker(request, DreamSettings(), "live-test", tmp_path)
+    dream._worker(request, DreamSettings(environment=environment), "live-test", tmp_path)
     stopping = [call for call in events.call_args_list if call.kwargs.get("phase") == "stopping"]
     assert len(stopping) == 1
     argv = dream.dream_process.spawn.call_args.args[0]
     assert argv[argv.index("--stop-button-pid") + 1] == "10"
+    assert "--live" in argv
+    assert argv[argv.index("--environment") + 1] == environment
+    assert argv[argv.index("--stop-button-start-time") + 1] == "123.0"
+    assert "--lab-session-id" in argv
 
 
 def test_remote_press_during_launch_is_retained_until_pid_ready(tmp_path):
@@ -834,3 +851,84 @@ def test_pending_stop_warns_page_after_one_second(monkeypatch, tmp_path, client)
     assert "the red button is not responding: use it directly or cut power" in response["error"]
     path.unlink()  # button consumes the request
     assert "not responding" not in (dream.status()["error"] or "")
+
+
+@pytest.mark.parametrize("environment,other", [("tank", "dry_air"), ("dry_air", "tank")])
+def test_environment_mismatch_refuses_before_claim_or_supervisor(robot, monkeypatch, environment, other):
+    plan_id = "0123456789"
+    dream._plans[plan_id] = {
+        "robot": "tank",
+        "settings": DreamSettings(environment=environment),
+        "record": dream._digest(robot),
+        "created": time.monotonic(),
+    }
+    thread = Mock(side_effect=AssertionError("must not start supervision"))
+    monkeypatch.setattr(dream.threading, "Thread", thread)
+    with pytest.raises(ApiError, match="Environment changed"):
+        dream.handle_start_dream(dream.DreamRequest("tank", plan_id, environment=other))
+    assert not dream.dream_active
+    assert plan_id in dream._plans
+    thread.assert_not_called()
+
+
+@pytest.mark.parametrize("environment", ["tank", "dry_air"])
+def test_new_viscous_record_plan_and_start_keep_environment(robot, monkeypatch, environment):
+    name = "viscous_waterproof_01_dry_air"
+    record = dict(robot, name=name, cameras=[{"name": "new-head", "camera_index": 9}])
+    Path(cfg.ROBOTS_PATH, f"{name}.json").write_text(json.dumps(record))
+    calls = []
+
+    def run(args, **kwargs):
+        calls.append(args)
+        Path(args[args.index("--lab-report-file") + 1]).write_text(
+            json.dumps(
+                {
+                    "plan_id": "0123456789",
+                    "movement": f"Environment: {environment}\n",
+                    "readiness": [],
+                }
+            )
+        )
+
+    monkeypatch.setattr(dream, "_run", run)
+    result = dream.plan(DreamPlanBody(robot=name, environment=environment, overhead="new-head"))
+    thread = Mock()
+    factory = Mock(return_value=thread)
+    monkeypatch.setattr(dream.threading, "Thread", factory)
+    monkeypatch.setattr(sessions, "is_robot_record_clean", lambda *a, **k: True)
+    monkeypatch.setattr(sessions, "_ensure_watchdog", lambda: None)
+    result = sessions.handle_start_session(
+        SessionStartBody(
+            kind="dream",
+            robot=name,
+            owner="browser",
+            options={
+                "plan_id": result["plan_id"],
+                "environment": environment,
+            },
+        )
+    )
+    cached_request, settings, run_name, work = factory.call_args.kwargs["args"]
+    # The worker receives the cached settings; the shared argv builder is used by all three paths.
+    start = dream._argv(cached_request.robot, settings, run_name, work)
+    for argv in [calls[0], start]:
+        assert argv[argv.index("--robot") + 1] == name
+        assert argv[argv.index("--environment") + 1] == environment
+        assert argv[argv.index("--overhead") + 1] == "new-head"
+    assert settings.environment == cached_request.environment == environment
+    assert result["session"]["robot"] == name
+    thread.start.assert_called_once()
+
+
+def test_environment_schema_defaults_and_rejects_unknown(client):
+    from pydantic import ValidationError
+
+    from makermodslab.schemas.dream import DreamOptions
+
+    assert DreamSettings().environment == "tank"
+    assert DreamOptions(plan_id="0123456789").environment == "tank"
+    for model, fields in [(DreamPlanBody, {"robot": "tank"}), (DreamOptions, {"plan_id": "0123456789"})]:
+        with pytest.raises(ValidationError):
+            model(**fields, environment="outside")
+    response = client.post("/api/v1/dream/plan", json={"robot": "tank", "environment": "outside"})
+    assert response.status_code == 422
