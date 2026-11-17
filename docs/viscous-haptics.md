@@ -143,6 +143,12 @@ restore paths in the DAgger runner.
 - *Status (2026-10-21):* resolved in sim. With a Maker-style wrist camera the
   Viscous puts the apple in the bowl 6/6, and one arm plus a parked second arm
   also 6/6. Details under "Findings".
+- *Grace on one arm (relayed by Gavin 2026-11-16, said the weekend before):* "grace
+  from dreamlabs says that one arm is now supported. even single camera is somewhat
+  supported." This supersedes Ryan's earlier "one-arm operation is not supported"
+  (`makermods-brain/Marketing/2026-10-24-cal-hacks-feedback.md`) and the 2026-10-21 sim
+  result that one arm needed a parked second arm. Gavin also: our overhead (`head`)
+  camera has the same downward pitch as the Maker station's.
 - *Status (2026-11-07):* Grace (World Intelligence) blamed the URDF; it checks out.
   The box failures come mainly from the sim's 5 Nm shoulder cap (the RS00's
   continuous rating): at 14 Nm the box goes 7/12 vs 2/12. See "Grace's URDF claim"
