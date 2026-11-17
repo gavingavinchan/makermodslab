@@ -87,7 +87,8 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
     while getattr(type(bus), "__getattr__", None) is not None and "_base" in vars(bus):
         bus = bus._base
     original_write = bus.write
-    joints = set(model.joints)
+    bus._makermodslab_gravity_original_write = original_write
+    joints = set(model.joints) - {"gripper"}
     state = {"started": None, "computed": -math.inf, "tau": {}, "logged": -math.inf}
     status: dict = {"scale": scale, "feedforward_nm": {}, "stiffness_nm": {}}
 
@@ -100,6 +101,13 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
             return original_write(data_name, motor, value)
         name = bus._get_motor_name(motor)
         torque = 0.0
+        gains = bus._gains[name]
+        if gains["kp"] == 0 and gains["kd"] == 0:
+            # Neutralize/recovery must remain zero effort even with the hook
+            # installed, and must not evaluate the model or start its ramp.
+            if name in joints:
+                status["feedforward_nm"][name] = 0.0
+            return original_write(data_name, motor, value)
         if name in joints:
             now = clock()
             if state["started"] is None:
@@ -115,7 +123,10 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
             scale = status["scale"]
             if isinstance(scale, bool) or not isinstance(scale, (int, float)) or not 0.0 <= scale <= 1.0:
                 scale = 0.0  # a bad live value must not command torque
-            torque = max(-CLAMP_NM, min(CLAMP_NM, scale * ramp * state["tau"].get(name, 0.0)))
+            predicted = state["tau"].get(name, 0.0)
+            torque = (
+                max(-CLAMP_NM, min(CLAMP_NM, scale * ramp * predicted)) if math.isfinite(predicted) else 0.0
+            )
             kp = bus._gains[name]["kp"]
             raw = robot._last_positions.get(name)
             status["feedforward_nm"][name] = torque
@@ -139,6 +150,16 @@ def install(robot, model, *, scale: float = 1.0, clock=time.monotonic) -> dict:
 
     bus.write = write
     return status
+
+
+def uninstall(robot) -> None:
+    """Detach the hook before final neutralize/recovery; disabling never needs it."""
+    bus = robot.bus
+    while getattr(type(bus), "__getattr__", None) is not None and "_base" in vars(bus):
+        bus = bus._base
+    original = vars(bus).pop("_makermodslab_gravity_original_write", None)
+    if original is not None:
+        bus.write = original
 
 
 def install_from_env(robot, robot_name: str) -> dict | None:

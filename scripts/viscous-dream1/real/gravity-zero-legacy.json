@@ -1,0 +1,71 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "source_commit": "be5b6d40",
+  "cases": [
+    {
+      "environment": "tank",
+      "dream": false,
+      "slot": "left",
+      "ticks_sha256": "00fcd7983203be6ed5a51fea9c0eff87e3e0a248c2b96ebc8ab8caf764721fe9",
+      "events_sha256": "66f7647521d1bdfc520c4c8485dfdce57d6556c21445c8ec8695262d050e4c37",
+      "summary_sha256": "6fa3b076eb3d7ce53d5bf997c3019d60603b6b07297716a12495dff79f17a108"
+    },
+    {
+      "environment": "tank",
+      "dream": false,
+      "slot": "right",
+      "ticks_sha256": "00fcd7983203be6ed5a51fea9c0eff87e3e0a248c2b96ebc8ab8caf764721fe9",
+      "events_sha256": "66f7647521d1bdfc520c4c8485dfdce57d6556c21445c8ec8695262d050e4c37",
+      "summary_sha256": "6fa3b076eb3d7ce53d5bf997c3019d60603b6b07297716a12495dff79f17a108"
+    },
+    {
+      "environment": "tank",
+      "dream": true,
+      "slot": "left",
+      "ticks_sha256": "476ee7dbaf02464253ef361d59c055cfafe6afd1b237bb88abb6b8220cfb33ef",
+      "events_sha256": "b529a660face7d60e2401c9a0857fc45c5141bcb2eab8bd72ea68a058ca08bb0",
+      "summary_sha256": "6fc3ecd39b54aac07629dbfd675a480ce9a86bc3e5afc5c2393762af01636884"
+    },
+    {
+      "environment": "tank",
+      "dream": true,
+      "slot": "right",
+      "ticks_sha256": "476ee7dbaf02464253ef361d59c055cfafe6afd1b237bb88abb6b8220cfb33ef",
+      "events_sha256": "b529a660face7d60e2401c9a0857fc45c5141bcb2eab8bd72ea68a058ca08bb0",
+      "summary_sha256": "6fc3ecd39b54aac07629dbfd675a480ce9a86bc3e5afc5c2393762af01636884"
+    },
+    {
+      "environment": "dry_air",
+      "dream": false,
+      "slot": "left",
+      "ticks_sha256": "00fcd7983203be6ed5a51fea9c0eff87e3e0a248c2b96ebc8ab8caf764721fe9",
+      "events_sha256": "66f7647521d1bdfc520c4c8485dfdce57d6556c21445c8ec8695262d050e4c37",
+      "summary_sha256": "9118789f27656033a9409d2ea5e6ee7640b066e0317386c59fb07c39e0880844"
+    },
+    {
+      "environment": "dry_air",
+      "dream": false,
+      "slot": "right",
+      "ticks_sha256": "00fcd7983203be6ed5a51fea9c0eff87e3e0a248c2b96ebc8ab8caf764721fe9",
+      "events_sha256": "66f7647521d1bdfc520c4c8485dfdce57d6556c21445c8ec8695262d050e4c37",
+      "summary_sha256": "9118789f27656033a9409d2ea5e6ee7640b066e0317386c59fb07c39e0880844"
+    },
+    {
+      "environment": "dry_air",
+      "dream": true,
+      "slot": "left",
+      "ticks_sha256": "239dfe2bb7854d8ffd8447f8692e5abf003abe14ec3355f9579560767c484207",
+      "events_sha256": "b529a660face7d60e2401c9a0857fc45c5141bcb2eab8bd72ea68a058ca08bb0",
+      "summary_sha256": "10b0fb708ae8ce403587ba8b774a947822583b777d4ef5eca6100dba99a51182"
+    },
+    {
+      "environment": "dry_air",
+      "dream": true,
+      "slot": "right",
+      "ticks_sha256": "239dfe2bb7854d8ffd8447f8692e5abf003abe14ec3355f9579560767c484207",
+      "events_sha256": "b529a660face7d60e2401c9a0857fc45c5141bcb2eab8bd72ea68a058ca08bb0",
+      "summary_sha256": "10b0fb708ae8ce403587ba8b774a947822583b777d4ef5eca6100dba99a51182"
+    }
+  ]
+}

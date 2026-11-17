@@ -647,7 +647,9 @@ sweep holds. CAD supplies only the reference RMS. Tests change every CAD
 mass/COM and verify that both the regressor and empirical solution stay the
 same. Existing unit-1 `GravityModel` callers retain identity coordinates.
 
-The log-only fit is **provisional and blocked from feedforward installation**.
+The log-only fit is **provisional and refused by default for feedforward**;
+only the explicit runner override below permits it (the environment installer
+still refuses it).
 It has narrow coverage and poor wrist-roll R²; offsets/friction are weakly
 separated. Planner usability requires the matching robot/condition/map/URDF,
 finite parameters/friction/CV errors, static rank >=6 and worst held-out RMS
@@ -678,3 +680,148 @@ network rules (the helper is opt-in and leaves ordinary pytest unchanged):
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PWD:$PWD/scripts/viscous-dream1/real \
   ~/Documents/makermodslab-viscous/.venv/bin/python -m pytest -q --maxfail=0 -p offline_test_guard tests/
 ```
+
+## Dry-air gravity feedforward (2026-11-17)
+
+Gavin: "i want all technique to work on air first before water". `--gravity-comp
+SCALE` (0..1, default 0) is supported for rehearsal and Dream in **dry_air only**.
+It refuses `--gravity-sweep`, because the sweep measures raw holding torque.
+`--gravity-fit PATH` defaults to the waterproof unit's `gravity-dry-air-fit.json`.
+The fit's robot must equal the selected record's name, its condition must equal
+`dry_air`, and its six joints, commissioned physical map and URDF must match.
+A provisional fit is refused unless `--allow-provisional-fit` is explicit. The
+plan prints the selected path, SHA256, scale and provisional status; the run
+bundle copies the fit. Replacing the fit requires a new plan ID. In particular,
+a fit for `viscous_waterproof_01` refuses the distinct `_dry_air` robot record;
+use the correct commissioned record/fit pair rather than changing this check.
+
+At zero, no fit is read, no hook is installed, no `ff` field is logged and the
+legacy plan JSON/IDs, ticks, fake events and summaries are unchanged. Eight
+committed reference hashes came from pre-feedforward `be5b6d40`, spanning both
+environments, rehearsal/Dream (internal stub), and both arm slots.
+
+The installed MakerFollower sends each joint through `bus.write(Goal_Position)`.
+The RobStride bus's `_mit_control(motor,kp,kd,q,0,tau_ff)` encodes torque in Nm
+in the MIT packet; normal driver writes hard-code its last argument to zero.
+`maker_can.py` only changes the gs_usb connection; it does not alter MIT effort.
+The reused `gravity_feedforward.install` follows `_base` beneath
+`RateLimitedRobstrideBus`, preserving the existing slew limit. It evaluates
+kinematic gravity at the follower's last measured, whole-turn-corrected motor
+pose. Telemetry offsets and Coulomb friction are excluded from commanded
+feedforward; each torque is clamped to 6 Nm, with the existing 2 s ramp from
+the first nonzero-gain arm position write. The gripper always gets zero ff.
+Install follows the backstop and successful connect/initial neutralize and
+precedes engage. No inertial changes, gains or torque thresholds were made.
+
+Write-path audit of the installed fork and this runner:
+
+| Path | MIT effort with compensation enabled |
+|---|---|
+| connect handshake/configuration, initial neutralize/disable | Hook not installed yet; original zero ff; disable protocol frames are separate |
+| engage's `remote_can.neutralize` | Kp=Kd=0 frames pass to the original writer with zero ff; do not start the ramp |
+| engage's backstop fresh preload, motor enable, measured-pose hold | Preload/hold position frames carry ramped ff; enable's protocol frame is separate |
+| approach, rehearsal hold, Dream `remote_can.send_action` -> follower -> slew wrapper | Limited position targets carry ff on all six arm joints |
+| `can_speed_limit.rebase` / re-anchor | Fresh measured+standing-error goals intentionally bypass slew, then pass through the innermost ff hook |
+| `release_gripper` | Gripper Kp=Kd=0, zero-effort Goal_Position, then its disable frame; the arm's ff stays on |
+| rest-return helper / `Fresh.send_action` / settling hold writes | Follower position writes retain ff and pass through the slew wrapper |
+| mid-air HOLD | Last re-anchored MIT goals and their ff remain active; feedback continues; HOLD does not advance the ramp by sending new motion frames |
+| verified rest ramp-down | Same final arm goals at 20 Hz; live ff scale falls to zero over 1 s; gripper stays disabled |
+| final `LabArm.release` -> `remote_can.release` | Detach ff hook first; original neutralize sends zero-effort MIT frames, then independent `de_energize_can_device` disables/disconnects |
+| failed connect / de-energize recovery | No hook was installed before successful connect. The recovery's disable/disconnect does not depend on a model or wrapped position writer |
+| second signal / RELEASE ALL | Skip any remaining return/ramp/HOLD as today, detach hook and release immediately |
+
+The stop deliberately keeps ff on during re-anchor, return and any HOLD:
+removing it in mid-air changes equilibrium by tau/kp, and the learned standing
+error belongs to the compensated equilibrium. Only after the existing rest
+arrival verdict does it hold the final goals and ramp ff to zero over 1 s,
+then release. Every ramp tick reads feedback, checks all trips and the measured
+guard, logs `ff`, and updates button status. A ramp fault holds with the current
+remaining ff and waits for RELEASE ALL; it does not finish removing support.
+The second signal is checked every ramp tick (50 ms), without waiting a second.
+
+Effects on the existing protections:
+
+- FloorSlide's sag coefficient becomes `SAG_MM_PER_M2 * (1-scale)` in the actual
+  pre-IK transport and in the plan ID. Geometry, buffer and keep-out are unchanged.
+  This linear sag approximation is subject to fit error and 6 Nm ff saturation.
+- HoldError continues averaging the **raw** command-minus-position error, now
+  the residual sag with ff present. Re-anchor preserves that error while ff
+  remains present. Lag remains raw position tracking error; overspeed remains
+  measured motion, independent of ff.
+- Torque tiers still use the motor's **total measured torque**, including ff.
+  Never subtract ff when checking heat/load protection.
+- With ff enabled only, limp tests zero measured torque against the combined
+  MIT demand `kp*(cmd-pos)+ff`, expressed as equivalent position error
+  `cmd-pos+degrees(ff/kp)`, retaining 0.25 Nm / 3 deg / one reading. Otherwise a
+  healthy joint with opposing ff and stiffness can have zero total torque at
+  >3 deg raw error. This correction applies in the loop, return, HOLD and rest
+  ramp and binds the plan ID. Raw lag/HoldError do not use this equivalent goal.
+  It omits the velocity damping term, as the original limp rule did.
+- `ticks.jsonl` adds the six-joint `ff` dictionary only when scale >0, including
+  stop readings. These values describe the latest successfully sent effort.
+
+### Gavin's rehearsal progression (commands below were NOT run live)
+
+The current log fit is provisional. These IDs were generated by matching
+30-second FakeArm rehearsals using this checkout's **default robot record**,
+arm file and current fit SHA256
+`45d29ebdefc8c72bf3ea1b0610141753e2d327adad8ba863d254564f2fa5b09c`.
+All three completed the hold, returned and ramped to zero. Re-run the same
+command without `--live --plan-id ...` on the arm machine to regenerate its ID
+if its record/port, arm file or fit differs. The sweep's measured fit should
+replace the provisional fit; remove the override and regenerate all IDs then.
+
+| Scale | Plan ID | Floor sag coefficient mm/m² |
+|---|---|---:|
+| 0.25 | `825105ac75` | 168 |
+| 0.5 | `113cb1400d` | 112 |
+| 1.0 | `6caee7f868` | 0 |
+
+Run in order with the existing button/power-switch procedure. Each approaches
+with all seven joints available, holds 30 s at the start pose, releases the
+gripper on stop, and returns the six arm joints at <=15 deg/s.
+
+```bash
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse --environment dry_air --gravity-comp 0.25 --allow-provisional-fit --hold-s 30 --live --plan-id 825105ac75 --pid-file /tmp/dream_real.pid
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse --environment dry_air --gravity-comp 0.5 --allow-provisional-fit --hold-s 30 --live --plan-id 113cb1400d --pid-file /tmp/dream_real.pid
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/dream_real.py --rehearse --environment dry_air --gravity-comp 1.0 --allow-provisional-fit --hold-s 30 --live --plan-id 6caee7f868 --pid-file /tmp/dream_real.pid
+```
+
+Watch command-minus-position and vertical sag shrink without reversal/lifting,
+oscillation, guard contact, heat/total torque rise or trips. Check `ff` rises
+smoothly during startup, remains present on return/HOLD, and reaches zero at
+rest before release. At scale 1 the current provisional fit saturates shoulder
+and elbow ff at 6 Nm at this start pose: scale 1 is therefore not full gravity
+cancellation. Compare settled holds with:
+
+```bash
+PYTHONPATH=$PWD ~/Documents/makermodslab-viscous/.venv/bin/python scripts/viscous-dream1/real/gravity_comp_report.py /path/to/run
+# ticks.jsonl or the run's nominal/ directory also works; --arm-file restores a moved bundle's TCP file
+```
+
+The report prints per-joint median raw command-minus-position, measured torque
+and ff, and median vertical TCP sag from command/position FK on the committed
+tank-model URDF through the commissioned joint map (pan shift included).
+It uses only phase `hold`, discarding its first second. Positive sag means the
+measured TCP is below its command. It does not confuse return/HOLD readings
+with the initial rehearsal hold.
+
+For Dream after these rehearsals, add `--gravity-comp S --gravity-fit PATH`
+(and the explicit provisional override only if still needed) to the existing
+reviewed dry-air/right-slot recipe with the matching robot/fit, generate its
+new plan ID offline, then use that ID. No Dream request was made for this build.
+Do not reuse a rehearsal ID for Dream.
+
+The opt-in nominal FakeArm uses a bounded synthetic load matched to the chosen
+ff scale, easing it in away from its supported rest; explicit sag fixtures
+instead lose `degrees(ff/kp)` of their sag. This verifies sequencing and the
+wrapper, not real tracking, fit accuracy or thermal behavior. The zero-sag
+scale-zero fake is unchanged. The report's zero fake sag is not an arm result.
+
+Offline verification: 262 passed +31 subtests across the runner, gravity model,
+sweep, feedforward, compensation, right-slot/slot mapping, real CAN wrapper and
+remote-CAN tests. The 23 compensation cases include eight legacy zero-scale
+run hashes, fit refusals, changed-fit refusal before connect, ramp-in, hold and
+return support, zero at rest, mid-air HOLD, immediate second-signal release,
+ramp send/feedback faults, limp cancellation, floor sag and the FK report.
+Portable results: `configs/viscous/viscous_waterproof_01/evidence/gravity-comp-offline-20261117.json`.

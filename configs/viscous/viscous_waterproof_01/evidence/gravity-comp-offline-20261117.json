@@ -1,0 +1,327 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "part1_sha": "be5b6d40c691cb9c598f3b2bb3f8e13c3093f00e",
+  "offline_only": true,
+  "provisional_fit": true,
+  "runs": [
+    {
+      "scale": 0.25,
+      "plan_id": "825105ac75",
+      "gravity_comp": {
+        "scale": 0.25,
+        "fit": "configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json",
+        "fit_sha256": "45d29ebdefc8c72bf3ea1b0610141753e2d327adad8ba863d254564f2fa5b09c",
+        "robot": "viscous_waterproof_01",
+        "condition": "dry_air",
+        "provisional": true,
+        "allow_provisional_fit": true,
+        "sag_mm_per_m2": 168.0,
+        "ramp_in_s": 2.0,
+        "ramp_out_s": 1.0,
+        "clamp_nm": 6.0,
+        "limp_reference": "cmd + degrees(ff/kp) (effort equivalent)"
+      },
+      "result": "held 30 s at the Dream start pose",
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": -0.0,
+            "wrist_flex": -0.0,
+            "wrist_yaw": -0.0,
+            "wrist_roll": 0.0
+          },
+          "goal": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": ""
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      },
+      "hold_report": {
+        "ticks": 580,
+        "duration_s": 28.94999999997367,
+        "joints": {
+          "shoulder_pan": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.4018966186586372,
+            "ff_nm": -1.3170205681761776e-16
+          },
+          "shoulder_lift": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 3.009918311854987,
+            "ff_nm": 2.6080216931963496
+          },
+          "elbow_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 2.2672615258576627,
+            "ff_nm": 1.868273099193915
+          },
+          "wrist_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 1.8102109767649335,
+            "ff_nm": 1.4122340199543106
+          },
+          "wrist_yaw": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.29353622059957574,
+            "ff_nm": -0.10444073621104714
+          },
+          "wrist_roll": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.9110198186066538,
+            "ff_nm": 0.5110830394127521
+          }
+        },
+        "vertical_sag_mm": 0.0
+      }
+    },
+    {
+      "scale": 0.5,
+      "plan_id": "113cb1400d",
+      "gravity_comp": {
+        "scale": 0.5,
+        "fit": "configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json",
+        "fit_sha256": "45d29ebdefc8c72bf3ea1b0610141753e2d327adad8ba863d254564f2fa5b09c",
+        "robot": "viscous_waterproof_01",
+        "condition": "dry_air",
+        "provisional": true,
+        "allow_provisional_fit": true,
+        "sag_mm_per_m2": 112.0,
+        "ramp_in_s": 2.0,
+        "ramp_out_s": 1.0,
+        "clamp_nm": 6.0,
+        "limp_reference": "cmd + degrees(ff/kp) (effort equivalent)"
+      },
+      "result": "held 30 s at the Dream start pose",
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": -0.0,
+            "wrist_flex": -0.0,
+            "wrist_yaw": -0.0,
+            "wrist_roll": 0.0
+          },
+          "goal": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": ""
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      },
+      "hold_report": {
+        "ticks": 580,
+        "duration_s": 28.94999999997367,
+        "joints": {
+          "shoulder_pan": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.401896618658637,
+            "ff_nm": -2.6340411363523553e-16
+          },
+          "shoulder_lift": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 5.617940005051336,
+            "ff_nm": 5.216043386392699
+          },
+          "elbow_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 4.1355346251134595,
+            "ff_nm": 3.73654619838783
+          },
+          "wrist_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 3.2224449967192443,
+            "ff_nm": 2.8244680399086213
+          },
+          "wrist_yaw": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.1890954843885286,
+            "ff_nm": -0.2088814724220943
+          },
+          "wrist_roll": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 1.422102858019441,
+            "ff_nm": 1.0221660788255043
+          }
+        },
+        "vertical_sag_mm": 0.0
+      }
+    },
+    {
+      "scale": 1.0,
+      "plan_id": "6caee7f868",
+      "gravity_comp": {
+        "scale": 1.0,
+        "fit": "configs/viscous/viscous_waterproof_01/gravity-dry-air-fit.json",
+        "fit_sha256": "45d29ebdefc8c72bf3ea1b0610141753e2d327adad8ba863d254564f2fa5b09c",
+        "robot": "viscous_waterproof_01",
+        "condition": "dry_air",
+        "provisional": true,
+        "allow_provisional_fit": true,
+        "sag_mm_per_m2": 0.0,
+        "ramp_in_s": 2.0,
+        "ramp_out_s": 1.0,
+        "clamp_nm": 6.0,
+        "limp_reference": "cmd + degrees(ff/kp) (effort equivalent)"
+      },
+      "result": "held 30 s at the Dream start pose",
+      "stop": {
+        "reason": "held 30 s at the Dream start pose",
+        "reanchor": {
+          "measured": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          },
+          "offset_deg": {
+            "shoulder_pan": -0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": -0.0,
+            "wrist_flex": -0.0,
+            "wrist_yaw": -0.0,
+            "wrist_roll": 0.0
+          },
+          "goal": {
+            "shoulder_pan": 176.59,
+            "shoulder_lift": -122.9,
+            "elbow_flex": 99.34,
+            "wrist_flex": 8.56,
+            "wrist_yaw": -9.0,
+            "wrist_roll": -3.99
+          }
+        },
+        "gripper_release": "ok",
+        "legs": [
+          {
+            "leg": 1,
+            "ok": true,
+            "message": ""
+          },
+          {
+            "leg": 2,
+            "ok": true,
+            "message": ""
+          }
+        ],
+        "returned": "at the rest",
+        "release_problems": null,
+        "gravity_ramp": "zero at rest after 1 s"
+      },
+      "hold_report": {
+        "ticks": 580,
+        "duration_s": 28.94999999997367,
+        "joints": {
+          "shoulder_pan": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 0.4018966186586368,
+            "ff_nm": -5.268082272704711e-16
+          },
+          "shoulder_lift": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 6.401896618658638,
+            "ff_nm": 6.0
+          },
+          "elbow_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 6.398988426578656,
+            "ff_nm": 6.0
+          },
+          "wrist_flex": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 6.046913036627865,
+            "ff_nm": 5.6489360798172426
+          },
+          "wrist_yaw": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": -0.019785988033565682,
+            "ff_nm": -0.4177629448441886
+          },
+          "wrist_roll": {
+            "cmd_minus_pos_deg": 0.0,
+            "torque_nm": 2.444268936844882,
+            "ff_nm": 2.0443321576510085
+          }
+        },
+        "vertical_sag_mm": 0.0
+      }
+    }
+  ],
+  "tests": {
+    "runner": 104,
+    "arm_gravity": 10,
+    "sweep": 27,
+    "feedforward": 18,
+    "gravity_comp": 23,
+    "right_slot": 12,
+    "slots": 11,
+    "can_speed_limit": 26,
+    "remote_can": 31
+  },
+  "test_total": 262,
+  "subtests": 31,
+  "zero_scale_reference_commit": "be5b6d40",
+  "fake_dynamics": "Bounded synthetic load matched to chosen ff scale; supported rest interpolation. No real tracking or fit-accuracy claim."
+}

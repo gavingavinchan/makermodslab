@@ -179,3 +179,47 @@ def test_live_scale_changes_each_frame_and_bad_values_zero_torque(urdf, bad):  #
     assert drive(robot, clock, 3.0)["lift"] == pytest.approx(full["lift"] * 0.25)
     status["scale"] = bad
     assert all(tau == 0 for tau in drive(robot, clock, 3.0).values())
+
+
+def test_zero_gain_cleanup_never_evaluates_or_applies_feedforward(urdf):  # noqa: F811
+    from unittest import mock
+
+    model = GravityModel(urdf, JOINTS)
+    robot, clock = FakeRobot(POSE), [0.0]
+    ff.install(robot, model, clock=lambda: clock[0])
+    drive(robot, clock, 0)
+    drive(robot, clock, 3)
+    robot.bus._gains["lift"] = {"kp": 0, "kd": 0}
+    robot.bus.frames.clear()
+    with mock.patch.object(model, "torque", side_effect=AssertionError("cleanup model evaluation")):
+        robot.bus.write("Goal_Position", "lift", 0)
+    assert not robot.bus.frames
+    assert robot.bus.other[-1] == ("Goal_Position", "lift", 0)
+    ff.uninstall(robot)
+    robot.bus.write("Goal_Position", "elbow", 0)
+    assert robot.bus.other[-1] == ("Goal_Position", "elbow", 0)
+
+
+def test_real_slew_bus_rebase_and_send_both_carry_ff_without_bypassing_limit():
+    from types import SimpleNamespace
+
+    from tests.test_can_speed_limit import setup
+
+    bus, base, robot, now = setup()
+    robot.bus = bus
+    robot._last_positions = dict(base.positions)
+    frames = []
+    base._mit_control = lambda *frame: frames.append(frame)
+    model = SimpleNamespace(joints=("a", "b"), torque=lambda pose: {"a": 1, "b": -1})
+    ff.install(robot, model, clock=lambda: now[0])
+    bus.enable_torque()
+    now[0] = 2
+    bus.write("Goal_Position", "a", 100)
+    assert frames[-1][3] == 10.75  # 7.5 deg/s, at most 100 ms credit
+    assert frames[-1][-1] == 1
+    bus.rebase({"a": 0, "b": 0})
+    assert frames[-2][3:] == (10, 0, 1)
+    assert frames[-1][3:] == (-10, 0, -1)
+    ff.uninstall(robot)
+    bus.write("Goal_Position", "a", 20)
+    assert base.events[-1][0] == "Goal_Position"

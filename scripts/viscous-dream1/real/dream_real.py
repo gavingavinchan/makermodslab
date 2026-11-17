@@ -424,6 +424,7 @@ class FakeArm:
         self.pos = dict(start)
         self.target = dict(start)
         self.sag = dict.fromkeys(core.MOTORS, 0.0) | dict(sag or {})
+        self.explicit_sag = sag is not None
         self.home = dict(start)  # lying on the tank floor, supported: no sag there
         self.cameras, self.clock, self.scenario = list(cameras), clock, scenario
         self.ticks = 0
@@ -441,6 +442,32 @@ class FakeArm:
     def connect(self):
         self.events.append("connect (fake: no port opened)")
 
+    def install_gravity(self, model, scale):
+        from types import SimpleNamespace
+
+        from gravity_fit import KP
+
+        from makermodslab import gravity_feedforward
+
+        self.gravity_model = model
+        self.gravity_fake_load_scale = scale
+        self._last_positions = dict(self.pos)
+        self._turn_offset = dict.fromkeys(core.MOTORS, 0.0)
+        self.ff_frames = []
+        self.bus = SimpleNamespace(
+            _gains={n: {"kp": KP.get(n, 30.0), "kd": 2.0} for n in core.MOTORS},
+            _get_motor_name=lambda n: n,
+            write=lambda *args: None,
+            _mit_control=lambda *args: self.ff_frames.append((self.clock(), *args)),
+        )
+        self.gravity_status = gravity_feedforward.install(self, model, scale=scale, clock=self.clock)
+
+    def _send_gravity(self):
+        if getattr(self, "gravity_status", None) is not None:
+            self._last_positions = dict(self.pos)
+            for n in core.ARM:
+                self.bus.write("Goal_Position", n, self.target[n])
+
     def _pushed(self):
         return self.pushing and self.ticks > 70
 
@@ -450,7 +477,18 @@ class FakeArm:
     def _settle(self, m, goal):
         """Where a joint held at `goal` comes to rest: short by its sag, phased in over the first 20 deg
         away from the floor rest (lying there it is supported)."""
-        return goal - self.sag[m] * min(1.0, abs(goal - self.home[m]) / 20.0)
+        support = min(1.0, abs(goal - self.home[m]) / 20.0)
+        sag = self.sag[m] * support
+        if getattr(self, "gravity_status", None) is not None and m in core.ARM:
+            ff = self.gravity_status["feedforward_nm"].get(m, 0.0)
+            if not self.explicit_sag:
+                # Opt-in nominal fake: a bounded model-consistent load. This
+                # exercises compensation without mistaking a gravity-free
+                # fake's overcompensation for physical tracking evidence.
+                load = self.gravity_fake_load_scale * self.gravity_model.torque(self.pos)[m]
+                sag = support * math.degrees(max(-6.0, min(6.0, load)) / self.bus._gains[m]["kp"])
+            sag -= support * math.degrees(ff / self.bus._gains[m]["kp"])
+        return goal - sag
 
     def read(self) -> Reading:
         self.ticks += 1
@@ -497,16 +535,23 @@ class FakeArm:
                 out[m] = self.SLIP_NM
             else:
                 load = 0.4 + 0.1 * math.sin(self.ticks / 7 + i)
-                out[m] = load + self.KP_NM_PER_DEG * (self.target[m] - self.pos[m])
+                kp = self.KP_NM_PER_DEG
+                ff = 0.0
+                if getattr(self, "gravity_status", None) is not None and m in core.ARM:
+                    kp = math.radians(self.bus._gains[m]["kp"])
+                    ff = self.gravity_status["feedforward_nm"].get(m, 0.0)
+                out[m] = load + kp * (self.target[m] - self.pos[m]) + ff
         return out
 
     def engage(self):
         self.energized = True
         self.events.append("engage: torque on at the measured pose")
+        self._send_gravity()
         return dict(self.pos)
 
     def send(self, target, previous):
         self.target = dict(target)
+        self._send_gravity()
 
     def drop_cameras(self):
         self.events.append("drop cameras: the return reads the motors only")
@@ -530,6 +575,7 @@ class FakeArm:
             self.target[m] = self.pos[m] + offsets[m]
             if self.sag[m]:  # where the joint settles under that goal: still where it is
                 self.pos[m] = self._settle(m, self.target[m])
+        self._send_gravity()
         self.events.append(
             f"re-anchor: arm goals at the measured pose (moved {moved:.1f} deg from the old goals)"
         )
@@ -556,6 +602,7 @@ class FakeArm:
                     self.pos[m] -= self.FALL_DEG_PER_TICK
                 elif m not in self.stuck:
                     self.pos[m] = start[m] + (self._settle(m, v) - start[m]) * i / steps
+            self._send_gravity()
             temp = dict.fromkeys(core.MOTORS, 31.0 + self.heat_per_tick * self.ticks)
             if watch is not None and (trips := watch(dict(self.pos), self.torque(), temp, dict(self.target))):
                 self.events.append(f"return leg: ended by {trips[0].name} after {i}/{steps} steps")
@@ -572,6 +619,12 @@ class FakeArm:
         return False, f"{motor} still {off:.1f} deg away"
 
     def release(self):
+        if getattr(self, "gravity_status", None) is not None:
+            from makermodslab import gravity_feedforward
+
+            self.gravity_status["scale"] = 0.0
+            self.gravity_status["feedforward_nm"] = dict.fromkeys(core.ARM, 0.0)
+            gravity_feedforward.uninstall(self)
         self.energized = False
         self.events.append("release: zero-effort MIT frames, then torque off on every motor")
         return None
@@ -652,6 +705,11 @@ class LabArm:
             print(f"connect failed; de-energize recovery: {problem or 'done'}", flush=True)
             self.robot = None
             raise
+
+    def install_gravity(self, model, scale):
+        from makermodslab.gravity_feedforward import install
+
+        self.gravity_status = install(self.robot, model, scale=scale)
 
     def read(self) -> Reading:
         from makermodslab import remote_can
@@ -798,6 +856,11 @@ class LabArm:
     def release(self):
         from makermodslab import remote_can
 
+        if self.robot is not None and getattr(self, "gravity_status", None) is not None:
+            from makermodslab.gravity_feedforward import uninstall
+
+            with contextlib.suppress(Exception):
+                uninstall(self.robot)
         return remote_can.release(self.robot) if self.robot is not None else None
 
 
@@ -862,7 +925,7 @@ def deny_network():
 
 
 def make_floor_slide(
-    arm: dict, environment: Environment = TANK_ENVIRONMENT
+    arm: dict, environment: Environment = TANK_ENVIRONMENT, *, gravity_scale: float = 0.0
 ) -> tuple[core.FloorSlide | None, str | None]:
     """The floor slide for this arm file's tool point, on the tank guard's own mesh and floor line."""
     try:
@@ -879,6 +942,7 @@ def make_floor_slide(
             core.tool_rotation(arm["approach"], arm["jaw"]),
             np.asarray(arm["tcp"], float),
             core.keepout_floor_mm(environment.keepout_file),
+            sag_mm_per_m2=core.SAG_MM_PER_M2 * (1 - gravity_scale),
         ),
         None,
     )
@@ -936,6 +1000,7 @@ class DreamReal:
         api_ok=False,
         environment: Environment = TANK_ENVIRONMENT,
         arm_slot: str = "left",
+        gravity_scale: float = 0.0,
     ):
         core.chunk_key(arm_slot)
         os.environ["DREAM_LOG_DIR"] = str(log_dir / "dream_logs")
@@ -979,7 +1044,9 @@ class DreamReal:
         else:
             self.client.policy(self.config)
             self.stub = None
-        floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()), environment)
+        floor, self.floor_problem = make_floor_slide(
+            json.loads(Path(arm_file).read_text()), environment, gravity_scale=gravity_scale
+        )
         self.slide = SlideTransport(
             self.client._policy._transport, core.tcp_box_mm(environment.box_file), floor, arm_slot
         )
@@ -1222,6 +1289,10 @@ class Settings:
 
     sweep: object = None  # gravity_sweep.SweepSettings; opt-in only
     sweep_identity: dict | None = None
+    gravity_comp: float = 0.0
+    gravity_fit: Path | None = None
+    allow_provisional_fit: bool = False
+    gravity_identity: dict | None = None
 
     def disabled_run_trips(self) -> set[str]:
         return {name for name in ("lag", "limp", "overspeed") if getattr(self, f"no_{name}_trip")}
@@ -1257,6 +1328,17 @@ class Episode:
         environment: Environment = TANK_ENVIRONMENT,
         seam_join=None,
     ):
+        if settings.gravity_comp or not math.isfinite(settings.gravity_comp):
+            import gravity_comp
+
+            try:
+                robot = getattr(arm, "record", {}).get("name", "viscous_waterproof_01")
+                identity, self.gravity_model = gravity_comp.load(settings, robot, environment.name)
+                if settings.gravity_identity is not None and identity != settings.gravity_identity:
+                    raise ValueError("gravity fit changed after the plan id was printed")
+                settings.gravity_identity = identity
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                raise RefusedError(str(error)) from error
         self.speed_cap = 15.0 if settings.sweep else environment.arm_speed_cap_deg_s
         if settings.sweep:
             settings.sweep.check()
@@ -1304,6 +1386,8 @@ class Episode:
         self.status_reading, self.last_fresh_wall = None, None
         self.dead: set[str] = set()
         self.monitor = core.TripMonitor(settings.trips, clock)
+        if settings.gravity_comp:
+            self.monitor.limp = self._limp_monitor(settings.trips)
         self.hold_error = core.HoldError(limit_deg=min(settings.trips.lag_deg, REANCHOR_MAX_OFFSET_DEG))
         self.measured = None  # the last fresh reading's positions
         self.last_state = None  # the last fresh reading, whole (pos, torque, temp, lag): the trip snapshot
@@ -1353,6 +1437,13 @@ class Episode:
             with contextlib.suppress(Exception), (self.mirror_dir / path.name).open("a") as f:
                 f.write(line)
 
+    def _limp_monitor(self, limits):
+        if self.s.gravity_comp:
+            from gravity_comp import FeedforwardLimp
+
+            return FeedforwardLimp(limits, self.arm)
+        return core.LimpMonitor(limits.limp_torque_nm, limits.limp_lag_deg, limits.limp_ticks)
+
     def _tick(self, phase, reading, cmd, trips=(), **extra) -> None:
         """One line of ticks.jsonl: the loop's ticks and, since the 20261114T082911Z drop, every reading
         the stop path takes too (return legs, HOLDING), so an incident is recorded to the end. `reading`
@@ -1360,6 +1451,8 @@ class Episode:
         if not isinstance(reading, dict):
             reading = {"pos": reading.pos, "torque": reading.torque, "temp": reading.temp}
         row = {"t": self.clock(), "phase": phase, **reading, "cmd": cmd, "trips": [t.name for t in trips]}
+        if self.s.gravity_comp:
+            row["ff"] = dict(self.arm.gravity_status["feedforward_nm"])
         with contextlib.suppress(Exception):  # a full disk must never break the stop path
             self._write(self.ticks, row | extra)
 
@@ -1740,6 +1833,8 @@ class Episode:
         self._phase("connect")
         self.arm.connect()
         try:
+            if self.s.gravity_comp:
+                self.arm.install_gravity(self.gravity_model, self.s.gravity_comp)
             reading = self.arm.read()
             self.start_pose = dict(reading.pos)
             self.dream_start = self.start_target(self.start_pose)
@@ -1836,6 +1931,11 @@ class Episode:
                         "torque": reading.torque,
                         "temp": reading.temp,
                         "trips": [t.name for t in trips],
+                        **(
+                            {"ff": dict(self.arm.gravity_status["feedforward_nm"])}
+                            if self.s.gravity_comp
+                            else {}
+                        ),
                     },
                 )
                 if trips:
@@ -2189,7 +2289,7 @@ class Episode:
                 # monitor too, against the goals the stop itself sets.
                 lim = self.s.trips
                 speed = core.SpeedMonitor(lim.overspeed_deg_s, lim.overspeed_ticks)
-                limp = core.LimpMonitor(lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks)
+                limp = self._limp_monitor(lim)
                 return_trips = []
                 where = ["stop: check"]  # the phase the stop's readings are logged under
 
@@ -2221,6 +2321,7 @@ class Episode:
                 out.pop("at_return_trip", None)
                 legs = self.legs_from(here)
                 out["returned"] = "at the rest"
+                rest_goal = None
                 for k, leg in enumerate(legs, 1):
                     target = {**{m: float(leg[m]) for m in core.ARM}, "gripper": grip}
                     last = k == len(legs)
@@ -2267,6 +2368,7 @@ class Episode:
                         # The helper judged arrival at the rest on its own fresh readings (within 6 deg):
                         # lying there, torque off is the end the return was for.
                         out["returned"] = "at the rest (the helper's verdict; no reading after it)"
+                        rest_goal = target
                         break
                     if pos is None:
                         self._hold_mid_air(out, f"after leg {k}: no fresh reading", reanchor=True)
@@ -2286,6 +2388,10 @@ class Episode:
                     # The next leg's guard check starts from the goal this reading implies (it sags below).
                     offsets = self.hold_error.value()
                     here = {**target, **{m: pos[m] + offsets[m] for m in core.ARM}}
+                    if last:
+                        rest_goal = target
+                if self.s.gravity_comp and rest_goal is not None and not self.abort_event.is_set():
+                    self._ramp_gravity_off(out, rest_goal)
         finally:
             self._phase("release all torque")
             out["release_problems"] = self.arm.release()
@@ -2296,6 +2402,44 @@ class Episode:
                 message=f"released: all torque off{f' (problems: {problems})' if problems else ''}",
             )
         return out
+
+    def _ramp_gravity_off(self, out, goal):
+        """At verified rest only: hold the final arm targets while removing ff.
+
+        A second signal skips every remaining ramp tick and releases through
+        stop's existing finally. A feedback/trip failure holds at the current
+        reduced ff; it never removes the remaining support in mid-air.
+        """
+        self._phase("stop: gravity ramp down", "at rest, holding while feedforward reaches zero over 1 s")
+        self.commanded = dict(goal)
+        start = self.arm.gravity_status["scale"]
+        monitor = core.TripMonitor(self.s.trips, self.clock)
+        monitor.limp = self._limp_monitor(self.s.trips)
+        count = round(1.0 / core.ROW_DT_S)
+        for i in range(1, count + 1):
+            if self.abort_event.is_set():
+                out["gravity_ramp"] = "aborted by second signal"
+                return
+            try:
+                self.arm.gravity_status["scale"] = start * (1.0 - i / count)
+                self.arm.send(goal, goal)
+                self.sleep(core.ROW_DT_S)
+                if self.abort_event.is_set():
+                    out["gravity_ramp"] = "aborted by second signal"
+                    return
+                reading = self.arm.read()
+                trips = monitor.update(reading.pos, goal, reading.torque, reading.temp)
+                if message := self.guard.monitor(reading.pos):
+                    trips.append(core.Trip("tank_guard_measured", message))
+                self._tick("stop: gravity ramp down", reading, goal, trips)
+                self._status(reading)
+                if trips:
+                    raise TripStopError(trips)
+            except Exception as error:  # fresh feedback/trips never cause automatic mid-air release
+                out["gravity_ramp"] = f"interrupted: {error}"
+                self._hold_mid_air(out, f"during gravity ramp: {error}", goal=goal)
+                return
+        out["gravity_ramp"] = "zero at rest after 1 s"
 
     def _fresh_arm(self, watch, attempts: int = 3, goal=None) -> dict | None:
         """A fresh reading of the arm joints (retried: one lost frame is not a failed read), through the
@@ -2360,7 +2504,7 @@ class Episode:
                 flush=True,
             )
         lim = self.s.trips
-        limp = core.LimpMonitor(lim.limp_torque_nm, lim.limp_lag_deg, lim.limp_ticks)
+        limp = self._limp_monitor(lim)
         held = {m: float(goal[m]) for m in core.ARM} if goal else None
         anchored, attempts = not reanchor, 0
         while not self.abort_event.is_set():
@@ -2627,6 +2771,19 @@ def build_plan(
         plan["trips"]["speed"] = "any planned arm substep faster than 15 deg/s -> stop"
         safety["run"] = plan["run"]
         safety["gravity_sweep"] = plan["gravity_sweep"]
+    if settings.gravity_comp or not math.isfinite(settings.gravity_comp):
+        import gravity_comp
+
+        try:
+            identity, _ = gravity_comp.load(settings, record["name"], environment.name)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            raise RefusedError(str(error)) from error
+        settings.gravity_identity = identity
+        plan["gravity_comp"] = identity
+        plan["trips"]["slide"] = plan["trips"]["slide"].replace(
+            f"{core.SAG_MM_PER_M2:g} mm/m^2", f"{identity['sag_mm_per_m2']:g} mm/m^2"
+        )
+        safety["gravity_comp"] = identity
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2639,6 +2796,13 @@ def print_plan(plan):
         f"Environment: {env['name']}\n  keep-out: {env['keepout_file']}"
         f"\n  workspace box: {env['workspace_box_file']}"
     )
+    if "gravity_comp" in plan:
+        ff = plan["gravity_comp"]
+        print(
+            f"Gravity feedforward x{ff['scale']:g}: {ff['fit']} (sha256 {ff['fit_sha256']}, "
+            f"{'PROVISIONAL explicitly allowed' if ff['provisional'] else 'measured fit'}); "
+            f"floor sag {ff['sag_mm_per_m2']:g} mm/m^2"
+        )
     if "gravity_sweep" in plan:
         print("Joints that may move in sweep: " + ", ".join(plan["sweep_joints_that_move"]))
         print(
@@ -2767,6 +2931,7 @@ def run_dry(args, ctx) -> int:
                 scenario=scenario,
                 environment=ctx["environment"],
                 arm_slot=ctx["settings"].arm_slot,
+                **({"gravity_scale": ctx["settings"].gravity_comp} if ctx["settings"].gravity_comp else {}),
             )
             dream.install_gate("record")
         else:
@@ -3012,7 +3177,11 @@ def _run_preview(args, ctx) -> int:
 def live_facts(args, ctx, ledger) -> core.LiveFacts:
     arm, urdf = ctx["arm"], ctx["urdf_bytes"]
     dream_tcp = None
-    if not ctx["settings"].sweep and ctx["dream_problem"] is None:
+    if (
+        not ctx["settings"].sweep
+        and not (args.rehearse and ctx["settings"].gravity_comp)
+        and ctx["dream_problem"] is None
+    ):
         from dream import arm_file
 
         dream_tcp = arm_file.tool_point_problem(arm, urdf)  # Dream's own verdict as well as the mirror
@@ -3024,10 +3193,10 @@ def live_facts(args, ctx, ledger) -> core.LiveFacts:
         plan_id=ctx["plan"]["plan_id"],
         plan_id_given=args.plan_id,
         lab_holder="not checked offline"
-        if ctx["settings"].sweep and not args.live
+        if (ctx["settings"].sweep or ctx["settings"].gravity_comp) and not args.live
         else lab_holder(args.lab_url, args.lab_down_ok),
         port_holders=[]
-        if ctx["settings"].sweep and not args.live
+        if (ctx["settings"].sweep or ctx["settings"].gravity_comp) and not args.live
         else port_holders(ctx["record"]["follower_port"]),
         missing_slots=ctx["missing"],
         guard_problem=ctx["guard"].problem,
@@ -3036,7 +3205,7 @@ def live_facts(args, ctx, ledger) -> core.LiveFacts:
         max_calls=args.max_calls,
         arm_file_explicit=args.arm_file is not None,
         credentials_present=False
-        if ctx["settings"].sweep
+        if ctx["settings"].sweep or (args.rehearse and ctx["settings"].gravity_comp)
         else (
             bool(os.environ.get("DREAM_API_KEY")) or Path("~/.dreamlabs/credentials").expanduser().is_file()
         ),
@@ -3109,7 +3278,12 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     if not args.rehearse:
         # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
         dream = DreamReal(
-            arm_path, out, offline=False, environment=ctx["environment"], arm_slot=ctx["settings"].arm_slot
+            arm_path,
+            out,
+            offline=False,
+            environment=ctx["environment"],
+            arm_slot=ctx["settings"].arm_slot,
+            **({"gravity_scale": ctx["settings"].gravity_comp} if ctx["settings"].gravity_comp else {}),
         )
         dream.install_gate("preflight")
         _, grab, close = open_cameras(ctx["record"], fake=False)
@@ -3143,7 +3317,12 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             return 2
         print(f"inputs id {dream.inputs_id} checked.", flush=True)
         dream = DreamReal(
-            arm_path, out, offline=False, environment=ctx["environment"], arm_slot=ctx["settings"].arm_slot
+            arm_path,
+            out,
+            offline=False,
+            environment=ctx["environment"],
+            arm_slot=ctx["settings"].arm_slot,
+            **({"gravity_scale": ctx["settings"].gravity_comp} if ctx["settings"].gravity_comp else {}),
         )
         dream.install_gate("gate")
         worker = Worker(
@@ -3213,6 +3392,9 @@ def main(argv=None) -> int:
     p.add_argument(
         "--gravity-sweep", action="store_true", help="dry-air rehearsal: empirical gravity STAR sweep"
     )
+    p.add_argument("--gravity-comp", type=float, default=0.0, metavar="SCALE")
+    p.add_argument("--gravity-fit", type=Path)
+    p.add_argument("--allow-provisional-fit", action="store_true")
     p.add_argument("--sweep-seed", type=int, default=0)
     p.add_argument("--sweep-poses", type=int, default=30)
     p.add_argument("--sweep-hold-s", type=float, default=2.0)
@@ -3341,6 +3523,14 @@ def main(argv=None) -> int:
         p.error("--replan-after must be in 1..48")
     if not math.isfinite(args.stub_latency_s) or args.stub_latency_s < 0:
         p.error("--stub-latency-s must be finite and nonnegative")
+    from gravity_comp import check as check_gravity_comp
+
+    try:
+        check_gravity_comp(args.gravity_comp, args.environment, args.gravity_sweep)
+    except ValueError as error:
+        p.error(str(error))
+    if args.gravity_comp and args.preview:
+        p.error("--gravity-comp requires rehearsal or Dream execution, not preview")
     if args.gravity_sweep:
         if not args.rehearse or args.environment != "dry_air" or args.preview:
             p.error("--gravity-sweep requires --rehearse --environment dry_air")
@@ -3470,6 +3660,9 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         overlap=args.overlap,
         replan_after=args.replan_after,
         arm_slot=args.arm_slot,
+        gravity_comp=args.gravity_comp,
+        gravity_fit=args.gravity_fit,
+        allow_provisional_fit=args.allow_provisional_fit,
     )
     if args.gravity_sweep:
         from gravity_sweep import DEFAULT_OUT, SweepSettings
@@ -3494,6 +3687,15 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
             from dream import seam_join  # noqa: F401
         except ImportError:
             p.error("--overlap needs dream.seam_join from --dream-venv, including with --internal-stub")
+    if settings.gravity_comp:
+        import gravity_comp
+
+        try:
+            settings.gravity_identity, _ = gravity_comp.load(settings, record["name"], environment.name)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            p.error(str(error))
+        if bundle is not None:
+            bundle.copy_input(settings.gravity_fit or gravity_comp.DEFAULT_FIT, "gravity-fit.json")
     guard = Guard(environment)
     plan = build_plan(
         args,
@@ -3533,8 +3735,10 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         "bundle": bundle,
     }
     if not args.live and not args.preview:
-        if settings.sweep:
-            print("offline sweep: Lab and port readiness deferred to live preflight")
+        if settings.sweep or settings.gravity_comp:
+            print(
+                f"offline {'sweep' if settings.sweep else 'feedforward'}: Lab and port readiness deferred to live preflight"
+            )
         else:
             print(
                 f"lab: {lab_holder(args.lab_url, True) or 'idle'}; follower port holders: "

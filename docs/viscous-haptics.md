@@ -2943,3 +2943,28 @@ reasons and candidate/side rejection counts are emitted with the plan.
 No hardware, live mode, Dream, cameras or process signals. Part 1 evidence and
 the pushed SHA are in `~/codex_runs/gravity-fix/part1.md`. The three prior suite
 failures reproduce on base with the same LFS hydration state.
+
+2026-11-17, dry-air gravity feedforward (B1/B3, after sweep part 1): opt-in
+`--gravity-comp 0..1` reuses the innermost MIT feedforward hook after connect,
+before engage. Default zero preserves eight base plan IDs and pre-feedforward
+ticks/events/summaries. Fit robot/condition/map/URDF and hash bind the run;
+provisional requires explicit override. Sweep+compensation and tank are refused.
+Gavin wants the 0.25 / 0.5 / 1.0 rehearsal progression before Dream. All three
+30 s offline fakes completed return and ramp-off; no live/Dream request was made.
+
+Why ff remains through stop: its standing error was learned with support on;
+removing torque mid-air changes equilibrium by tau/kp. Keep it through re-anchor,
+return and HOLD, ramp to zero for 1 s while holding at rest, then detach the
+hook before independent release/recovery. RELEASE ALL skips the ramp. Fix the
+reused hook's zero-gain cleanup to retain zero effort. FloorSlide sag scales
+by 1-scale; HoldError/lag retain raw error, measured torque tiers retain total
+torque. Opt-in limp uses the combined kp*error+ff effort demand to avoid false
+limp on opposing ff/stiffness cancellation. The README records every write path,
+rehearsal commands/IDs, limitations, and the TCP sag report tool. Nominal fake
+loads are synthetic; successful fake sag is not empirical fit validation.
+
+Final part-2 validation: 262 passed +31 subtests (runner104, arm10, sweep27,
+feedforward18, compensation23, right-slot12, slot mapping11, CAN-speed26,
+remote-CAN31); Ruff/diff checks pass. Portable numeric rehearsal evidence is
+`configs/viscous/viscous_waterproof_01/evidence/gravity-comp-offline-20261117.json`.
+The three part-1 baseline failures remain unrelated; no frontend/profile fixes.
