@@ -289,6 +289,7 @@ class App:
         self.logic = logic
         self.geometry_path = geometry_path
         self._save_pending = None
+        self._saved_geometry = None
         self.root = tk.Tk()
         self.root.title("Dream-1 STOP")
         self.root.attributes("-topmost", True)
@@ -367,7 +368,20 @@ class App:
         self.headline.configure(text=headline, bg=bg, fg=fg)
         self.status.configure(text=detail)
         self.redraw()
+        self._remember_place()
         self.root.after(250, self.tick)
+
+    def _remember_place(self):
+        # macOS Tk reports a resize as <Configure> but not a drag of the title bar, so the place was never saved
+        # (Gavin 2026-11-17: it "always resets in a different location"). Polling the window's geometry every tick
+        # catches both; the file is written only when it changed.
+        if self.geometry_path is None:
+            return
+        with contextlib.suppress(Exception):  # never let the convenience stop the button
+            geometry = self.root.geometry()
+            if geometry != self._saved_geometry and valid_geometry(geometry):
+                save_geometry(self.geometry_path, geometry)
+                self._saved_geometry = geometry
 
     def run(self):
         self.root.mainloop()
