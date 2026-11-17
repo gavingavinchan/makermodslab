@@ -1092,7 +1092,7 @@ def slot_frames(frames_by_camera: Mapping[str, np.ndarray], slots: Mapping[str, 
 
 
 def resolve_slots(camera_names, overhead: str | None, wrist_l: str | None, wrist_r: str) -> tuple[dict, list]:
-    """Slot map and the slots no camera feeds. wrist_r: black | copy | camera:<name>.
+    """Slot map and the slots no camera feeds. wrist_r: name | black | copy | camera:<name>.
     overhead / wrist_l may be "black" on purpose (Gavin 2026-11-08: the record's only camera, `head`,
     is the wrist camera, and Grace at DreamLabs wants to try wrist-only), which is not "missing"."""
     names, slots, missing = set(camera_names), {}, []
@@ -1110,22 +1110,44 @@ def resolve_slots(camera_names, overhead: str | None, wrist_l: str | None, wrist
         slots["wrist_r"] = "black"
     elif wrist_r == "copy":
         slots["wrist_r"] = "copy:wrist_l"
+    elif wrist_r in names:
+        slots["wrist_r"] = wrist_r
     elif wrist_r.startswith("camera:") and wrist_r[7:] in names:
         slots["wrist_r"] = wrist_r[7:]
     else:
         slots["wrist_r"] = "black"
-        missing.append(f"wrist_r (camera {wrist_r[7:]!r} is not in the record)")
+        name = wrist_r[7:] if wrist_r.startswith("camera:") else wrist_r
+        missing.append(f"wrist_r (camera {name!r} is not in the record)")
     return slots, missing
 
 
-def dream_state(measured: Mapping[str, float], jmap: JointMap, right_rest_rad, prompt: str) -> dict:
-    """The state set_observation takes: the working arm on the LEFT, the right arm
-    reported parked at the arm file's rest with its gripper open (the sim's
-    parked arm), the prompt. Radians and a 0..1 grip, never degrees."""
+def chunk_key(arm_slot: str) -> str:
+    if arm_slot not in SIDES:
+        raise ValueError(f"unknown arm slot {arm_slot!r}")
+    return "q_l_chunk" if arm_slot == "left" else "q_r_chunk"
+
+
+def commanded_slots(row, idle_rest_rad, arm_slot: str = "left") -> dict:
+    """Our commanded IK row plus the idle side's arm-file rest/open grip."""
+    idle = "right" if arm_slot == "left" else "left"
+    return {chunk_key(arm_slot): row, chunk_key(idle): [*idle_rest_rad, 1.0]}
+
+
+def dream_state(
+    measured: Mapping[str, float], jmap: JointMap, right_rest_rad, prompt: str, arm_slot: str = "left"
+) -> dict:
+    """Our joints in the chosen slot; the idle side at arm-file rest/open grip.
+
+    Both sides use the same custom arm and its base-relative FK in ClientIK.
+    The legacy right_rest_rad argument is the idle rest in either mapping.
+    Radians and a 0..1 grip, never degrees.
+    """
+    chunk_key(arm_slot)  # validate before building any state
+    idle = "right" if arm_slot == "left" else "left"
     return {
-        "state.left_arm": jmap.to_ik(measured),
-        "state.left_grip": [motor_to_grip(measured["gripper"])],
-        "state.right_arm": [float(v) for v in right_rest_rad],
-        "state.right_grip": [1.0],
+        f"state.{arm_slot}_arm": jmap.to_ik(measured),
+        f"state.{arm_slot}_grip": [motor_to_grip(measured["gripper"])],
+        f"state.{idle}_arm": [float(v) for v in right_rest_rad],
+        f"state.{idle}_grip": [1.0],
         "prompt": prompt,
     }

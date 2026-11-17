@@ -815,8 +815,9 @@ class StubTransport:
     """Stands in for the client's HTTP channel (as viscous_dream_sim.py's dry run): records
     the request, answers a small synthetic hand motion around the anchor. Nothing leaves."""
 
-    def __init__(self, real, scenario="nominal"):
+    def __init__(self, real, scenario="nominal", arm_slot="left"):
         self.real, self.scenario, self.requests, self.calls = real, scenario, [], 0
+        self.arm_slot = arm_slot
         self.last_exchange = getattr(real, "last_exchange", None)
 
     def request(self, request, headers, **kwargs):
@@ -837,7 +838,7 @@ class StubTransport:
             xyz = np.asarray(obs[f"state.{side}_eef_xyz"], float)
             rot6 = np.asarray(obs[f"state.{side}_eef_rot6"], float)
             grip = float(np.asarray(obs[f"state.{side}_grip"], float).reshape(-1)[0])
-            moving = side == "left"
+            moving = side == self.arm_slot
             per_key[f"action.{side}_eef_xyz"] = (
                 xyz + s * delta if moving else np.repeat(xyz[None], rows, 0)
             ).tolist()
@@ -883,7 +884,7 @@ def make_floor_slide(
 
 
 class SlideTransport:
-    """Wraps the client's transport: BEFORE the client's IK, clips Dream's left hand targets into the tcp box
+    """Wraps the client's transport: BEFORE the client's IK, clips our slot's hand targets into the tcp box
     (core.clamp_eef_rows), then raises any whose hand would come lower than the floor slide allows
     (core.FloorSlide), so the hand slides along the limits instead of the chunk being cut there."""
 
@@ -891,7 +892,11 @@ class SlideTransport:
     ROT = "action.left_eef_rot6"
     GRIP = "action.left_grip"
 
-    def __init__(self, real, box_mm, floor: core.FloorSlide | None = None):
+    def __init__(self, real, box_mm, floor: core.FloorSlide | None = None, arm_slot="left"):
+        core.chunk_key(arm_slot)
+        self.KEY = f"action.{arm_slot}_eef_xyz"
+        self.ROT = f"action.{arm_slot}_eef_rot6"
+        self.GRIP = f"action.{arm_slot}_grip"
         self.real, self.box_mm, self.floor = real, box_mm, floor
         self.last_exchange = getattr(real, "last_exchange", None)
         self.clamped_rows = []  # per reply: rows whose hand target was moved onto a limit
@@ -929,7 +934,11 @@ class DreamReal:
         scenario="nominal",
         api_ok=False,
         environment: Environment = TANK_ENVIRONMENT,
+        arm_slot: str = "left",
     ):
+        if arm_slot == "right" and environment.name != "dry_air":
+            raise RefusedError("--arm-slot right requires --environment dry_air")
+        core.chunk_key(arm_slot)
         os.environ["DREAM_LOG_DIR"] = str(log_dir / "dream_logs")
         os.environ.setdefault(
             "JAX_COMPILATION_CACHE_DIR", str(Path("~/viscous-dream-real/.cache/jax").expanduser())
@@ -966,14 +975,14 @@ class DreamReal:
             )
             with patch("dream.models._record", return_value=model):
                 self.client.policy(self.config)
-            self.stub = StubTransport(self.client._policy._transport, scenario)
+            self.stub = StubTransport(self.client._policy._transport, scenario, arm_slot)
             self.client._policy._transport = self.stub
         else:
             self.client.policy(self.config)
             self.stub = None
         floor, self.floor_problem = make_floor_slide(json.loads(Path(arm_file).read_text()), environment)
         self.slide = SlideTransport(
-            self.client._policy._transport, core.tcp_box_mm(environment.box_file), floor
+            self.client._policy._transport, core.tcp_box_mm(environment.box_file), floor, arm_slot
         )
         self.client._policy._transport = self.slide
         self.inputs_id = None
@@ -1020,7 +1029,8 @@ class DreamReal:
 class DreamInternalStub:
     """When Dream's client is not installed: joint rows straight from the commanded row (no IK)."""
 
-    def __init__(self, jmap, scenario="nominal"):
+    def __init__(self, jmap, scenario="nominal", arm_slot="left"):
+        self.arm_slot = arm_slot
         self.jmap, self.scenario, self.calls = jmap, scenario, 0
         self.inputs_id, self.inputs_checked, self.state = None, None, None
 
@@ -1029,7 +1039,9 @@ class DreamInternalStub:
 
     def request(self, commanded):
         self.calls += 1
-        base = np.asarray(commanded["q_l_chunk"], float)
+        key = core.chunk_key(self.arm_slot)
+        idle_key = core.chunk_key("right" if self.arm_slot == "left" else "left")
+        base = np.asarray(commanded[key], float)
         s = np.linspace(0, 1, 48)[:, None]
         sign = 1.0 if self.calls % 2 else -1.0
         delta = np.array([0, 0.03, -0.03, 0.02, 0, 0, -0.2]) * sign
@@ -1037,8 +1049,8 @@ class DreamInternalStub:
             delta = np.array([-0.9, 0, 0, 0, 0, 0, 0])  # pan swings the hand sideways
         rows = base + s * delta
         return {
-            "q_l_chunk": rows.tolist(),
-            "q_r_chunk": np.repeat(np.asarray(commanded["q_r_chunk"])[None], 48, 0),
+            key: rows.tolist(),
+            idle_key: np.repeat(np.asarray(commanded[idle_key])[None], 48, 0),
         }
 
     def close(self):
@@ -1207,6 +1219,7 @@ class Settings:
     no_overspeed_trip: bool = False
     overlap: bool = False
     replan_after: int = 30
+    arm_slot: str = "left"
 
     def disabled_run_trips(self) -> set[str]:
         return {name for name in ("lag", "limp", "overspeed") if getattr(self, f"no_{name}_trip")}
@@ -1247,6 +1260,9 @@ class Episode:
             raise RefusedError(
                 f"arm speed {settings.speed_deg_s} deg/s is above the hard {self.speed_cap} deg/s cap"
             )
+        core.chunk_key(settings.arm_slot)
+        if settings.arm_slot == "right" and environment.name != "dry_air":
+            raise RefusedError("--arm-slot right requires --environment dry_air")
         if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
             raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
         if not 1 <= settings.replan_after <= 48:
@@ -1292,7 +1308,7 @@ class Episode:
                 json.loads(Path(dream.config["ik"]["arm"]).read_text()) if hasattr(dream, "config") else None
             )
             arm_rest = arm_file["rest"] if arm_file else json.loads(DEFAULT_ARM_FILE.read_text())["rest"]
-        # The arm file's rest (IK radians, the tank model's): the parked right arm reported to Dream, and,
+        # The arm file's rest (IK radians): the idle side reported to Dream, and,
         # through the joint map, the pose the approach brings the working arm to before the first call.
         self.right_rest = [float(v) for v in arm_rest]
         self.summary = {
@@ -1479,7 +1495,7 @@ class Episode:
         far as possible, "it shouldn't just reject or give up". Every sent substep is still guard-proven and
         speed-capped; IK flips are judged row to row on Dream's own chunk. Jumps, bad rows and other guard
         refusals still stop the run."""
-        rows = np.array(reply["q_l_chunk"], float)[: self.s.rows]
+        rows = np.array(reply[core.chunk_key(getattr(self.s, "arm_slot", "left"))], float)[: self.s.rows]
         if getattr(self, "pacing", None) and not len(rows):
             self.plan_row_ends = []
             return []
@@ -1556,7 +1572,8 @@ class Episode:
         The client's internal smoothing knows its IK plan, not our retimed/clipped commands.
         Re-anchor with its seam primitives at the actual takeover. Holding calls install whole.
         """
-        rows = np.asarray(reply["q_l_chunk"], dtype=float)[: self.s.rows].copy()
+        key = core.chunk_key(getattr(self.s, "arm_slot", "left"))
+        rows = np.asarray(reply[key], dtype=float)[: self.s.rows].copy()
         if rows.ndim != 2 or rows.shape[1] != 7 or not np.isfinite(rows).all():
             raise TripStopError([core.Trip("bad_chunk", "expected finite [rows, 7] chunk")])
         elapsed = max(0.0, self.clock() - self.worker.started_at)
@@ -1572,7 +1589,7 @@ class Episode:
                 rows[:count] = self.seam_join.velocity_blend(now, velocity, rows[:count])
             else:
                 rows[0] = now
-        return {**reply, "q_l_chunk": rows.tolist()}, dropped
+        return {**reply, key: rows.tolist()}, dropped
 
     def _check_speed(self, target):
         """The hard cap on what is about to be sent, whatever planned it (a clamp is on the guard's line)."""
@@ -1661,7 +1678,11 @@ class Episode:
                 if self.dream is not None and now >= next_frame:
                     frames = core.slot_frames(reading.frames, self.s.slots)
                     state = core.dream_state(
-                        self.dream_pose(reading.pos), self.jmap, self.right_rest, self.s.prompt
+                        self.dream_pose(reading.pos),
+                        self.jmap,
+                        self.right_rest,
+                        self.s.prompt,
+                        self.s.arm_slot,
                     )
                     self.dream.set_observation(frames, state, now)
                     if self.frame_sink is not None:
@@ -1724,7 +1745,11 @@ class Episode:
                             self.dream.set_observation(
                                 core.slot_frames(reading.frames, self.s.slots),
                                 core.dream_state(
-                                    self.dream_pose(reading.pos), self.jmap, self.right_rest, self.s.prompt
+                                    self.dream_pose(reading.pos),
+                                    self.jmap,
+                                    self.right_rest,
+                                    self.s.prompt,
+                                    self.s.arm_slot,
                                 ),
                                 now,
                             )
@@ -1735,7 +1760,7 @@ class Episode:
                     )
                     row = core.motor_to_ik_row(told, self.jmap)
                     if self.worker.calls < self.s.max_calls:
-                        self.worker.start({"q_l_chunk": row, "q_r_chunk": [*self.right_rest, 1.0]})
+                        self.worker.start(core.commanded_slots(row, self.right_rest, self.s.arm_slot))
                         timeline.append(
                             {
                                 "call": self.worker.calls,
@@ -1754,6 +1779,14 @@ class Episode:
                     if timeline:
                         timeline[-1]["reply_s"] = now - self.t0
                         timeline[-1]["rtt_s"] = self.worker.finished_at - self.worker.started_at
+                    # Capture both sides before our overlap splice. Idle replies are never executed or altered.
+                    raw_reply = {
+                        k: np.asarray(reply[k]).tolist() for k in ("q_l_chunk", "q_r_chunk") if k in reply
+                    }
+                    raw_reply["per_key"] = {
+                        k: np.asarray(v).tolist() for k, v in (reply.get("per_key") or {}).items()
+                    }
+                    slot_log = {"arm_slot": self.s.arm_slot, "raw_reply": raw_reply}
                     dropped = 0
                     if self.pacing:
                         was_sync = self.pacing.synchronous
@@ -1792,7 +1825,12 @@ class Episode:
                             {
                                 "call": self.summary["calls"],
                                 "ledger": request,
-                                "q_l_chunk": np.asarray(reply["q_l_chunk"]).tolist(),
+                                **slot_log,
+                                **{
+                                    k: np.asarray(reply[k]).tolist()
+                                    for k in ("q_l_chunk", "q_r_chunk")
+                                    if k in reply
+                                },
                                 "refused": str(trip),
                             },
                         )
@@ -1802,7 +1840,12 @@ class Episode:
                         {
                             "call": self.summary["calls"],
                             "ledger": request,
-                            "q_l_chunk": np.asarray(reply["q_l_chunk"]).tolist(),
+                            **slot_log,
+                            **{
+                                k: np.asarray(reply[k]).tolist()
+                                for k in ("q_l_chunk", "q_r_chunk")
+                                if k in reply
+                            },
                             "per_key": {
                                 k: np.asarray(v).tolist() for k, v in (reply.get("per_key") or {}).items()
                             },
@@ -2216,6 +2259,9 @@ def build_plan(
     environment = ENVIRONMENTS[getattr(args, "environment", "tank")]
     if environment.name != "dry_air" and (settings.overlap or settings.replan_after != 30):
         raise RefusedError("--overlap and non-default --replan-after require --environment dry_air")
+    core.chunk_key(settings.arm_slot)
+    if settings.arm_slot == "right" and environment.name != "dry_air":
+        raise RefusedError("--arm-slot right requires --environment dry_air")
     cameras = {
         c["name"]: {k: c.get(k) for k in ("camera_index", "unique_id", "width", "height", "fps", "rotation")}
         for c in record.get("cameras") or []
@@ -2343,6 +2389,11 @@ def build_plan(
                 f"(re-anchor, lag arrival, limp/overspeed HOLD); stop threshold: {stop_thresholds[name]}"
             )
         plan["trips"]["stop"] += " Return speed <= 15 deg/s, including the bus backstop."
+    # Left omits the new hash input to preserve all previously approved plan ids.
+    if settings.arm_slot == "right":
+        plan["arm_slot"] = "right"
+        plan["left_arm"] = plan.pop("right_arm")
+        plan["trips"]["slide"] = plan["trips"]["slide"].replace("Dream's left hand", "Dream's right hand")
     safety = {
         k: plan[k]
         for k in (
@@ -2370,6 +2421,8 @@ def build_plan(
         safety["environment"] = environment.metadata()
         safety["run_trip_overrides"] = plan["run_trip_overrides"]
         safety["pacing"] = plan["pacing"]
+    if settings.arm_slot == "right":
+        safety["arm_slot"] = "right"
     plan["plan_id"] = core.canonical_id(safety)
     return plan
 
@@ -2388,7 +2441,11 @@ def print_plan(plan):
             f"  {m:13s} {j['motor_limits_deg']} -> {j['commanded_within_deg']}  IK {j['ik_limits_deg']}  "
             f"sign {j['sign_to_urdf']} ({j['sign_status']})"
         )
-    print(f"Right arm: {plan['right_arm']}")
+    if plan.get("arm_slot") == "right":
+        print("Our arm: Dream RIGHT (state.right_*, action.right_*, q_r_chunk); base frame unchanged")
+        print(f"Left arm: {plan['left_arm']}")
+    else:
+        print(f"Right arm: {plan['right_arm']}")
     print(f"Dream state: {plan['dream_state']}")
     pacing = plan.get("pacing", {})
     print(
@@ -2484,11 +2541,16 @@ def run_dry(args, ctx) -> int:
             dream = None
         elif ctx["dream_problem"] is None and not args.internal_stub:
             dream = DreamReal(
-                ctx["arm_path"], out, offline=True, scenario=scenario, environment=ctx["environment"]
+                ctx["arm_path"],
+                out,
+                offline=True,
+                scenario=scenario,
+                environment=ctx["environment"],
+                arm_slot=ctx["settings"].arm_slot,
             )
             dream.install_gate("record")
         else:
-            dream = DreamInternalStub(ctx["jmap"], scenario)
+            dream = DreamInternalStub(ctx["jmap"], scenario, ctx["settings"].arm_slot)
         stop_event, abort_event = threading.Event(), threading.Event()
         # `far` stops at the call cap right after its rolled chunk (> 10 deg from the start pose).
         settings = dataclasses.replace(ctx["settings"], max_calls=1) if scenario == "far" else ctx["settings"]
@@ -2641,14 +2703,16 @@ def _run_preview(args, ctx) -> int:
     deny_network()
     out = ctx["out"]
     out.mkdir(parents=True, exist_ok=True)
-    dream = DreamReal(ctx["arm_path"], out, offline=True, environment=ctx["environment"])
+    dream = DreamReal(
+        ctx["arm_path"], out, offline=True, environment=ctx["environment"], arm_slot=ctx["settings"].arm_slot
+    )
     dream.install_gate("record")
     _, grab, close = open_cameras(ctx["record"], args.fake_cameras)
     rest = [float(v) for v in ctx["arm"]["rest"]]
     motor = {**ctx["jmap"].to_motor(rest), "gripper": core.GRIP_OPEN_DEG}
     if args.start_motor_deg:
         motor.update(args.start_motor_deg)
-    state = core.dream_state(motor, ctx["jmap"], rest, ctx["settings"].prompt)
+    state = core.dream_state(motor, ctx["jmap"], rest, ctx["settings"].prompt, ctx["settings"].arm_slot)
     try:
         t0 = time.monotonic()
         for i in range(core.FRAMES_IN_WINDOW):
@@ -2657,7 +2721,14 @@ def _run_preview(args, ctx) -> int:
             )
             time.sleep(core.FRAME_PERIOD_S)
         dream.request(
-            {"q_l_chunk": [*state["state.left_arm"], state["state.left_grip"][0]], "q_r_chunk": [*rest, 1.0]}
+            core.commanded_slots(
+                [
+                    *state[f"state.{ctx['settings'].arm_slot}_arm"],
+                    state[f"state.{ctx['settings'].arm_slot}_grip"][0],
+                ],
+                rest,
+                ctx["settings"].arm_slot,
+            )
         )
     finally:
         close()
@@ -2802,7 +2873,9 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
     dream = worker = None
     if not args.rehearse:
         # Preflight, before any CAN traffic: the observation as it would be sent, refused locally.
-        dream = DreamReal(arm_path, out, offline=False, environment=ctx["environment"])
+        dream = DreamReal(
+            arm_path, out, offline=False, environment=ctx["environment"], arm_slot=ctx["settings"].arm_slot
+        )
         dream.install_gate("preflight")
         _, grab, close = open_cameras(ctx["record"], fake=False)
         rest = [float(v) for v in arm["rest"]]
@@ -2811,6 +2884,7 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             ctx["jmap"],
             rest,
             ctx["settings"].prompt,
+            ctx["settings"].arm_slot,
         )
         try:
             t0 = time.monotonic()
@@ -2818,7 +2892,11 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
                 dream.set_observation(core.slot_frames(grab(), ctx["settings"].slots), state, t0 + i * 0.2)
                 time.sleep(0.2)
             with contextlib.suppress(PreflightDoneError):
-                dream.request({"q_l_chunk": [*state["state.left_arm"], 1.0], "q_r_chunk": [*rest, 1.0]})
+                dream.request(
+                    core.commanded_slots(
+                        [*state[f"state.{ctx['settings'].arm_slot}_arm"], 1.0], rest, ctx["settings"].arm_slot
+                    )
+                )
         finally:
             close()
             dream.close()
@@ -2829,7 +2907,9 @@ def _run_live(args, ctx, arm_path, arm, ledger, out, stop_event, abort_event) ->
             )
             return 2
         print(f"inputs id {dream.inputs_id} checked.", flush=True)
-        dream = DreamReal(arm_path, out, offline=False, environment=ctx["environment"])
+        dream = DreamReal(
+            arm_path, out, offline=False, environment=ctx["environment"], arm_slot=ctx["settings"].arm_slot
+        )
         dream.install_gate("gate")
         worker = Worker(
             dream, time.monotonic, threaded=True, ledger=ledger, run_id=out.name, max_calls=args.max_calls
@@ -2908,13 +2988,19 @@ def main(argv=None) -> int:
     p.add_argument(
         "--arm-file", type=Path, help="live: the arm file dreamcli tcp wrote (its URDF copy beside it)"
     )
+    p.add_argument(
+        "--arm-slot",
+        choices=("left", "right"),
+        default="left",
+        help="our Dream arm slot; right requires dry_air; base frame stays unchanged",
+    )
     p.add_argument("--prompt", default="put apple into the bowl")
     p.add_argument("--overhead", help="record camera name for video.overhead (none in the record yet)")
+    p.add_argument("--wrist-l", default="wrist", help="record camera name or black for video.wrist_l")
     p.add_argument(
-        "--wrist-l", default="wrist", help="record camera name for video.wrist_l (the working arm)"
-    )
-    p.add_argument(
-        "--wrist-r", default="black", help="black | copy | camera:<name> (no second arm on the rig)"
+        "--wrist-r",
+        default="black",
+        help="record camera name | black | copy (wrist_l) | camera:<name> for video.wrist_r",
     )
     p.add_argument("--max-calls", type=int, default=10)
     p.add_argument(
@@ -3001,6 +3087,8 @@ def main(argv=None) -> int:
     p.add_argument("--no-run-data", action="store_true", help="write no raw bundle (tests)")
     args = p.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
+    if args.arm_slot == "right" and args.environment != "dry_air":
+        p.error("--arm-slot right requires --environment dry_air")
     if not 1 <= args.max_calls <= 20 or not 1 <= args.rows <= 48:
         p.error("--max-calls 1..20 and --rows 1..48")
     if args.environment != "dry_air" and (args.overlap or args.replan_after != 30):
@@ -3117,6 +3205,7 @@ def _main(args, p, kind, home, record, limits, limits_source, out, bundle) -> in
         no_overspeed_trip=args.no_overspeed_trip,
         overlap=args.overlap,
         replan_after=args.replan_after,
+        arm_slot=args.arm_slot,
     )
     dream_problem = add_dream_venv(args.dream_venv)
     if args.overlap:
