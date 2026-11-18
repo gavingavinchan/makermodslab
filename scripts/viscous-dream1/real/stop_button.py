@@ -197,6 +197,18 @@ def runner_command(pid: int) -> str | None:
     return out.stdout.strip() or None
 
 
+def is_runner_command(cmd: str) -> bool:
+    """A process this button may signal: dream_real.py, the astra operator server, or the tank autocal's
+    real-arm run (scripts/viscous-tank-autocal/autocal.py run, 2026-11-18). Its sim and plan never
+    hold a pid file."""
+    python = r"^(?:\S*/)?(?i:python)(?:3(?:\.\d+)?)?\s+"
+    return (
+        RUNNER in cmd
+        or re.match(python + r"(?:\S*/)?astra_op\.py\s+serve(?:\s|$)", cmd) is not None
+        or re.match(python + r"(?:\S*/)?viscous-tank-autocal/autocal\.py\s+run(?:\s|$)", cmd) is not None
+    )
+
+
 class StopLogic:
     """Everything but the window: pid lookup, the two stages, the lockout. Injected kill/clock for tests."""
 
@@ -240,10 +252,7 @@ class StopLogic:
         cmd = self.command(pid)
         if cmd is None:
             return None, f"pid {pid} is not running (runner exited)"
-        astra_serve = re.match(
-            r"^(?:\S*/)?(?i:python)(?:3(?:\.\d+)?)?\s+(?:\S*/)?astra_op\.py\s+serve(?:\s|$)", cmd
-        )
-        if cmd and RUNNER not in cmd and not astra_serve:
+        if cmd and not is_runner_command(cmd):
             return None, f"pid {pid} is not {RUNNER} ({cmd[:60]}); not signalling it"
         return pid, f"runner pid {pid} alive"
 
