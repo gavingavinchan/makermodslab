@@ -668,6 +668,16 @@ restore paths in the DAgger runner.
   removes the marker on exit; stale markers are cleaned by readers. Paths are shared
   through `utils/config.py`. Tests use injected identities/clocks and fakes; signal tests
   target only their own spawned stub processes. No hardware or Dream service calls.
+- *Status (2026-11-18), waterproof touch calibration.* Astra commands tip positions in
+  metres. The URDF, motor map and flange TCP define the arm's identity for IK and glass
+  clearance. The dry-run pad TCP sits 34.33 mm behind the CAD fingertip used in the
+  archived live arm file. Built printable targets, torque-off Lab capture, a fit with
+  held-out targets and sign checks, five-opening caliper mapping and fresh-directory
+  tank regeneration. Synthetic recovery and replay of the loose-base November 8 trace
+  ran offline. Mac capture, physical zeros, jaw gap and clearance on tonight's mount
+  still need Gavin's measurements and approval.
+  [Tonight's procedure](../scripts/viscous-urdf-cal/PROCEDURE.md) ·
+  [Offline results](../scripts/viscous-urdf-cal/RESULTS.md)
 - *B3a. Propeller scrubbing, zero-shot (Gavin, 2026-10-23).* "Give it a ship
   propeller and ask it to clean it. Let's see whether it knows how to do that, or
   at least ... do scrubbing motion on it. Let's see what happens." This is the
