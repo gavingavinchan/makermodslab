@@ -193,8 +193,6 @@ def simulate(cfg: dict) -> dict:
     def tick_hook(session, reading):
         holder["session"] = session
         step = session.step or ""
-        if recorder_ref.get("rec") is not None:
-            recorder_ref["rec"].label = step[:90]
         if backend == "mujoco":
             session.arm.phase = step
             session.arm.probe_number = len(session.probes)
@@ -228,7 +226,6 @@ def simulate(cfg: dict) -> dict:
             if holder["hold_reads"] > 30:
                 abort_event.set()
 
-    recorder_ref = {}
     if scenario == "wrist_post":
         first = probe_planner.PROBES[0]
         centre = (first.u + 35.0, first.v - 75.0, truth.floor)
@@ -247,7 +244,6 @@ def simulate(cfg: dict) -> dict:
 
         obs = [sim.SimObstacle(face, tuple(c), r, h, k, name) for name, face, c, r, h, k in obstacles]
         arm = sim.MujocoArm(rest, truth, model.guard.model, kp_kd, physics, obs, seed=seed, recorder=recorder)
-        recorder_ref["rec"] = recorder
         clock = arm.clock
     else:
         from fakes import Obstacle

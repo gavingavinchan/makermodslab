@@ -568,6 +568,9 @@ class MujocoArm(real.FakeArm):
         self.energized = False
         self._held = False
         self.events.append("release: torque off on every motor")
+        if self.recorder is not None:
+            self.phase = "release: torque off"
+            self.recorder(self, force=True)
         return None
 
 
@@ -587,13 +590,12 @@ class Recorder:
         self.t0 = None
         self.next_t = None
         self.renderer = None
-        self.label = ""
 
-    def __call__(self, arm):
+    def __call__(self, arm, force=False):
         t = arm.clock.t
         if self.next_t is None:
             self.next_t = t
-        if t < self.next_t:
+        if t < self.next_t and not force:
             return
         self.next_t = t + self.every
         if self.renderer is None:
@@ -622,7 +624,7 @@ class Recorder:
         img = Image.fromarray(frame)
         draw = ImageDraw.Draw(img)
         draw.rectangle([0, 0, img.width, 30], fill=(0, 0, 0))
-        text = f"{t - self.t0:6.1f} s    {self.label}" + ("   CONTACT" if arm._touching else "")
+        text = f"{t - self.t0:6.1f} s    {arm.phase[:90]}" + ("   CONTACT" if arm._touching else "")
         draw.text((10, 8), text, fill=(255, 255, 0) if arm._touching else (255, 255, 255))
         self.writer.append_data(np.asarray(img))
 

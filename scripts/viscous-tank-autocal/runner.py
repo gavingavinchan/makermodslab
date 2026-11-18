@@ -145,6 +145,12 @@ class AutocalSession(Operator):
             self.arm.phase = self.step
         super()._phase(name, detail)
 
+    def heartbeat(self):
+        # Use the session clock for both timestamps. Offline planning consumes no simulated
+        # time, so CPU contention must not add noise samples or advance injected faults.
+        if self.stop_event.is_set() or self.clock() - self.last_poll >= DT:
+            self.poll()
+
     def poll(self):
         if self.stop_event.is_set():
             raise RuntimeError("red button")
@@ -157,7 +163,7 @@ class AutocalSession(Operator):
         self.last_state = self._state(r, reference, self.phase)
         self._tick(self.step, r, reference, trips)
         self._status(r)
-        self.last_poll = time.monotonic()
+        self.last_poll = self.clock()
         speeds = self.monitor.speed.peak
         self.metrics.max_measured_joint_deg_s = max(speeds.values())
         if self.tick_hook is not None:
