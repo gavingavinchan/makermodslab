@@ -75,6 +75,7 @@ class Physics:
     position_noise_deg: float = 0.01
     encoder_bias_deg: dict = dataclasses.field(default_factory=dict)  # a calibration / URDF error
     glass_friction: float = 0.4
+    finite_panes: bool = False
 
 
 @dataclasses.dataclass
@@ -166,31 +167,31 @@ def build_scene(
         # of a thin box during sliding. The finite glass stays in the renderer.
         inward = -truth.normal(name)
         inner_face = axes.T @ np.array(centre_tank) + inward * glass / 2
-        ET.SubElement(
-            world,
-            "geom",
-            name=f"glass_{name}",
-            type="plane",
-            pos=_f(inner_face),
-            zaxis=_f(inward),
-            size="1 1 0.01",
-            rgba="0 0 0 0",
-            group="5",
-            **env,
-        )
+        if not physics.finite_panes:
+            ET.SubElement(
+                world,
+                "geom",
+                name=f"glass_{name}",
+                type="plane",
+                pos=_f(inner_face),
+                zaxis=_f(inward),
+                size="1 1 0.01",
+                rgba="0 0 0 0",
+                group="5",
+                **env,
+            )
 
         ET.SubElement(
             world,
             "geom",
-            name=f"visible_{name}",
+            name=f"glass_{name}" if physics.finite_panes else f"visible_{name}",
             type="box",
             pos=_f(axes.T @ np.array(centre_tank)),
             size=_f(half),
             quat=quat,
             rgba="0.45 0.75 0.85 0.18",
             group="1",
-            contype="0",
-            conaffinity="0",
+            **(env if physics.finite_panes else {"contype": "0", "conaffinity": "0"}),
         )
     # The mount's truss post, rigid with the base, flush on the back glass at its bearing point.
     post_z0, post_h = truth.floor / 1000, 0.30

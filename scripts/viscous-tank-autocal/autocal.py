@@ -105,6 +105,7 @@ SCENARIOS = {
     # name: (description, kwargs for simulate)
     "nominal": "random displacements about the CAD mount, nothing in the way",
     "centred": "random displacements about a physically centred mount, using the same CAD planner prior",
+    "finite_panes": "finite glass boxes in the physical collision solver, with identical inner faces",
     "cable": "a soft cable bundle (300 N/m) under the first floor probe",
     "post": "a floor request at the mount post",
     "wrist_post": "a raised rigid pin under the wrist during a floor press with softened wrist gains",
@@ -172,7 +173,7 @@ def simulate(cfg: dict) -> dict:
     if backend == "mujoco":
         import sim
 
-        physics = sim.Physics()
+        physics = sim.Physics(finite_panes=scenario == "finite_panes")
         if scenario == "model_error":
             physics.encoder_bias_deg = {"shoulder_lift": 0.5, "elbow_flex": -0.5, "wrist_flex": 0.5}
         if scenario == "no_flex":
