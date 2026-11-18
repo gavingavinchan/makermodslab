@@ -45,6 +45,7 @@ class Session:
         self.contacts = (directory / "sim-contacts.jsonl").open("x", buffering=1)
         self.marks = (directory / "sim-marks.jsonl").open("x", buffering=1)
         self.camera = Cameras(self.tank, directory)
+        self.release_t_s = None
         self.max_backlog = 0.0
         self.clock = time.monotonic()
         try:
@@ -96,11 +97,14 @@ class Session:
         if op == "frames":
             return self.camera.get()
         if op == "engage":
+            self.release_t_s = None
             return tank.engage()
         if op == "goal":
             tank.goal(req["target"])
         elif op in ("release", "gripper_off"):
             tank.release(gripper_only=op == "gripper_off")
+            if op == "release" and self.release_t_s is None:
+                self.release_t_s = tank.data.time
         elif op == "mark":
             tank.label = req["label"]
             self.marks.write(dump({"t_s": tank.data.time, "label": tank.label}) + "\n")
@@ -110,11 +114,20 @@ class Session:
 
     def close(self):
         try:
+            # An archived "rest" may still be suspended. Leave the simulated
+            # motors off and observe the first second of passive motion.
+            if self.release_t_s is not None:
+                until = self.clock + self.release_t_s + 1.0
+                while time.monotonic() < until:
+                    self.catch_up()
+                    time.sleep(0.004)
+                self.catch_up()
             self.log_sample()
             self.camera.close()
             summary = self.tank.truth() | {
                 "wall_s": time.monotonic() - self.clock,
                 "max_backlog_s": self.max_backlog,
+                "release_t_s": self.release_t_s,
                 "camera_frames": self.camera.rendered,
                 "missed_camera_snapshots": self.camera.dropped,
             }

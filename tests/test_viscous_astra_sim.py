@@ -86,8 +86,6 @@ def stub_child():
 
 @pytest.fixture
 def sim(tmp_path):
-    from model import real
-
     def start(*options):
         # Replace only the child executable/script. Run the ordinary serve parser and endpoint.
         command = (
@@ -105,8 +103,6 @@ def sim(tmp_path):
                 "serve",
                 "--backend",
                 "sim",
-                "--arm-file",
-                str(real.DEFAULT_ARM_FILE),
                 "--pid-file",
                 str(tmp_path / "serve.pid"),
                 "--run-root",
@@ -163,6 +159,7 @@ def test_sim_wall_time_motion_frames_and_idle_return(sim):
     assert stop["reason"] == "idle deadline" and stop["returned"] == "at the rest"
     trace = calls(folder)
     ops = [r["op"] for r in trace]
+    assert Path(trace[0]["arm_file"]).parent.name == "tank_model_foamed"
     assert trace[0]["variant"] == "foamed" and trace[0]["task"] == "ball"
     assert ops[-2:] == ["release", "close"]
     assert ops.index("engage") < ops.index("goal") < ops.index("gripper_off")

@@ -23,7 +23,7 @@ Gavin owns the red button. Claude starts one server. Astra chooses one move at a
 - The tip is the arm file's calibrated TCP. `dream_base` shares the physical URDF base_link origin on the J1 axis at the base mounting datum, 57.4 mm below the J1 joint origin in the November model. +x goes forward down the tank, +y to your left looking forward, +z up. Physical base_link x and y are reversed. Use metres for tip/nudge and degrees for angles. Motor telemetry is in unwrapped motor degrees.
 - `head` is the KD overhead. The arm should appear on the right. Refraction through the water surface shifts apparent positions. Use it for gross alignment. Trust the already 180°-rotated `left` wrist view near the object. Keep both jaw tips visible. Glare, bubbles or a missing cube warrant another observation or a stop.
 - Physical base_link planes in mm are floor −28, rim +414, sides +227/−207, post face +106 and estimated far glass −616. Back glass lies 12 mm beyond the post. Gavin places the post flush on the back glass and between its marks before each session. Wall/rim margin is normally 30 mm with 40 mm cable allowance on most links. The tank backstop allows 20 mm of modeled floor press to accommodate CAD error at rest. The operator restricts the lowest hand vertex to recovery upward once below glass. Reported mm distances are mesh-to-plane estimates.
-- The operator caps arm commands at 15°/s and slows to 5°/s within 76 mm of the floor. One move has a 45° default budget summed across the seven motors and all its legs. The gripper's full stroke is about 112°, so change its opening fraction by at most 0.4 per command. The server checks all waypoints before the first write. After a refusal, read the verdict and inspect both views. Hand back if the view stays occluded or the same boundary rejects a smaller move.
+- The operator caps arm commands at 15°/s and slows to 5°/s within 76 mm of the floor. `--max-command-travel-deg` defaults to 45° summed across the seven motors and all legs of one move. Only `rest` is exempt. The gripper's full stroke is about 112°, so change its opening fraction by at most 0.4 per command. The server checks all waypoints before the first write. After a refusal, read the verdict and inspect both views. Hand back if the view stays occluded or the same boundary rejects a smaller move.
 
 ## Commands and a 25 mm cube
 
@@ -45,13 +45,15 @@ For a new floor measurement, start an **unarmed** lab session with the motors al
 
 Start the server with the Lab Python. The simulated motors start at the supplied arm file's `rest` with closed jaws. The child runs in the Dream trial environment with EGL. The same `op` and paired `frames` tools work for `ball`, `screwdriver` and `cube`. The simulated overhead camera has an assumed pose. Use it for coarse XY and use measured hand clearance for depth.
 
+For the 42.7 mm golf ball, open past its diameter in two moves and check `gripper.opening_mm` before descending. For the screwdriver, align the opening axis across the handle and verify both jaws straddle it in the wrist view. Confirm a lift by watching the object move with the jaws.
+
 ```bash
 python scripts/viscous-astra/astra_op.py serve --backend sim --armed \
-  --sim-variant current --sim-task ball --arm-file "$ARM_FILE" \
+  --sim-variant current --sim-task ball \
   --run-root "$RUN_ROOT" --pid-file "$RUN_ROOT/serve.pid" --tcp 127.0.0.1:0
 ```
 
-Point `ARM_FILE` at the matching tank arm profile and use a separate `RUN_ROOT` for each campaign. The server polls trips while the agent thinks. The idle timer starts at READY and restarts after each operator reply. After `--idle-deadline-s` (45 by default), the server enters its ordinary protected stop. Set 240 explicitly for a foamed simulation needing the longer interval. A torque or motion trip can stop either variant sooner. The supervisor's sim-only `op truth` and `op mark LABEL` report ground truth in physical base_link metres and annotate the child log, respectively. Both leave the operator budget and idle deadline intact.
+The variant selects its archived fingertip or foam guard profile. An explicit `--arm-file` overrides it. Use a separate `RUN_ROOT` for each campaign. The server polls trips while the agent thinks. The idle timer starts at READY and restarts after each operator reply. After `--idle-deadline-s` (45 by default), the server enters its ordinary protected stop. Set 240 explicitly for a foamed simulation needing the longer interval. A torque or motion trip can stop either variant sooner. The supervisor's sim-only `op truth` and `op mark LABEL` report ground truth in physical base_link metres and annotate the child log, respectively. Both leave the operator budget and idle deadline intact.
 
 ### Reproduce the offline fixture pick
 
@@ -73,3 +75,11 @@ python scripts/viscous-astra/astra_op.py ops --json \
   'tip .317 0 .066 --pitch -59' 'tip .26 0 .0445 --pitch -70' \
   'nudge up=-.030' 'nudge up=-.030' 'close' 'nudge up=.030' 'nudge up=.030' 'rest'
 ```
+
+
+### Tank campaign observations (2026-11-18)
+
+- When the solver refuses a steep approach at reach, read the position and angle residuals. If both cameras still show the target and there is clearance, change **pitch** toward level and leave optional yaw free on the next small approach. Repeating the same pitch and yaw with slightly different XYZ repeatedly hit the same reach limit in the campaign.
+- Use the overhead view to choose a direction and the wrist view to check whether the object moves between the fingers. If the hand obscures the overhead target, use measured tip height and hand-floor clearance to separate a depth error from an XY error. Give control back if both views stay ambiguous.
+- For the screwdriver, describe the handle and the far shaft tip separately. A grasped handle rose 37 mm in a trial while the shaft stayed on the floor. Verify that the **whole tool** rises with the jaws before reporting a pickup. For the cube, check its position on the red square again after opening and withdrawing.
+- Hand back any suspended object explicitly. The stop releases the gripper before it returns the arm. The archived simulation rest places the empty hand in mid-water. A successful return and a safe unpowered rest are separate observations.

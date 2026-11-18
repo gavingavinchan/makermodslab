@@ -83,8 +83,8 @@ def serve(args):
 
     lab = args.backend == "lab"
     sim = args.backend == "sim"
-    if sim and (not args.arm_file or args.environment != "tank" or args.frames or args.fake_cube):
-        raise ValueError("sim requires an explicit --arm-file, tank environment and simulator cameras")
+    if sim and (args.environment != "tank" or args.frames or args.fake_cube):
+        raise ValueError("sim requires the tank environment and simulator cameras")
     if not sim and (args.sim_variant or args.sim_task):
         raise ValueError("--sim-variant and --sim-task require --backend sim")
     if not math.isfinite(args.idle_deadline_s) or args.idle_deadline_s <= 0:
@@ -156,7 +156,12 @@ def serve(args):
             from make_tank_arm import PROFILE
 
             limits = json.loads(PROFILE.read_text())["follower"]["joint_limits"]
-            arm_path = (args.arm_file or real.DEFAULT_ARM_FILE).expanduser()
+            default_arm = real.DEFAULT_ARM_FILE
+            if sim:
+                from make_foamed_arm import SIM_PROFILES
+
+                default_arm = SIM_PROFILES[settings["sim_variant"]]
+            arm_path = (args.arm_file or default_arm).expanduser()
         model = Model(arm_path, env, folder, limits, lab)
         if args.floor_calibration:
             data = json.loads(args.floor_calibration.read_text())

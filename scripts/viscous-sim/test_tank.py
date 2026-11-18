@@ -122,7 +122,7 @@ class Physics(unittest.TestCase):
                 expected = dry - wet @ np.array([1000 * v["volume_m3"] for v in side["links"].values()])
                 for b in side["foam_blocks"]:
                     expected += hydro.block_load(model, np.array([q]), b) * b["volume"]
-                np.testing.assert_allclose(tau[:6] * t.signs[:6], expected[0], atol=1e-7)
+                np.testing.assert_allclose(tau[:6] * t.signs[:6], expected[0], atol=1e-7, rtol=0)
 
     def test_limp_latches_and_contact_at_release(self):
         t = Tank(request())
@@ -208,7 +208,9 @@ class Protocol(unittest.TestCase):
             rows = [json.loads(line) for line in (run / "sim-telemetry.jsonl").read_text().splitlines()]
             np.testing.assert_allclose(np.diff([r["t_s"] for r in rows[:-1]]), 0.05, atol=1e-8)
             self.assertEqual(json.loads((run / "sim-marks.jsonl").read_text())["label"], "release check")
-            self.assertGreater(json.loads((run / "sim-summary.json").read_text())["max_backlog_s"], 0.2)
+            summary = json.loads((run / "sim-summary.json").read_text())
+            self.assertGreater(summary["max_backlog_s"], 0.2)
+            self.assertGreaterEqual(summary["t_s"] - summary["release_t_s"], 0.999)
 
 
 if __name__ == "__main__":

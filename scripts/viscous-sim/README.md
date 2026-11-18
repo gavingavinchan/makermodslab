@@ -23,9 +23,9 @@
 | Current | 4.80 / 3.18 / 1.15 | 0.933 m/s | 0.942 m/s |
 | Foamed | 4.66 / 3.15 / 1.15 | 0.926 m/s | 0.949 m/s |
 
-The initial motor degrees were 176.59, −122.90, 99.34, 8.56, −9.00, −4.00 and −2.922. The arm settled under its own PD controller before release. The clip plays at 4× wall speed. Each local output directory contains the 20 Hz joint/truth trace, contact events and picture timestamps. [Current release video](outputs/hold-release-current/sim-video.mp4) · [Foamed release video](outputs/hold-release-foamed/sim-video.mp4)
+The initial motor degrees were 176.59, −122.90, 99.34, 8.56, −9.00, −4.00 and −2.922. The arm settled under its own PD controller before release. The clip plays at 4× wall speed. The Linux run directories also retain the 20 Hz joint/truth trace, contact events and picture timestamps. [Current release video](outputs/hold-release-current/sim-video.mp4) · [Foamed release video](outputs/hold-release-foamed/sim-video.mp4)
 
-A second experiment initializes those angles exactly with **zero velocity and zero motor torque**, eliminating differences in pre-release sag. Both first contacts occur at 0.220 s. Nominal normal impact speeds are **0.969 m/s current and 0.974 m/s foamed**. Independently multiplying drag and added mass by 0.5 or 2 gave ranges of **0.667–1.225 m/s** and **0.695–1.220 m/s** over the four corners. These are single-pose scenario ranges. Workspace extremes and uncertainty in displacement, rotor inertia, cables and surface conditions can fall outside them. The retained clips show 0.5–0.7 mm penetration on the first contact step. The solver reports contact speed, and glass fracture strength remains unmeasured.
+A second experiment initializes those angles exactly with **zero velocity and zero motor torque**, eliminating differences in pre-release sag. Both first contacts occur at 0.220 s. Nominal normal impact speeds are **0.969 m/s current and 0.974 m/s foamed**. Independently multiplying drag and added mass by 0.5 or 2 gave ranges of **0.667–1.225 m/s** and **0.695–1.220 m/s** over the four corners. These are single-pose scenario ranges. Workspace extremes and uncertainty in displacement, rotor inertia, cables and surface conditions can fall outside them. The first reported contact points in the retained clips are 0.5–0.7 mm below the modeled floor. The solver reports contact speed, and glass fracture strength remains unmeasured.
 
 ## Thermal evidence
 
@@ -87,3 +87,5 @@ export MUJOCO_GL=egl
 ```
 
 Seven tests exercise independent hydrostatic torques on both variants, FK, mass preservation, jaw span, negative buoyancy of all three objects, analytic initial ball acceleration, native fluid behavior, motor disable and thermal latch, actual floor impacts, protocol, camera JPEGs, H.264 video and missed deadlines. The independent hydrostatic torque check uses an absolute tolerance of 10⁻⁷ Nm and aligns the two FK models' gripper endpoint conventions.
+
+The child records at least one second of passive motion after an explicit all-motor release before closing. The November 18 Astra campaign predates this recording change. Its post-release windows vary with the time between release and close. A return logged as “at the rest” can end at a suspended pose.
