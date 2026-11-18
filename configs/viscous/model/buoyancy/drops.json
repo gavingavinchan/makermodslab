@@ -1,0 +1,485 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "release_poses": 718,
+  "fully_wet_proposals": 183,
+  "settings": {
+    "nominal": [
+      1.0,
+      0.6,
+      1.0
+    ],
+    "low_resistance": [
+      0.5,
+      0.25,
+      0.0
+    ],
+    "high_resistance": [
+      1.6,
+      1.2,
+      2.0
+    ]
+  },
+  "results": {
+    "current": {
+      "nominal": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 615,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 1.0162836421049315,
+          "floor_time_s": 0.22800000000000017,
+          "link": "wrist_roll_link",
+          "speed_3d_m_s": 1.0414580301308478,
+          "side": null,
+          "start_motor_deg": [
+            176.89297251534748,
+            -166.39291294597422,
+            137.47906438959382,
+            52.41720074393689,
+            -75.05090986086687,
+            38.1309907441088,
+            -25.575638987851235
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.31621316437264974,
+          0.7605885618141742,
+          1.0204993693598572
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.2484742530799002,
+          "floor_time_s": 0.22800000000000017,
+          "link": "gripper_right",
+          "speed_3d_m_s": 1.385065201270693,
+          "side": null,
+          "start_motor_deg": [
+            164.89520661739954,
+            -175.4233981637398,
+            228.1907493301169,
+            -91.96645432333787,
+            -58.23815308863816,
+            141.1231307154266,
+            -98.81646804612649
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "low_resistance": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 615,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 1.2709094340479752,
+          "floor_time_s": 0.22000000000000017,
+          "link": "wrist_pitch_link",
+          "speed_3d_m_s": 1.4496900064515128,
+          "side": null,
+          "start_motor_deg": [
+            6.130600430089757,
+            -27.120575862587287,
+            200.11026425159528,
+            -36.16807669221937,
+            -79.09974860534108,
+            -31.60960136247604,
+            -14.07678120419871
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.3326039076678535,
+          0.8925666308752817,
+          1.2522369264969184
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.6885426784787723,
+          "floor_time_s": 0.2440000000000002,
+          "link": "gripper_left",
+          "speed_3d_m_s": 1.7780830872580384,
+          "side": null,
+          "start_motor_deg": [
+            178.96223982113162,
+            -88.89203017020462,
+            58.6252382224542,
+            24.566762861201283,
+            -17.03504494739589,
+            22.319388977670428,
+            -85.13329600317842
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "high_resistance": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 616,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 0.869480711177088,
+          "floor_time_s": 0.21600000000000016,
+          "link": "gripper_left",
+          "speed_3d_m_s": 0.8780040061819601,
+          "side": null,
+          "start_motor_deg": [
+            0.14355502123817132,
+            -39.178621446711986,
+            192.45667547023805,
+            59.72568406269548,
+            -6.774135768932695,
+            -12.315499559514961,
+            -15.744182539711176
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.29066025521222294,
+          0.6542212394818848,
+          0.8664696013851669
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.0183698172574855,
+          "floor_time_s": 0.25600000000000017,
+          "link": "gripper_right",
+          "speed_3d_m_s": 1.1191216688359957,
+          "side": null,
+          "start_motor_deg": [
+            164.89520661739954,
+            -175.4233981637398,
+            228.1907493301169,
+            -91.96645432333787,
+            -58.23815308863816,
+            141.1231307154266,
+            -98.81646804612649
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "contact_free_statics": {
+        "poses": 618,
+        "submerged": 162,
+        "all": {
+          "median": [
+            0.0,
+            4.50607492789294,
+            2.5798429083998125,
+            0.8868244249056112,
+            0.12326150744213604,
+            0.01428026045526562
+          ],
+          "p95": [
+            0.0,
+            5.674356607772162,
+            3.3203218644929295,
+            1.2058953244896293,
+            0.3744126443981661,
+            0.0228419551413612
+          ],
+          "max": [
+            0.0,
+            6.138710896454086,
+            3.974087627056231,
+            1.4771534043120633,
+            0.5334896795725473,
+            0.03251751787580625
+          ]
+        },
+        "fully_submerged": {
+          "median": [
+            0.0,
+            4.922202113373217,
+            2.6073517950823835,
+            0.9252395897405072,
+            0.09870401678735599,
+            0.015732189460019905
+          ],
+          "p95": [
+            0.0,
+            5.625385325186863,
+            3.0664396261821905,
+            1.1843912157504102,
+            0.3494515016911961,
+            0.022620258909996784
+          ],
+          "max": [
+            0.0,
+            5.770911442857561,
+            3.165648872522034,
+            1.19931140082761,
+            0.3861000454044511,
+            0.022848930948026803
+          ]
+        },
+        "minimax_pocket_fractions": [],
+        "over_5nm_shoulder": 190,
+        "submerged_over_5nm_shoulder": 67,
+        "minimax_pitch_load_over_poses_nm": 1.3757633638622027
+      },
+      "worst_half_step": {
+        "floor_speed_m_s": 1.244592016330058,
+        "floor_time_s": 0.22800000000000017,
+        "link": "gripper_right",
+        "speed_3d_m_s": 1.3763181396890836,
+        "side": {
+          "face": "right",
+          "time": 0.7360000000000005
+        },
+        "duration_s": 5.213000000000076,
+        "tool0_drift_m": [
+          0.02011045102268949,
+          -0.04713467486747247,
+          -0.0741208404504935
+        ],
+        "max_joint_speed_rad_or_m_s": 0.008597077704882942,
+        "settled": true,
+        "floor_contacts_at_end": 2
+      },
+      "rehearsal_pose_release": {
+        "floor_speed_m_s": 0.9070607700867046,
+        "floor_time_s": 0.17400000000000013,
+        "link": "gripper_left",
+        "speed_3d_m_s": 0.9111870975311829,
+        "side": null,
+        "duration_s": 6.000000000000338,
+        "tool0_drift_m": [
+          0.024913857849559518,
+          0.0030625667226871663,
+          -0.09439226023778245
+        ],
+        "max_joint_speed_rad_or_m_s": 0.012502118098742512,
+        "settled": false,
+        "floor_contacts_at_end": 3
+      }
+    },
+    "foamed": {
+      "nominal": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 615,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 1.0214890080240515,
+          "floor_time_s": 0.22800000000000017,
+          "link": "wrist_roll_link",
+          "speed_3d_m_s": 1.047002569786638,
+          "side": null,
+          "start_motor_deg": [
+            176.89297251534748,
+            -166.39291294597422,
+            137.47906438959382,
+            52.41720074393689,
+            -75.05090986086687,
+            38.1309907441088,
+            -25.575638987851235
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.292628816970269,
+          0.7528605870887156,
+          1.0264215487675488
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.205409255792632,
+          "floor_time_s": 0.32400000000000023,
+          "link": "wrist_pitch_link",
+          "speed_3d_m_s": 1.380068810891848,
+          "side": null,
+          "start_motor_deg": [
+            14.47367206435878,
+            -16.599375146450313,
+            163.0393451681835,
+            -42.66568974699187,
+            -83.9985990271232,
+            -129.24250499499922,
+            -86.39591847859404
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "low_resistance": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 615,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 1.211755021577484,
+          "floor_time_s": 0.22000000000000017,
+          "link": "wrist_roll_link",
+          "speed_3d_m_s": 1.2567507618528635,
+          "side": null,
+          "start_motor_deg": [
+            176.89297251534748,
+            -166.39291294597422,
+            137.47906438959382,
+            52.41720074393689,
+            -75.05090986086687,
+            38.1309907441088,
+            -25.575638987851235
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.32098061962828406,
+          0.8763557414486641,
+          1.2210171211962793
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.7819095105732163,
+          "floor_time_s": 0.2580000000000002,
+          "link": "gripper_right",
+          "speed_3d_m_s": 1.8654448349162867,
+          "side": null,
+          "start_motor_deg": [
+            185.49376347230645,
+            -95.2400956946887,
+            66.7411410770901,
+            27.414399354134446,
+            23.181015368610062,
+            -15.794830279726796,
+            -114.84555242986286
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "high_resistance": {
+        "initial_contact_exclusions": 100,
+        "floor_impacts": 616,
+        "first_side_before_floor": 0,
+        "fully_wet_floor_impacts": 162,
+        "fully_wet_worst": {
+          "floor_speed_m_s": 0.8686993092832955,
+          "floor_time_s": 0.21800000000000017,
+          "link": "gripper_left",
+          "speed_3d_m_s": 0.8857032270760075,
+          "side": null,
+          "start_motor_deg": [
+            0.14355502123817132,
+            -39.178621446711986,
+            192.45667547023805,
+            59.72568406269548,
+            -6.774135768932695,
+            -12.315499559514961,
+            -15.744182539711176
+          ]
+        },
+        "floor_normal_percentiles_m_s": [
+          0.28484541309647277,
+          0.6339944552944592,
+          0.8687128631511066
+        ],
+        "worst": {
+          "floor_speed_m_s": 1.0000140877780004,
+          "floor_time_s": 0.35800000000000026,
+          "link": "gripper_right",
+          "speed_3d_m_s": 1.0138646966012916,
+          "side": null,
+          "start_motor_deg": [
+            -13.295468131879417,
+            -81.480671211846,
+            243.23554938507613,
+            20.627217049249282,
+            11.380788377678357,
+            -36.12592141566445,
+            -3.0540139128099923
+          ],
+          "fully_submerged_at_release": false
+        }
+      },
+      "contact_free_statics": {
+        "poses": 618,
+        "submerged": 162,
+        "all": {
+          "median": [
+            0.0,
+            4.2725910761913575,
+            2.522365912272668,
+            0.8868244249056112,
+            0.12326150744213604,
+            0.01428026045526562
+          ],
+          "p95": [
+            0.0,
+            5.359733861912279,
+            3.2659440714455465,
+            1.2058953244896293,
+            0.3744126443981661,
+            0.0228419551413612
+          ],
+          "max": [
+            0.0,
+            5.819809157012745,
+            3.9501519124618016,
+            1.4771534043120633,
+            0.5334896795725473,
+            0.03251751787580625
+          ]
+        },
+        "fully_submerged": {
+          "median": [
+            0.0,
+            4.6342484866606295,
+            2.533954723487163,
+            0.9252395897405072,
+            0.09870401678735599,
+            0.015732189460019905
+          ],
+          "p95": [
+            0.0,
+            5.303872107834388,
+            2.9864209169822327,
+            1.1843912157504102,
+            0.3494515016911961,
+            0.022620258909996784
+          ],
+          "max": [
+            0.0,
+            5.441292757258224,
+            3.0893717466189967,
+            1.19931140082761,
+            0.3861000454044511,
+            0.022848930948026803
+          ]
+        },
+        "minimax_pocket_fractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "over_5nm_shoulder": 127,
+        "submerged_over_5nm_shoulder": 44,
+        "minimax_pitch_load_over_poses_nm": 1.2142800508143137
+      },
+      "worst_half_step": {
+        "floor_speed_m_s": 1.2033297432164995,
+        "floor_time_s": 0.32500000000000023,
+        "link": "wrist_pitch_link",
+        "speed_3d_m_s": 1.3781618781960638,
+        "side": null,
+        "duration_s": 6.000000000000338,
+        "tool0_drift_m": [
+          -0.0040466467717556465,
+          -0.0025319543941780404,
+          -0.22195993395417316
+        ],
+        "max_joint_speed_rad_or_m_s": 0.02864424636590753,
+        "settled": false,
+        "floor_contacts_at_end": 7
+      },
+      "rehearsal_pose_release": {
+        "floor_speed_m_s": 0.9044148993395851,
+        "floor_time_s": 0.17400000000000013,
+        "link": "gripper_left",
+        "speed_3d_m_s": 0.9197438948040841,
+        "side": null,
+        "duration_s": 6.000000000000338,
+        "tool0_drift_m": [
+          0.05182963391196571,
+          0.02056343028747178,
+          -0.0948862439678706
+        ],
+        "max_joint_speed_rad_or_m_s": 0.01019814680778557,
+        "settled": false,
+        "floor_contacts_at_end": 4
+      }
+    }
+  }
+}
