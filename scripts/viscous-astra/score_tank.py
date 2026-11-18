@@ -95,6 +95,7 @@ def score(slot):
     full = json.loads(summary_file.read_text()) if summary_file.is_file() else {}
     return {
         "run": str(run),
+        "slot": slot.name,
         "task": trial["task"],
         "variant": trial["variant"],
         "mode": trial["mode"],
@@ -130,6 +131,8 @@ def score(slot):
         "returned": stop.get("returned"),
         "release_problems": stop.get("release_problems"),
         "red_button": trial.get("red_button", False),
+        "operator_rc": trial.get("operator_rc"),
+        "server_rc": trial.get("server_rc"),
         "stop_complete": bool(stop),
         "video": str(run / "sim-video.mp4"),
         "camera_frames": full.get("camera_frames"),
@@ -138,8 +141,35 @@ def score(slot):
     }
 
 
+def campaign(root):
+    notice = json.loads(
+        (Path(__file__).resolve().parents[2] / "configs/viscous/model/buoyancy/current.json").read_text()
+    )
+    attempts = []
+    for variant in ("current", "foamed"):
+        for task in ("ball", "screwdriver", "cube"):
+            for repeat in range(1, 4):
+                result = score(root / f"{variant}-{task}-{repeat}")
+                for key in ("run", "video"):
+                    result[key] = str(Path(result[key]).relative_to(root))
+                result["recording"] = f"videos/{result['slot']}.mp4"
+                attempts.append(result)
+    return {
+        "_copyright": notice["_copyright"],
+        "_license": notice["_license"],
+        "run_root": str(root),
+        "model": "gpt-6.2-astra",
+        "reasoning_effort": "high",
+        "scoring": "Pre-handback simulation truth. Ball requires 50 mm and cube requires a held lift followed by settled release within 20 mm XY. Screwdriver requires bilateral handle contact, whole tool off floor and at least 10 mm lift for 0.2 s of 20 Hz samples. The simulator benchmark also requires 50 mm for the screwdriver.",
+        "timing": "Intervals begin at READY or prior reply, end at next request. Hold efforts integrate absolute actuator torque. Post-handback contact data cover the recorded return and variable release-to-close window.",
+        "attempts": attempts,
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("slot", type=Path)
+    parser.add_argument("path", type=Path)
+    parser.add_argument("--campaign", action="store_true", help="score all 18 reserved trials in this root")
     args = parser.parse_args()
-    print(json.dumps(score(args.slot), indent=2, allow_nan=False))
+    target = args.path.expanduser().resolve()
+    print(json.dumps(campaign(target) if args.campaign else score(target), indent=2, allow_nan=False))

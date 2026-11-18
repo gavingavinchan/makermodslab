@@ -13,3 +13,5 @@ scripts/viscous-dream1/**/*.exr filter=lfs diff=lfs merge=lfs -text
 configs/viscous/**/*.blend filter=lfs diff=lfs merge=lfs -text
 configs/viscous/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
 configs/viscous/**/*.npz filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-astra/results/videos/*.mp4 filter=lfs diff=lfs merge=lfs -text
+scripts/viscous-sim/outputs/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
