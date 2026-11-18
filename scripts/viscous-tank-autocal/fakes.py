@@ -221,9 +221,16 @@ class PlaneFakeArm(real.FakeArm):
             if "shoulder_lift" in self.limp:
                 self.pos["shoulder_lift"] -= self.FALL_DEG_PER_TICK
 
+    def reanchor(self, offsets):
+        if self.fault == "stale" and self.ticks > self.fault_tick:
+            raise ConnectionError("cannot re-anchor without a fresh reading")
+        return super().reanchor(offsets)
+
     def return_to_rest(self, pose, abort, speed, watch=None):
         """The stop path's leg: the goal ramped at `speed` from the measured pose, the arm following
         through the same dynamics (and contacts) as every other tick."""
+        if self.fault == "stale" and self.ticks > self.fault_tick:
+            return False, "no fresh feedback for the return"
         start = {m: self.pos[m] for m in pose}
         travel = max(abs(start[m] - pose[m]) for m in pose)
         self.returns.append((dict(pose), speed))

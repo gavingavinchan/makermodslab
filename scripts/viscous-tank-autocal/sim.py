@@ -129,7 +129,7 @@ def build_scene(
     for geom in root.iter("geom"):
         if geom.get("name", "").startswith("arm_"):
             geom.set("friction", f"{physics.glass_friction} 0.005 0.0001")
-            geom.set("solref", "0.002 1")
+            geom.set("solref", "0.008 1")
     if tip_local_m is not None:
         wrist = next(b for b in root.iter("body") if b.get("name") == "wrist_roll_link")
         ET.SubElement(wrist, "site", name="probe_tip", pos=_f(tip_local_m), size="0.003", rgba="1 0.2 0.2 1")
@@ -153,25 +153,44 @@ def build_scene(
             [length / 2 + glass, width / 2 + glass, glass / 2],
         ),
     }
-    env = dict(
-        contype="2",
-        conaffinity="1",
-        friction=f"{physics.glass_friction} 0.005 0.0001",
-        solref="0.002 1",
-        solimp="0.95 0.99 0.001",
-    )
+    env = {
+        "contype": "2",
+        "conaffinity": "1",
+        "friction": f"{physics.glass_friction} 0.005 0.0001",
+        "solref": "0.008 1",
+        "solimp": "0.95 0.99 0.001",
+    }
     for name, (centre_tank, half) in panes.items():
+        # Collision uses the inner pane face. The whole guarded sweep is inside the
+        # tank and below its rim. A plane/mesh manifold avoids mesh/edge switches
+        # of a thin box during sliding. The finite glass stays in the renderer.
+        inward = -truth.normal(name)
+        inner_face = axes.T @ np.array(centre_tank) + inward * glass / 2
         ET.SubElement(
             world,
             "geom",
             name=f"glass_{name}",
+            type="plane",
+            pos=_f(inner_face),
+            zaxis=_f(inward),
+            size="1 1 0.01",
+            rgba="0 0 0 0",
+            group="5",
+            **env,
+        )
+
+        ET.SubElement(
+            world,
+            "geom",
+            name=f"visible_{name}",
             type="box",
             pos=_f(axes.T @ np.array(centre_tank)),
             size=_f(half),
             quat=quat,
             rgba="0.45 0.75 0.85 0.18",
             group="1",
-            **env,
+            contype="0",
+            conaffinity="0",
         )
     # The mount's truss post, rigid with the base, flush on the back glass at its bearing point.
     post_z0, post_h = truth.floor / 1000, 0.30
@@ -211,7 +230,8 @@ def build_scene(
                 **env,
             )
         else:
-            body = ET.SubElement(world, "body", name=ob.name, pos=_f(centre))
+            body = ET.SubElement(world, "body", name=ob.name, pos=_f(centre), gravcomp="1")
+            ET.SubElement(body, "inertial", pos="0 0 0", mass="0.02", diaginertia="0.00001 0.00001 0.00001")
             ET.SubElement(
                 body,
                 "joint",
@@ -220,7 +240,7 @@ def build_scene(
                 axis=_f(n),
                 stiffness=str(ob.stiffness_n_per_m),
                 damping="20",
-                range="-0.03 0.002",
+                range=_f([-0.002, ob.height_mm / 1000]),
                 limited="true",
             )
             ET.SubElement(
@@ -282,10 +302,8 @@ class MujocoArm(real.FakeArm):
         repo = geo.load_model(_tank())
         self.scene_map = {m: repo.motor_to_urdf[m] for m in ARM}
         slide = geo.joint_positions(pm, start)["gripper_left_joint"]
-        axis = next(j.t for j in pm.joints if j.name == "tool_fixed")
         r, t = geo.forward_kinematics(pm, start)["wrist_roll_link"]
         tip_local = r.T @ (geo.probe_point(pm, geo.forward_kinematics(pm, start)) / 1000 - t)
-        del axis
         xml = build_scene(truth, self.physics, self.scene_map, slide, obstacles, tip_local)
         self.model = mujoco.MjModel.from_xml_string(xml)
         self.data = mujoco.MjData(self.model)
@@ -323,9 +341,15 @@ class MujocoArm(real.FakeArm):
         self.pos = dict(start)
         self.recorder = recorder
         self.contact_peak = []  # per 50 ms tick: (t, max total normal force N, surfaces touched, non-finger?)
+        self.approach_contacts = {}
+        self.probe_number = 0
+        self.probe_contacts = {}
         self.first_contacts = []  # (t, surface, probe-tip speed mm/s)
         self.peak_force_n = 0.0
         self.peak_tip_speed_mm_s = 0.0
+        self.peak_details = {}
+        self.peak_link_speed_deg_s = 0.0
+        self.phase = "prehold"
         self._touching = False
         self._tick_force = 0.0
         self._tick_surfaces = set()
@@ -333,13 +357,11 @@ class MujocoArm(real.FakeArm):
         self.kp_override = {}
         self._window = []
         self.peak_force_20ms_n = 0.0
-        # The real arm is engaged lying on the floor; this one starts at the hub in mid-water, so it
-        # is held for 3 s first (as if it had been engaged a moment ago) to take up its sag.
-        self.target = dict(start)
-        self._held = True
-        self.advance(3.0)
-        self.first_contacts.clear()
-        self.peak_force_n = self.peak_force_20ms_n = 0.0
+        # At engage the real arm is supported. The sim starts at its mid-water hub:
+        # an external support unloads over 3 s, then ordinary wet gravity applies.
+        self.engage_t = None
+        self.wet_gravity = self.model.opt.gravity.copy()
+        self.model.opt.gravity[:] = 0.0
 
     # motor <-> scene joint coordinates (scene = repo URDF map)
     def _urdf(self, m, motor_deg):
@@ -357,6 +379,11 @@ class MujocoArm(real.FakeArm):
         steps = max(1, round(dt / PHYSICS_DT))
         p = self.physics
         for _ in range(steps):
+            if self.engage_t is not None:
+                support = min(1.0, (self.clock.t - self.engage_t) / 3.0)
+                self.model.opt.gravity[:] = self.wet_gravity * support
+                if support >= 1.0:
+                    self.engage_t = None
             for m in ARM:
                 q = self.data.qpos[self.qadr[m]]
                 qd = self.data.qvel[self.vadr[m]]
@@ -367,7 +394,7 @@ class MujocoArm(real.FakeArm):
                     flex = p.flex_nm_per_rad.get(m, math.inf)
                     prev = self.tau[m]
                     play = math.radians(p.backlash_deg) * math.tanh(prev / 0.05)
-                    err = math.radians(self.target[m] - link_motor) - play
+                    err = math.radians(self.target[m] - link_motor - p.encoder_bias_deg.get(m, 0.0)) - play
                     tau = (kp * err - self.kd[m] * sign * qd) / (1 + kp / flex)
                     tau = max(-TORQUE_PEAK_NM, min(TORQUE_PEAK_NM, tau))
                 else:
@@ -378,6 +405,10 @@ class MujocoArm(real.FakeArm):
                     link_motor + math.degrees(tau / flex + play) + p.encoder_bias_deg.get(m, 0.0)
                 )
             mujoco.mj_step(self.model, self.data)
+            self.peak_link_speed_deg_s = max(
+                self.peak_link_speed_deg_s,
+                math.degrees(max(abs(self.data.qvel[i]) for i in self.vadr.values())),
+            )
             self._contacts()
             self.clock.t += PHYSICS_DT
             if self.recorder is not None:
@@ -405,13 +436,40 @@ class MujocoArm(real.FakeArm):
         self._window.append(total)
         if len(self._window) > 20:
             self._window.pop(0)
-        self.peak_force_20ms_n = max(self.peak_force_20ms_n, sum(self._window) / len(self._window))
+        averaged = sum(self._window) / len(self._window)
+        self.peak_force_20ms_n = max(self.peak_force_20ms_n, averaged)
+        if total > 0:
+            peak = self.probe_contacts.setdefault(
+                self.probe_number,
+                {
+                    "peak_force_n": 0.0,
+                    "peak_force_instant_n": 0.0,
+                    "surfaces": set(),
+                    "first_phase": self.phase,
+                },
+            )
+            peak["peak_force_n"] = max(peak["peak_force_n"], averaged)
+            peak["peak_force_instant_n"] = max(peak["peak_force_instant_n"], total)
+            peak["surfaces"].update(surfaces)
         if total > 0 and not self._touching:
             vel = np.zeros(6)
             mujoco.mj_objectVelocity(self.model, self.data, mujoco.mjtObj.mjOBJ_SITE, self.site, vel, 0)
+            if "first_speed_mm_s" not in peak:
+                peak["first_speed_mm_s"] = float(np.linalg.norm(vel[3:]) * 1000)
             self.first_contacts.append(
                 (self.clock.t, sorted(surfaces), float(np.linalg.norm(vel[3:]) * 1000))
             )
+        if total > self.peak_force_n:
+            self.peak_details = {
+                "phase": self.phase,
+                "t": self.clock.t,
+                "surfaces": sorted(surfaces),
+                "depth_mm": min(c.dist for c in self.data.contact) * 1000,
+            }
+        if total > 0 and "approach" in self.phase and self.probe_number not in self.approach_contacts:
+            vel = np.zeros(6)
+            mujoco.mj_objectVelocity(self.model, self.data, mujoco.mjtObj.mjOBJ_SITE, self.site, vel, 0)
+            self.approach_contacts[self.probe_number] = float(np.linalg.norm(vel[3:]) * 1000)
         self._touching = total > 0
         self.peak_force_n = max(self.peak_force_n, total)
         self._tick_force = max(self._tick_force, total)
@@ -451,6 +509,7 @@ class MujocoArm(real.FakeArm):
 
     def engage(self):
         self.energized = True
+        self.engage_t = self.clock.t
         self._held = False
         self.target = {**self.encoder, "gripper": self.target["gripper"]}
         self.events.append("engage: torque on at the measured pose")
@@ -460,6 +519,8 @@ class MujocoArm(real.FakeArm):
         self.target = dict(target)
 
     def reanchor(self, offsets):
+        if self.fault == "stale" and self.ticks > self.fault_tick:
+            raise ConnectionError("cannot re-anchor without a fresh reading")
         if any(abs(offsets[m]) > real.REANCHOR_MAX_OFFSET_DEG for m in ARM):
             raise ValueError("re-anchor offset too large")
         for m in ARM:
@@ -470,15 +531,21 @@ class MujocoArm(real.FakeArm):
     def return_to_rest(self, pose, abort, speed, watch=None):
         if "gripper" in pose:
             raise AssertionError("the return must leave the (limp) gripper alone")
+        if self.fault == "stale" and self.ticks > self.fault_tick:
+            return False, "no fresh feedback for the return"
         start = {m: self.encoder[m] for m in pose}
         travel = max(abs(start[m] - pose[m]) for m in pose)
         self.returns.append((dict(pose), speed))
         steps = max(1, math.ceil(travel / (speed * core.ROW_DT_S)))
         for i in range(1, steps + 1):
+            if self.read_hook:
+                self.read_hook()
             if abort.is_set():
                 return False, "cut-short"
             for m, v in pose.items():
-                self.target[m] = start[m] + (v - start[m]) * i / steps
+                goal = start[m] + (v - start[m]) * i / steps
+                max_step = speed * core.ROW_DT_S
+                self.target[m] += max(-max_step, min(max_step, goal - self.target[m]))
             self.clock.sleep(core.ROW_DT_S)
             if watch is not None and (
                 trips := watch(
@@ -513,9 +580,11 @@ def _tank():
 class Recorder:
     """Offscreen frames every `every_s` of sim time (MUJOCO_GL=egl), for the run video."""
 
-    def __init__(self, every_s=0.4, width=960, height=720):
+    def __init__(self, path, every_s=1.6, width=640, height=480):
         self.every, self.width, self.height = every_s, width, height
-        self.frames = []
+        self.path = Path(path)
+        self.writer = None
+        self.t0 = None
         self.next_t = None
         self.renderer = None
         self.label = ""
@@ -540,21 +609,25 @@ class Recorder:
             self.renderer.update_scene(arm.data, camera=cam)
             views.append(self.renderer.render())
         frame = np.concatenate([v[:, 120:-120] for v in views], axis=1)
-        self.frames.append((t, frame, self.label, arm._touching))
+        if self.writer is None:
+            import imageio.v2 as imageio
 
-    def write(self, path: Path, fps=10):
-        import imageio.v2 as imageio
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.writer = imageio.get_writer(
+                str(self.path), fps=12, codec="libx264", quality=7, macro_block_size=8
+            )
+            self.t0 = t
         from PIL import Image, ImageDraw
 
-        writer = imageio.get_writer(str(path), fps=fps, codec="libx264", quality=7, macro_block_size=8)
-        t0 = self.frames[0][0] if self.frames else 0
-        for t, frame, label, touching in self.frames:
-            img = Image.fromarray(frame)
-            draw = ImageDraw.Draw(img)
-            draw.rectangle([0, 0, img.width, 30], fill=(0, 0, 0))
-            text = f"t={t - t0:6.1f} s  x{self.every * fps:.0f} speed   {label}" + (
-                "   CONTACT" if touching else ""
-            )
-            draw.text((10, 8), text, fill=(255, 255, 0) if touching else (255, 255, 255))
-            writer.append_data(np.asarray(img))
-        writer.close()
+        img = Image.fromarray(frame)
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([0, 0, img.width, 30], fill=(0, 0, 0))
+        text = f"{t - self.t0:6.1f} s    {self.label}" + ("   CONTACT" if arm._touching else "")
+        draw.text((10, 8), text, fill=(255, 255, 0) if arm._touching else (255, 255, 255))
+        self.writer.append_data(np.asarray(img))
+
+    def close(self):
+        if self.writer is not None:
+            self.writer.close()
+        if self.renderer is not None:
+            self.renderer.close()

@@ -44,6 +44,7 @@ from geometry import (
     FINGERS,
     Estimate,
     IKError,
+    approach_axis,
     contact_link,
     contact_point,
     geo,
@@ -53,7 +54,6 @@ from geometry import (
     probe_tip_mm,
     solve,
     solve_jaw_position,
-    approach_axis,
     tank_guard,
     tilted_axes,
     torque_per_newton,
@@ -119,19 +119,20 @@ PROBES = (
     ProbeSpec("floor", "floor", -380, -80),
     ProbeSpec("floor", "floor", -420, -40),
     ProbeSpec("floor", "floor", -380, 40),
-    ProbeSpec("right", "right", -470, 80),
-    ProbeSpec("right", "right", -330, 90),
-    ProbeSpec("right", "right", -500, 90),
+    ProbeSpec("right", "right", -470, 135),
+    ProbeSpec("right", "right", -330, 100),
+    ProbeSpec("right", "right", -500, 110),
     ProbeSpec("left", "left", -360, 120),
-    ProbeSpec("left", "left", -440, 100),
+    ProbeSpec("left", "left", -440, 140),
     ProbeSpec("left", "left", -280, 140),
     ProbeSpec("check:floor", "floor", -400, -60),
     ProbeSpec("check:right", "right", -430, 120),
     ProbeSpec("check:left", "left", -400, 160),
 )
 SPARES = (
-    ProbeSpec("floor", "floor", -340, 0, True),
-    ProbeSpec("floor", "floor", -435, 30, True),
+    ProbeSpec("floor", "floor", -400, 28, True),
+    ProbeSpec("floor", "floor", -413, -65, True),
+    ProbeSpec("floor", "floor", -360, -25, True),
     ProbeSpec("right", "right", -315, 110, True),
     ProbeSpec("right", "right", -505, 110, True),
     ProbeSpec("right", "right", -335, 105, True),
@@ -161,8 +162,7 @@ def update_estimate(prior: Estimate, touches: list[dict]) -> Estimate:
     floor is the mean height of its touches."""
     est = prior.copy()
     groups = {
-        f: [np.asarray(t["point_mm"]) for t in touches if t["label"] == f]
-        for f in ("floor", "left", "right")
+        f: [np.asarray(t["point_mm"]) for t in touches if t["label"] == f] for f in ("floor", "left", "right")
     }
     walls = {f: np.array(p) for f, p in groups.items() if f != "floor" and p}
     sxx = sxy = 0.0
@@ -343,9 +343,16 @@ class Planner:
         self.poll = lambda: None
         self.transit_floor = tank_guard.TankGuard(keepout, self.pm)
         for link, requirements in self.transit_floor.required.items():
-            if requirements["floor"] is not None and link in ("gripper_left", "gripper_right", "wrist_roll_link", "wrist_pitch_link", "wrist_yaw_link"):
+            if requirements["floor"] is not None and link in (
+                "gripper_left",
+                "gripper_right",
+                "wrist_roll_link",
+                "wrist_pitch_link",
+                "wrist_yaw_link",
+            ):
                 # Before lift compensation the archived wet sag reaches 53 mm.
                 requirements["floor"] = 60.0
+        self.sag = {}
         self.good: list[dict] = []  # standoff poses of earlier feasible plans: the best IK seeds
 
     def seeds(self, target, axis, k: int = 6) -> list[dict]:
@@ -412,36 +419,10 @@ class Planner:
             cands.append((math.degrees(math.acos(float(np.clip(a @ n, -1, 1)))), a))
         cands.sort(key=lambda c: c[0])
         reasons, feasible = [], []
-        if face != "floor":
-            # Search measured, reachable wrist attitudes first. The line constrains the
-            # jaw depth and tangential position; orientation can change while the jaw
-            # stays ahead of every padded link. A fixed attitude unnecessarily pins J1.
-            rows = self.bank.rows
-            dist = np.linalg.norm(rows[:, :3] - stand, axis=1)
-            cosine = rows[:, 3:] @ n
-            travel = np.max(np.abs(self.bank.angles - np.array([self.rest[m] for m in ARM])), axis=1)
-            order = np.argsort(dist + 140 * (1 - cosine) + 0.30 * travel)
-            seen = []
-            for i in order[:120]:
-                self.poll()
-                seed = self.bank.poses[i]
-                key = np.array([seed[m] for m in ARM])
-                if any(np.linalg.norm(key - prev) < 24 for prev in seen):
-                    continue
-                seen.append(key)
-                try:
-                    candidate = self._candidate(spec, est, n, point, rows[i, 3:], standoff, window, hub, seed)
-                except IKError as error:
-                    reasons.append(str(error))
-                    continue
-                if candidate.ok:
-                    axis = approach_axis(self.pm, geo.forward_kinematics(self.pm, candidate.nodes[0]))
-                    candidate.tilt_deg = math.degrees(math.acos(float(np.clip(axis @ n, -1, 1))))
-                    candidate.uncertainty_mm = u_mm
-                    self.good.append(candidate.nodes[0])
-                    return candidate
-                reasons.extend(candidate.reasons)
-
+        if face != "floor" and (
+            plan := self._free_wrist(spec, est, n, point, standoff, window, hub, u_mm, reasons)
+        ):
+            return plan
         for tilt, axis in cands:
             if feasible and (tilt > feasible[0].tilt_deg + 10.0 or len(feasible) >= 3):
                 break
@@ -459,6 +440,10 @@ class Planner:
             best = max(feasible, key=lambda r: (min(r.lead_mm, 60.0), -r.press_force_n))
             self.good.append(best.nodes[0])
             return best
+        if face == "floor" and (
+            plan := self._free_wrist(spec, est, n, point, standoff, window, hub, u_mm, reasons)
+        ):
+            return plan
         return ProbePlan(
             spec,
             False,
@@ -467,6 +452,38 @@ class Planner:
             expected_point_mm=point.tolist(),
             uncertainty_mm=u_mm,
         )
+
+    def _free_wrist(self, spec, est, n, point, standoff, window, hub, uncertainty_mm, reasons):
+        # Search measured, reachable wrist attitudes first. The line constrains the
+        # jaw depth and tangential position; orientation can change while the jaw
+        # stays ahead of every padded link. A fixed attitude unnecessarily pins J1.
+        rows = self.bank.rows
+        dist = np.linalg.norm(rows[:, :3] - (point - standoff * n), axis=1)
+        cosine = rows[:, 3:] @ n
+        travel = np.max(np.abs(self.bank.angles - np.array([self.rest[m] for m in ARM])), axis=1)
+        order = np.argsort(dist + 140 * (1 - cosine) + 0.30 * travel)
+        seen = []
+        for i in order[:120]:
+            self.poll()
+            seed = self.bank.poses[i]
+            key = np.array([seed[m] for m in ARM])
+            if any(np.linalg.norm(key - prev) < 24 for prev in seen):
+                continue
+            seen.append(key)
+            try:
+                candidate = self._candidate(spec, est, n, point, rows[i, 3:], standoff, window, hub, seed)
+            except IKError as error:
+                reasons.append(str(error))
+                continue
+            if candidate.ok:
+                axis = approach_axis(self.pm, geo.forward_kinematics(self.pm, candidate.nodes[0]))
+                candidate.tilt_deg = math.degrees(math.acos(float(np.clip(axis @ n, -1, 1))))
+                candidate.uncertainty_mm = uncertainty_mm
+                self.good.append(candidate.nodes[0])
+                return candidate
+            reasons.extend(candidate.reasons)
+
+        return None
 
     def _candidate(self, spec, est, n, point, axis, standoff, window, hub, seed=None) -> ProbePlan:
         """One approach axis. Cheap refusals first (standoff guard, lead), then the whole line."""
@@ -489,8 +506,11 @@ class Planner:
             )
         # The press line: nodes every NODE_MM from the standoff (s = 0) to the deepest command.
         try:
-            q_contact = (self.solve_contact([start], point, axis, n) if seed is None
-                         else solve_jaw_position(pm, start, point, n, self.limits))
+            q_contact = (
+                self.solve_contact([start], point, axis, n)
+                if seed is None
+                else solve_jaw_position(pm, start, point, n, self.limits)
+            )
         except IKError as error:
             raise IKError(f"plane point unreachable from the standoff: {error}") from None
         link = contact_link(pm, q_contact, n)
@@ -503,10 +523,14 @@ class Planner:
         d2 = min(D2_MM, min(F_MAX_N, 0.70 * backstop_force) / stiffness * 1000)
         d1 = min(D1_MM, d2 * 0.6)
         if d2 < D2_MIN_MM:
-            return ProbePlan(spec, False, [
-                f"too stiff along the normal ({stiffness:.0f} N/m): a {D2_MIN_MM:g} mm press "
-                f"would push {stiffness * D2_MIN_MM / 1000:.1f} N"
-            ])
+            return ProbePlan(
+                spec,
+                False,
+                [
+                    f"too stiff along the normal ({stiffness:.0f} N/m): a {D2_MIN_MM:g} mm press "
+                    f"would push {stiffness * D2_MIN_MM / 1000:.1f} N"
+                ],
+            )
         # The line runs to the window's end unless the arm runs out first (IK, joint continuity, soft
         # limits): then the window is cut to what is reachable, as long as it still covers the
         # expected plane plus the deep press plus WINDOW_MIN_MM. A plane beyond a cut window is not
@@ -521,8 +545,11 @@ class Planner:
             delta = contact_point(pm, q, n) - probe_tip_mm(pm, q)
             try:
                 target = point + (s - standoff) * n
-                q = (self._solve([q], target - delta, axis) if seed is None
-                     else solve_jaw_position(pm, q, target, n, self.limits))
+                q = (
+                    self._solve([q], target - delta, axis)
+                    if seed is None
+                    else solve_jaw_position(pm, q, target, n, self.limits)
+                )
             except IKError as error:
                 cut = f"node s={s:.0f} mm unreachable ({str(error).split(':')[0]})"
             else:
@@ -539,10 +566,33 @@ class Planner:
             if reach < standoff + d2 + WINDOW_MIN_MM:
                 raise IKError(f"press line cut before the plane: {cut}")
             window = reach - standoff - d2
+        # A free wrist can change the leverage. Bound depth over the entire reachable
+        # line, including when the pane is on the near side of the uncertainty interval.
+        max_stiffness = stiffness
+        for node in nodes:
+            cp = contact_point(pm, node, n)
+            node_jac = point_jacobian(pm, node, cp, "gripper_left")
+            node_stiffness = normal_stiffness(node_jac, n, KP)
+            max_stiffness = max(max_stiffness, node_stiffness)
+            lever = np.max(np.abs(node_jac.T @ n))
+            backstop_force = min(backstop_force, TORQUE_BACKSTOP_NM / max(lever, 1e-9))
+        safe_depth = min(d2, min(F_MAX_N, 0.70 * backstop_force) * 1000 / max_stiffness)
+        if safe_depth < D2_MIN_MM:
+            return ProbePlan(spec, False, ["too stiff along the planned line for two bounded presses"])
+        if safe_depth < d2:
+            end = standoff + window + safe_depth
+            k = int(np.searchsorted(s_values, end, side="left"))
+            fraction = (end - s_values[k - 1]) / (s_values[k] - s_values[k - 1])
+            last = {m: nodes[k - 1][m] + fraction * (nodes[k][m] - nodes[k - 1][m]) for m in nodes[k]}
+            nodes, s_values = [*nodes[:k], last], [*s_values[:k], end]
+            d2, d1 = safe_depth, min(d1, safe_depth * 0.6)
         up = np.array([0.0, 0.0, 1.0])
         try:
-            lift = (self._solve([start], probe_tip_mm(pm, start) + LIFT_MM * up, axis)
-                    if seed is None else solve_jaw_position(pm, start, stand + LIFT_MM * up, n, self.limits))
+            lift = (
+                self._solve([start], probe_tip_mm(pm, start) + LIFT_MM * up, axis)
+                if seed is None
+                else solve_jaw_position(pm, start, stand + LIFT_MM * up, n, self.limits)
+            )
         except IKError as error:
             raise IKError(f"lift unreachable: {error}") from None
         for name, pose in (("lift", lift),):
@@ -563,6 +613,15 @@ class Planner:
         if other < OTHER_MIN_MM:
             reasons.append(f"fingers only {other:.0f} mm from another face at the touch")
         guard = probe_guard(self.keepout, pm, est, face, window + d2 + 5.0)
+        if face in self.sag:
+            supported = {
+                **lift,
+                **{m: float(np.clip(lift[m] + self.sag[face][m], *self.limits[m])) for m in ARM},
+            }
+            if not guard.check_pose(supported, need_mm=-guard.tracking_allowance_mm).ok:
+                return ProbePlan(
+                    spec, False, ["lift with measured standing offset exceeds tracking allowance"]
+                )
         slack = math.inf
         for a, b in zip(nodes, nodes[1:], strict=False):
             v = guard.check_segment(a, b)
@@ -600,7 +659,7 @@ class Planner:
             d1_mm=d1,
             d2_mm=d2,
             stiffness_n_per_m=stiffness,
-            press_force_n=stiffness * d2 / 1000,
+            press_force_n=max_stiffness * d2 / 1000,
             backstop_force_n=backstop_force,
             undetected_force_n=min(stiffness * (2 * window - WINDOW_PAD_MM) / 1000, backstop_force),
             lead_mm=lead,
@@ -622,11 +681,17 @@ def _top_reasons(reasons: list[str], k: int = 6) -> list[str]:
 
 
 def plan_all(planner: Planner, est: Estimate, specs=PROBES) -> dict:
-    """The dry plan: every probe planned against the NOMINAL estimate (the session re-plans each one
-    from the touches before it, which only shrinks standoffs and windows)."""
+    """Preview the same staged estimate, assuming each feasible nominal press finds its pane."""
     hub = planner.hub(est)
     hub_verdict = planner.model.guard.check_pose(hub)
-    plans = [planner.plan(s, est, [], hub) for s in specs]
+    plans, touches = [], []
+    current = est
+    for spec in specs:
+        plan = planner.plan(spec, current, touches, hub)
+        plans.append(plan)
+        if plan.ok and not spec.spare and not spec.label.startswith("check:"):
+            touches.append({"label": spec.label, "point_mm": plan.expected_point_mm})
+            current = update_estimate(est, touches)
     return {"hub": hub, "hub_guard": dataclasses.asdict(hub_verdict), "plans": plans}
 
 
@@ -634,6 +699,7 @@ def write_plan(path: Path, result: dict) -> None:
     out = {
         "hub_motor_deg": result["hub"],
         "hub_guard": result["hub_guard"],
-        "probes": [p.summary() for p in result["plans"]],
+        "assumption": "earlier feasible presses find the nominal planes",
+        "probes": [dataclasses.asdict(p) for p in result["plans"]],
     }
     path.write_text(json.dumps(out, indent=2, default=float) + "\n")

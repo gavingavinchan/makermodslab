@@ -48,6 +48,7 @@ def width_fallback(touches: list[dict], tank: dict) -> tuple[list[dict], dict | 
     kept as a held-out check of that width, so its residual measures the width error. Returns the
     touches for the fit and a note (None when not needed)."""
     left = [t for t in touches if t["label"] == "left"]
+
     def wall_axes(points):
         xy = np.array([t["point_mm"][:2] for t in points])
         _, _, axes = np.linalg.svd(xy - xy.mean(axis=0), full_matrices=False)
@@ -123,8 +124,9 @@ def robust_fit(touches: list[dict], tank: dict, estimate: Estimate) -> dict:
         if not trials:
             break
         _, index = min(trials)
-        touch = kept.pop(index)
+        touch = kept[index]
         residual = next(r for r in fit["residuals"] if inputs[r["index"]] is touch)
+        kept = kept[:index] + kept[index + 1 :]
         dropped.append({**touch, "dropped_residual_mm": abs(residual["residual_mm"])})
         fit, inputs, fallback = fit_measured(kept)
     return {

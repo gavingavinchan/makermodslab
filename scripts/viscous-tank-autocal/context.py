@@ -52,7 +52,9 @@ class CalibrationModel(astra_model.Model):
         out = []
         previous = start
         for target, origin, speed, verdict in steps:
-            count = max(1, math.ceil(astra_model.travel(previous, target) / (SLEW_DEG_S * core.ROW_DT_S) - 1e-9))
+            count = max(
+                1, math.ceil(astra_model.travel(previous, target) / (SLEW_DEG_S * core.ROW_DT_S) - 1e-9)
+            )
             for i in range(1, count + 1):
                 step = astra_model.mix(previous, target, i / count)
                 out.append((step, origin, min(speed, SLEW_DEG_S), verdict))

@@ -34,8 +34,8 @@ import math
 import time
 
 import numpy as np
-import planner as P
-import press as PR
+import planner as probe_planner
+import press_checks
 from context import core, real
 from geometry import ARM, back_touch, contact_point, point_jacobian
 from session import Operator
@@ -83,8 +83,8 @@ class AutocalSession(Operator):
         clock,
         sleep,
         armed=True,
-        specs=P.PROBES,
-        spares=P.SPARES,
+        specs=probe_planner.PROBES,
+        spares=probe_planner.SPARES,
         log=print,
     ):
         self.model, self.folder, self.armed = model, folder, armed
@@ -98,7 +98,7 @@ class AutocalSession(Operator):
         self.last_poll = 0.0
         self.reading = None
         self.say = log
-        settings = real.Settings("", 0, 0, P.SLEW_DEG_S, 15, 35.0, 0, core.TripLimits(), {})
+        settings = real.Settings("", 0, 0, probe_planner.SLEW_DEG_S, 15, 35.0, 0, core.TripLimits(), {})
         self.transit_guard = ProbeReturnGuard(model.guard)
         real.Episode.__init__(
             self,
@@ -121,7 +121,7 @@ class AutocalSession(Operator):
         self.say = log  # Episode.__init__ reset it
         self.step = "start"  # this tool's own phase (Episode's self.phase belongs to its loop)
         self.specs, self.spares = list(specs), list(spares)
-        self.nominal = P.update_estimate(planner_nominal(planner, tank, keepout), [])
+        self.nominal = probe_planner.update_estimate(planner_nominal(planner, tank, keepout), [])
         self.estimate = self.nominal.copy()
         self.touches: list[dict] = []
         self.rejected: list[dict] = []
@@ -190,7 +190,7 @@ class AutocalSession(Operator):
             samples.append(self.reading)
         return samples
 
-    def slew(self, goal, speed_deg_s=P.SLEW_DEG_S, guard=None, intended=None, returning=False):
+    def slew(self, goal, speed_deg_s=probe_planner.SLEW_DEG_S, guard=None, intended=None, returning=False):
         """Straight joint-space slew at <= speed_deg_s, proven before the first tick.
 
         `intended` = (a, b): the poses the arm is expected to actually take (the command minus the
@@ -211,6 +211,10 @@ class AutocalSession(Operator):
                 v = guard.check_segment(self.commanded, goal)
             if not v.ok:
                 raise ProbeError(f"slew refused by the keep-out: {v.link} vs {v.face} ({v.slack_mm:.1f} mm)")
+        for m in ARM:
+            lo, hi = self.limits[m]
+            if not lo <= goal[m] <= hi:
+                raise ProbeError(f"compensated slew would exceed the {m} limit")
         start = dict(self.commanded)
         ticks = max(1, math.ceil(max(abs(goal[m] - start[m]) for m in ARM) / (speed_deg_s * DT)))
         for i in range(1, ticks + 1):
@@ -220,12 +224,12 @@ class AutocalSession(Operator):
 
     def run_all(self):
         """Hub, every probe (replanned from the touches so far), replacements, the fit."""
+        if abs(self.reading.pos["gripper"] - core.GRIP_CLOSED_DEG) > 1.0:
+            raise ProbeError("calibration requires a measured closed jaw")
         self._phase("autocal", "to the hub")
         self.hub = self.planner.hub(self.estimate)
         if max(abs(self.commanded[m] - self.hub[m]) for m in ARM) > 0.5:
             self.execute([self.hub])
-        if abs(self.commanded["gripper"] - core.GRIP_CLOSED_DEG) > 1.0:
-            raise ProbeError("calibration requires a closed jaw")
         self.planner.poll = self.heartbeat
         self.base_trail = [dict(p) for p in self.trail]
         queue = list(self.specs)
@@ -234,7 +238,14 @@ class AutocalSession(Operator):
             spec = queue.pop(0)
             outcome = self.probe(spec)
             if outcome != "touch":
-                replacement = next((s for s in spares if P.face_of(s.label) == P.face_of(spec.label)), None)
+                replacement = next(
+                    (
+                        s
+                        for s in spares
+                        if probe_planner.face_of(s.label) == probe_planner.face_of(spec.label)
+                    ),
+                    None,
+                )
                 if replacement is not None:
                     spares.remove(replacement)
                     queue.insert(0, dataclasses.replace(replacement, label=spec.label))
@@ -245,11 +256,14 @@ class AutocalSession(Operator):
         # location (once per dropped touch); then the final fit.
         if result["dropped"]:
             self.touches = result["kept"]
-            self.estimate = P.update_estimate(self.nominal, self.touches)
-            P.sync_guard(self.model.guard, self.estimate, self.planner.nominal, conservative=True)
+            self.estimate = probe_planner.update_estimate(self.nominal, self.touches)
+            probe_planner.sync_guard(self.model.guard, self.estimate, self.planner.nominal, conservative=True)
             self.dropped = result["dropped"]
             for label in result["dropped_labels"]:
-                replacement = next((s for s in spares if P.face_of(s.label) == P.face_of(label)), None)
+                replacement = next(
+                    (s for s in spares if probe_planner.face_of(s.label) == probe_planner.face_of(label)),
+                    None,
+                )
                 if replacement is None:
                     continue
                 spares.remove(replacement)
@@ -257,6 +271,19 @@ class AutocalSession(Operator):
             result = robust_fit(self.touches, self.tank, self.estimate)
             result["dropped"] = self.dropped + result["dropped"]
         self.touches = result["kept"]
+        fit = result["fit"]
+        counts = {
+            label: sum(t["label"] == label for t in self.touches)
+            for label in ("floor", "right", "left", "check:floor", "check:right", "check:left")
+        }
+        fit["measured_counts"] = counts
+        required = {"floor": 4, "right": 3, "check:floor": 1, "check:right": 1}
+        if not result["left_derived"]:
+            required.update(left=3, **{"check:left": 1})
+        for label, count in required.items():
+            if counts[label] < count:
+                fit["failures"].append(f"{label}: obtained {counts[label]} of {count} required real touches")
+        fit["valid"] = not fit["failures"]
         return result
 
     def probe(self, spec) -> str:
@@ -289,8 +316,8 @@ class AutocalSession(Operator):
                 "probe": len(self.probes),
             }
             self.touches.append(touch)
-            self.estimate = P.update_estimate(self.nominal, self.touches)
-            P.sync_guard(self.model.guard, self.estimate, self.planner.nominal, conservative=True)
+            self.estimate = probe_planner.update_estimate(self.nominal, self.touches)
+            probe_planner.sync_guard(self.model.guard, self.estimate, self.planner.nominal, conservative=True)
             record["outcome"] = "touch"
             self.say(
                 f"  touch {spec.label}: {np.round(result['point_mm'], 1).tolist()} "
@@ -320,7 +347,9 @@ class AutocalSession(Operator):
         face, n = spec.face, np.asarray(plan.normal)
         pm = self.planner.pm
         nodes, svals = plan.nodes, np.asarray(plan.node_s_mm)
-        probe_guard = P.probe_guard(self.keepout, pm, self.estimate, face, plan.window_mm + plan.d2_mm + 5.0)
+        probe_guard = probe_planner.probe_guard(
+            self.keepout, pm, self.estimate, face, plan.window_mm + plan.d2_mm + 5.0
+        )
 
         def line(s):
             """Joint targets for commanded depth s (mm past the standoff), linear between nodes."""
@@ -343,7 +372,23 @@ class AutocalSession(Operator):
         self._phase(f"probe {spec.label}", "lift: measure the sag")
         self.guard = ProbeReturnGuard(probe_guard)
         lift = {**plan.lift, "gripper": self.commanded["gripper"]}
+        self.retreat_path = [lift]
         offset = dict.fromkeys(ARM, 0.0)
+
+        def bounded_offset(proposed, poses):
+            # Pan standing error at a limit can be <0.1 degree. Use only the support
+            # available over the entire stroke, then measure the residual at standoff.
+            return {
+                m: float(
+                    np.clip(
+                        proposed[m],
+                        self.limits[m][0] - min(q[m] for q in poses),
+                        self.limits[m][1] - max(q[m] for q in poses),
+                    )
+                )
+                for m in ARM
+            }
+
         # 2. Sag compensation: the MIT standing error, measured and added back, twice.
         for _ in range(2):
             readings = self.hold(SETTLE_S)[-round(1.0 / DT) :]
@@ -351,10 +396,13 @@ class AutocalSession(Operator):
                 offset[m] += float(np.mean([lift[m] - r.pos[m] for r in readings]))
             if max(abs(v) for v in offset.values()) > MAX_OFFSET_DEG:
                 raise ProbeError(f"standing error over {MAX_OFFSET_DEG:g} deg at the lift pose: {offset}")
+            self.planner.sag[face] = dict(offset)
+            offset = bounded_offset(offset, [lift, nodes[0]])
             self.slew({m: lift[m] + offset[m] for m in ARM}, guard=probe_guard, intended=(lift, lift))
         record["offset_deg"] = dict(offset)
         # 3. Down to the standoff, re-measure the standing error there.
-        self.trail.append(dict(lift))
+        if self.trail[-1] != lift:
+            self.trail.append(dict(lift))
         self.retreat_path = [lift]
         self._phase(f"probe {spec.label}", "descend to the standoff")
         self.slew({m: nodes[0][m] + offset[m] for m in ARM}, guard=probe_guard, intended=(lift, nodes[0]))
@@ -363,6 +411,8 @@ class AutocalSession(Operator):
             offset[m] += float(np.mean([nodes[0][m] - r.pos[m] for r in readings]))
         if max(abs(v) for v in offset.values()) > MAX_OFFSET_DEG:
             raise ProbeError(f"standing error over {MAX_OFFSET_DEG:g} deg at the standoff")
+        offset = bounded_offset(offset, nodes)
+        record["standoff_offset_deg"] = dict(offset)
         self.slew({m: nodes[0][m] + offset[m] for m in ARM}, guard=probe_guard, intended=(nodes[0], nodes[0]))
         stand_cmd = dict(self.commanded)
         self.trail.append(dict(stand_cmd))
@@ -388,7 +438,7 @@ class AutocalSession(Operator):
 
         # Prove every compensated segment through the deepest command before advancing.
         # Apply only the existing 15 mm tracking allowance to the compensated commands.
-        relax = {key: probe_guard.tracking_allowance_mm for key in probe_guard.clearances(stand_cmd)}
+        relax = dict.fromkeys(probe_guard.clearances(stand_cmd), probe_guard.tracking_allowance_mm)
         before = stand_cmd
         allowed_s = 0.0
         for depth in svals[1:]:
@@ -400,18 +450,18 @@ class AutocalSession(Operator):
                 break
             before, allowed_s = target, float(depth)
         limit = min(plan.standoff_mm + plan.window_mm, allowed_s - plan.d2_mm)
-        if limit < plan.standoff_mm + P.WINDOW_MIN_MM:
+        if limit < plan.standoff_mm + probe_planner.WINDOW_MIN_MM:
             raise ProbeError("compensated line too short inside joint limits and keep-out")
         record["compensated_search_limit_mm"] = limit
         # 4. The free-space baseline: hold at the standoff.
         self._phase(f"probe {spec.label}", "baseline at the standoff")
         hold = [sample(0.0, r) for r in self.hold(1.0)]
-        base = PR.baseline_from([h["div"] for h in hold], [h["torque"] for h in hold])
-        detector = PR.PressDetector(base, P.TORQUE_BACKSTOP_NM, ARM)
+        base = press_checks.baseline_from([h["div"] for h in hold], [h["torque"] for h in hold])
+        detector = press_checks.PressDetector(base, probe_planner.TORQUE_BACKSTOP_NM, ARM)
         record["baseline"] = dataclasses.asdict(base)
         # 5. The approach, at APPROACH_MM_S, until the divergence says the plane is reached.
         self._phase(f"probe {spec.label}", "approach")
-        v = P.APPROACH_MM_S * DT
+        v = probe_planner.APPROACH_MM_S * DT
         s, event, trace = 0.0, None, []
         allowance = -probe_guard.tracking_allowance_mm
         while s < limit:
@@ -448,8 +498,8 @@ class AutocalSession(Operator):
         def check_load():
             nonlocal backstop_ticks
             over = max(abs(self.reading.torque[m] - base.torque_nm[m]) for m in ARM)
-            backstop_ticks = backstop_ticks + 1 if over > P.TORQUE_BACKSTOP_NM else 0
-            if backstop_ticks >= PR.TORQUE_TICKS:
+            backstop_ticks = backstop_ticks + 1 if over > probe_planner.TORQUE_BACKSTOP_NM else 0
+            if backstop_ticks >= press_checks.TORQUE_TICKS:
                 self.retreat(command, s)
                 raise ProbeError(f"torque backstop during press ({over:.2f} Nm above baseline)")
 
@@ -470,7 +520,7 @@ class AutocalSession(Operator):
                 smp["div_excess"] = smp["div"] - detector.mean
                 jac = point_jacobian(pm, r.pos, smp["point"], jac_link)
                 dtau = np.array([r.torque[m] - base.torque_nm[m] for m in ARM])
-                smp["force_n"] = PR.force_from_torques(dtau, jac, n)
+                smp["force_n"] = press_checks.force_from_torques(dtau, jac, n)
                 samples.append(smp)
             return samples
 
@@ -480,7 +530,7 @@ class AutocalSession(Operator):
         p2 = press_to(plan.d2_mm)
         deep_pose = p2[-1]["pos"]
         problems = self.contact_problems(face, n, deep_pose)
-        verdict = PR.judge(p1, p2, plan.d1_mm, plan.d2_mm, n, plan.stiffness_n_per_m, problems)
+        verdict = press_checks.judge(p1, p2, plan.d1_mm, plan.d2_mm, n, plan.stiffness_n_per_m, problems)
         verdict["positions"] = {m: float(np.median([smp["pos"][m] for smp in p1 + p2])) for m in deep_pose}
         verdict["onset_mm"] = event.onset_mm
         record["presses"] = {
@@ -493,7 +543,7 @@ class AutocalSession(Operator):
     def retreat(self, command, s):
         """Back along the line to the standoff at RETREAT_MM_S (back_to_hub then takes the lift)."""
         self._phase("probe", "retreat")
-        v = P.RETREAT_MM_S * DT
+        v = probe_planner.RETREAT_MM_S * DT
         while s > 0:
             s = max(0.0, s - v)
             self.send(command(s))
@@ -504,7 +554,7 @@ class AutocalSession(Operator):
 
         problems = []
         lead, link = lead_margin(self.planner.pm, pose, n, self.planner.padding)
-        if lead < P.LEAD_MIN_MM / 2:
+        if lead < probe_planner.LEAD_MIN_MM / 2:
             problems.append(f"{link} (+ padding) is within {lead:.0f} mm of the jaw toward the glass")
         for other in ("floor", "left", "right"):
             if other == face or other not in self.estimate.known:
@@ -567,8 +617,8 @@ def run_session(
     clock,
     sleep,
     *,
-    specs=P.PROBES,
-    spares=P.SPARES,
+    specs=probe_planner.PROBES,
+    spares=probe_planner.SPARES,
     log=print,
     tick_hook=None,
     setup=None,
@@ -613,7 +663,9 @@ def run_session(
     if fit is not None:
         out["placement"] = placement_report(fit, keepout)
         if fit["valid"]:
-            tank_file, keepout_file = candidate_files(fit, out["fit"]["fit_touches"], tank, keepout, folder.name)
+            tank_file, keepout_file = candidate_files(
+                fit, out["fit"]["fit_touches"], tank, keepout, folder.name
+            )
             dump(folder / "candidate-tank.PENDING-APPROVAL.json", tank_file)
             dump(folder / "candidate-keepout.PENDING-APPROVAL.json", keepout_file)
             out["candidate_files"] = [

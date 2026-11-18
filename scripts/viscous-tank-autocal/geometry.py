@@ -40,7 +40,7 @@ ROOT = HERE.parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from makermodslab import (
+from makermodslab import (  # noqa: E402
     tank_geometry as geo,  # noqa: E402
     tank_guard,  # noqa: E402
 )
@@ -232,17 +232,17 @@ def lead_margin(model: geo.ArmModel, q: dict, normal: np.ndarray, padding: dict)
 
 def point_jacobian(model: geo.ArmModel, q: dict, point_mm: np.ndarray, link: str) -> np.ndarray:
     """d(point)/d(motor angle), metres per radian, 3 x 6, for a point fixed in `link`."""
-    r, t = geo.forward_kinematics(model, q)[link]
-    local = r.T @ (np.asarray(point_mm) / 1000 - t)
+    tf = geo.forward_kinematics(model, q)
     jac = np.zeros((3, len(ARM)))
-    h = 1e-4  # degrees
-    for i, m in enumerate(ARM):
-        qp, qm = dict(q), dict(q)
-        qp[m] += h
-        qm[m] -= h
-        rp, tp = geo.forward_kinematics(model, qp)[link]
-        rm, tm = geo.forward_kinematics(model, qm)[link]
-        jac[:, i] = ((rp @ local + tp) - (rm @ local + tm)) / math.radians(2 * h)
+    point = np.asarray(point_mm) / 1000
+    for joint in reversed(model.joints):
+        if joint.child != link:
+            continue
+        if joint.name in ARM:
+            r, origin = tf[link]
+            axis = (r @ joint.axis) * model.motor_to_urdf[joint.name]["sign"]
+            jac[:, ARM.index(joint.name)] = np.cross(axis, point - origin)
+        link = joint.parent
     return jac
 
 
@@ -349,16 +349,24 @@ def solve(
     hi = np.array([limits[m][1] for m in ARM])
     w = 0.12  # metres per radian of axis error
 
-    def residual(qd):
+    tips = geo.probe_local_points(model)
+    joints = [next(j for j in model.joints if j.name == m) for m in ARM]
+    signs = np.array([model.motor_to_urdf[m]["sign"] for m in ARM])
+
+    def evaluate(qd):
         tf = geo.forward_kinematics(model, qd)
-        tip = geo.probe_point(model, tf) / 1000
-        return np.r_[tip - target, w * (approach_axis(model, tf) - axis)]
+        tip = np.mean([tf[k][0] @ pt + tf[k][1] for k, pt in tips.items()], axis=0)
+        direction = approach_axis(model, tf)
+        axes = np.array([tf[j.child][0] @ j.axis for j in joints]) * signs[:, None]
+        origins = np.array([tf[j.child][1] for j in joints])
+        jac = np.vstack((np.cross(axes, tip - origins).T, w * np.cross(axes, direction).T))
+        return np.r_[tip - target, w * (direction - axis)], jac
 
     def pose(xv):
         return {**q, **dict(zip(ARM, xv, strict=True))}
 
     x = np.clip(np.array([q[m] for m in ARM]), lo, hi)
-    e = residual(pose(x))
+    e, jac = evaluate(pose(x))
     lam = 0.01
     best, stall = float(e @ e), 0
     for _ in range(iterations):
@@ -366,20 +374,13 @@ def solve(
         ang = math.degrees(np.linalg.norm(e[3:]) / w)
         if pos <= pos_tol_mm and ang <= axis_tol_deg:
             return pose(x)
-        jac = np.zeros((6, 6))
-        h = 0.01
-        for i in range(6):
-            xp = x.copy()
-            xp[i] += h
-            jac[:, i] = (residual(pose(xp)) - e) / math.radians(h)
-        # Levenberg-Marquardt: a joint pinned at a limit is dropped from the step it would leave by.
         for _ in range(8):
             step = np.degrees(-jac.T @ np.linalg.solve(jac @ jac.T + lam**2 * np.eye(6), e))
             step /= max(1.0, np.max(np.abs(step)) / 8.0)
             trial = np.clip(x + step, lo, hi)
-            e_trial = residual(pose(trial))
+            e_trial, trial_jac = evaluate(pose(trial))
             if e_trial @ e_trial < e @ e:
-                x, e, lam = trial, e_trial, max(lam / 3, 1e-4)
+                x, e, jac, lam = trial, e_trial, trial_jac, max(lam / 3, 1e-4)
                 break
             lam *= 4
         else:

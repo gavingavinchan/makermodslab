@@ -41,7 +41,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import context  # noqa: E402,F401  (import paths)
-import planner as P  # noqa: E402
+import planner as probe_planner  # noqa: E402
 from context import core, real  # noqa: E402
 from geometry import ARM, back_touch, load_inputs, nominal_estimate  # noqa: E402
 
@@ -56,16 +56,18 @@ def cmd_plan(args) -> int:
     model = context.offline_model(folder)
     tank, keepout = load_inputs()
     rest = context.arm_file_rest(model)
-    planner = P.Planner(model, keepout, model.limits, rest)
+    planner = probe_planner.Planner(model, keepout, model.limits, rest)
     est = nominal_estimate(tank, keepout)
-    result = P.plan_all(planner, est, P.PROBES + (P.SPARES if args.spares else ()))
+    result = probe_planner.plan_all(
+        planner, est, probe_planner.PROBES + (probe_planner.SPARES if args.spares else ())
+    )
     print(
         f"nominal planes (tank axes, mm): {json.dumps({k: round(v, 1) for k, v in est.offsets().items()})}, "
         f"yaw {est.yaw_deg:g} deg; back glass from the post (never probed): "
         f"{json.dumps(back_touch(est)['point_mm'])}"
     )
     print(f"hub = arm-file rest {_fmt(result['hub'])}  keep-out: {result['hub_guard']['ok']}")
-    print(f"probe gains (kp, kd): {P.PROBE_GAINS}")
+    print(f"probe gains (kp, kd): {probe_planner.PROBE_GAINS}")
     ok = 0
     for i, plan in enumerate(result["plans"], 1):
         s = plan.spec
@@ -81,11 +83,14 @@ def cmd_plan(args) -> int:
             f"({plan.lead_link}), other face {plan.other_face_mm:.0f} mm, guard slack {plan.guard_slack_mm:.1f} mm"
         )
         print(f"      lift     {_fmt(plan.lift)}")
-        print(f"      standoff {_fmt(plan.nodes[0])}")
+        for depth, node in zip(plan.node_s_mm, plan.nodes, strict=True):
+            print(f"      s={depth:6.1f} mm {_fmt(node)}  OK")
         print(f"      deepest  {_fmt(plan.nodes[-1])}  (s = {plan.node_s_mm[-1]:.0f} mm)")
-    print(f"{ok}/{len(result['plans'])} probes plannable against the nominal tank")
+    print(
+        f"{ok}/{len(result['plans'])} probes plannable assuming preceding feasible touches find the nominal panes"
+    )
     if args.out:
-        P.write_plan(Path(args.out), result)
+        probe_planner.write_plan(Path(args.out), result)
         print(f"plan written to {args.out}")
     return 0 if ok else 1
 
@@ -99,7 +104,8 @@ def _fmt(q):
 SCENARIOS = {
     # name: (description, kwargs for simulate)
     "nominal": "a random tank, nothing in the way",
-    "cable": "a soft cable bundle (300 N/m) hanging against the left wall at the second left probe",
+    "cable": "a soft cable bundle (300 N/m) under the first floor probe",
+    "post": "a floor request at the mount post",
     "rock": "a rigid 30 mm-tall object on the floor under the first floor probe",
     "floor_trap": "a wall probe planned 10 mm above the true floor (the floor is 22 mm higher than nominal)",
     "buckle": "the wrist joints go soft (kp 3) during the presses: the wrist folds",
@@ -110,7 +116,7 @@ SCENARIOS = {
     "second_signal": "the stop signal mid-press, then a second one during the return",
     "stale": "a motor stops answering mid-press",
     "limp": "shoulder_lift cuts out mid-press",
-    "missing_wall": "the right wall is 80 mm further than the window allows",
+    "missing_wall": "the right wall is 120 mm beyond its nominal location",
 }
 
 
@@ -127,18 +133,22 @@ def simulate(cfg: dict) -> dict:
     tank, keepout = load_inputs()
     model = context.offline_model(out / "model")
     rest = context.arm_file_rest(model)
-    planner = P.Planner(model, keepout, model.limits, rest, bank=_bank(model))
+    planner = probe_planner.Planner(model, keepout, model.limits, rest, bank=_bank(model))
     nominal = nominal_estimate(tank, keepout)
     truth = random_truth(nominal, rng)
-    specs, spares = list(P.PROBES), list(P.SPARES)
+    specs, spares = list(probe_planner.PROBES), list(probe_planner.SPARES)
     if scenario == "floor_trap":
         truth.floor = nominal.floor + 22.0
-        specs = [s for s in specs if s.face == "floor"][:1] + [P.ProbeSpec("right", "right", -330, 32)]
+        specs = [s for s in specs if s.face == "floor"][:1] + [
+            probe_planner.ProbeSpec("right", "right", -470, 2)
+        ]
         spares = []
+    if scenario == "post":
+        specs, spares = [probe_planner.ProbeSpec("floor", "floor", 106, 10)], []
     if scenario == "missing_wall":
-        truth.right = nominal.right - 80.0
-        truth.left = truth.right + nominal.dims["inner_width"] + 80.0  # an impossible tank: width check
-    kp_kd = P.PROBE_GAINS
+        truth.right = nominal.right - 120.0
+        specs, spares = [next(s for s in specs if s.face == "right")], []
+    kp_kd = probe_planner.PROBE_GAINS
     stop_event, abort_event = threading.Event(), threading.Event()
     log_lines = []
 
@@ -151,9 +161,9 @@ def simulate(cfg: dict) -> dict:
     arm_kw = {}
     obstacles = []
     if backend == "mujoco":
-        import sim as S
+        import sim
 
-        physics = S.Physics()
+        physics = sim.Physics()
         if scenario == "model_error":
             physics.encoder_bias_deg = {"shoulder_lift": 0.5, "elbow_flex": -0.5, "wrist_flex": 0.5}
         if scenario == "no_flex":
@@ -164,7 +174,7 @@ def simulate(cfg: dict) -> dict:
                 m: (600.0 if m in ("shoulder_pan", "shoulder_lift", "elbow_flex") else 300.0) for m in ARM
             }
             physics.backlash_deg = 0.1
-        recorder = S.Recorder(every_s=0.8) if cfg.get("video") else None
+        recorder = sim.Recorder(cfg["video"]) if cfg.get("video") else None
         arm = None
     pending = {"armed_fault": False}
 
@@ -175,13 +185,19 @@ def simulate(cfg: dict) -> dict:
         step = session.step or ""
         if recorder_ref.get("rec") is not None:
             recorder_ref["rec"].label = step[:90]
-        if scenario in ("red_button", "second_signal", "stale", "limp") and not pending["armed_fault"]:
-            if "press 2" in step:
-                pending["armed_fault"] = True
-                if scenario in ("red_button", "second_signal"):
-                    stop_event.set()
-                else:
-                    session.arm.fault, session.arm.fault_tick = fault, session.arm.ticks + 5
+        if backend == "mujoco":
+            session.arm.phase = step
+            session.arm.probe_number = len(session.probes)
+        if (
+            scenario in ("red_button", "second_signal", "stale", "limp")
+            and not pending["armed_fault"]
+            and "press 2" in step
+        ):
+            pending["armed_fault"] = True
+            if scenario in ("red_button", "second_signal"):
+                stop_event.set()
+            else:
+                session.arm.fault, session.arm.fault_tick = fault, session.arm.ticks + 5
         if scenario == "buckle" and backend == "mujoco":
             soft = "press" in step
             session.arm.kp_override = (
@@ -203,17 +219,18 @@ def simulate(cfg: dict) -> dict:
                 abort_event.set()
 
     recorder_ref = {}
-    if scenario == "cable":
-        left2 = truth.surface_point("left", -330, 100)
-        obstacles.append(("cable", "left", left2, 25.0, 15.0, 300.0))
-    if scenario == "rock":
-        floor1 = truth.surface_point("floor", -330, 0)
-        obstacles.append(("rock", "floor", floor1, 30.0, 30.0, None))
+    if scenario in ("cable", "rock"):
+        first = probe_planner.PROBES[0]
+        centre = truth.surface_point(first.face, first.u, first.v)
+        if scenario == "cable":
+            obstacles.append(("cable", first.face, centre, 38.0, 20.0, 300.0))
+        else:
+            obstacles.append(("rock", first.face, centre, 38.0, 24.0, None))
     if backend == "mujoco":
-        import sim as S
+        import sim
 
-        obs = [S.SimObstacle(face, tuple(c), r, h, k, name) for name, face, c, r, h, k in obstacles]
-        arm = S.MujocoArm(rest, truth, model.guard.model, kp_kd, physics, obs, seed=seed, recorder=recorder)
+        obs = [sim.SimObstacle(face, tuple(c), r, h, k, name) for name, face, c, r, h, k in obstacles]
+        arm = sim.MujocoArm(rest, truth, model.guard.model, kp_kd, physics, obs, seed=seed, recorder=recorder)
         recorder_ref["rec"] = recorder
         clock = arm.clock
     else:
@@ -263,8 +280,8 @@ def simulate(cfg: dict) -> dict:
         truth={"yaw_deg": truth.yaw_deg, **truth.offsets()},
         folder=str(out),
     )
-    if backend == "mujoco" and cfg.get("video") and recorder is not None and recorder.frames:
-        recorder.write(Path(cfg["video"]))
+    if backend == "mujoco" and cfg.get("video") and recorder is not None and recorder.writer is not None:
+        recorder.close()
         report["video"] = cfg["video"]
     (out / "report.json").write_text(json.dumps(report, indent=2, default=_jsonable) + "\n")
     return report
@@ -275,7 +292,7 @@ _BANKS = {}
 
 def _bank(model):
     if "bank" not in _BANKS:
-        _BANKS["bank"] = P.SeedBank(model.guard.model, model.limits)
+        _BANKS["bank"] = probe_planner.SeedBank(model.guard.model, model.limits)
     return _BANKS["bank"]
 
 
@@ -293,6 +310,7 @@ def evaluate(result, truth, nominal, arm, backend) -> dict:
     out = {
         "reason": result["reason"],
         "touches": len(session["touches"]),
+        "fit_failures": (fit or {}).get("failures", []),
         "rejected": [r["reasons"] for r in session["rejected"]],
         "abandoned": [p.get("reason") for p in session["probes"] if p.get("outcome") == "abandoned"],
         "unplannable": [p["spec"]["label"] for p in session["probes"] if p.get("outcome") == "unplannable"],
@@ -323,6 +341,7 @@ def evaluate(result, truth, nominal, arm, backend) -> dict:
         }
         out["fit"] = {
             "valid": fit["valid"],
+            "left_derived": fit.get("left_derived"),
             "failures": fit["failures"],
             "yaw_error_deg": fit["yaw_deg"] - truth.yaw_deg,
             "floor_error_mm": o["floor"] - truth.floor,
@@ -339,6 +358,10 @@ def evaluate(result, truth, nominal, arm, backend) -> dict:
         )
         contacts = {
             "peak_force_n": arm.peak_force_20ms_n,
+            "per_probe": arm.probe_contacts,
+            "peak_details": arm.peak_details,
+            "approach_first_contact_speeds_mm_s": arm.approach_contacts,
+            "peak_link_speed_deg_s": arm.peak_link_speed_deg_s,
             "peak_force_instant_n": arm.peak_force_n,
             "tick_force_p99_n": float(np.percentile(forces, 99)) if forces.size else 0.0,
             "max_first_contact_speed_mm_s": max((v for _, _, v in arm.first_contacts), default=0.0),
@@ -400,7 +423,7 @@ def cmd_sim(args) -> int:
     )
     print(json.dumps(summary, indent=2, default=_jsonable))
     print(f"results in {out}")
-    return 0
+    return int(any("crash" in r for r in reports))
 
 
 def _simulate_safe(cfg):
@@ -415,6 +438,13 @@ def _simulate_safe(cfg):
             "crash": f"{error!r}",
             "traceback": traceback.format_exc(),
         }
+
+
+def error_stat(values):
+    import numpy as np
+
+    v = np.abs(values)
+    return {"mean": float(v.mean()), "p95": float(np.percentile(v, 95)), "max": float(v.max())}
 
 
 def summarise(reports) -> dict:
@@ -452,19 +482,27 @@ def summarise(reports) -> dict:
                 (r["contacts"]["peak_force_n"] for r in runs if "contacts" in r), default=None
             ),
         }
+        contacts = [r["contacts"] for r in runs if "contacts" in r]
+        entry["derived_left_valid_fits"] = sum(bool(f.get("left_derived")) for f in valid)
+        entry["peak_force_instant_n"] = max(
+            (c["peak_force_instant_n"] for c in contacts if "peak_force_instant_n" in c), default=None
+        )
+        entry["peak_physics_joint_deg_s"] = max(
+            (c["peak_link_speed_deg_s"] for c in contacts if "peak_link_speed_deg_s" in c), default=None
+        )
+        entry["max_first_approach_contact_mm_s"] = max(
+            (v for c in contacts for v in c.get("approach_first_contact_speeds_mm_s", {}).values()),
+            default=None,
+        )
         if valid:
-
-            def stat(key):
-                v = np.abs([f[key] for f in valid])
-                return {"mean": float(v.mean()), "p95": float(np.percentile(v, 95)), "max": float(v.max())}
-
-            entry.update(
-                yaw_error_deg=stat("yaw_error_deg"),
-                floor_error_mm=stat("floor_error_mm"),
-                left_error_mm=stat("left_error_mm_max_over_reach"),
-                right_error_mm=stat("right_error_mm_max_over_reach"),
-                centre_error_mm=stat("centre_error_mm"),
-            )
+            for label, key in (
+                ("yaw_error_deg", "yaw_error_deg"),
+                ("floor_error_mm", "floor_error_mm"),
+                ("left_error_mm", "left_error_mm_max_over_reach"),
+                ("right_error_mm", "right_error_mm_max_over_reach"),
+                ("centre_error_mm", "centre_error_mm"),
+            ):
+                entry[label] = error_stat([f[key] for f in valid])
             touch = np.abs([e for r in runs for _, e in r.get("touch_errors_mm", [])])
             if touch.size:
                 entry["touch_error_mm"] = {"mean": float(touch.mean()), "max": float(touch.max())}
@@ -480,7 +518,7 @@ class ProbeLabArm(real.LabArm):
 
     def connect(self):
         saved = real.FOLLOWER_GAINS
-        real.FOLLOWER_GAINS = {m: P.PROBE_GAINS[m] for m in ARM}
+        real.FOLLOWER_GAINS = {m: probe_planner.PROBE_GAINS[m] for m in ARM}
         try:
             super().connect()
         finally:
@@ -518,7 +556,7 @@ def cmd_run(args) -> int:
         if holder := real.lab_holder(url, False) or real.port_holders(record["follower_port"]):
             raise SystemExit(f"Lab/port not idle: {holder}")
         real.release_lab_previews(url, False)
-        model = context.astra_model.Model(arm_path, real.ENVIRONMENTS["tank"], folder, limits, True)
+        model = context.CalibrationModel(arm_path, real.ENVIRONMENTS["tank"], folder, limits, True)
         if not args.armed:
             # Passive: bus open without the energizing handshake, read the start, plan, close.
             arm = PassiveLabArm.__new__(PassiveLabArm)
@@ -543,11 +581,15 @@ def cmd_run(args) -> int:
             start = reading.pos
             gate = model.guard.start_gate(start)
             print(f"UNARMED: measured start {_fmt(start)}; start gate {'OK' if gate.ok else gate}")
-            planner = P.Planner(model, keepout, model.limits, start)
+            if not gate.ok:
+                raise SystemExit("start gate refused the measured pose")
+            planner = probe_planner.Planner(model, keepout, model.limits, context.arm_file_rest(model))
             est = nominal_estimate(tank, keepout)
             hub = planner.hub(est)
-            for spec in P.PROBES:
-                plan = planner.plan(spec, est, [], hub)
+            model.plan(start, [hub], start)
+            model.plan(hub, [start], start)
+            for plan in probe_planner.plan_all(planner, est)["plans"]:
+                spec = plan.spec
                 print(
                     f"  {spec.label:12s} u={spec.u:5.0f} v={spec.v:4.0f} "
                     + (
@@ -559,7 +601,7 @@ def cmd_run(args) -> int:
             print("No torque was enabled. Re-run with --armed after Gavin's go.")
             return 0
         rest_guess = context.arm_file_rest(model)
-        planner = P.Planner(model, keepout, model.limits, rest_guess)
+        planner = probe_planner.Planner(model, keepout, model.limits, rest_guess)
         arm = ProbeLabArm(home, record, 15, cameras=False)
         result = run_session(
             arm, model, planner, folder, events, tank, keepout, pid, time.monotonic, time.sleep
