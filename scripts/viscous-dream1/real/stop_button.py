@@ -240,7 +240,10 @@ class StopLogic:
         cmd = self.command(pid)
         if cmd is None:
             return None, f"pid {pid} is not running (runner exited)"
-        if cmd and RUNNER not in cmd:
+        astra_serve = re.match(
+            r"^(?:\S*/)?(?i:python)(?:3(?:\.\d+)?)?\s+(?:\S*/)?astra_op\.py\s+serve(?:\s|$)", cmd
+        )
+        if cmd and RUNNER not in cmd and not astra_serve:
             return None, f"pid {pid} is not {RUNNER} ({cmd[:60]}); not signalling it"
         return pid, f"runner pid {pid} alive"
 

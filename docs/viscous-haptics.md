@@ -128,6 +128,19 @@ restore paths in the DAgger runner.
   officially supports, so Gavin wants Dream-1 to drive it, possibly through "a
   translation layer ... so that ... the Dream One model just pretends that it is
   ... using the maker arm but then in reality it's using my arm" (2026-10-20).
+- *Status (2026-11-18): Astra drives the arm through a MakerMods-style operator harness.*
+  Gavin wanted MakerMods' one-command camera loop so the agent can choose the next
+  move from the actual hand view. `scripts/viscous-astra/` pairs the existing Lab
+  arm connection and stop routine with tank-model tip IK, whole-path glass checks,
+  measured telemetry and a server-side command budget. The Linux replay lifted
+  a simulated 25 mm cube about 60 mm and returned to rest. The red-button path
+  was exercised against the fake server. The first Astra smoke found both direct
+  sandbox transports blocked and stopped on MCP tool approval. The repaired
+  bridge delivered both JPEGs and executed observe, nudge, rest and quit through
+  Codex app-server. An unbilled, scripted local model endpoint then exercised
+  the corrected production launcher and received both images after each command. Mac isolation, physical torque-off reads, grasp
+  sensing and all powered motion still need Gavin's bench checks.
+  [Operator procedure and replay recipe](../scripts/viscous-astra/OPERATING.md).
 - *Status (2026-11-07):* first step toward the real arm. Gavin: "can we now
   build a bounding box to run dream1?" A keep-out box that gates every joint
   target against the measured tank is built and tested offline; the real-run

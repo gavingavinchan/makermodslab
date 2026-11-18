@@ -48,10 +48,12 @@ def terminal_run_active(path=None, *, process=psutil.Process) -> bool:
         if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
             raise ValueError("invalid pid")
         proc = process(pid)
+        argv = proc.cmdline()
+        astra = len(argv) >= 3 and Path(argv[1]).name == "astra_op.py" and argv[2] == "serve"
         valid = (
             proc.is_running()
             and proc.create_time() == marker["process_start_time"]
-            and any(Path(arg).name == "dream_real.py" for arg in proc.cmdline())
+            and (astra or any(Path(arg).name == "dream_real.py" for arg in argv))
         )
     except psutil.AccessDenied:
         # A reader unable to verify identity must not open a competing camera.
