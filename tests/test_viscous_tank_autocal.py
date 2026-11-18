@@ -32,7 +32,7 @@ import context  # noqa: E402
 import fitting  # noqa: E402
 import geometry  # noqa: E402
 import planner as probe_planner  # noqa: E402
-import press_checks  # noqa: E402
+import press as press_checks  # noqa: E402
 
 ARM = geometry.ARM
 

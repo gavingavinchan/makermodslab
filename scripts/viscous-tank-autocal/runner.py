@@ -35,7 +35,7 @@ import time
 
 import numpy as np
 import planner as probe_planner
-import press_checks
+import press as press_checks
 from context import core, real
 from geometry import ARM, back_touch, contact_point, point_jacobian
 from session import Operator
