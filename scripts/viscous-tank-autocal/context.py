@@ -21,6 +21,7 @@ and stop path. Nothing here opens a port.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -41,10 +42,28 @@ def profile_limits() -> dict:
     return json.loads(PROFILE.read_text())["follower"]["joint_limits"]
 
 
+class CalibrationModel(astra_model.Model):
+    """Retain the harness segment proofs and slow every transit to the probe slew speed."""
+
+    def plan(self, start, goals, rest, poll=lambda: None):
+        from planner import SLEW_DEG_S
+
+        steps = super().plan(start, goals, rest, poll)
+        out = []
+        previous = start
+        for target, origin, speed, verdict in steps:
+            count = max(1, math.ceil(astra_model.travel(previous, target) / (SLEW_DEG_S * core.ROW_DT_S) - 1e-9))
+            for i in range(1, count + 1):
+                step = astra_model.mix(previous, target, i / count)
+                out.append((step, origin, min(speed, SLEW_DEG_S), verdict))
+            previous = target
+        return out
+
+
 def offline_model(folder: Path, arm_file: Path | None = None, limits: dict | None = None):
     """The harness Model on the committed tank arm file (lab=False: no station approval check)."""
     folder.mkdir(parents=True, exist_ok=True)
-    return astra_model.Model(
+    return CalibrationModel(
         arm_file or real.DEFAULT_ARM_FILE,
         real.ENVIRONMENTS["tank"],
         folder,

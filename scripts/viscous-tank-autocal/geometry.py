@@ -246,6 +246,44 @@ def point_jacobian(model: geo.ArmModel, q: dict, point_mm: np.ndarray, link: str
     return jac
 
 
+def solve_jaw_position(model, seed, target, normal, limits):
+    """Trace the normal with a free wrist orientation. Tangential coordinates follow the
+    CAD tip, while depth follows the leading jaw vertex. The two can differ on a tilted jaw.
+    Resolve redundant joints locally from the last pose and keep all six soft limits."""
+    tips = geo.probe_local_points(model)
+    joints = [j for j in model.joints if j.name in ARM]
+    signs = np.array([model.motor_to_urdf[j.name]["sign"] for j in joints])
+    lo, hi = np.array([limits[j.name] for j in joints]).T
+    q = dict(seed)
+    for _ in range(45):
+        tf = geo.forward_kinematics(model, q)
+        tip = np.mean([tf[k][0] @ pt + tf[k][1] for k, pt in tips.items()], axis=0)
+        verts = finger_vertices_mm(model, tf) / 1000
+        contact = verts[np.argmax(verts @ normal)]
+        point = tip + normal * ((contact - tip) @ normal)
+        err = target / 1000 - point
+        if np.linalg.norm(err) < 0.00020:
+            return q
+        axes = np.array([tf[j.child][0] @ j.axis for j in joints]) * signs[:, None]
+        origins = np.array([tf[j.child][1] for j in joints])
+        tip_j = np.cross(axes, tip - origins).T
+        normal_j = normal @ np.cross(axes, contact - origins).T
+        jac = tip_j + np.outer(normal, normal_j - normal @ tip_j)
+        x = np.array([q[j.name] for j in joints])
+        free = np.ones(len(joints), dtype=bool)
+        for _ in joints:
+            jfree = jac[:, free]
+            delta = np.zeros_like(x)
+            delta[free] = np.degrees(jfree.T @ np.linalg.solve(jfree @ jfree.T + 0.008**2 * np.eye(3), err))
+            pinned = ((x <= lo + 0.001) & (delta < 0)) | ((x >= hi - 0.001) & (delta > 0))
+            if not pinned.any():
+                break
+            free[pinned] = False
+        x = np.clip(x + delta / max(1.0, np.max(np.abs(delta)) / 5), lo, hi)
+        q.update((j.name, float(value)) for j, value in zip(joints, x, strict=True))
+    raise IKError("jaw position outside the local joint branch")
+
+
 def contact_link(model: geo.ArmModel, q: dict, normal: np.ndarray) -> str:
     transforms = geo.forward_kinematics(model, q)
     best = max(

@@ -120,12 +120,14 @@ class ContactModel:
             depth, name, n, vertex, k_surface = self._deepest(q)
             if name is None or depth < 1e-4:
                 break
-            link = min(FINGERS, key=lambda f: 0)  # either finger: both are rigid with the wrist
+            link = FINGERS[0]  # either finger: both are rigid with the wrist
             jac = point_jacobian(self.pm, q, vertex, link)
             kinv = np.diag([1.0 / self.kp[m] for m in ARM])
             c = float(n @ jac @ kinv @ jac.T @ n)
             soft = 0.0 if math.isinf(k_surface) else 1.0 / k_surface
-            force = depth / 1000 / (c + soft)
+            force = (depth / 1000 - soft * forces.get(name, 0.0)) / (c + soft)
+            if force < 1e-6:
+                break
             dq = -kinv @ jac.T @ n * force
             for i, m in enumerate(ARM):
                 q[m] += math.degrees(dq[i])
@@ -227,6 +229,8 @@ class PlaneFakeArm(real.FakeArm):
         self.returns.append((dict(pose), speed))
         steps = max(1, math.ceil(travel / (speed * core.ROW_DT_S)))
         for i in range(1, steps + 21):
+            if self.read_hook:
+                self.read_hook()
             if abort.is_set():
                 return False, "cut-short"
             f = min(1.0, i / steps)

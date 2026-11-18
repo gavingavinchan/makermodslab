@@ -138,6 +138,8 @@ class AutocalSession(Operator):
 
     def _phase(self, name, detail=""):
         self.step = f"{name}: {detail}" if detail else name
+        if hasattr(self.arm, "phase"):
+            self.arm.phase = self.step
         super()._phase(name, detail)
 
     def poll(self):
@@ -166,6 +168,10 @@ class AutocalSession(Operator):
         """One guarded tick: speed-checked against the 15 deg/s cap, then sent, then a fresh reading."""
         if self.stop_event.is_set():
             raise RuntimeError("red button")
+        for m in ARM:
+            lo, hi = self.limits[m]
+            if not lo <= target[m] <= hi:
+                raise ProbeError(f"compensated {m} target {target[m]:.2f} outside {lo:.2f}..{hi:.2f}")
         step = max(abs(target[m] - self.commanded[m]) for m in ARM)
         speed = step / DT
         if speed > real.HARD_ARM_SPEED_DEG_S + 1e-6:
@@ -218,6 +224,9 @@ class AutocalSession(Operator):
         self.hub = self.planner.hub(self.estimate)
         if max(abs(self.commanded[m] - self.hub[m]) for m in ARM) > 0.5:
             self.execute([self.hub])
+        if abs(self.commanded["gripper"] - core.GRIP_CLOSED_DEG) > 1.0:
+            raise ProbeError("calibration requires a closed jaw")
+        self.planner.poll = self.heartbeat
         self.base_trail = [dict(p) for p in self.trail]
         queue = list(self.specs)
         spares = list(self.spares)
@@ -236,6 +245,8 @@ class AutocalSession(Operator):
         # location (once per dropped touch); then the final fit.
         if result["dropped"]:
             self.touches = result["kept"]
+            self.estimate = P.update_estimate(self.nominal, self.touches)
+            P.sync_guard(self.model.guard, self.estimate, self.planner.nominal, conservative=True)
             self.dropped = result["dropped"]
             for label in result["dropped_labels"]:
                 replacement = next((s for s in spares if P.face_of(s.label) == P.face_of(label)), None)
@@ -342,9 +353,8 @@ class AutocalSession(Operator):
                 raise ProbeError(f"standing error over {MAX_OFFSET_DEG:g} deg at the lift pose: {offset}")
             self.slew({m: lift[m] + offset[m] for m in ARM}, guard=probe_guard, intended=(lift, lift))
         record["offset_deg"] = dict(offset)
-        lift_cmd = dict(self.commanded)
         # 3. Down to the standoff, re-measure the standing error there.
-        self.trail.append(dict(lift_cmd))
+        self.trail.append(dict(lift))
         self.retreat_path = [lift]
         self._phase(f"probe {spec.label}", "descend to the standoff")
         self.slew({m: nodes[0][m] + offset[m] for m in ARM}, guard=probe_guard, intended=(lift, nodes[0]))
@@ -376,6 +386,23 @@ class AutocalSession(Operator):
                 "torque": dict(reading.torque),
             }
 
+        # Prove every compensated segment through the deepest command before advancing.
+        # Apply only the existing 15 mm tracking allowance to the compensated commands.
+        relax = {key: probe_guard.tracking_allowance_mm for key in probe_guard.clearances(stand_cmd)}
+        before = stand_cmd
+        allowed_s = 0.0
+        for depth in svals[1:]:
+            self.heartbeat()
+            target = command(depth)
+            if any(not self.limits[m][0] <= target[m] <= self.limits[m][1] for m in ARM):
+                break
+            if not probe_guard._scan(before, target, to_violation=False, relax=relax)[0].ok:
+                break
+            before, allowed_s = target, float(depth)
+        limit = min(plan.standoff_mm + plan.window_mm, allowed_s - plan.d2_mm)
+        if limit < plan.standoff_mm + P.WINDOW_MIN_MM:
+            raise ProbeError("compensated line too short inside joint limits and keep-out")
+        record["compensated_search_limit_mm"] = limit
         # 4. The free-space baseline: hold at the standoff.
         self._phase(f"probe {spec.label}", "baseline at the standoff")
         hold = [sample(0.0, r) for r in self.hold(1.0)]
@@ -385,7 +412,6 @@ class AutocalSession(Operator):
         # 5. The approach, at APPROACH_MM_S, until the divergence says the plane is reached.
         self._phase(f"probe {spec.label}", "approach")
         v = P.APPROACH_MM_S * DT
-        limit = plan.standoff_mm + plan.window_mm
         s, event, trace = 0.0, None, []
         allowance = -probe_guard.tracking_allowance_mm
         while s < limit:
@@ -417,14 +443,29 @@ class AutocalSession(Operator):
         # 6. Two presses past the onset, each held; settled samples are plane points.
         jac_link = "gripper_left"
 
+        backstop_ticks = 0
+
+        def check_load():
+            nonlocal backstop_ticks
+            over = max(abs(self.reading.torque[m] - base.torque_nm[m]) for m in ARM)
+            backstop_ticks = backstop_ticks + 1 if over > P.TORQUE_BACKSTOP_NM else 0
+            if backstop_ticks >= PR.TORQUE_TICKS:
+                self.retreat(command, s)
+                raise ProbeError(f"torque backstop during press ({over:.2f} Nm above baseline)")
+
         def press_to(depth):
             target = min(event.onset_mm + depth, float(svals[-1]))
             nonlocal s
             while s < target - 1e-9:
                 s = min(s + v, target)
                 self.send(command(s))
+                check_load()
             samples = []
-            for r in self.hold(HOLD_S):
+            for _ in range(round(HOLD_S / DT)):
+                self.send(self.commanded)
+                check_load()
+                r = self.reading
+                r.t = self.clock()
                 smp = sample(s, r)
                 smp["div_excess"] = smp["div"] - detector.mean
                 jac = point_jacobian(pm, r.pos, smp["point"], jac_link)
@@ -451,7 +492,7 @@ class AutocalSession(Operator):
 
     def retreat(self, command, s):
         """Back along the line to the standoff at RETREAT_MM_S (back_to_hub then takes the lift)."""
-        self._phase(self.status_phase, "retreat")
+        self._phase("probe", "retreat")
         v = P.RETREAT_MM_S * DT
         while s > 0:
             s = max(0.0, s - v)
@@ -572,7 +613,7 @@ def run_session(
     if fit is not None:
         out["placement"] = placement_report(fit, keepout)
         if fit["valid"]:
-            tank_file, keepout_file = candidate_files(fit, out["fit"]["kept"], tank, keepout, folder.name)
+            tank_file, keepout_file = candidate_files(fit, out["fit"]["fit_touches"], tank, keepout, folder.name)
             dump(folder / "candidate-tank.PENDING-APPROVAL.json", tank_file)
             dump(folder / "candidate-keepout.PENDING-APPROVAL.json", keepout_file)
             out["candidate_files"] = [

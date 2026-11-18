@@ -48,21 +48,26 @@ def width_fallback(touches: list[dict], tank: dict) -> tuple[list[dict], dict | 
     kept as a held-out check of that width, so its residual measures the width error. Returns the
     touches for the fit and a note (None when not needed)."""
     left = [t for t in touches if t["label"] == "left"]
-    xs = [t["point_mm"][0] for t in left]
-    if len(left) >= 2 and max(xs) - min(xs) >= geo.MIN_WALL_SPAN_MM:
-        return touches, None
+    def wall_axes(points):
+        xy = np.array([t["point_mm"][:2] for t in points])
+        _, _, axes = np.linalg.svd(xy - xy.mean(axis=0), full_matrices=False)
+        direction = axes[0] if axes[0, 0] >= 0 else -axes[0]
+        return geo.tank_axes(math.degrees(math.atan2(direction[1], direction[0])))
+
+    if len(left) >= 2:
+        coords = np.array([t["point_mm"] for t in left]) @ wall_axes(left).T
+        if np.ptp(coords[:, 0]) >= geo.MIN_WALL_SPAN_MM:
+            return touches, None
     right = [t for t in touches if t["label"] == "right"]
     if len(right) < 2:
         return touches, None
     width = tank["outer_dimensions_mm"]["value"]["width"] - 2 * tank["glass_thickness_mm"]["value"]
-    p = np.array([t["point_mm"] for t in right], dtype=float)
-    dx, dy = p[:, 0] - p[:, 0].mean(), p[:, 1] - p[:, 1].mean()
-    yaw = math.degrees(math.atan2(float(dx @ dy), float(dx @ dx))) if float(dx @ dx) > 1.0 else 0.0
-    axes = geo.tank_axes(yaw)
+    axes = wall_axes(right)
+    projected = np.array([t["point_mm"] for t in right]) @ axes.T
+    mid = projected.mean(axis=0)
     synthetic = []
-    for t in sorted(right, key=lambda t: t["point_mm"][0])[:: max(1, len(right) - 1)]:
-        p = axes @ np.asarray(t["point_mm"], dtype=float)
-        p[1] += width
+    for x in (min(projected[:, 0]), max(projected[:, 0])):
+        p = np.array([x, mid[1] + width, mid[2]])
         synthetic.append(
             {
                 "label": "left",
@@ -77,6 +82,7 @@ def width_fallback(touches: list[dict], tank: dict) -> tuple[list[dict], dict | 
         "mode": "left_from_width",
         "inner_width_mm": width,
         "real_left_touches_as_checks": len(checks),
+        "total_left_checks": len(checks) + sum(t["label"] == "check:left" for t in rest),
         "why": "the +y touches could not span fit_tank's 150 mm (J1's +187.5 deg soft limit)",
     }
     return [*rest, *checks, *synthetic], note
@@ -87,33 +93,44 @@ def robust_fit(touches: list[dict], tank: dict, estimate: Estimate) -> dict:
     rigid object on the floor, say, passes the press check but not the plane) as long as the face
     keeps its minimum. Returns {fit, kept, dropped, dropped_labels}."""
     back = back_touch(estimate)
-    kept, fallback = width_fallback(list(touches), tank)
+    kept = list(touches)
     dropped = []
-    fit = _fit([*kept, back], tank)
-    while not fit["valid"] and "residuals" in fit and len(dropped) < MAX_DROPS:
-        if not any("residual" in f for f in fit["failures"]):
-            break
-        candidates = []
-        for r in fit["residuals"]:
-            if r["index"] >= len(kept):
-                continue  # the synthetic back touch
-            touch = kept[r["index"]]
-            face = touch["label"].removeprefix("check:")
-            same = [t for t in kept if t["label"] == touch["label"]]
-            if not touch["label"].startswith("check:") and len(same) - 1 < MIN_COUNTS.get(face, 1):
+
+    def fit_measured(points):
+        inputs, fallback = width_fallback(points, tank)
+        fit = _fit([*inputs, back], tank)
+        if fallback is not None:
+            fit["left_derived"] = fallback
+        return fit, inputs, fallback
+
+    fit, inputs, fallback = fit_measured(kept)
+    while len(dropped) < MAX_DROPS and any("residual" in reason for reason in fit["failures"]):
+        # A held-out disagreement is evidence against the candidate. Never discard it,
+        # and rebuild the width construction whenever a real right-wall sample is removed.
+        trials = []
+        for index, touch in enumerate(kept):
+            label = touch["label"]
+            if label.startswith("check:") or (label == "left" and fallback is not None):
                 continue
-            candidates.append((abs(r["residual_mm"]), r["index"]))
-        if not candidates:
+            if sum(t["label"] == label for t in kept) <= MIN_COUNTS.get(label, 1):
+                continue
+            remaining = kept[:index] + kept[index + 1 :]
+            alt, _, _ = fit_measured(remaining)
+            if alt.get("max_mm", math.inf) < fit["max_mm"] and all(
+                "residual" in reason for reason in alt["failures"]
+            ):
+                trials.append((alt["max_mm"], index))
+        if not trials:
             break
-        _, index = max(candidates)
-        dropped.append({**kept[index], "dropped_residual_mm": max(candidates)[0]})
-        kept = kept[:index] + kept[index + 1 :]
-        fit = _fit([*kept, back], tank)
-    if fallback is not None:
-        fit["left_derived"] = fallback
+        _, index = min(trials)
+        touch = kept.pop(index)
+        residual = next(r for r in fit["residuals"] if inputs[r["index"]] is touch)
+        dropped.append({**touch, "dropped_residual_mm": abs(residual["residual_mm"])})
+        fit, inputs, fallback = fit_measured(kept)
     return {
         "fit": fit,
         "kept": kept,
+        "fit_touches": [*inputs, back],
         "dropped": dropped,
         "dropped_labels": [d["label"] for d in dropped],
         "left_derived": fallback,
@@ -165,6 +182,10 @@ def candidate_files(fit: dict, touches: list[dict], tank: dict, keepout: dict, r
         "run": run,
         "do_not_use_until": "Gavin approves it; copy values by hand, this file replaces nothing",
     }
+    if fit.get("left_derived"):
+        note["left_wall"] = fit["left_derived"]
+        exported["outer_dimensions_mm"]["source"] = "Nominal inner width used to derive the +y plane"
+        exported["outer_dimensions_mm"]["status"] = "nominal_width_assumed"
     exported = {"approval": note, **exported}
     o = fit["offsets_mm"]
     proposal = copy.deepcopy(keepout)

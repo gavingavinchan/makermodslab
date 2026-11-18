@@ -58,7 +58,7 @@ def setup(tmp_path_factory):
     }
 
 
-FLOOR = P.ProbeSpec("floor", "floor", -330, 0)
+FLOOR = P.PROBES[0]
 
 
 @pytest.fixture(scope="module")
@@ -96,8 +96,9 @@ def test_planned_floor_probe_is_slow_soft_and_jaw_first(setup, floor_plan):
     # The deepest command stops at the window plus the deep press, never further.
     assert plan.node_s_mm[-1] == pytest.approx(plan.standoff_mm + plan.window_mm + plan.d2_mm)
     # Every node is a 4 mm step: at 3 mm/s no joint target moves near 15 deg/s.
-    worst = max(max(abs(a[m] - b[m]) for m in ARM) for a, b in zip(plan.nodes, plan.nodes[1:], strict=False))
-    assert worst / (P.NODE_MM / P.APPROACH_MM_S) < 1.0
+    for a, b, sa, sb in zip(plan.nodes[:-1], plan.nodes[1:], plan.node_s_mm[:-1], plan.node_s_mm[1:], strict=True):
+        dt = (sb - sa) / P.APPROACH_MM_S
+        assert max(abs(a[m] - b[m]) for m in ARM) / dt <= 15
     # The lift and the standoff pass the NORMAL keep-out; the press line passes the probe one.
     model = setup["model"]
     assert model.guard.check_pose(plan.lift).ok and model.guard.check_pose(plan.nodes[0]).ok
@@ -297,6 +298,22 @@ def test_fit_drops_a_touch_that_is_not_on_the_glass(setup):
     assert result["fit"]["offsets_mm"]["floor"] == pytest.approx(truth.floor, abs=0.05)
 
 
+def test_width_fallback_keeps_measurements_and_held_out_disagreement(setup):
+    truth = _truth(setup["nominal"], yaw=2.0)
+    touches = [t for t in _touches(truth) if t["label"] != "left"]
+    result = fitting.robust_fit(touches, setup["tank"], truth)
+    assert result["fit"]["valid"]
+    assert result["fit"]["left_derived"]["inner_width_mm"] == 434
+    assert result["kept"] == touches
+    assert result["fit"]["offsets_mm"]["left"] == pytest.approx(truth.left, abs=0.01)
+    assert result["fit"]["yaw_deg"] == pytest.approx(truth.yaw_deg, abs=0.01)
+    check = next(t for t in touches if t["label"] == "check:left")
+    check["point_mm"][1] += 15
+    bad = fitting.robust_fit(touches, setup["tank"], truth)
+    assert not bad["fit"]["valid"]
+    assert check in bad["kept"]
+
+
 def test_candidate_files_are_pending_and_touch_nothing(setup, tmp_path):
     truth = _truth(setup["nominal"], yaw=0.3)
     before = {p: p.read_bytes() for p in (G.geo.DEFAULT_TANK, P.tank_guard.DEFAULT_CONFIG)}
@@ -434,7 +451,7 @@ def test_a_soft_obstacle_is_rejected_not_fitted(setup, tmp_path):
     from fakes import Obstacle
 
     truth = _truth(setup["nominal"], yaw=0.0, shift=0.0, floor=0.0)
-    cable = Obstacle("floor", tuple(truth.surface_point("floor", -330, 0)), 40.0, 15.0, 300.0, "cable")
+    cable = Obstacle("floor", tuple(truth.surface_point(FLOOR.face, FLOOR.u, FLOOR.v)), 40.0, 15.0, 300.0, "cable")
     result, arm, _ = _session(setup, tmp_path, truth=truth, obstacles=[cable])
     probe = result["session"]["probes"][0]
     assert probe["outcome"] == "rejected", probe.get("verdict")
