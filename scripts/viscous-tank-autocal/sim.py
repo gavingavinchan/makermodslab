@@ -537,13 +537,14 @@ class MujocoArm(real.FakeArm):
         travel = max(abs(start[m] - pose[m]) for m in pose)
         self.returns.append((dict(pose), speed))
         steps = max(1, math.ceil(travel / (speed * core.ROW_DT_S)))
-        for i in range(1, steps + 1):
+        # Keep the stop button and feedback watch active during the final settling second.
+        for i in range(1, steps + 21):
             if self.read_hook:
                 self.read_hook()
             if abort.is_set():
                 return False, "cut-short"
             for m, v in pose.items():
-                goal = start[m] + (v - start[m]) * i / steps
+                goal = start[m] + (v - start[m]) * min(i / steps, 1.0)
                 max_step = speed * core.ROW_DT_S
                 self.target[m] += max(-max_step, min(max_step, goal - self.target[m]))
             self.clock.sleep(core.ROW_DT_S)
@@ -554,8 +555,6 @@ class MujocoArm(real.FakeArm):
             ):
                 self.events.append(f"return leg: ended by {trips[0].name} after {i}/{steps} steps")
                 return False, f"{trips[0].name}: {trips[0].detail}"
-        for _ in range(20):
-            self.clock.sleep(core.ROW_DT_S)
         self.events.append(f"return leg: {travel:.1f} deg max travel at {speed:.0f} deg/s")
         motor, off = max(((m, abs(self.encoder[m] - v)) for m, v in pose.items()), key=lambda kv: kv[1])
         if off <= 2.0:

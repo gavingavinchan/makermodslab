@@ -103,13 +103,14 @@ def _fmt(q):
 
 SCENARIOS = {
     # name: (description, kwargs for simulate)
-    "nominal": "a random tank, nothing in the way",
+    "nominal": "random displacements about the CAD mount, nothing in the way",
+    "centred": "random displacements about a physically centred mount, using the same CAD planner prior",
     "cable": "a soft cable bundle (300 N/m) under the first floor probe",
     "post": "a floor request at the mount post",
     "wrist_post": "a raised rigid pin under the wrist during a floor press with softened wrist gains",
     "rock": "a localized rigid 24 mm-tall object under the first floor probe",
     "rock_wide": "a rigid object extending under several floor probes",
-    "floor_trap": "a wall probe planned 10 mm above the true floor (the floor is 22 mm higher than nominal)",
+    "floor_trap": "a wall target 2 mm above the estimated floor, with the true floor raised 22 mm",
     "buckle": "the wrist joints go soft (kp 3) during the presses: the wrist folds",
     "model_error": "0.5 deg encoder zero errors on lift, elbow and wrist_flex (a URDF/calibration error)",
     "no_flex": "random tanks with no structural flex or backlash (the method's own accuracy)",
@@ -137,7 +138,11 @@ def simulate(cfg: dict) -> dict:
     rest = context.arm_file_rest(model)
     planner = probe_planner.Planner(model, keepout, model.limits, rest, bank=_bank(model))
     nominal = nominal_estimate(tank, keepout)
-    truth = random_truth(nominal, rng)
+    simulated_mount = nominal.copy()
+    if scenario == "centred":
+        half_width = nominal.dims["inner_width"] / 2
+        simulated_mount.left, simulated_mount.right = half_width, -half_width
+    truth = random_truth(simulated_mount, rng)
     specs, spares = list(probe_planner.PROBES), list(probe_planner.SPARES)
     if scenario == "floor_trap":
         truth.floor = nominal.floor + 22.0

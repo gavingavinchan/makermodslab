@@ -84,12 +84,12 @@ def width_fallback(touches: list[dict], tank: dict) -> tuple[list[dict], dict | 
         "inner_width_mm": width,
         "real_left_touches_as_checks": len(checks),
         "total_left_checks": len(checks) + sum(t["label"] == "check:left" for t in rest),
-        "why": "the +y touches could not span fit_tank's 150 mm (J1's +187.5 deg soft limit)",
+        "why": "real +y samples did not span 150 mm; see the per-probe reach and contact verdicts",
     }
     return [*rest, *checks, *synthetic], note
 
 
-def robust_fit(touches: list[dict], tank: dict, estimate: Estimate) -> dict:
+def robust_fit(touches: list[dict], tank: dict, estimate: Estimate, max_drops: int = MAX_DROPS) -> dict:
     """fit_tank, then while it fails only on the residual gate, drop the worst probed touch (a
     rigid object on the floor, say, passes the press check but not the plane) as long as the face
     keeps its minimum. Returns {fit, kept, dropped, dropped_labels}."""
@@ -105,7 +105,7 @@ def robust_fit(touches: list[dict], tank: dict, estimate: Estimate) -> dict:
         return fit, inputs, fallback
 
     fit, inputs, fallback = fit_measured(kept)
-    while len(dropped) < MAX_DROPS and any("residual" in reason for reason in fit["failures"]):
+    while len(dropped) < max_drops and any("residual" in reason for reason in fit["failures"]):
         # A held-out disagreement is evidence against the candidate. Never discard it,
         # and rebuild the width construction whenever a real right-wall sample is removed.
         trials = []

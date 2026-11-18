@@ -109,11 +109,9 @@ class ProbeSpec:
     spare: bool = False
 
 
-# Order matters (2026-11-18 survey, scripts/viscous-tank-autocal/README.md): the floor first, then
-# the -y ("right") wall, which the arm reaches jaw-first from x = -480 to -280 even while its plane is
-# uncertain by +-50 mm; that fixes the centre and the yaw. Only then the +y ("left") wall: J1's
-# +187.5 deg soft limit leaves the jaw a short line there, enough only once the wall is predicted to
-# a few mm from the right wall and the nominal width.
+# The first -y probe at x=-470 takes the full uncertainty window. Further -y observations
+# estimate yaw and predict +y from the nominal width. J1's +187.529 degree soft limit
+# constrains the available search on +y, so the longer blind approach is unsuitable there.
 PROBES = (
     ProbeSpec("floor", "floor", -380, 0),
     ProbeSpec("floor", "floor", -380, -80),

@@ -98,7 +98,10 @@ class AutocalSession(Operator):
         self.last_poll = 0.0
         self.reading = None
         self.say = log
-        settings = real.Settings("", 0, 0, probe_planner.SLEW_DEG_S, 15, 35.0, 0, core.TripLimits(), {})
+        # The shared trip validator requires a threshold strictly above the 15 deg/s command cap.
+        settings = real.Settings(
+            "", 0, 0, probe_planner.SLEW_DEG_S, 15, 35.0, 0, core.TripLimits(overspeed_deg_s=15.1), {}
+        )
         self.transit_guard = ProbeReturnGuard(model.guard)
         real.Episode.__init__(
             self,
@@ -246,7 +249,7 @@ class AutocalSession(Operator):
                 if replacement is not None:
                     spares.remove(replacement)
                     queue.insert(0, dataclasses.replace(replacement, label=spec.label))
-        from fitting import robust_fit
+        from fitting import MAX_DROPS, robust_fit
 
         result = robust_fit(self.touches, self.tank, self.estimate)
         # A touch the fit could not place on the glass is dropped and re-probed at a spare
@@ -265,7 +268,9 @@ class AutocalSession(Operator):
                     continue
                 spares.remove(replacement)
                 self.probe(dataclasses.replace(replacement, label=label))
-            result = robust_fit(self.touches, self.tank, self.estimate)
+            result = robust_fit(
+                self.touches, self.tank, self.estimate, max_drops=MAX_DROPS - len(self.dropped)
+            )
             result["dropped"] = self.dropped + result["dropped"]
         self.touches = result["kept"]
         fit = result["fit"]
@@ -654,7 +659,11 @@ def run_session(
         out["reason"] = f"{error.__class__.__name__}: {error}"
         out["exception"] = error.__class__.__name__
     finally:
-        out["stop"] = session.end(out["reason"] or "exit")
+        try:
+            out["stop"] = session.end(out["reason"] or "exit")
+        finally:
+            session.trace.close()
+            planner.poll = lambda: None
     out["session"] = session.report()
     fit = (out["fit"] or {}).get("fit")
     if fit is not None:
@@ -680,5 +689,4 @@ def run_session(
         },
     )
     dump(folder / "probes.json", out["session"]["probes"])
-    out["session_object"] = session
     return out

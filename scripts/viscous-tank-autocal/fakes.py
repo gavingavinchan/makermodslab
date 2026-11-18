@@ -173,13 +173,13 @@ class PlaneFakeArm(real.FakeArm):
         self.first_contacts = []  # (t, surface, tip speed mm/s at first contact)
         self._touching = False
         self._last_tip = None
+        self._load_started = clock()
+        self._dynamics_at = clock()
 
     def _settle(self, m, goal):
         # Held in water, never supported: the full standing sag, phased in over ~3 s after engage
         # (a real arm engaged lying on the floor takes up its load as it lifts).
-        return goal - self.sag[m] * min(1.0, self._held_ticks / 60)
-
-    _held_ticks = 0
+        return goal - self.sag[m] * min(1.0, (self.clock() - self._load_started) / 3.0)
 
     read_hook = None
 
@@ -208,8 +208,8 @@ class PlaneFakeArm(real.FakeArm):
         return real.Reading(noisy, self.torque(), temp, {})
 
     def _dynamics(self):
-        if self.energized:
-            self._held_ticks += 1
+        if self.energized and self.clock() > self._dynamics_at:
+            self._dynamics_at = self.clock()
             free = {m: self._settle(m, self.target[m]) for m in core.MOTORS}
             if self.gripper_limp:
                 free["gripper"] = self.pos["gripper"]
@@ -242,7 +242,9 @@ class PlaneFakeArm(real.FakeArm):
                 return False, "cut-short"
             f = min(1.0, i / steps)
             for m, v in pose.items():
-                self.target[m] = start[m] + (v - start[m]) * f
+                goal = start[m] + (v - start[m]) * f
+                step = speed * core.ROW_DT_S
+                self.target[m] += max(-step, min(step, goal - self.target[m]))
             self.clock.sleep(core.ROW_DT_S)
             self._dynamics()
             if watch is not None and (
