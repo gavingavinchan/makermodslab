@@ -160,7 +160,8 @@ def test_unarmed_has_no_actuation_paths_and_calibrates(tmp_path, model, monkeypa
     )
     try:
         op.begin()
-        q = op.reply(["open"])
+        assert not op.reply(["open"])["ok"]  # the full 112-degree stroke exceeds the command cap
+        q = op.reply(["gripper", "0.3"])
         assert q["ok"] and q["gripper"]["fraction"] == 0
         assert op.reply(["nudge", "up=0.008"])["ok"]
         assert op.commanded != arm.pos
@@ -319,3 +320,50 @@ def test_floor_touch_disagreement_is_rejected(operator):
     assert not reply["ok"] and "touches differ" in reply["guard"]
     assert op.model.guard.planes["floor"] == before
     assert not (op.folder / "floor.json").exists()
+
+
+def test_travel_sums_joints_and_legs_before_writing_and_exempts_rest(operator, monkeypatch):
+    q = operator.start_pose
+    operator.max_command_travel_deg = 4.0
+    both = {**q, "wrist_yaw": q["wrist_yaw"] + 2.1, "wrist_roll": q["wrist_roll"] + 2}
+    roll = {**q, "wrist_roll": q["wrist_roll"] + 3}
+    with monkeypatch.context() as patch:
+        patch.setattr(operator.arm, "send", lambda *_: pytest.fail("wrote a goal before refusal"))
+        for goals in ([both], [roll, q], [{**q, "gripper": q["gripper"] - 5}]):
+            with pytest.raises(RefusalError, match="command travel"):
+                operator.execute(goals)
+    operator.execute([roll])
+    operator.max_command_travel_deg = 1.0
+    assert operator.reply(["rest"])["ok"] and operator.commanded == q
+
+
+def test_projected_floor_refusal_while_measured_hand_is_still_above_glass(operator, monkeypatch):
+    model = operator.model
+    q = model.solve(operator.start_pose, [0.29, 0, 0.01], -70)
+
+    # Put the floor midway between the sagging hand and its projected endpoint.
+    def lower(q, amount):
+        return min(
+            ({**q, "shoulder_lift": q["shoulder_lift"] + sign * amount} for sign in (-1, 1)),
+            key=lambda goal: model.clearance(goal)["hand_floor_mm"],
+        )
+
+    measured = lower(q, 2)
+    goal, projected = lower(q, 1), lower(measured, 1)
+    floor_shift = (
+        model.clearance(measured)["hand_floor_mm"] + model.clearance(projected)["hand_floor_mm"]
+    ) / 2
+    model.guard.planes["floor"] += floor_shift
+    assert model.clearance(measured)["hand_floor_mm"] > 0 > model.clearance(projected)["hand_floor_mm"]
+    assert model.clearance(goal)["hand_floor_mm"] > 0
+    monkeypatch.setattr(operator, "commanded", q)
+    monkeypatch.setattr(operator.reading, "pos", measured)
+    monkeypatch.setattr(operator, "heartbeat", lambda: None)
+    monkeypatch.setattr(operator.arm, "send", lambda *_: pytest.fail("wrote a goal before refusal"))
+    observation = operator.observation()
+    assert observation["sag_mm"] == pytest.approx(
+        model.clearance(q)["hand_floor_mm"] - model.clearance(measured)["hand_floor_mm"]
+    )
+    assert observation["sag_mm"] > 0
+    with pytest.raises(RefusalError, match="standing error projects hand"):
+        operator.execute([goal])

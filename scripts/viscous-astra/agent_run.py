@@ -49,8 +49,8 @@ def run(folder, command):
                 )
                 counts[kind] += 1
             if max(counts.values()) > budget:
-                # This child is Codex, never the arm owner. The launcher's exit
-                # trap uses op quit; only stop_button signals serve.
+                # End the agent only. The supervisor owns the red button and
+                # serve keeps polling trips and its idle deadline until stopped.
                 print(f"Agent budget exhausted: {counts}", file=sys.stderr)
                 agent.terminate()
                 agent.wait()

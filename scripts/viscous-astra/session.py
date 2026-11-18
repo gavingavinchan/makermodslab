@@ -23,8 +23,9 @@ import time
 from collections import deque
 
 import numpy as np
-from model import DT, LEG, SLOW, ZONE, RefusalError, core, mix, real, travel
+from model import DT, LEG, SLOW, ZONE, RefusalError, core, deepens_floor_contact, mix, real, travel
 from PIL import Image
+from sim_arm import SimArm
 
 
 def number(value):
@@ -43,6 +44,8 @@ class PassiveLabArm(real.LabArm):
     The human starts with torque off. Use the tank measurement's bus-only connection
     and turn correction. LabArm.read uses remote_can's fresh-status requests.
     """
+
+    backend = "lab"
 
     def connect(self):
         from lerobot.robots import make_robot_from_config
@@ -76,6 +79,8 @@ class PassiveLabArm(real.LabArm):
 
 class ReplayArm(real.FakeArm):
     """Paired recorded views, optionally a 25 mm contact fixture at a known tank location."""
+
+    backend = "fake"
 
     def __init__(self, model, folder, cube, clock):
         start = {
@@ -115,9 +120,12 @@ class ReturnGuard(real.Guard):
 
 
 class Operator(real.Episode):
-    def __init__(self, arm, model, folder, env, armed, events, pid_file, budget):
+    def __init__(
+        self, arm, model, folder, env, armed, events, pid_file, budget, *, max_command_travel_deg=45
+    ):
         self.model, self.folder, self.armed = model, folder, armed
         self.number, self.budget = 0, budget
+        self.max_command_travel_deg = max_command_travel_deg
         self.trace = (folder / "commands.jsonl").open("a", buffering=1)
         self.floor_sample = None
         self.grip_history = deque(maxlen=4)
@@ -182,7 +190,7 @@ class Operator(real.Episode):
             self.clock.sleep(DT)
         r = self.arm.read()
         self.reading = r
-        if not isinstance(self.arm, ReplayArm):
+        if not isinstance(self.arm, (ReplayArm, SimArm)):
             for name in ("head", "left"):
                 image = r.frames.get(name)
                 if (
@@ -239,6 +247,17 @@ class Operator(real.Episode):
         return self.stop_result
 
     def execute(self, goals, returning=False):
+        if not returning:
+            origin = self.commanded
+            distance = 0.0
+            for goal in goals:
+                distance += sum(abs(goal[m] - origin[m]) for m in core.MOTORS)
+                origin = goal
+            if distance > self.max_command_travel_deg + 1e-8:
+                raise RefusalError(
+                    f"command travel {distance:.2f} degrees exceeds {self.max_command_travel_deg:g}; "
+                    "request a smaller move"
+                )
         steps = self.model.plan(self.commanded, goals, self.start_pose, self.heartbeat)
         # A stalled gripper can be appreciably wider than its target. Prove the
         # arm route at the sensed aperture too (finger slides are linear).
@@ -251,12 +270,22 @@ class Operator(real.Episode):
                 self.heartbeat,
             )
         measured = self.reading.pos
-        if self.armed and self.model.clearance(measured)["hand_floor_mm"] < 0 and measured != self.commanded:
-            # Check the requested recovery from the sensed height as well as from
-            # the last commanded height. A refusal here leaves every motor alone.
+        if self.armed and measured != self.commanded:
+            # Carry the observed joint errors through FK: a fixed angular error
+            # changes the hand's height by different amounts across the reach.
             offset = {m: measured[m] - self.commanded[m] for m in core.MOTORS}
-            sensed_route = [{m: g[m] + offset[m] for m in core.MOTORS} for g in goals]
-            self.model.plan(measured, sensed_route, self.start_pose, self.heartbeat)
+            height = self.model.clearance(measured)["hand_floor_mm"]
+            if height < 0:
+                # Preserve the full recovery checks for a hand already below the floor.
+                sensed_route = [{m: g[m] + offset[m] for m in core.MOTORS} for g in goals]
+                self.model.plan(measured, sensed_route, self.start_pose, self.heartbeat)
+            for target, _, _, _ in steps:
+                self.heartbeat()
+                projected = {m: target[m] + offset[m] for m in core.MOTORS}
+                next_height = self.model.clearance(projected)["hand_floor_mm"]
+                if deepens_floor_contact(height, next_height):
+                    raise RefusalError(f"standing error projects hand to {next_height:.2f} mm at the floor")
+                height = next_height
         self.log(waypoints=len(steps), guards=[v for _, _, _, v in steps])
         last_leg = None
         for target, origin, speed, _ in steps:
@@ -267,21 +296,25 @@ class Operator(real.Episode):
                 self.poll()
                 measured = self.reading.pos
                 height = self.model.clearance(measured)["hand_floor_mm"]
-                if height < 0:
-                    projected = {m: measured[m] + target[m] - self.commanded[m] for m in core.MOTORS}
-                    if self.model.clearance(projected)["hand_floor_mm"] < height - 1e-7:
-                        raise RuntimeError("measured hand below floor; next waypoint would deepen contact")
                 # Re-time on measured near-floor sag while preserving the approved line.
                 ticks = 1
                 if speed > SLOW and height <= ZONE + self.model.guard.motion_bound_mm(self.commanded, target):
-                    ticks = max(1, math.ceil(travel(self.commanded, target) / (SLOW * DT)))
+                    distance = max(abs(target[m] - self.commanded[m]) for m in core.MOTORS)
+                    ticks = max(1, math.ceil(distance / (SLOW * DT) - 1e-8))
                 before = self.commanded
                 for i in range(1, ticks + 1):
                     if i > 1:
                         self.poll()
+                        measured = self.reading.pos
+                        height = self.model.clearance(measured)["hand_floor_mm"]
                     if self.stop_event.is_set():
                         raise RuntimeError("red button")
                     step = mix(before, target, i / ticks)
+                    projected = {m: measured[m] + step[m] - self.commanded[m] for m in core.MOTORS}
+                    if deepens_floor_contact(height, self.model.clearance(projected)["hand_floor_mm"]):
+                        raise RuntimeError(
+                            "measured tracking error projects the next waypoint through the floor"
+                        )
                     self.arm.send(step, self.commanded)
                     self.commanded = step
                     self.sleep(DT)
@@ -375,7 +408,7 @@ class Operator(real.Episode):
                 "floor_mm": (a + z) / 2,
                 "samples_mm": [a, z],
                 "urdf_sha256": self.model.sha,
-                "backend": "fake" if isinstance(self.arm, ReplayArm) else "lab",
+                "backend": self.arm.backend,
                 "environment": self.environment.name,
             }
             previous = self.model.guard.planes["floor"]
@@ -415,10 +448,13 @@ class Operator(real.Episode):
     def observation(self):
         r = self.reading
         frames = {}
+        sim_frames = self.arm.frames() if isinstance(self.arm, SimArm) else None
         for name in ("head", "left"):
             dest = self.folder / "frames" / name / f"{self.number:04}.jpg"
             dest.parent.mkdir(parents=True, exist_ok=True)
-            if isinstance(self.arm, ReplayArm):
+            if sim_frames is not None:
+                dest.write_bytes(sim_frames[name])
+            elif isinstance(self.arm, ReplayArm):
                 shutil.copyfile(
                     self.arm.frames / name / self.arm.names[(self.number - 1) % len(self.arm.names)], dest
                 )
@@ -434,6 +470,8 @@ class Operator(real.Episode):
             and max(self.grip_history) - min(self.grip_history) < 0.5
             and abs(r.torque["gripper"]) >= 0.4
         )
+        clearance = self.model.clearance(r.pos)
+        commanded_clearance = self.model.clearance(self.commanded)
         reply = {
             "armed": self.armed,
             "sequence": self.number,
@@ -445,7 +483,9 @@ class Operator(real.Episode):
                 "opening_mm": fraction * 2000 * self.model.guard.model.gripper_slide_open_m,
                 "holding_something": holding,
             },
-            "clearance": self.model.clearance(r.pos),
+            "clearance": clearance,
+            "commanded_clearance": commanded_clearance,
+            "sag_mm": commanded_clearance["hand_floor_mm"] - clearance["hand_floor_mm"],
             "floor_z_mm": self.model.guard.planes["floor"],
             "urdf_sha256": self.model.sha,
             "frames": frames,

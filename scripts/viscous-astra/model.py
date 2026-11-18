@@ -56,6 +56,10 @@ def check_leg(a, b):
         raise RefusalError("excursion exceeds 35 degrees in one leg")
 
 
+def deepens_floor_contact(height, next_height):
+    return next_height < min(0.0, height) - 1e-7
+
+
 class Model:
     def __init__(self, arm_file, env, folder, limits, lab=False):
         self.in_tank = env.name == "tank"
@@ -193,7 +197,7 @@ class Model:
         cap = SLOW if min(floor_a, floor_b) <= ZONE else FAST
         if travel(a, b) > speed * DT + 1e-8 or not 0 < speed <= cap:
             raise RefusalError("waypoint speed exceeds cap")
-        if floor_a < 0 and floor_b < floor_a - 1e-7 or floor_a >= 0 and floor_b < -1e-7:
+        if deepens_floor_contact(floor_a, floor_b):
             raise RefusalError("floor: hand below the measured glass may only stay level or rise")
         if any(not min(lo, rest[m]) <= b[m] <= max(hi, rest[m]) for m, (lo, hi) in self.limits.items()):
             raise RefusalError("joint soft limit")

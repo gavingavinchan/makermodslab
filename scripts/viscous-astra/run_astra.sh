@@ -39,13 +39,6 @@ elif [[ $backend == lab ]]; then
     tcp_rule=$("$py" -Ic 'import json,sys; e=json.load(open(sys.argv[1])); print("(allow network-outbound (remote tcp \"localhost:%d\"))"%int(e["tcp"].split(":")[1]) if "tcp" in e else "")' "$session/connection.json")
     wrapper=(/usr/bin/sandbox-exec -p '(version 1)(allow default)(deny iokit-open)(deny appleevent-send)(deny file-read* file-write* (regex #"^/dev/(cu[.]|tty[.]|video|disk|rdisk)"))(deny network-outbound (remote ip "localhost:*"))'"$tcp_rule")
 fi
-# Close out a model error or an early final answer through the protocol, never a signal.
-cleanup() {
-    if [[ ! -f "$session/stop.json" ]]; then
-        "$py" "$here/astra_op.py" op --session "$session" quit >> "$session/launcher-stop.log" 2>&1 || true
-    fi
-}
-trap cleanup EXIT
 {
     cat "$here/OPERATING.md"
     printf '\nSession task\n%s\n' "$2"

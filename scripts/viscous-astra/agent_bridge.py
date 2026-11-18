@@ -73,10 +73,9 @@ class Bridge:
             "open",
             "close",
             "rest",
-            "quit",
         ):
             raise ValueError("unknown agent command")
-        if self.frames and words != ["quit"]:
+        if self.frames:
             raise ValueError("open the two pending JPEGs with frames first")
         reply = send(self.folder, words)
         self.frames = reply.get("frames")

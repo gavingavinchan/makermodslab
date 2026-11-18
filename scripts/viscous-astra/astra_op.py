@@ -79,8 +79,26 @@ def receive(listener, token, requests, done):
 def serve(args):
     from model import Model, core, real
     from session import Operator, PassiveLabArm, ReplayArm
+    from sim_arm import SimArm
 
     lab = args.backend == "lab"
+    sim = args.backend == "sim"
+    if sim and (not args.arm_file or args.environment != "tank" or args.frames or args.fake_cube):
+        raise ValueError("sim requires an explicit --arm-file, tank environment and simulator cameras")
+    if not sim and (args.sim_variant or args.sim_task):
+        raise ValueError("--sim-variant and --sim-task require --backend sim")
+    if not math.isfinite(args.idle_deadline_s) or args.idle_deadline_s <= 0:
+        raise ValueError("--idle-deadline-s must be finite and positive")
+    if not math.isfinite(args.max_command_travel_deg) or args.max_command_travel_deg <= 0:
+        raise ValueError("--max-command-travel-deg must be finite and positive")
+    settings = {
+        "backend": args.backend,
+        "budget": args.budget,
+        "idle_deadline_s": args.idle_deadline_s,
+        "max_command_travel_deg": args.max_command_travel_deg,
+    }
+    if sim:
+        settings.update(sim_variant=args.sim_variant or "current", sim_task=args.sim_task or "cube")
     if lab and (args.environment != "tank" or args.fake_cube or args.frames):
         raise ValueError("lab requires tank and record cameras")
     if lab and sys.platform != "darwin":
@@ -105,7 +123,7 @@ def serve(args):
         bundle = real.run_data.RunBundle.start(
             time.strftime("astra-%Y%m%dT%H%M%SZ", time.gmtime()),
             root,
-            meta={"backend": args.backend, "armed": args.armed, "environment": env.name},
+            meta={**settings, "armed": args.armed, "environment": env.name},
         )
         stack.callback(bundle.finish)
         folder = bundle.dir.resolve()
@@ -153,18 +171,31 @@ def serve(args):
             ):
                 raise ValueError("floor record mismatch")
             model.guard.planes["floor"] = data["floor_mm"]
-        arm = (
-            (real.LabArm if args.armed else PassiveLabArm)(home, record, 15)
-            if lab
-            else ReplayArm(
+        if lab:
+            arm = (real.LabArm if args.armed else PassiveLabArm)(home, record, 15)
+        elif sim:
+            start = {**model.map.to_motor(model.spec["rest"]), "gripper": core.GRIP_CLOSED_DEG}
+            arm = SimArm(settings["sim_variant"], settings["sim_task"], folder, arm_path, start)
+            stack.callback(arm.close)
+        else:
+            arm = ReplayArm(
                 model, (args.frames or ARCHIVE / "frames").expanduser(), args.fake_cube, real.VirtualClock()
             )
+        session = Operator(
+            arm,
+            model,
+            folder,
+            env,
+            args.armed,
+            events,
+            pid,
+            args.budget,
+            max_command_travel_deg=args.max_command_travel_deg,
         )
-        session = Operator(arm, model, folder, env, args.armed, events, pid, args.budget)
         stack.callback(session.trace.close)
         listener = stack.enter_context(socket.socket(socket.AF_INET if args.tcp else socket.AF_UNIX))
         token = secrets.token_hex(32)
-        endpoint = {"token": token, "backend": args.backend, "budget": args.budget}
+        endpoint = {"token": token, **settings}
         if args.tcp:
             listener.bind(address(args.tcp))
             endpoint["tcp"] = "127.0.0.1:" + str(listener.getsockname()[1])
@@ -189,15 +220,34 @@ def serve(args):
             session_pointer.write_text(str(folder) + "\n")
             stack.callback(session_pointer.unlink, missing_ok=True)
             print(f"READY {folder}", flush=True)
+            deadline = time.monotonic() + args.idle_deadline_s
             while not session.finished and not events[0].is_set():
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    reason = "idle deadline"
+                    break
                 try:
-                    words, response = requests.get(timeout=core.ROW_DT_S)
+                    words, response = requests.get(timeout=min(core.ROW_DT_S, remaining))
                 except queue.Empty:
                     if not thread.is_alive():
                         raise RuntimeError("operator socket listener exited") from None
                     session.poll()
                     continue
-                reply = session.reply(words)
+                if time.monotonic() >= deadline:
+                    reason = "idle deadline"
+                    break
+                if sim and words and words[0] in ("truth", "mark"):
+                    # Supervisor diagnostics do not spend the operator's budget or renew its hold.
+                    session.heartbeat()
+                    if words == ["truth"]:
+                        reply = arm.truth()
+                    elif words[0] == "mark" and len(words) == 2:
+                        reply = arm.mark(words[1])
+                    else:
+                        reply = {"ok": False, "guard": "use truth or mark LABEL"}
+                else:
+                    reply = session.reply(words)
+                    deadline = time.monotonic() + args.idle_deadline_s
                 response.put(reply)
                 response = None
             reason = "red button" if events[0].is_set() else reason
@@ -229,7 +279,9 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="mode", required=True)
     s = sub.add_parser("serve")
-    s.add_argument("--backend", choices=("fake", "lab"), required=True)
+    s.add_argument("--backend", choices=("fake", "lab", "sim"), required=True)
+    s.add_argument("--sim-variant", choices=("current", "foamed"))
+    s.add_argument("--sim-task", choices=("ball", "screwdriver", "cube"))
     s.add_argument("--environment", choices=("tank", "dry_air"), default="tank")
     s.add_argument("--armed", action="store_true")
     s.add_argument("--arm-file", type=Path)
@@ -239,6 +291,8 @@ def main(argv=None):
     s.add_argument("--fake-cube", nargs=2, type=float, metavar=("X", "Y"))
     s.add_argument("--floor-calibration", type=Path)
     s.add_argument("--budget", type=int, default=40)
+    s.add_argument("--idle-deadline-s", type=float, default=45)
+    s.add_argument("--max-command-travel-deg", type=float, default=45)
     net = s.add_mutually_exclusive_group()
     net.add_argument("--socket", type=Path)
     net.add_argument("--tcp")
