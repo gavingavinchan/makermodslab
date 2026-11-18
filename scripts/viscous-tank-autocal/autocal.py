@@ -106,7 +106,9 @@ SCENARIOS = {
     "nominal": "a random tank, nothing in the way",
     "cable": "a soft cable bundle (300 N/m) under the first floor probe",
     "post": "a floor request at the mount post",
-    "rock": "a rigid 30 mm-tall object on the floor under the first floor probe",
+    "wrist_post": "a raised rigid pin under the wrist during a floor press with softened wrist gains",
+    "rock": "a localized rigid 24 mm-tall object under the first floor probe",
+    "rock_wide": "a rigid object extending under several floor probes",
     "floor_trap": "a wall probe planned 10 mm above the true floor (the floor is 22 mm higher than nominal)",
     "buckle": "the wrist joints go soft (kp 3) during the presses: the wrist folds",
     "model_error": "0.5 deg encoder zero errors on lift, elbow and wrist_flex (a URDF/calibration error)",
@@ -128,7 +130,7 @@ def simulate(cfg: dict) -> dict:
 
     seed, backend, scenario = cfg["seed"], cfg["backend"], cfg.get("scenario", "nominal")
     out = Path(cfg["out"]) / f"{scenario}-{backend}-{seed:03d}"
-    out.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=False)
     rng = np.random.default_rng(seed)
     tank, keepout = load_inputs()
     model = context.offline_model(out / "model")
@@ -143,6 +145,8 @@ def simulate(cfg: dict) -> dict:
             probe_planner.ProbeSpec("right", "right", -470, 2)
         ]
         spares = []
+    if scenario == "wrist_post":
+        specs, spares = [probe_planner.PROBES[0]], []
     if scenario == "post":
         specs, spares = [probe_planner.ProbeSpec("floor", "floor", 106, 10)], []
     if scenario == "missing_wall":
@@ -198,7 +202,7 @@ def simulate(cfg: dict) -> dict:
                 stop_event.set()
             else:
                 session.arm.fault, session.arm.fault_tick = fault, session.arm.ticks + 5
-        if scenario == "buckle" and backend == "mujoco":
+        if scenario in ("buckle", "wrist_post") and backend == "mujoco":
             soft = "press" in step
             session.arm.kp_override = (
                 dict.fromkeys(("wrist_flex", "wrist_yaw", "wrist_roll"), 3.0) if soft else {}
@@ -219,13 +223,19 @@ def simulate(cfg: dict) -> dict:
                 abort_event.set()
 
     recorder_ref = {}
-    if scenario in ("cable", "rock"):
+    if scenario == "wrist_post":
+        first = probe_planner.PROBES[0]
+        centre = (first.u + 35.0, first.v - 75.0, truth.floor)
+        obstacles.append(("post_pin", "floor", centre, 8.0, 80.0, None))
+    if scenario in ("cable", "rock", "rock_wide"):
         first = probe_planner.PROBES[0]
         centre = truth.surface_point(first.face, first.u, first.v)
         if scenario == "cable":
             obstacles.append(("cable", first.face, centre, 38.0, 20.0, 300.0))
         else:
-            obstacles.append(("rock", first.face, centre, 38.0, 24.0, None))
+            obstacles.append(
+                ("rock", first.face, centre, 38.0 if scenario == "rock_wide" else 12.0, 24.0, None)
+            )
     if backend == "mujoco":
         import sim
 
@@ -345,6 +355,8 @@ def evaluate(result, truth, nominal, arm, backend) -> dict:
             "failures": fit["failures"],
             "yaw_error_deg": fit["yaw_deg"] - truth.yaw_deg,
             "floor_error_mm": o["floor"] - truth.floor,
+            "left_offset_error_mm": o["left"] - truth.left,
+            "right_offset_error_mm": o["right"] - truth.right,
             "left_error_mm_max_over_reach": wall_err["left"],
             "right_error_mm_max_over_reach": wall_err["right"],
             "centre_error_mm": -(o["left"] + o["right"]) / 2 + (truth.left + truth.right) / 2,
@@ -394,6 +406,12 @@ def _jsonable(v):
 
 def cmd_sim(args) -> int:
     out = Path(args.out or RUN_ROOT / time.strftime("autocal-sim-%Y%m%dT%H%M%SZ", time.gmtime())).expanduser()
+    if min(args.tanks, args.repeat, args.workers) < 1:
+        raise SystemExit("tanks, repeat and workers must be positive")
+    if out.exists() and any(out.iterdir()):
+        raise SystemExit(f"choose an empty output directory: {out}")
+    if args.video and Path(args.video).expanduser().exists():
+        raise SystemExit("choose a new video filename")
     out.mkdir(parents=True, exist_ok=True)
     configs = []
     for scenario in args.scenario:
@@ -461,7 +479,7 @@ def summarise(reports) -> dict:
             "runs": len(runs),
             "crashed": [r.get("crash") for r in runs if r.get("crash")],
             "valid_fits": len(valid),
-            "invalid_fit_failures": [f["failures"] for f in fits if not f["valid"]],
+            "invalid_fit_failures": [r["fit_failures"] for r in runs if r.get("fit_failures")],
             "ended_released": sum(1 for r in runs if r.get("released")),
             "returned": sorted({str(r.get("stop", {}).get("returned")) for r in runs}),
             "reasons": sorted({str(r.get("reason")) for r in runs}),
@@ -518,7 +536,7 @@ class ProbeLabArm(real.LabArm):
 
     def connect(self):
         saved = real.FOLLOWER_GAINS
-        real.FOLLOWER_GAINS = {m: probe_planner.PROBE_GAINS[m] for m in ARM}
+        real.FOLLOWER_GAINS = dict(probe_planner.PROBE_GAINS)
         try:
             super().connect()
         finally:
@@ -617,7 +635,7 @@ def cmd_run(args) -> int:
             f"stop: {result['stop'].get('returned')}; release problems: {result['stop'].get('release_problems')}"
         )
         print(f"run folder: {folder}")
-    return 0
+        return int(not result.get("candidate_files") or bool(result["stop"].get("release_problems")))
 
 
 def main(argv=None) -> int:

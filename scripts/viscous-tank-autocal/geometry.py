@@ -87,6 +87,8 @@ class Estimate:
     source: str = "nominal"
     known: set = field(default_factory=set)  # faces measured so far (else nominal)
 
+    unconfirmed_floor_high: float | None = None
+
     @property
     def far(self) -> float:
         return self.near - self.dims["inner_length"]

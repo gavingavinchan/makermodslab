@@ -238,13 +238,10 @@ class AutocalSession(Operator):
             spec = queue.pop(0)
             outcome = self.probe(spec)
             if outcome != "touch":
-                replacement = next(
-                    (
-                        s
-                        for s in spares
-                        if probe_planner.face_of(s.label) == probe_planner.face_of(spec.label)
-                    ),
-                    None,
+                replacement = min(
+                    (s for s in spares if s.face == spec.face),
+                    key=lambda s: math.hypot(s.u - spec.u, s.v - spec.v),
+                    default=None,
                 )
                 if replacement is not None:
                     spares.remove(replacement)

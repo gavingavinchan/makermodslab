@@ -133,9 +133,11 @@ SPARES = (
     ProbeSpec("floor", "floor", -400, 28, True),
     ProbeSpec("floor", "floor", -413, -65, True),
     ProbeSpec("floor", "floor", -360, -25, True),
-    ProbeSpec("right", "right", -315, 110, True),
+    ProbeSpec("right", "right", -338, 90, True),
+    ProbeSpec("right", "right", -350, 115, True),
     ProbeSpec("right", "right", -505, 110, True),
-    ProbeSpec("right", "right", -335, 105, True),
+    ProbeSpec("right", "right", -522, 115, True),
+    ProbeSpec("right", "right", -460, 135, True),
     ProbeSpec("left", "left", -400, 80, True),
     ProbeSpec("left", "left", -320, 160, True),
     ProbeSpec("left", "left", -360, 160, True),
@@ -182,8 +184,22 @@ def update_estimate(prior: Estimate, touches: list[dict]) -> Estimate:
     if "right" in walls and "left" not in walls:
         est.left = est.right + width
     if groups["floor"]:
-        est.floor = float(np.mean([p[2] for p in groups["floor"]]))
-        est.known.add("floor")
+        floor = np.array(groups["floor"])
+        plausible = np.abs(floor[:, 2] - prior.floor) <= U_FLOOR_MM + U_MODEL_MM
+        if plausible.any():
+            est.floor = float(np.median(floor[plausible, 2]))
+            est.known.add("floor")
+        else:
+            # A rock gives rigid, repeatable FK too. Keep the original search window
+            # until an independently located touch confirms a surface outside the prior.
+            for point in floor:
+                agree = np.abs(floor[:, 2] - point[2]) <= U_MODEL_MM
+                if np.any(agree & (np.linalg.norm(floor[:, :2] - point[:2], axis=1) >= 70.0)):
+                    est.floor = float(np.median(floor[agree, 2]))
+                    est.known.add("floor")
+                    break
+            if "floor" not in est.known:
+                est.unconfirmed_floor_high = float(max(floor[:, 2]))
     est.source = "touches"
     return est
 
@@ -194,7 +210,11 @@ def uncertainty(est: Estimate, touches: list[dict], face: str, u: float) -> floa
         return U_MODEL_MM if "floor" in est.known else U_FLOOR_MM + U_MODEL_MM
     walls = [t for t in touches if t["label"] in ("left", "right")]
     xs = [est.to_tank(t["point_mm"])[0] for t in walls]
-    yaw_known = len(xs) >= 2 and max(xs) - min(xs) >= 100.0
+    yaw_known = any(
+        len(group) >= 2 and max(group) - min(group) >= 100.0
+        for label in ("left", "right")
+        if (group := [x for x, t in zip(xs, walls, strict=True) if t["label"] == label])
+    )
     yaw_u = math.tan(math.radians(0.5 if yaw_known else U_YAW_DEG))
     if not walls:
         return U_CENTRE_MM + abs(u) * yaw_u + U_MODEL_MM
@@ -216,6 +236,8 @@ def sync_guard(guard: tank_guard.TankGuard, est: Estimate, nominal: dict, conser
         if conservative:
             value = min(value, nominal[face]) if face == "left" else max(value, nominal[face])
         guard.planes[face] = float(value)
+    if conservative and est.unconfirmed_floor_high is not None:
+        guard.planes["floor"] = max(guard.planes["floor"], est.unconfirmed_floor_high)
     guard.planes["rim"] = float(min(o["rim"], nominal["rim"]) if conservative else o["rim"])
     guard.yaw_deg = float(est.yaw_deg)
     guard._axes = geo.tank_axes(guard.yaw_deg)
@@ -414,15 +436,24 @@ class Planner:
         # seed bank shows this arm actually reaches near the standoff (the reachable cone at a given
         # point is narrow and rarely on the grid). Least tilted first.
         stand = point - standoff * n
+        reasons, feasible = [], []
+        if face != "floor":
+            standoffs = [standoff]
+            if face in est.known:
+                # Once this wall has a real observation the 65 mm starting distance
+                # can unnecessarily fold the wrist back over the centre. Search closer
+                # only inside the same normal guard and outside the full uncertainty.
+                closer = max(42.0, u_mm + WINDOW_PAD_MM)
+                if closer < standoff:
+                    standoffs.append(closer)
+            for distance in standoffs:
+                plan = self._free_wrist(spec, est, n, point, distance, window, hub, u_mm, reasons)
+                if plan:
+                    return plan
         cands = [(float(t), a) for t, _, a in tilted_axes(n, TILTS_DEG, AZIMUTHS_DEG)]
         for a in self.bank.axes_near(stand, n, BANK_TILT_DEG, BANK_AXES):
             cands.append((math.degrees(math.acos(float(np.clip(a @ n, -1, 1)))), a))
         cands.sort(key=lambda c: c[0])
-        reasons, feasible = [], []
-        if face != "floor" and (
-            plan := self._free_wrist(spec, est, n, point, standoff, window, hub, u_mm, reasons)
-        ):
-            return plan
         for tilt, axis in cands:
             if feasible and (tilt > feasible[0].tilt_deg + 10.0 or len(feasible) >= 3):
                 break
@@ -702,4 +733,6 @@ def write_plan(path: Path, result: dict) -> None:
         "assumption": "earlier feasible presses find the nominal planes",
         "probes": [dataclasses.asdict(p) for p in result["plans"]],
     }
-    path.write_text(json.dumps(out, indent=2, default=float) + "\n")
+    with path.open("x") as stream:
+        json.dump(out, stream, indent=2, default=float)
+        stream.write("\n")
