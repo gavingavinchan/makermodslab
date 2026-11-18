@@ -1,0 +1,105 @@
+{
+  "_copyright": "Copyright 2026 MakerMods. All rights reserved.",
+  "_license": "Licensed under the Apache License, Version 2.0 (the License); you may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "run_root": "/home/gavin/astra-tonight/campaign",
+  "scripted_proofs": [
+    {
+      "slot": "proof-current-ball-4",
+      "variant": "current",
+      "task": "ball",
+      "success": true,
+      "grasped_lift_mm": 69.87254873626196,
+      "xy_error_mm": 60.933746808167314,
+      "server_commands": 20,
+      "min_glass_mm": 13.163446118142216,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.0,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    },
+    {
+      "slot": "proof-current-cube-4",
+      "variant": "current",
+      "task": "cube",
+      "success": true,
+      "grasped_lift_mm": 81.10669698538894,
+      "xy_error_mm": 3.508392523088978,
+      "server_commands": 29,
+      "min_glass_mm": 4.508036608669195,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.08457025503498591,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    },
+    {
+      "slot": "proof-current-screwdriver-4",
+      "variant": "current",
+      "task": "screwdriver",
+      "success": true,
+      "grasped_lift_mm": 76.68565777902305,
+      "xy_error_mm": 60.57144860154944,
+      "server_commands": 20,
+      "min_glass_mm": 4.4986818939550846,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.07322819331587938,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    },
+    {
+      "slot": "proof-foamed-ball-4",
+      "variant": "foamed",
+      "task": "ball",
+      "success": true,
+      "grasped_lift_mm": 69.48313690481683,
+      "xy_error_mm": 61.32079748084363,
+      "server_commands": 20,
+      "min_glass_mm": 13.192069824082779,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.0,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    },
+    {
+      "slot": "proof-foamed-cube-4",
+      "variant": "foamed",
+      "task": "cube",
+      "success": true,
+      "grasped_lift_mm": 81.11481635348291,
+      "xy_error_mm": 3.513501353689664,
+      "server_commands": 29,
+      "min_glass_mm": 4.6080218342121375,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.08443639836571966,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    },
+    {
+      "slot": "proof-foamed-screwdriver-4",
+      "variant": "foamed",
+      "task": "screwdriver",
+      "success": true,
+      "grasped_lift_mm": 76.72093695620633,
+      "xy_error_mm": 60.65399430930172,
+      "server_commands": 20,
+      "min_glass_mm": 4.616277642553377,
+      "glass_contact_speed_m_s": 0.0,
+      "whole_session_glass_contact_speed_m_s": 0.07167276630808132,
+      "red_button": true,
+      "returned": "at the rest",
+      "release_problems": null
+    }
+  ],
+  "real_approval_check": {
+    "run": "/home/gavin/astra-tonight/campaign/approval/runs/astra-20261118T232755Z",
+    "verified": [
+      "observe",
+      "head",
+      "left"
+    ]
+  }
+}

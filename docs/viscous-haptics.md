@@ -128,6 +128,28 @@ restore paths in the DAgger runner.
   officially supports, so Gavin wants Dream-1 to drive it, possibly through "a
   translation layer ... so that ... the Dream One model just pretends that it is
   ... using the maker arm but then in reality it's using my arm" (2026-10-20).
+- *Status (2026-11-18), underwater hold and torque-loss campaign on Linux.*
+  Gavin wanted to know whether foam could support the arm while Astra thinks and keep an
+  unpowered hand from striking glass. Wet holding traces, dry CAD and the available
+  flooded pockets support 159 cm³ in the upper arm and 94 cm³ in the forearm. Across
+  618 contact-free sample poses the worst J2 hold fell from 6.14 to 5.82 Nm. J4 still
+  supports the 1.45 kg dry hand. Nominal worst sampled floor-normal impact speeds were
+  1.25 and 1.21 m/s. The inserts leave 1.49 kg of apparent downward load beyond J2.
+  The shoulder has insufficient margin for a longer physical hold.
+  [Buoyancy, insert placement and uncertainty](../scripts/viscous-buoyancy/REPORT.md).
+  The real-time MuJoCo child uses the existing operator, tank guard and protected stop,
+  with wall-clock idle expiry, measured-sag checks and a 45° command travel cap. A
+  scripted operator completed all six object/variant combinations. Astra completed
+  one current-arm cube placement and one foamed golf-ball lift in 18 runs. Three
+  screwdriver attempts raised the handle while the shaft still touched glass at handback.
+  The arm stayed clear during agent control. A jaw struck the floor at 0.93 m/s normal
+  speed after one return to the suspended simulation rest and release. The simulator
+  now records a full second after release. Every trial received one supervisor SIGTERM.
+  All work was offline with respect to the arm. Physical flooding, pad friction, wet
+  camera calibration, supported rest, and cutout behavior under foam remain unverified.
+  [Per-attempt loads, timing, contact and recordings](../scripts/viscous-astra/results/tank-20261118.json)
+  · [Simulator and thermal replay](../scripts/viscous-sim/README.md)
+  · [Revised operator procedure](../scripts/viscous-astra/OPERATING.md).
 - *Status (2026-11-18): Astra drives the arm through a MakerMods-style operator harness.*
   Gavin wanted MakerMods' one-command camera loop so the agent can choose the next
   move from the actual hand view. `scripts/viscous-astra/` pairs the existing Lab
