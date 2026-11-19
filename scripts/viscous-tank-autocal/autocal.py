@@ -79,7 +79,8 @@ def cmd_plan(args) -> int:
         print(
             f"{head}  OK tilt {plan.tilt_deg:4.1f} deg, standoff {plan.standoff_mm:.0f} mm, window {plan.window_mm:.0f} mm,"
             f" press {plan.d1_mm:.1f}/{plan.d2_mm:.1f} mm, stiffness {plan.stiffness_n_per_m:.0f} N/m -> "
-            f"{plan.press_force_n:.1f} N (torque backstop {plan.backstop_force_n:.1f} N), lead {plan.lead_mm:.0f} mm "
+            f"{plan.press_force_n:.1f} N (static torque trip {plan.backstop_force_n:.1f}–{plan.backstop_force_max_n:.1f} N), "
+            f"lead {plan.lead_mm:.0f} mm "
             f"({plan.lead_link}), other face {plan.other_face_mm:.0f} mm, guard slack {plan.guard_slack_mm:.1f} mm"
         )
         print(f"      lift     {_fmt(plan.lift)}")
@@ -518,6 +519,8 @@ def summarise(reports) -> dict:
             for label, key in (
                 ("yaw_error_deg", "yaw_error_deg"),
                 ("floor_error_mm", "floor_error_mm"),
+                ("left_offset_error_mm", "left_offset_error_mm"),
+                ("right_offset_error_mm", "right_offset_error_mm"),
                 ("left_error_mm", "left_error_mm_max_over_reach"),
                 ("right_error_mm", "right_error_mm_max_over_reach"),
                 ("centre_error_mm", "centre_error_mm"),

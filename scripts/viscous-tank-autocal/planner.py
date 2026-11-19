@@ -330,8 +330,8 @@ class ProbePlan:
     d2_mm: float | None = None
     stiffness_n_per_m: float | None = None
     press_force_n: float | None = None
-    backstop_force_n: float | None = None
-    undetected_force_n: float | None = None
+    backstop_force_n: float | None = None  # lowest quasi-static trip force on the line
+    backstop_force_max_n: float | None = None  # highest quasi-static trip force on the line
     lead_mm: float | None = None
     lead_link: str | None = None
     other_face_mm: float | None = None
@@ -598,13 +598,16 @@ class Planner:
         # A free wrist can change the leverage. Bound depth over the entire reachable
         # line, including when the pane is on the near side of the uncertainty interval.
         max_stiffness = stiffness
+        max_backstop_force = backstop_force
         for node in nodes:
             cp = contact_point(pm, node, n)
             node_jac = point_jacobian(pm, node, cp, "gripper_left")
             node_stiffness = normal_stiffness(node_jac, n, KP)
             max_stiffness = max(max_stiffness, node_stiffness)
             lever = np.max(np.abs(node_jac.T @ n))
-            backstop_force = min(backstop_force, TORQUE_BACKSTOP_NM / max(lever, 1e-9))
+            node_backstop = TORQUE_BACKSTOP_NM / max(lever, 1e-9)
+            backstop_force = min(backstop_force, node_backstop)
+            max_backstop_force = max(max_backstop_force, node_backstop)
         safe_depth = min(d2, min(F_MAX_N, 0.70 * backstop_force) * 1000 / max_stiffness)
         if safe_depth < D2_MIN_MM:
             return ProbePlan(spec, False, ["too stiff along the planned line for two bounded presses"])
@@ -690,7 +693,7 @@ class Planner:
             stiffness_n_per_m=stiffness,
             press_force_n=max_stiffness * d2 / 1000,
             backstop_force_n=backstop_force,
-            undetected_force_n=min(stiffness * (2 * window - WINDOW_PAD_MM) / 1000, backstop_force),
+            backstop_force_max_n=max_backstop_force,
             lead_mm=lead,
             lead_link=lead_link,
             other_face_mm=other,
