@@ -141,6 +141,18 @@ restore paths in the DAgger runner.
   the corrected production launcher and received both images after each command. Mac isolation, physical torque-off reads, grasp
   sensing and all powered motion still need Gavin's bench checks.
   [Operator procedure and replay recipe](../scripts/viscous-astra/OPERATING.md).
+- *2026-11-18 · Optional tank wall auto-calibration, Linux simulation only.*
+  Gavin wants a convenient way to remeasure after moving the mount. A tape measure still suffices.
+  The closed jaw presses the floor, then −y, then predicted +y. Commanded versus measured
+  jaw travel at two depths detects compliance. Independent spatial checks guard against rigid
+  objects. The flush post fixes the back. Only Gavin-approved candidate files belong in use.
+  Of 20 CAD-displaced tanks, 20 yielded candidates (9 direct +y, 11 derived using 434 mm width).
+  The centred trial yielded 20/20. Maximum CAD floor error was 2.47 mm and yaw error
+  0.078°. J1's +187.529° limit left only 9–12 mm of +y search at 227 mm.
+  The CAD fingertip is 166 mm from the flange versus the arm file's 132 mm. Wet sag,
+  encoder-blind flex and untested pan gains still need physical validation. A failed shoulder
+  reached 35.15 N instantaneous and needed support before release.
+  [Method, reach survey and simulation evidence](../scripts/viscous-tank-autocal/README.md).
 - *Status (2026-11-07):* first step toward the real arm. Gavin: "can we now
   build a bounding box to run dream1?" A keep-out box that gates every joint
   target against the measured tank is built and tested offline; the real-run
