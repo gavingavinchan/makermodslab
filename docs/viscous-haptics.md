@@ -2623,6 +2623,28 @@ not running, port free.
   -2.2, roll -1.4, gripper -0.30 (inside its soft limits [-115.1, -0.03], at the
   closed end; the 2026-11-07 reading of +242.1 is gone).
 
+## Dry arms 2 and 3: Shenzhen bring-up guide (2026-11-19)
+
+- *Objective:* the two Shenzhen interns bring up two new dry Viscous arms
+  (`viscous_02`, `viscous_03`, each with its own Star) using Kimi Code, then
+  WeChat Gavin one zip per arm. These are the dry sets for Marcus and Adrien.
+- *Gavin's intent:* "the goal is just to see all the motors move so everything
+  is working"; "calibrate it good enough to do some teleop … its fine if the
+  calibration results is not perfect". The new arms are "identical to the very
+  first dry arm" (the waterproof unit's different stops come from its added parts).
+- *Decision:* follow the MakerMods practice (zero only, fixed model limits). The
+  model is `viscous_01`'s built-in preset, shrunk 5° at every end not set by a
+  stop so a rough zero cannot drive a joint into its hard stop; Star mapping is
+  the preset with gripper offset 0 (unit 1's −33° compensated its own drift).
+  Mac only: the maker-arm SDK does not support Windows.
+- *Guide:* [zh/viscous-dry-arm-bringup-kimi.md](zh/viscous-dry-arm-bringup-kimi.md),
+  in Chinese, addressed to Kimi. Its profile and bundle were checked offline
+  against Lab's loader and `restore-viscous-waterproof.py`; nothing run on hardware.
+- *Found while checking makermods-brain:* MakerMods has no written factory
+  calibration/QC procedure (Maker plan D3/D4 🔴), and Lab's MIT path never sets
+  the RobStride CAN watchdog (lerobot `DEFAULT_TIMEOUT_MS = 0`); only the SDK's
+  private-protocol enable does. The guide persists 200 ms before the MIT switch.
+
 ## Working rules for this project
 
 How Gavin wants the work done. These apply to every agent and tool.
