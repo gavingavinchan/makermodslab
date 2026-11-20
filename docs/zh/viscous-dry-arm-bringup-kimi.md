@@ -29,8 +29,9 @@
 3. **不要让电机上力矩**，除了第 4.8 步同学在 Lab 里按"Teleop"按钮。具体来说，**禁止运行**：`maker-arm check`、`maker-arm teleop`、`examples/02_enable_hold.py`、`examples/03_sine_wave.py`、`tools/experimental/lerobot/mit_move.py`、`mit_spin.py`、`tools/diagnostics/jog_one_motor.py`，以及任何会 enable 电机的自写代码。
 4. **写电机 flash 的命令**（`assign-id`、`zero`、`persist_can_timeout.py`、`switch_protocol.py`、Star 的 `set_origin_point`）运行前，必须先让同学确认对应的物理状态（例如"机械臂已折叠、手已离开"），得到"好了"才运行。
 5. **不要修改** maker-arm SDK 或 MakerMods Lab 的代码。不要 `git commit` / `git push`。
-6. **遇到任何异常就停下**：用中文向同学解释发生了什么，把日志保存好，不要自己想办法绕过（尤其是任何会让电机动起来的办法）。可以让同学把情况发给 Gavin。
-7. 机械臂**没有刹车**。断电或 Lab 停止时力矩会释放，臂会在重力下落下。所以任何时候上电测试前，臂都要先折叠好放在桌上。
+6. **不要打扰 Isaac 的 MakerMods Lab。** 这台 Mac 上已经装了 Isaac 在用的 Lab（最新版）。我们用的是另一个分支（`feat/viscous-arm`），放在**独立的 git worktree** 里（见 1.2）。在 Isaac 的那个目录里**禁止**：`git checkout`、`git switch`、`git pull`、`git stash`、`git reset`、`git clean`、改文件、`uv sync`、`npm install`。不要碰他的 `~/.makermods/makermodslab/` 目录。也不要关掉他正在运行的 Lab（我们的 Lab 用另一个端口 8010）。
+7. **遇到任何异常就停下**：用中文向同学解释发生了什么，把日志保存好，不要自己想办法绕过（尤其是任何会让电机动起来的办法）。可以让同学把情况发给 Gavin。
+8. 机械臂**没有刹车**。断电或 Lab 停止时力矩会释放，臂会在重力下落下。所以任何时候上电测试前，臂都要先折叠好放在桌上。
 
 ### 0.4 名称（ID）
 
@@ -72,28 +73,51 @@
 
 ### 1.2 下载并安装
 
+**maker-arm SDK**（RobStride 电机工具，装在独立的环境里，固定在验证过的版本）：
+
 ```bash
 mkdir -p ~/viscous-bringup && cd ~/viscous-bringup
-
-# maker-arm SDK（RobStride 电机工具），固定在验证过的版本
 git clone https://github.com/makermods-robotics/maker-arm-sdk.git
 git -C maker-arm-sdk checkout 8d3998d774650c239bc1b42f73c3f7d569e2c59d
 uv venv --python 3.12 .venv-sdk
 uv pip install --python .venv-sdk/bin/python -e ./maker-arm-sdk
 .venv-sdk/bin/maker-arm --help
-
-# MakerMods Lab（Viscous 分支）
-git clone --branch feat/viscous-arm https://github.com/gavingavinchan/makermodslab.git
-cd makermodslab
-git lfs install && git lfs pull      # 失败的话可以继续，遥操作不需要这些文件
-uv sync                               # 会从 GitHub 安装固定版本的 lerobot，可能比较慢
-cd frontend && npm ci && npm run build && cd ..
 ```
+
+**MakerMods Lab（Viscous 分支）：用 git worktree，不动 Isaac 的目录。**
+
+1. 找到 Mac 上已有的 Lab 目录（问同学，或者找包含 `makermodslab/server.py` 和 `.git` 的目录，常见位置 `~/makermodslab`、`~/Documents/makermodslab`、`~/Documents/GitHub/makermodslab`）。下面记为 `$ISAAC_LAB`。**只读地**看一下它的状态，记进日志，不要改：
+   ```bash
+   git -C $ISAAC_LAB status -sb | head -3
+   git -C $ISAAC_LAB remote -v
+   git -C $ISAAC_LAB worktree list
+   ```
+2. 从 Gavin 的仓库取 Viscous 分支，建一个独立的 worktree（这只会在 `.git` 里加一个 remote 和几个 ref，Isaac 的工作目录、分支和文件都不变）：
+   ```bash
+   git -C $ISAAC_LAB remote get-url gavin-viscous 2>/dev/null || \
+     git -C $ISAAC_LAB remote add gavin-viscous https://github.com/gavingavinchan/makermodslab.git
+   git -C $ISAAC_LAB fetch gavin-viscous feat/viscous-arm
+   git -C $ISAAC_LAB worktree add --detach ~/viscous-bringup/makermodslab gavin-viscous/feat/viscous-arm
+   ```
+   如果 `$ISAAC_LAB` 不是 git 目录（例如是 pip 装的），或者找不到，就直接单独克隆一份，同样不影响 Isaac：
+   ```bash
+   git clone --branch feat/viscous-arm https://github.com/gavingavinchan/makermodslab.git ~/viscous-bringup/makermodslab
+   ```
+3. 在 worktree 里安装（它有自己的 `.venv` 和 `node_modules`，和 Isaac 的互不影响）：
+   ```bash
+   cd ~/viscous-bringup/makermodslab
+   unset VIRTUAL_ENV UV_PROJECT_ENVIRONMENT   # 确保 uv 用这个目录自己的 .venv
+   git lfs install --local && git lfs pull     # 失败的话可以继续，遥操作不需要这些文件
+   uv sync                                     # 会从 GitHub 安装固定版本的 lerobot，可能比较慢
+   cd frontend && npm ci && npm run build && cd ..
+   ```
 
 说明：
 - 如果 npm 下载太慢：`npm ci --registry=https://registry.npmmirror.com`。
 - 如果 uv 下载 Python 或依赖太慢：优先让同学开代理。**不要**为了换镜像去改 `uv.lock` 或 `pyproject.toml`。
 - `frontend/dist` 是本地构建产物，不要提交。
+- **两个 Lab 的数据是分开的**：我们的 Lab 每次启动都必须带 `MAKERMODSLAB_HOME=~/.makermods/makermodslab-viscous`（Isaac 的在 `~/.makermods/makermodslab/`）。两者共用 lerobot 的标定目录 `~/.cache/huggingface/lerobot/calibration/`，但我们只新增 `viscous_follower/<ARM>.json` 和 `rebot_102_leader/<STAR>.json` 这两个新名字的文件，不覆盖任何已有文件（安装脚本遇到同名不同内容的文件会拒绝写入）。
+- 全部做完后**保留** worktree，不要删（Gavin 之后可能还要用）。
 
 ### 1.3 工作目录
 
@@ -372,14 +396,16 @@ $PY $SDKDIR/tools/experimental/lerobot/switch_protocol.py --backend slcan --port
 
 ### 4.8 Lab 遥操作测试
 
-启动 Lab（在另一个终端窗口，保持运行）：
+启动我们的 Lab（在另一个终端窗口，保持运行）。**用 8010 端口直接启动**，这样即使 Isaac 的 Lab 正在 8000 端口运行也互不影响（不要用 `makermodslab` 命令，它固定用 8000，还可能去停掉别的 Lab）：
 
 ```bash
 cd ~/viscous-bringup/makermodslab
-MAKERMODSLAB_HOME=~/.makermods/makermodslab-viscous uv run makermodslab 2>&1 | tee configs/viscous/<ARM>/evidence/logs/08-lab-server.log
+MAKERMODSLAB_HOME=~/.makermods/makermodslab-viscous uv run uvicorn makermodslab.server:app --host 127.0.0.1 --port 8010 2>&1 | tee configs/viscous/<ARM>/evidence/logs/08-lab-server.log
 ```
 
-浏览器打开 `http://127.0.0.1:8000`。
+浏览器打开 `http://127.0.0.1:8010`。页面上应该能看到机器人 `<ARM>`；如果看到的是 Isaac 的机器人列表，说明打开的是 8000 端口或者没带 `MAKERMODSLAB_HOME`，关掉重来。
+
+注意：如果 Isaac 的 Lab 正在 8000 端口运行并且**正在用某台机械臂**（遥操作/录制等），先问同学，等它结束再测试，不要关它。
 
 **物理准备**，逐条对同学说，每条等"好了"：
 1. **"请用夹子或螺丝把从臂底座牢牢固定在桌子上。"**
@@ -394,7 +420,7 @@ MAKERMODSLAB_HOME=~/.makermods/makermodslab-viscous uv run makermodslab 2>&1 | t
 2. **"现在慢慢地，一次只动 Star 的一个关节，每个动 20–30 度，看从臂对应的关节是否跟着动、方向是否一样。顺序：J1 底座、J2 肩（只抬一点点）、J3 肘、J4 腕俯仰、J5 腕偏航、J6 腕旋转、J7 夹爪张开再闭合。每个关节动完都回到折叠位置。"**
 3. **"每个关节告诉我：动了没有？方向对不对？"** 你把结果记进 bringup-record 的 `teleop_test`。
 4. **"全部测完后，把 Star 折叠回去，在 Lab 里点停止（Stop）。从臂会自己慢慢回到起始姿态然后释放力矩。手扶着从臂。"**
-5. **"停止录像。"** 让同学把视频存到 `evidence/photos/teleop-test.mp4`（太大的话只发微信，不放进 zip）。
+5. **"停止录像。"** 视频**不要**放进 `configs/viscous/<ARM>/` 文件夹（会让 zip 太大），让同学直接用微信单独发给 Gavin。在 bringup-record 里记下视频的文件名。
 
 **整个测试控制在 2 分钟以内**。干臂的肩部电机在受力时发热很快，不要让臂长时间伸展着保持不动。
 
@@ -403,7 +429,7 @@ MAKERMODSLAB_HOME=~/.makermods/makermodslab-viscous uv run makermodslab 2>&1 | t
 - 某个关节不动或方向相反 → 记录下来，**不要改配置**，在 README_zh.md 里写清楚，照样打包发给 Gavin。
 - 出现报错 → 把 Lab 页面的错误截图存到 `evidence/photos/`，日志在 `08-lab-server.log`，停下报告。
 
-测试结束后可以在 Lab 终端按 Ctrl-C 关闭 Lab。
+测试结束后可以在我们的 Lab 终端（8010 那个）按 Ctrl-C 关闭它。
 
 ### 4.9 同学确认，打包
 
